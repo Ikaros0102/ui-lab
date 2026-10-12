@@ -3,7 +3,9 @@
 A curated, modular catalog of inspiring UI components, micro-interactions, and visual CSS tricks designed for immediate reuse. 
 
 Built with pure vanilla web standards (HTML5, Modern CSS, ES Modules) and hosted effortlessly on **GitHub Pages** with zero backend or build-step dependencies.
- 
+
+🔗 **Live Demo**: [https://ikaros0102.github.io/ui-lab/](https://ikaros0102.github.io/ui-lab/)
+
 ---
 
 ## ⚡ Key Architecture Principles
@@ -105,9 +107,6 @@ Then open `http://localhost:8000` in your browser.
 
 ## 📄 License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** license.
-
-- ✅ **You are free to**: Share, copy, redistribute, adapt, and build upon the material in any medium or format for non-commercial and educational purposes.
-- ❗ **Under the following terms**: You must give appropriate credit (**@Ikaros0102**), provide a link to the original repository, and indicate if changes were made.
-- ❌ **Commercial restrictions**: You may not use the material, source code, or audio assets for commercial purposes or monetization without prior explicit permission from the author.
+- The **UI Components code** (`components/` HTML/CSS/JS) is licensed under the [MIT License](LICENSE-COMPONENTS). Feel free to use them in your personal and commercial projects.
+- The **UI Lab platform architecture**, catalog design, and core tooling (`index.html`, `assets/`, `tools/`) are licensed under [CC BY-NC 4.0](LICENSE).
 

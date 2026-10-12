@@ -1,6 +1,8 @@
 # Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.
+This license covers the **UI Lab platform architecture**, catalog design, engine, and core tooling (`index.html`, `assets/`, `tools/`).
+
+*(For UI components code in `components/`, see [LICENSE-COMPONENTS](LICENSE-COMPONENTS) — MIT License).*
 
 ### ✅ You are free to:
 - **Share**: Copy and redistribute the material in any medium or format.
