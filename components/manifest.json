@@ -1,0 +1,527 @@
+{
+ "generated": "2026-10-12T13:14:43.547Z",
+ "count": 16,
+ "items": [
+  {
+   "id": "mesh-hero",
+   "path": "components/backgrounds/mesh-hero.html",
+   "title": "Mesh Hero Card",
+   "category": "backgrounds",
+   "themes": [
+    "mesh"
+   ],
+   "tags": [
+    "mesh",
+    "background",
+    "hero",
+    "gradient",
+    "blobs",
+    "animation"
+   ],
+   "description": "Vibrant dynamic mesh background scene with organically floating OKLCH color blobs and a glassmorphic hero callout.",
+   "techniques": [
+    "OKLCH color space",
+    "animated floating blobs",
+    "filter: blur() gradient blending",
+    "mix-blend-mode: hard-light",
+    "glassmorphism"
+   ],
+   "recipe": "Мягкий переливчатый меш строится из нескольких крупных геометрических элементов (`.blob`) с цветами в пространстве OKLCH, которые медленно вращаются и перемещаются по разным траекториям. Родительский контейнер с `filter: blur(60px)` смешивает их в органичный градиент без артефактов растекания.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 680
+   },
+   "hasJs": false
+  },
+  {
+   "id": "glitch-cyber-button",
+   "path": "components/buttons/glitch-cyber-button.html",
+   "title": "Glitch Cyber Buttons",
+   "category": "buttons",
+   "themes": [
+    "retro"
+   ],
+   "tags": [
+    "cyberpunk",
+    "glitch",
+    "hud",
+    "neon",
+    "angular",
+    "rgb split",
+    "scanlines"
+   ],
+   "description": "Cyberpunk HUD panel with three angular clip-path buttons that RGB-split and glitch on hover, framed by scanlines and corner brackets.",
+   "techniques": [
+    "clip-path polygon",
+    "RGB-split pseudo elements",
+    "steps() animation",
+    "clip-path inset slicing",
+    "attr() content",
+    "repeating-linear-gradient scanlines",
+    "color-mix()"
+   ],
+   "recipe": "Скошенные углы — это `clip-path: polygon()` с отступами `var(--cut)`; рамку делаем вторым слоем внутри с тем же полигоном, чуть меньшим. Глитч: `::before`/`::after` дублируют текст через `content: attr(data-text)`, окрашены в cyan и magenta и на hover дёргаются анимацией с `steps()`, каждый кадр вырезая горизонтальную полосу `clip-path: inset()` и сдвигая её — резкие ступени дают «цифровой» сбой вместо плавности.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": false
+  },
+  {
+   "id": "orbit-border-button",
+   "path": "components/buttons/orbit-border-button.html",
+   "title": "Orbit Border Button",
+   "category": "buttons",
+   "themes": [
+    "mesh",
+    "dark"
+   ],
+   "tags": [
+    "button",
+    "border",
+    "conic-gradient",
+    "@property",
+    "glow",
+    "orbit"
+   ],
+   "description": "Call-to-action button with rotating conic-gradient border powered by CSS @property and an outer glowing duplicate blur.",
+   "techniques": [
+    "@property --angle",
+    "conic-gradient()",
+    "blur() glow layer",
+    "smooth hover transition",
+    "color-mix()"
+   ],
+   "recipe": "Ключевой приём — регистрация CSS свойства `@property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg }`. Это позволяет плавно анимировать угол градиента через стандартный `@keyframes`. Сзади лежит псевдоэлемент с `filter: blur(12px)`, который создаёт эффект динамического свечения ореола.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": false
+  },
+  {
+   "id": "glass-4-hazy-border",
+   "path": "components/cards/glass-4-hazy-border.html",
+   "title": "Glass-4 · Hazy Segmented Border",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "light",
+    "glass"
+   ],
+   "tags": [
+    "blur",
+    "glow",
+    "border",
+    "haze",
+    "timer",
+    "stats",
+    "theme switch"
+   ],
+   "description": "Result panel: big timer, badge and three stat tiles, with a dark/light theme switch.",
+   "techniques": [
+    "conic-gradient border",
+    "mask-composite: exclude",
+    "color-mix()",
+    "blurred haze ::after",
+    "backdrop-filter",
+    "theme via CSS variables"
+   ],
+   "recipe": "Неоднородный border — это conic-gradient на ::before с padding: 1px, вырезанный маской (content-box XOR border-box), а прозрачные промежутки между цветными секторами дают «сегменты». Дымка — ::after с inset: -50px, тремя radial-gradient и filter: blur(25px). В светлой теме насыщенность кромок и дымки снижается, а не инвертируется — так стекло остаётся стеклом.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 780
+   },
+   "hasJs": true
+  },
+  {
+   "id": "holo-foil-card",
+   "path": "components/cards/holo-foil-card.html",
+   "title": "Holo Foil Card",
+   "category": "cards",
+   "themes": [
+    "mesh"
+   ],
+   "tags": [
+    "3d",
+    "card",
+    "holo",
+    "foil",
+    "iridescent",
+    "tilt",
+    "color-dodge"
+   ],
+   "description": "3D interactive collectible card with pointer-tracking tilt, iridescent holographic sheen, and dynamic specular glare.",
+   "techniques": [
+    "transform: perspective() rotateX() rotateY()",
+    "mix-blend-mode: color-dodge",
+    "conic-gradient spectrum",
+    "dynamic pointer CSS vars",
+    "specular glare highlights"
+   ],
+   "recipe": "При движении мыши вычисляются углы наклона `--rx`, `--ry` и положение блика `--px`, `--py`. Радужный перелив (holographic foil) создаётся псевдоэлементом с `conic-gradient` в режиме наложения `mix-blend-mode: color-dodge`, а скользящий белый блик (`mix-blend-mode: overlay`) имитирует отражение источника света.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "spotlight-card-grid",
+   "path": "components/cards/spotlight-card-grid.html",
+   "title": "Spotlight Card Grid",
+   "category": "cards",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "cards",
+    "spotlight",
+    "hover",
+    "border",
+    "cursor-follow",
+    "css-variables"
+   ],
+   "description": "Interactive card grid where moving the cursor illuminates borders and textures across neighboring cards synchronously.",
+   "techniques": [
+    "dynamic CSS variables --x / --y",
+    "radial-gradient border highlight",
+    "mask-composite: exclude",
+    "pointermove tracking",
+    "backdrop-filter"
+   ],
+   "recipe": "На родительском контейнере отслеживается событие pointermove, вычисляющее координаты курсора относительно каждой карточки (--x, --y). На каждой карточке ::before использует radial-gradient с центром в (var(--x), var(--y)), вырезанный маской по контуру border. Соседние карточки освещаются единым мягким лучом света.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "signal-loaders",
+   "path": "components/loaders/signal-loaders.html",
+   "title": "Signal Loaders Pack",
+   "category": "loaders",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "loaders",
+    "spinner",
+    "radar",
+    "oscilloscope",
+    "svg",
+    "animation"
+   ],
+   "description": "Curated collection of 6 distinctive telemetry loaders: radar sweep, oscilloscope wave, segmented LCD bar, conic ring, pulsing core, and orbiting dots.",
+   "techniques": [
+    "SVG stroke-dasharray animations",
+    "conic-gradient() spinning mask",
+    "CSS keyframe transforms",
+    "retro telemetry styling",
+    "CSS grid tiles"
+   ],
+   "recipe": "Каждый лоадер иллюстрирует отдельную технику анимации: от вращающегося полупрозрачного сектора радара (conic-gradient) и бегущей синусоиды осциллографа (SVG stroke-dashoffset) до сегментированного LCD-индикатора с пошаговой дискретной задержкой (`animation-delay`).",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 660
+   },
+   "hasJs": false
+  },
+  {
+   "id": "scroll-reveal-feed",
+   "path": "components/micro-interactions/scroll-reveal-feed.html",
+   "title": "Scroll-Driven Reveal Feed",
+   "category": "micro-interactions",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "scroll",
+    "reveal",
+    "feed",
+    "progress bar",
+    "timeline",
+    "journal"
+   ],
+   "description": "Dark editorial feed: cards rise and unblur as they enter the viewport, plus a glowing reading-progress bar at the top.",
+   "techniques": [
+    "animation-timeline: view()",
+    "animation-timeline: scroll()",
+    "animation-range",
+    "IntersectionObserver fallback",
+    "@supports",
+    "grain overlay",
+    "OKLCH"
+   ],
+   "recipe": "Обычная @keyframes-анимация привязывается к прокрутке: `animation-timeline: view()` проигрывает её, пока элемент входит в область видимости (`animation-range: entry 0% cover 30%`), а `scroll(root)` связывает прогресс-бар с прокруткой страницы. Там, где это не поддерживается, `@supports not (animation-timeline: view())` включает классический путь: IntersectionObserver добавляет класс `.in`, а прогресс считается в scroll-обработчике.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "soft-toggle-set",
+   "path": "components/micro-interactions/soft-toggle-set.html",
+   "title": "Soft Toggle Set",
+   "category": "micro-interactions",
+   "themes": [
+    "light"
+   ],
+   "tags": [
+    "neumorphism",
+    "toggle",
+    "switch",
+    "settings",
+    "segmented control",
+    "soft ui"
+   ],
+   "description": "Light neumorphic settings panel: 4 springy toggles + segmented mode picker; the panel accent reacts to checked state.",
+   "techniques": [
+    ":has(:checked)",
+    "linear() spring easing",
+    "layered soft shadows",
+    "OKLCH",
+    "color-mix()",
+    "@property",
+    "inset shadows"
+   ],
+   "recipe": "Неоморфизм строится из двух теней разного знака: светлая сверху-слева и тёмная снизу-справа, а «вдавленность» — те же тени с inset. Состояние панели меняется без JS: `.panel:has(#t-focus:checked)` переопределяет переменную `--accent`, и всё, что от неё зависит (свечение, индикаторы), перекрашивается. Пружинистость ползунка — это кривая `linear()` с перелётом за 1 и затухающими колебаниями, с fallback на cubic-bezier.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "crt-terminal",
+   "path": "components/modals/crt-terminal.html",
+   "title": "CRT Terminal Window",
+   "category": "modals",
+   "themes": [
+    "retro"
+   ],
+   "tags": [
+    "crt",
+    "terminal",
+    "scanlines",
+    "flicker",
+    "bloom",
+    "retro"
+   ],
+   "description": "Retro hacker terminal window with phosphor green glow, curved screen vignette, animated scanlines, and typewriter output.",
+   "techniques": [
+    "text-shadow bloom",
+    "repeating-linear-gradient scanlines",
+    "screen curvature vignette",
+    "steps() typing animation",
+    "phosphor flicker"
+   ],
+   "recipe": "Эффект ЭЛТ-монитора достигается сочетанием radial-gradient по краям (виньетка кривизны экрана) и repeating-linear-gradient поверх всего с pointer-events: none (полосы развертки/scanlines). Свечение текста строится многослойным text-shadow (зелёный люминофор P1), а курсор мигает дискретно через steps(1).",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 680
+   },
+   "hasJs": true
+  },
+  {
+   "id": "frosted-grain-dialog",
+   "path": "components/modals/frosted-grain-dialog.html",
+   "title": "Frosted Grain Dialog",
+   "category": "modals",
+   "themes": [
+    "glass",
+    "dark"
+   ],
+   "tags": [
+    "dialog",
+    "modal",
+    "backdrop-filter",
+    "grain",
+    "texture",
+    "@starting-style"
+   ],
+   "description": "Native modal dialog featuring frosted glass aesthetics, SVG feTurbulence tactile grain noise, and top-layer transition-behavior animations.",
+   "techniques": [
+    "native <dialog> API",
+    "@starting-style entry transition",
+    "SVG feTurbulence grain",
+    "transition-behavior: allow-discrete",
+    "backdrop-filter"
+   ],
+   "recipe": "Диалог открывается через нативный `.showModal()`. Плавный вход из топ-слоя анимируется через `@starting-style` в паре с `transition-behavior: allow-discrete`. Осязаемая текстура матового стекла (noise/grain) создаётся фоновым SVG с фильтром `feTurbulence` и `feColorMatrix`, наложенным в режиме `mix-blend-mode: overlay`.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 680
+   },
+   "hasJs": true
+  },
+  {
+   "id": "glass-dock",
+   "path": "components/navigation/glass-dock.html",
+   "title": "Glass Dock Menu",
+   "category": "navigation",
+   "themes": [
+    "glass",
+    "light"
+   ],
+   "tags": [
+    "dock",
+    "navigation",
+    "magnification",
+    ":has()",
+    "apple",
+    "glassmorphism"
+   ],
+   "description": "macOS inspired floating glass dock menu featuring neighbor icon magnification powered by modern CSS :has() selectors.",
+   "techniques": [
+    ":has(+ :hover) selector",
+    ":hover + * selector",
+    "backdrop-filter: blur()",
+    "soft glass reflections",
+    "CSS transforms"
+   ],
+   "recipe": "Эффект ступенчатого увеличения соседних иконок без JS строится на комбинации `:hover`, селектора следующего элемента `.item:hover + .item` и селектора предыдущего элемента через `.item:has(+ .item:hover)`. Размытый стеклянный корпус dock использует `backdrop-filter: blur(24px)` и легкий радиальный градиент.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 640
+   },
+   "hasJs": false
+  },
+  {
+   "id": "pixel-menu",
+   "path": "components/navigation/pixel-menu.html",
+   "title": "8-bit Pixel Menu",
+   "category": "navigation",
+   "themes": [
+    "retro"
+   ],
+   "tags": [
+    "pixel-art",
+    "8-bit",
+    "retro",
+    "game",
+    "arcade",
+    "keyboard-nav"
+   ],
+   "description": "Arcade 8-bit game main menu with stepped pixel border shadows, blinking cursor arrow, and keyboard navigation.",
+   "techniques": [
+    "box-shadow pixel-art border",
+    "Press Start 2P font",
+    "image-rendering: pixelated",
+    "keyboard arrow navigation",
+    "steps(1) blinking arrow"
+   ],
+   "recipe": "Пиксельная рамка вокруг меню строится через каскадный `box-shadow` без размытия, имитирующий уступчатые пиксели. Курсор (мигающий треугольник) управляется клавишами Up/Down/Enter с дискретной анимацией через `steps(1)`.",
+   "preview": {
+    "mode": "page",
+    "width": 860,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
+   "id": "segmented-nav",
+   "path": "components/navigation/segmented-nav.html",
+   "title": "Segmented Nav with Sliding Pill",
+   "category": "navigation",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "navigation",
+    "tabs",
+    "anchor-positioning",
+    "pill",
+    "glassmorphism"
+   ],
+   "description": "Sleek glass segmented control with an active indicator pill that smoothly glides between options using CSS transitions.",
+   "techniques": [
+    "CSS anchor-positioning",
+    ":has() selector",
+    "backdrop-filter",
+    "linear() spring easing",
+    "layout containment"
+   ],
+   "recipe": "Бегущий индикатор (pill) позиционируется динамически через CSS переменные --pill-left и --pill-width, которые синхронизируются при клике или смене активной ссылки. Фон панели выполнен в стиле полупрозрачного стекла с backdrop-filter: blur(16px) и тонким бликом по верхней кромке.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "lcd-stopwatch",
+   "path": "components/widgets/lcd-stopwatch.html",
+   "title": "LCD Stopwatch",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "lcd",
+    "stopwatch",
+    "timer",
+    "dseg7",
+    "seven-segment",
+    "digital",
+    "laps",
+    "scanlines"
+   ],
+   "description": "Retro LCD stopwatch device: ghost-segment display, glow, scanlines, start/stop/lap/reset buttons and a lap list.",
+   "techniques": [
+    "DSEG7 web font",
+    "ghost segments layer",
+    "layered text-shadow glow",
+    "repeating-linear-gradient scanlines",
+    "layered box-shadow bezel",
+    "OKLCH palette",
+    "requestAnimationFrame timer",
+    "tabular digits"
+   ],
+   "recipe": "Главный трюк — два слоя одного и того же шрифта DSEG7 в grid-ячейке: снизу тусклая строка «88:88.88» (все сегменты выключены), сверху — светящиеся цифры. Так как у DSEG все глифы одной ширины, слои совпадают сегмент в сегмент и получается настоящий эффект ЖК-индикатора. Свечение даёт многослойный text-shadow, а сканлайны — repeating-linear-gradient поверх экрана с mix-blend-mode.",
+   "preview": {
+    "mode": "page",
+    "width": 640,
+    "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "paper-notification-stack",
+   "path": "components/widgets/paper-notification-stack.html",
+   "title": "Paper Notification Stack",
+   "category": "widgets",
+   "themes": [
+    "light"
+   ],
+   "tags": [
+    "notifications",
+    "stack",
+    "paper",
+    "shadows",
+    "swipe",
+    "cards"
+   ],
+   "description": "Tactile light-mode notification cards stacked with realistic layered paper shadows that fan out gracefully upon interaction.",
+   "techniques": [
+    "layered paper box-shadows",
+    "transform-origin fanning",
+    "CSS sibling counters & nth-child",
+    "swipe/click dismiss"
+   ],
+   "recipe": "Многослойный эффект бумажной стопки строится за счёт сдвигов `transform: translateY(...) scale(...)` и тонкой комбинации теней `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.04)`. При наведении на стопку карточки плавно раскрываются веером.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  }
+ ]
+}

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll-Driven Reveal Feed</title>
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Scroll-Driven Reveal Feed",
+  "category": "micro-interactions",
+  "themes": ["dark"],
+  "tags": ["scroll", "reveal", "feed", "progress bar", "timeline", "journal"],
+  "description": "Dark editorial feed: cards rise and unblur as they enter the viewport, plus a glowing reading-progress bar at the top.",
+  "techniques": ["animation-timeline: view()", "animation-timeline: scroll()", "animation-range", "IntersectionObserver fallback", "@supports", "grain overlay", "OKLCH"],
+  "recipe": "Обычная @keyframes-анимация привязывается к прокрутке: `animation-timeline: view()` проигрывает её, пока элемент входит в область видимости (`animation-range: entry 0% cover 30%`), а `scroll(root)` связывает прогресс-бар с прокруткой страницы. Там, где это не поддерживается, `@supports not (animation-timeline: view())` включает классический путь: IntersectionObserver добавляет класс `.in`, а прогресс считается в scroll-обработчике.",
+  "preview": { "mode": "page", "width": 1000, "height": 720 }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  :root { --ink: #e9ecf4; --muted: #8790a6; --line: rgba(255,255,255,.07);
+    --acc: oklch(78% 0.14 75); --acc2: oklch(70% 0.17 340); }
+  html { scrollbar-color: #2a2f3d transparent; }
+  body {
+    margin: 0; color: var(--ink); background: #0b0c11;
+    font: 15px/1.55 "Inter", system-ui, sans-serif;
+  }
+  /* дымка + зерно фоном, зафиксированы */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 15% 10%, color-mix(in oklch, var(--acc2) 22%, transparent), transparent 70%),
+      radial-gradient(45% 40% at 90% 80%, color-mix(in oklch, var(--acc) 16%, transparent), transparent 70%);
+    filter: blur(20px);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- progress bar ---------- */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 10;
+    background: linear-gradient(90deg, var(--acc2), var(--acc));
+    box-shadow: 0 0 12px var(--acc), 0 0 30px color-mix(in oklch, var(--acc2) 60%, transparent);
+    transform-origin: left; transform: scaleX(var(--p, 0));
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 14px;
+    padding: 18px 48px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, #0b0c11 70%, transparent); border-bottom: 1px solid var(--line);
+  }
+  .logo { font: 700 13px/1 ui-monospace, monospace; letter-spacing: .25em; }
+  .logo span { color: var(--acc); }
+  .topbar nav { margin-left: auto; display: flex; gap: 22px; font-size: 13px; color: var(--muted); }
+
+  main { max-width: 760px; margin: 0 auto; padding: 70px 24px 160px; }
+  .hero h1 { font: 600 52px/1.05 Georgia, "Times New Roman", serif; letter-spacing: -.02em; margin: 0 0 14px; }
+  .hero h1 em { color: var(--acc); font-style: italic; }
+  .hero p { color: var(--muted); max-width: 480px; margin: 0 0 56px; }
+  .hint { font: 12px ui-monospace, monospace; color: var(--muted); letter-spacing: .15em; }
+
+  /* ---------- cards ---------- */
+  .feed { display: grid; gap: 22px; }
+  .card {
+    position: relative; display: grid; grid-template-columns: 120px 1fr; gap: 22px;
+    padding: 22px; border-radius: 18px; border: 1px solid var(--line);
+    background: linear-gradient(160deg, #161822, #101119);
+    box-shadow: 0 1px 0 rgba(255,255,255,.05) inset, 0 20px 40px -20px #000, 0 2px 6px rgba(0,0,0,.4);
+  }
+  .card:nth-child(even) { margin-left: 60px; }
+  .thumb { aspect-ratio: 1; border-radius: 12px; position: relative; overflow: hidden;
+    background: conic-gradient(from calc(var(--h) * 1deg) at 30% 70%, oklch(65% .16 var(--h)), oklch(35% .1 calc(var(--h) + 60)), oklch(65% .16 var(--h))); }
+  .thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 25%, rgba(255,255,255,.4), transparent 45%); }
+  .meta { font: 11px ui-monospace, monospace; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+  .card h2 { margin: 6px 0 8px; font: 600 21px/1.25 Georgia, serif; }
+  .card p { margin: 0; color: #aab1c3; font-size: 14px; }
+
+  /* ---------- reveal keyframes (общие для обоих путей) ---------- */
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(60px) scale(.96); filter: blur(8px); }
+    to   { opacity: 1; transform: none; filter: none; }
+  }
+  @keyframes grow { to { transform: scaleX(1); } }
+
+  /* путь 1: нативные scroll-driven анимации */
+  @supports (animation-timeline: view()) {
+    .progress { transform: scaleX(0); animation: grow linear both; animation-timeline: scroll(root block); }
+    .card {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+    .card:nth-child(even) { animation-range: entry 10% cover 35%; }
+  }
+  /* путь 2: fallback через IntersectionObserver */
+  @supports not (animation-timeline: view()) {
+    .card { opacity: 0; transform: translateY(60px) scale(.96); filter: blur(8px);
+      transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1), filter .8s; }
+    .card.in { opacity: 1; transform: none; filter: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+  <header class="topbar"><div class="logo">NIGHT<span>/</span>LOG</div>
+    <nav><span>Index</span><span>Archive</span><span>About</span></nav></header>
+  <main>
+    <section class="hero">
+      <div class="hint">ISSUE 07 — SCROLL ↓</div>
+      <h1>Notes from the <em>long</em> evening</h1>
+      <p>A feed that assembles itself as you read. Every card is a plain keyframe animation driven by scroll position instead of time.</p>
+    </section>
+    <section class="feed" id="feed"></section>
+  </main>
+<script>
+  // генерация карточек (чтобы файл был короче)
+  const items = [
+    ['Field recording', 'Rain on a tin roof, 04:12', 'Captured on a cassette walkman left on a windowsill overnight.'],
+    ['Essay', 'The grammar of neon', 'Why signage from the eighties still reads as "open late" to all of us.'],
+    ['Playlist', 'Slow drive, no map', 'Twelve tracks for highways that empty out after midnight.'],
+    ['Interview', 'A typographer in the dark', 'On designing letterforms that survive glare, fog and CRT bloom.'],
+    ['Photo set', 'Laundromat, 2 AM', 'Fluorescent hum, warm dryers, a single cat asleep on a folding table.'],
+    ['Short fiction', 'The last train keeps time', 'A conductor who has never once looked at a clock.'],
+    ['Recipe', 'Insomnia noodles', 'Five ingredients, one pot, and the radio turned low.'],
+    ['Letter', 'To whoever finds this tape', 'Side B is mostly static. Listen anyway.']
+  ];
+  const feed = document.getElementById('feed');
+  feed.innerHTML = items.map(([m, t, d], i) => `
+    <article class="card"><div class="thumb" style="--h:${(i * 47 + 20) % 360}"></div>
+      <div><div class="meta">${m} · ${String(i + 1).padStart(2, '0')}</div><h2>${t}</h2><p>${d}</p></div></article>`).join('');
+
+  // fallback, если нет scroll-driven animations
+  if (!CSS.supports('animation-timeline: view()')) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }), { threshold: 0.15 });
+    document.querySelectorAll('.card').forEach(c => io.observe(c));
+    const bar = document.querySelector('.progress');
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - innerHeight;
+      bar.style.setProperty('--p', h > 0 ? scrollY / h : 0);
+    };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soft Toggle Set</title>
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Soft Toggle Set",
+  "category": "micro-interactions",
+  "themes": ["light"],
+  "tags": ["neumorphism", "toggle", "switch", "settings", "segmented control", "soft ui"],
+  "description": "Light neumorphic settings panel: 4 springy toggles + segmented mode picker; the panel accent reacts to checked state.",
+  "techniques": [":has(:checked)", "linear() spring easing", "layered soft shadows", "OKLCH", "color-mix()", "@property", "inset shadows"],
+  "recipe": "Неоморфизм строится из двух теней разного знака: светлая сверху-слева и тёмная снизу-справа, а «вдавленность» — те же тени с inset. Состояние панели меняется без JS: `.panel:has(#t-focus:checked)` переопределяет переменную `--accent`, и всё, что от неё зависит (свечение, индикаторы), перекрашивается. Пружинистость ползунка — это кривая `linear()` с перелётом за 1 и затухающими колебаниями, с fallback на cubic-bezier.",
+  "preview": { "mode": "center" }
+}
+</script>
+<style>
+  /* ---------- tokens ---------- */
+  @property --accent-h { syntax: "<number>"; inherits: true; initial-value: 250; }
+  :root {
+    --bg: #e7ebf2;
+    --hi: rgba(255,255,255,.95);
+    --lo: rgba(163,177,198,.65);
+    --ink: #3b4558;
+    --muted: #8b95a8;
+    --ease-spring: cubic-bezier(.34,1.56,.64,1);
+  }
+  @supports (transition-timing-function: linear(0, 1)) {
+    :root {
+      /* затухающая пружина: перелёт 1.12 → 0.97 → 1.01 → 1 */
+      --ease-spring: linear(0, 0.22 8%, 0.62 18%, 1.06 32%, 1.12 38%, 1.07 46%, 0.98 58%, 0.97 64%, 1.005 78%, 1.01 86%, 1);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    background:
+      radial-gradient(60% 50% at 30% 20%, #f4f6fa, transparent 70%),
+      radial-gradient(50% 50% at 80% 90%, #dde3ec, transparent 70%),
+      var(--bg);
+    color: var(--ink);
+    font: 14px/1.4 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+  }
+
+  /* ---------- panel ---------- */
+  .panel {
+    --accent: oklch(68% 0.15 var(--accent-h));
+    width: 340px; padding: 26px 24px 22px; border-radius: 28px;
+    background: linear-gradient(145deg, #eef1f6, #e0e5ed);
+    box-shadow:
+      -14px -14px 30px var(--hi),
+      14px 14px 34px var(--lo),
+      inset 1px 1px 0 rgba(255,255,255,.7),
+      0 0 0 1px rgba(255,255,255,.4);
+    transition: --accent-h .8s ease, box-shadow .6s ease;
+    position: relative;
+  }
+  /* мягкий ореол акцента за панелью */
+  .panel::before {
+    content: ""; position: absolute; inset: 30% 10% -8%; z-index: -1;
+    border-radius: 50%; filter: blur(40px); opacity: .35;
+    background: var(--accent); transition: opacity .6s;
+  }
+  /* :has() — состояние панели зависит от отмеченных чекбоксов */
+  .panel:has(#t-focus:checked) { --accent-h: 300; }
+  .panel:has(#t-night:checked) { --accent-h: 30; }
+  .panel:has(#t-focus:checked):has(#t-night:checked) { --accent-h: 160; }
+  .panel:not(:has(.toggle input:checked))::before { opacity: 0; }
+
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .badge {
+    width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+    background: var(--bg);
+    box-shadow: inset 4px 4px 8px var(--lo), inset -4px -4px 8px var(--hi);
+  }
+  .badge svg { width: 22px; height: 22px; stroke: var(--accent); transition: stroke .6s; }
+  h1 { font-size: 17px; margin: 0; letter-spacing: .01em; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+  .count { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--accent);
+    padding: 5px 10px; border-radius: 99px; background: var(--bg);
+    box-shadow: 3px 3px 6px var(--lo), -3px -3px 6px var(--hi); }
+
+  /* ---------- toggle rows ---------- */
+  .row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; }
+  .row + .row { border-top: 1px solid rgba(163,177,198,.25); }
+  .row b { display: block; font-size: 14px; font-weight: 600; }
+  .row small { color: var(--muted); font-size: 11.5px; }
+
+  .toggle { margin-left: auto; position: relative; width: 56px; height: 30px; flex: none; cursor: pointer; }
+  .toggle input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .track {
+    position: absolute; inset: 0; border-radius: 99px; background: var(--bg);
+    box-shadow: inset 3px 3px 7px var(--lo), inset -3px -3px 7px var(--hi);
+    transition: background .4s;
+  }
+  .track::after { /* светящаяся полоска внутри трека */
+    content: ""; position: absolute; inset: 9px 30px 9px 9px; border-radius: 99px;
+    background: var(--accent); opacity: 0; transform: scaleX(.2); transform-origin: left;
+    box-shadow: 0 0 10px var(--accent);
+    transition: opacity .3s, transform .5s var(--ease-spring);
+  }
+  .knob {
+    position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(145deg, #fbfcfe, #dfe4ec);
+    box-shadow: 3px 3px 6px var(--lo), -2px -2px 5px var(--hi), inset 0 0 0 1px rgba(255,255,255,.6);
+    transition: translate .6s var(--ease-spring), scale .2s;
+  }
+  .toggle input:checked ~ .knob { translate: 26px 0; }
+  .toggle input:checked ~ .track::after { opacity: .85; transform: scaleX(1); }
+  .toggle input:active ~ .knob { scale: 1.12 .9; }
+  .toggle input:focus-visible ~ .track { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---------- segmented ---------- */
+  .seg-label { margin: 16px 4px 10px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .seg {
+    position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
+    padding: 5px; border-radius: 16px; background: var(--bg);
+    box-shadow: inset 4px 4px 9px var(--lo), inset -4px -4px 9px var(--hi);
+  }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label { position: relative; z-index: 1; text-align: center; padding: 9px 0; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); cursor: pointer; transition: color .3s; }
+  .seg input:checked + label { color: var(--ink); }
+  .seg input:focus-visible + label { outline: 2px solid var(--accent); border-radius: 12px; }
+  .pill {
+    position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 3);
+    border-radius: 12px; background: linear-gradient(145deg, #f6f8fb, #e3e8ef);
+    box-shadow: 4px 4px 9px var(--lo), -3px -3px 8px var(--hi);
+    transition: translate .65s var(--ease-spring);
+  }
+  .pill::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 14px; height: 3px; margin-left: -7px;
+    border-radius: 3px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  /* позиция пилюли — тоже через :has() */
+  .seg:has(#m2:checked) .pill { translate: 100% 0; }
+  .seg:has(#m3:checked) .pill { translate: 200% 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+  <section class="panel" aria-label="Device settings">
+    <header>
+      <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></div>
+      <div><h1>Quiet Room</h1><p>Ambient device controls</p></div>
+      <span class="count" id="count">2 ON</span>
+    </header>
+
+    <div class="row"><div><b>Wi-Fi Sync</b><small>Keep library up to date</small></div>
+      <label class="toggle"><input type="checkbox" checked aria-label="Wi-Fi Sync"><span class="track"></span><span class="knob"></span></label></div>
+    <div class="row"><div><b>Focus Mode</b><small>Tints the panel violet</small></div>
+      <label class="toggle"><input id="t-focus" type="checkbox" aria-label="Focus Mode"><span class="track"></span><span class="knob"></span></label></div>
+    <div class="row"><div><b>Night Light</b><small>Warm amber accent</small></div>
+      <label class="toggle"><input id="t-night" type="checkbox" aria-label="Night Light"><span class="track"></span><span class="knob"></span></label></div>
+    <div class="row"><div><b>Haptics</b><small>Soft tap feedback</small></div>
+      <label class="toggle"><input type="checkbox" checked aria-label="Haptics"><span class="track"></span><span class="knob"></span></label></div>
+
+    <div class="seg-label">Sound profile</div>
+    <div class="seg" role="radiogroup">
+      <span class="pill"></span>
+      <input type="radio" name="m" id="m1" checked><label for="m1">Calm</label>
+      <input type="radio" name="m" id="m2"><label for="m2">Balanced</label>
+      <input type="radio" name="m" id="m3"><label for="m3">Vivid</label>
+    </div>
+  </section>
+<script>
+  // только счётчик; вся визуальная логика — в CSS (:has)
+  const count = document.getElementById('count');
+  const boxes = document.querySelectorAll('.toggle input');
+  const upd = () => count.textContent = [...boxes].filter(b => b.checked).length + ' ON';
+  boxes.forEach(b => b.addEventListener('change', upd));
+</script>
+</body>
+</html>

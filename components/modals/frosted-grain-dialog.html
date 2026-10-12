@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frosted Grain Dialog</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Frosted Grain Dialog",
+  "category": "modals",
+  "themes": ["glass", "dark"],
+  "tags": ["dialog", "modal", "backdrop-filter", "grain", "texture", "@starting-style"],
+  "description": "Native modal dialog featuring frosted glass aesthetics, SVG feTurbulence tactile grain noise, and top-layer transition-behavior animations.",
+  "techniques": ["native <dialog> API", "@starting-style entry transition", "SVG feTurbulence grain", "transition-behavior: allow-discrete", "backdrop-filter"],
+  "recipe": "Диалог открывается через нативный `.showModal()`. Плавный вход из топ-слоя анимируется через `@starting-style` в паре с `transition-behavior: allow-discrete`. Осязаемая текстура матового стекла (noise/grain) создаётся фоновым SVG с фильтром `feTurbulence` и `feColorMatrix`, наложенным в режиме `mix-blend-mode: overlay`.",
+  "preview": { "mode": "page", "width": 960, "height": 680 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: 
+      radial-gradient(circle at 10% 20%, #1e1b4b, transparent 40%),
+      radial-gradient(circle at 90% 80%, #312e81, transparent 40%),
+      #030712;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #f8fafc;
+  }
+
+  .open-btn {
+    background: #6366f1;
+    color: #ffffff;
+    border: 0;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    transition: transform 0.2s;
+  }
+  .open-btn:hover {
+    transform: scale(1.04);
+  }
+
+  /* Native Dialog */
+  dialog {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 32px;
+    width: min(520px, 90vw);
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    color: #f8fafc;
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.65),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    position: relative;
+
+    /* Discrete transition setup */
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition-property: opacity, transform, display, overlay;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-behavior: allow-discrete;
+  }
+
+  dialog[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+
+    @starting-style {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+  }
+
+  dialog::backdrop {
+    background: rgba(2, 6, 23, 0);
+    backdrop-filter: blur(0px);
+    transition-property: background, backdrop-filter, display, overlay;
+    transition-duration: 0.3s;
+    transition-behavior: allow-discrete;
+  }
+
+  dialog[open]::backdrop {
+    background: rgba(2, 6, 23, 0.7);
+    backdrop-filter: blur(8px);
+
+    @starting-style {
+      background: rgba(2, 6, 23, 0);
+      backdrop-filter: blur(0px);
+    }
+  }
+
+  /* Grain noise overlay */
+  .grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0 0 24px;
+    color: #94a3b8;
+    line-height: 1.6;
+    font-size: 14.5px;
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 0;
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .btn-primary {
+    background: #6366f1;
+    color: #ffffff;
+  }
+  .btn-primary:hover {
+    background: #4f46e5;
+  }
+</style>
+</head>
+<body>
+
+<button class="open-btn" id="openDialog">Open Frosted Dialog</button>
+
+<dialog id="grainModal">
+  <div class="grain"></div>
+  <h2>Tactile Grain Modal</h2>
+  <p>
+    This dialog features natural acoustic noise overlay, high-blur glass refraction, 
+    and native HTML5 top-layer entry transitions using @starting-style.
+  </p>
+  <div class="dialog-actions">
+    <button class="btn btn-secondary" id="closeBtn">Dismiss</button>
+    <button class="btn btn-primary" id="confirmBtn">Confirm Action</button>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById("grainModal");
+  const openBtn = document.getElementById("openDialog");
+  const closeBtn = document.getElementById("closeBtn");
+  const confirmBtn = document.getElementById("confirmBtn");
+
+  openBtn.addEventListener("click", () => dialog.showModal());
+  closeBtn.addEventListener("click", () => dialog.close());
+  confirmBtn.addEventListener("click", () => dialog.close());
+
+  // Automatically open for preview mode
+  window.addEventListener("DOMContentLoaded", () => {
+    dialog.showModal();
+  });
+</script>
+
+</body>
+</html>

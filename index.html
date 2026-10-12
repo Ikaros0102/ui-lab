@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>UI Lab — Interface Ideas Catalog</title>
+<meta name="description" content="A curated catalog of inspiring UI components and micro-interfaces built with modern CSS.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e131c'/%3E%3Cpath d='M9 9v8a7 7 0 0 0 14 0V9' fill='none' stroke='%237cc4ff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="modulepreload" href="assets/js/main.js">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" aria-label="Filters">
+    <a class="brand" href="./">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M9 9v8a7 7 0 0 0 14 0V9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      </span>
+      <span>
+        <strong>UI Lab</strong>
+        <small>Interface ideas</small>
+      </span>
+    </a>
+
+    <section class="filter-group">
+      <h2 class="filter-title">Category</h2>
+      <div class="filter-list" id="category-filters" role="radiogroup" aria-label="Category"></div>
+    </section>
+
+    <section class="filter-group">
+      <h2 class="filter-title">Theme</h2>
+      <div class="chip-row" id="theme-filters" aria-label="Themes"></div>
+    </section>
+
+    <section class="filter-group">
+      <h2 class="filter-title">Techniques</h2>
+      <div class="chip-row chip-row--small" id="technique-filters" aria-label="Techniques"></div>
+    </section>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <label class="search">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="visually-hidden">Search components</span>
+        <input id="search" type="search" placeholder="Search by name, tag, technique…" autocomplete="off" spellcheck="false">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <div class="topbar-meta">
+        <span id="result-count" aria-live="polite"></span>
+        <button class="btn-ghost" id="reset-filters" type="button" hidden>Reset</button>
+      </div>
+    </header>
+
+    <main class="grid" id="grid" aria-label="Components"></main>
+
+    <div class="empty" id="empty" hidden>
+      <p class="empty-title">Nothing found</p>
+      <p>Try a different search or reset the filters.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CARD TEMPLATE ============ -->
+<template id="card-template">
+  <article class="card">
+    <div class="preview" data-preview>
+      <div class="preview-placeholder" aria-hidden="true"></div>
+    </div>
+    <div class="card-body">
+      <div class="card-head">
+        <h3 class="card-title"></h3>
+        <div class="card-themes"></div>
+      </div>
+      <p class="card-desc"></p>
+      <div class="card-foot">
+        <ul class="card-tags"></ul>
+        <button class="btn-code" type="button" data-action="code">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>
+          Get Code
+        </button>
+      </div>
+    </div>
+  </article>
+</template>
+
+<!-- ============ CODE DIALOG ============ -->
+<dialog class="code-dialog" id="code-dialog" closedby="any" aria-labelledby="cd-title">
+  <div class="cd-shell">
+    <header class="cd-header">
+      <div class="cd-heading">
+        <p class="cd-eyebrow" id="cd-category"></p>
+        <h2 id="cd-title"></h2>
+        <p class="cd-desc" id="cd-desc"></p>
+      </div>
+      <div class="cd-actions">
+        <a class="btn-ghost" id="cd-open" target="_blank" rel="noopener">Open ↗</a>
+        <button class="btn-icon" type="button" data-close aria-label="Close">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <details class="cd-recipe" id="cd-recipe" open>
+      <summary>How it works</summary>
+      <p id="cd-recipe-text"></p>
+      <ul class="cd-techniques" id="cd-techniques"></ul>
+    </details>
+
+    <div class="cd-tabs" role="tablist" aria-label="Code view" id="cd-tabs">
+      <button role="tab" type="button" data-tab="preview">Preview</button>
+      <button role="tab" type="button" data-tab="html">HTML</button>
+      <button role="tab" type="button" data-tab="css">CSS</button>
+      <button role="tab" type="button" data-tab="js">JS</button>
+      <button role="tab" type="button" data-tab="full">Full file</button>
+      <button class="btn-copy" type="button" id="cd-copy">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        <span>Copy</span>
+      </button>
+    </div>
+
+    <div class="cd-panel" role="tabpanel" id="cd-panel" tabindex="0">
+      <div class="cd-preview" id="cd-preview" hidden></div>
+      <pre class="code" id="cd-code"><code></code></pre>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ TOASTS ============ -->
+<div class="toaster" id="toaster" popover="manual" aria-live="polite"></div>
+
+<noscript><p class="noscript">UI Lab needs JavaScript to render the catalog.</p></noscript>
+
+<script type="module" src="assets/js/main.js"></script>
+</body>
+</html>

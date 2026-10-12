@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liquid Glass — Dark / Light</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Glass-4 · Hazy Segmented Border",
+  "category": "cards",
+  "themes": ["dark", "light", "glass"],
+  "tags": ["blur", "glow", "border", "haze", "timer", "stats", "theme switch"],
+  "description": "Result panel: big timer, badge and three stat tiles, with a dark/light theme switch.",
+  "techniques": ["conic-gradient border", "mask-composite: exclude", "color-mix()", "blurred haze ::after", "backdrop-filter", "theme via CSS variables"],
+  "recipe": "Неоднородный border — это conic-gradient на ::before с padding: 1px, вырезанный маской (content-box XOR border-box), а прозрачные промежутки между цветными секторами дают «сегменты». Дымка — ::after с inset: -50px, тремя radial-gradient и filter: blur(25px). В светлой теме насыщенность кромок и дымки снижается, а не инвертируется — так стекло остаётся стеклом.",
+  "preview": { "mode": "page", "width": 1000, "height": 780 }
+}
+</script>
+
+<style>
+:root {
+  --bg: #070b12;
+  --bg2: #0d1420;
+  --text: #e8eef8;
+  --muted: #8491a7;
+
+  --glass: rgba(14, 21, 34, .66);
+  --glass-border: rgba(255,255,255,.08);
+
+  --blue: #4d8dff;
+  --purple: #9a63ff;
+  --cyan: #43d9df;
+  --green: #43dfb5;
+
+  --shadow: rgba(0,0,0,.30);
+}
+
+body.light {
+  --bg: #edf2f8;
+  --bg2: #f7f9fc;
+  --text: #172033;
+  --muted: #69758a;
+
+  --glass: rgba(255,255,255,.54);
+  --glass-border: rgba(255,255,255,.72);
+
+  --shadow: rgba(50,65,90,.14);
+
+  --blue: #5b8cff;
+  --purple: #9a72ee;
+  --cyan: #38bfc8;
+  --green: #38bd98;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  background:
+    radial-gradient(circle at 10% 10%, rgba(65,135,255,.13), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(150,80,255,.10), transparent 30%),
+    var(--bg);
+
+  transition:
+    background .45s ease,
+    color .35s ease;
+}
+
+body.light {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(75,145,255,.14), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgba(170,110,255,.13), transparent 30%),
+    radial-gradient(circle at 55% 100%, rgba(55,205,180,.08), transparent 28%),
+    var(--bg);
+}
+
+.page {
+  width: min(920px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 55px 0 80px;
+}
+
+/* ---------------------------
+   HEADER
+---------------------------- */
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 34px;
+}
+
+.eyebrow {
+  color: #68dbe8;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+body.light .eyebrow {
+  color: #438fb5;
+}
+
+h1 {
+  margin: 8px 0 10px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.hero p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ---------------------------
+   THEME SWITCH
+---------------------------- */
+
+.theme-switch {
+  flex: 0 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.10);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 8px 25px var(--shadow);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+body.light .theme-switch {
+  background: rgba(255,255,255,.48);
+  border-color: rgba(255,255,255,.72);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 8px 25px var(--shadow);
+}
+
+.theme-button {
+  width: 34px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 999px;
+
+  color: var(--muted);
+  background: transparent;
+
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.theme-button:hover {
+  color: var(--text);
+  background: rgba(255,255,255,.07);
+}
+
+body.light .theme-button:hover {
+  background: rgba(80,110,150,.08);
+}
+
+.theme-button.active {
+  color: var(--text);
+  background: rgba(255,255,255,.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+body.light .theme-button.active {
+  background: rgba(255,255,255,.72);
+  box-shadow:
+    0 2px 8px rgba(50,70,100,.10),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.theme-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------------------------
+   GLASS-4
+---------------------------- */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  min-height: 370px;
+  padding: 34px;
+
+  border-radius: 24px;
+  border: 1px solid transparent;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--glass),
+      color-mix(in srgb, var(--glass) 76%, transparent)
+    );
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 24px 65px var(--shadow),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(0,0,0,.18);
+
+  transition:
+    background .45s ease,
+    box-shadow .45s ease,
+    border-color .45s ease;
+}
+
+/*
+  Именно эффект glass-4:
+  неравномерные светящиеся сегменты по border.
+*/
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  padding: 1px;
+  border-radius: inherit;
+
+  background:
+    conic-gradient(
+      from 220deg,
+
+      transparent 0deg,
+
+      rgba(70,140,255,.55) 50deg,
+      transparent 110deg,
+
+      rgba(130,80,255,.40) 180deg,
+      transparent 250deg,
+
+      rgba(50,210,190,.32) 310deg,
+      transparent 360deg
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  mask-composite: exclude;
+
+  opacity: .78;
+
+  pointer-events: none;
+}
+
+/*
+  Дымка внутри.
+  В тёмной теме она чуть насыщеннее.
+  В светлой — сильно мягче, чтобы не получилась
+  "неоновая карточка".
+*/
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: -50px;
+
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 18% 15%,
+      rgba(70,140,255,.20),
+      transparent 34%
+    ),
+
+    radial-gradient(
+      circle at 82% 70%,
+      rgba(130,70,255,.16),
+      transparent 38%
+    ),
+
+    radial-gradient(
+      circle at 52% 105%,
+      rgba(35,220,195,.09),
+      transparent 34%
+    );
+
+  filter: blur(25px);
+  opacity: .85;
+}
+
+body.light .glass::before {
+  background:
+    conic-gradient(
+      from 220deg,
+
+      transparent 0deg,
+
+      rgba(65,130,255,.32) 50deg,
+      transparent 110deg,
+
+      rgba(145,95,235,.25) 180deg,
+      transparent 250deg,
+
+      rgba(45,185,165,.22) 310deg,
+      transparent 360deg
+    );
+
+  opacity: .72;
+}
+
+body.light .glass::after {
+  background:
+    radial-gradient(
+      circle at 18% 15%,
+      rgba(70,140,255,.15),
+      transparent 34%
+    ),
+
+    radial-gradient(
+      circle at 82% 70%,
+      rgba(145,90,235,.11),
+      transparent 38%
+    ),
+
+    radial-gradient(
+      circle at 52% 105%,
+      rgba(35,190,165,.07),
+      transparent 34%
+    );
+
+  filter: blur(32px);
+  opacity: .75;
+}
+
+/* ---------------------------
+   CONTENT
+---------------------------- */
+
+.content {
+  position: relative;
+  z-index: 3;
+}
+
+.panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  font-weight: 700;
+}
+
+.title {
+  margin-top: 5px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.025em;
+}
+
+.badge {
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  color: var(--text);
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.10);
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+body.light .badge {
+  background: rgba(255,255,255,.48);
+  border-color: rgba(255,255,255,.76);
+
+  box-shadow:
+    0 3px 12px rgba(50,70,100,.06),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.timer {
+  margin: 55px 0 30px;
+
+  font-size: clamp(48px, 9vw, 82px);
+  line-height: 1;
+  letter-spacing: -.055em;
+  font-weight: 750;
+
+  text-shadow:
+    0 0 30px rgba(70,170,255,.10);
+}
+
+body.light .timer {
+  text-shadow:
+    0 5px 25px rgba(70,110,180,.13);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  padding: 15px 16px;
+
+  border-radius: 15px;
+
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.065);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+body.light .stat {
+  background: rgba(255,255,255,.34);
+  border-color: rgba(255,255,255,.70);
+
+  box-shadow:
+    0 4px 15px rgba(50,70,100,.035),
+    inset 0 1px 0 rgba(255,255,255,.82);
+}
+
+.stat strong {
+  display: block;
+  font-size: 17px;
+}
+
+.stat span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ---------------------------
+   EXTRA BORDER HIGHLIGHTS
+---------------------------- */
+
+.highlight {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+
+  background: rgba(80,160,255,.13);
+  filter: blur(30px);
+
+  top: -45px;
+  left: 17%;
+}
+
+body.light .highlight {
+  background: rgba(100,160,255,.10);
+}
+
+/* ---------------------------
+   FOOTER NOTE
+---------------------------- */
+
+.note {
+  margin-top: 20px;
+  padding: 15px 18px;
+
+  color: var(--muted);
+
+  border-left: 2px solid rgba(70,180,220,.45);
+  border-radius: 0 12px 12px 0;
+
+  background: rgba(255,255,255,.025);
+}
+
+body.light .note {
+  background: rgba(255,255,255,.30);
+  border-left-color: rgba(65,140,190,.35);
+}
+
+code {
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 680px) {
+  .page {
+    width: min(100% - 24px, 620px);
+    padding-top: 30px;
+  }
+
+  .hero {
+    flex-direction: column;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .glass {
+    padding: 25px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Liquid Glass / Theme Lab</div>
+      <h1>Glass-4</h1>
+      <p>
+        Неоднородный border с цветными участками,
+        мягкой дымкой внутри и двумя вариантами освещения.
+      </p>
+    </div>
+
+    <div class="theme-switch" aria-label="Theme switch">
+      <button class="theme-button active" id="darkBtn" title="Тёмная тема">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+      </button>
+
+      <button class="theme-button" id="lightBtn" title="Светлая тема">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3a8.5 8.5 0 1 0 9.8 9.8Z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+
+  <section class="glass">
+
+    <div class="highlight"></div>
+
+    <div class="content">
+
+      <div class="panel-top">
+        <div>
+          <div class="label">Maze Daily</div>
+          <div class="title">#1004 · Key &amp; Door</div>
+        </div>
+
+        <div class="badge">
+          Personal Best
+        </div>
+      </div>
+
+      <div class="timer">
+        00:32.41
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <strong>-2.18s</strong>
+          <span>vs. Previous</span>
+        </div>
+
+        <div class="stat">
+          <strong>08.21s</strong>
+          <span>25% Split</span>
+        </div>
+
+        <div class="stat">
+          <strong>32.41s</strong>
+          <span>Finish</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <div class="note">
+    В светлой теме border намеренно стал менее насыщенным:
+    вместо яркого неона — полупрозрачные голубые, фиолетовые и cyan-кромки.
+    Это сохраняет характер <code>glass-4</code>, но делает его похожим именно
+    на светлое стекло, а не на тёмный UI с инвертированными цветами.
+  </div>
+
+</main>
+
+
+<script>
+const darkBtn = document.getElementById("darkBtn");
+const lightBtn = document.getElementById("lightBtn");
+
+function setTheme(theme) {
+  const light = theme === "light";
+
+  document.body.classList.toggle("light", light);
+
+  darkBtn.classList.toggle("active", !light);
+  lightBtn.classList.toggle("active", light);
+
+  localStorage.setItem("glass-theme", theme);
+}
+
+darkBtn.addEventListener("click", () => setTheme("dark"));
+lightBtn.addEventListener("click", () => setTheme("light"));
+
+const saved = localStorage.getItem("glass-theme");
+setTheme(saved === "light" ? "light" : "dark");
+</script>
+
+</body>
+</html>

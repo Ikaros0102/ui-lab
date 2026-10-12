@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Component Title</title>
+
+<!--
+  UI Lab component template.
+  1. Copy this file to components/<category>/<your-id>.html  (file name = id)
+  2. Fill the meta JSON below, paste your markup / styles / script
+  3. Run: node tools/build-manifest.mjs   (or just push — the GitHub Action does it)
+
+  meta fields:
+    title        — card title (required)
+    category     — one of components/taxonomy.json categories (defaults to folder name)
+    themes       — array of taxonomy theme ids (required, at least one)
+    tags         — free search tags
+    description  — what this UI *is* (e.g. "Result panel: timer + 3 stats")
+    techniques   — CSS/JS tricks used, shown as chips & searchable
+    recipe       — short explanation of the core trick, so you can reuse it
+    preview.mode — "center" (widget at natural size) | "page" (full page scaled to fit)
+    preview.width / preview.height — virtual viewport for "page" mode
+    preview.bg   — optional background behind "center" widgets
+-->
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Component Title",
+  "category": "buttons",
+  "themes": ["dark"],
+  "tags": ["example"],
+  "description": "What this interface element is.",
+  "techniques": ["technique one"],
+  "recipe": "How the core trick works in two or three sentences.",
+  "preview": { "mode": "center" }
+}
+</script>
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #0b0f17;
+    color: #e8eef8;
+    font: 14px/1.5 system-ui, sans-serif;
+  }
+</style>
+</head>
+<body>
+
+  <button>Example</button>
+
+<script>
+  // optional
+</script>
+</body>
+</html>

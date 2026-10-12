@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holo Foil Card</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Holo Foil Card",
+  "category": "cards",
+  "themes": ["mesh"],
+  "tags": ["3d", "card", "holo", "foil", "iridescent", "tilt", "color-dodge"],
+  "description": "3D interactive collectible card with pointer-tracking tilt, iridescent holographic sheen, and dynamic specular glare.",
+  "techniques": ["transform: perspective() rotateX() rotateY()", "mix-blend-mode: color-dodge", "conic-gradient spectrum", "dynamic pointer CSS vars", "specular glare highlights"],
+  "recipe": "При движении мыши вычисляются углы наклона `--rx`, `--ry` и положение блика `--px`, `--py`. Радужный перелив (holographic foil) создаётся псевдоэлементом с `conic-gradient` в режиме наложения `mix-blend-mode: color-dodge`, а скользящий белый блик (`mix-blend-mode: overlay`) имитирует отражение источника света.",
+  "preview": { "mode": "center" }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #090b10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    perspective: 1000px;
+    padding: 24px;
+  }
+
+  .card-container {
+    position: relative;
+    width: 320px;
+    height: 460px;
+    border-radius: 20px;
+    background: #141722;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.1s ease-out;
+    cursor: grab;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      0 0 20px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  /* Iridescent Holo Layer */
+  .holo-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+      115deg,
+      transparent 0%,
+      rgba(255, 0, 150, 0.4) 15%,
+      rgba(0, 255, 255, 0.4) 30%,
+      rgba(255, 255, 0, 0.4) 45%,
+      transparent 60%
+    );
+    background-size: 250% 250%;
+    background-position: var(--px, 50%) var(--py, 50%);
+    mix-blend-mode: color-dodge;
+    opacity: 0.75;
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.3s;
+  }
+
+  /* Specular Glare Layer */
+  .glare-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at var(--px, 50%) var(--py, 50%),
+      rgba(255, 255, 255, 0.65) 0%,
+      transparent 55%
+    );
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Card Content */
+  .card-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(165deg, #1b2030, #0c0e17);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: inherit;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .series-tag {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .hp-stat {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f43f5e;
+  }
+
+  .art-frame {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #090d16;
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .art-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#ec4899, #8b5cf6, #3b82f6, #10b981, #ec4899);
+    filter: blur(10px);
+    animation: spin 10s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 14px;
+  }
+
+  .name {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .desc {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="card-container" id="card">
+  <div class="holo-layer"></div>
+  <div class="glare-layer"></div>
+
+  <div class="card-inner">
+    <div class="card-header">
+      <span class="series-tag">EDITION #001</span>
+      <span class="hp-stat">SPECTRAL // S</span>
+    </div>
+
+    <div class="art-frame">
+      <div class="art-circle"></div>
+    </div>
+
+    <div class="card-footer">
+      <h3 class="name">Prismatic Core</h3>
+      <p class="desc">Emits harmonic photons capable of warping optical wavepaths.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const card = document.getElementById("card");
+
+  function handlePointer(e) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const px = (x / rect.width) * 100;
+    const py = (y / rect.height) * 100;
+
+    // Calculate rotation (-15 to +15 deg)
+    const rx = -((y - rect.height / 2) / (rect.height / 2)) * 16;
+    const ry = ((x - rect.width / 2) / (rect.width / 2)) * 16;
+
+    card.style.setProperty("--rx", `${rx}deg`);
+    card.style.setProperty("--ry", `${ry}deg`);
+    card.style.setProperty("--px", `${px}%`);
+    card.style.setProperty("--py", `${py}%`);
+  }
+
+  function resetPointer() {
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+    card.style.setProperty("--px", "50%");
+    card.style.setProperty("--py", "50%");
+  }
+
+  card.addEventListener("pointermove", handlePointer);
+  card.addEventListener("pointerleave", resetPointer);
+</script>
+
+</body>
+</html>

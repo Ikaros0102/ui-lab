@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesh Hero Card</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Mesh Hero Card",
+  "category": "backgrounds",
+  "themes": ["mesh"],
+  "tags": ["mesh", "background", "hero", "gradient", "blobs", "animation"],
+  "description": "Vibrant dynamic mesh background scene with organically floating OKLCH color blobs and a glassmorphic hero callout.",
+  "techniques": ["OKLCH color space", "animated floating blobs", "filter: blur() gradient blending", "mix-blend-mode: hard-light", "glassmorphism"],
+  "recipe": "Мягкий переливчатый меш строится из нескольких крупных геометрических элементов (`.blob`) с цветами в пространстве OKLCH, которые медленно вращаются и перемещаются по разным траекториям. Родительский контейнер с `filter: blur(60px)` смешивает их в органичный градиент без артефактов растекания.",
+  "preview": { "mode": "page", "width": 1000, "height": 680 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #06080d;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 24px;
+  }
+
+  /* Mesh canvas */
+  .mesh-container {
+    position: absolute;
+    inset: -50px;
+    filter: blur(70px);
+    opacity: 0.85;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 14s infinite ease-in-out alternate;
+  }
+
+  .blob-1 {
+    width: 480px;
+    height: 480px;
+    top: 15%;
+    left: 20%;
+    background: oklch(0.65 0.28 340); /* vibrant magenta */
+    animation-duration: 16s;
+  }
+
+  .blob-2 {
+    width: 440px;
+    height: 440px;
+    top: 40%;
+    right: 20%;
+    background: oklch(0.75 0.22 230); /* electric blue */
+    animation-duration: 20s;
+    animation-direction: alternate-reverse;
+  }
+
+  .blob-3 {
+    width: 380px;
+    height: 380px;
+    bottom: 10%;
+    left: 35%;
+    background: oklch(0.82 0.24 140); /* vivid neon green/cyan */
+    animation-duration: 18s;
+  }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(60px, 40px) scale(1.15) rotate(90deg); }
+    100% { transform: translate(-40px, 80px) scale(0.95) rotate(180deg); }
+  }
+
+  /* Hero Content Card */
+  .hero-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(14, 20, 32, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+    padding: 56px 48px;
+    max-width: 640px;
+    text-align: center;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #e2e8f0;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    margin: 0 0 16px;
+    font-size: clamp(32px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #ffffff 40%, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    margin: 0 0 32px;
+    color: #94a3b8;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .cta-btn {
+    background: #ffffff;
+    color: #0f172a;
+    border: 0;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(255, 255, 255, 0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="mesh-container">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="hero-card">
+  <span class="badge">Next-Gen Interface</span>
+  <h1>Pure Spectral Fluidity</h1>
+  <p>Harness wide-gamut OKLCH chromatic blending with smooth hardware-accelerated fluid transforms.</p>
+  <button class="cta-btn">Experience The Flow</button>
+</div>
+
+</body>
+</html>

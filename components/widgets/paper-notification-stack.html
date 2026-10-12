@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Notification Stack</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Paper Notification Stack",
+  "category": "widgets",
+  "themes": ["light"],
+  "tags": ["notifications", "stack", "paper", "shadows", "swipe", "cards"],
+  "description": "Tactile light-mode notification cards stacked with realistic layered paper shadows that fan out gracefully upon interaction.",
+  "techniques": ["layered paper box-shadows", "transform-origin fanning", "CSS sibling counters & nth-child", "swipe/click dismiss"],
+  "recipe": "Многослойный эффект бумажной стопки строится за счёт сдвигов `transform: translateY(...) scale(...)` и тонкой комбинации теней `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.04)`. При наведении на стопку карточки плавно раскрываются веером.",
+  "preview": { "mode": "center" }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #f1f5f9;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .stack-wrap {
+    position: relative;
+    width: 360px;
+    height: 220px;
+  }
+
+  .stack-card {
+    position: absolute;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 22px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, opacity 0.3s;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 10px 15px -3px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Default stacked positions */
+  .stack-card:nth-child(1) {
+    top: 0;
+    z-index: 3;
+    transform: translateY(0) scale(1);
+  }
+  .stack-card:nth-child(2) {
+    top: 0;
+    z-index: 2;
+    transform: translateY(14px) scale(0.95);
+    opacity: 0.9;
+  }
+  .stack-card:nth-child(3) {
+    top: 0;
+    z-index: 1;
+    transform: translateY(28px) scale(0.9);
+    opacity: 0.75;
+  }
+
+  /* Fan out on hover */
+  .stack-wrap:hover .stack-card:nth-child(1) {
+    transform: translateY(-8px) scale(1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+  }
+  .stack-wrap:hover .stack-card:nth-child(2) {
+    transform: translateY(72px) scale(0.98);
+    opacity: 1;
+    box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.06);
+  }
+  .stack-wrap:hover .stack-card:nth-child(3) {
+    transform: translateY(152px) scale(0.96);
+    opacity: 1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: grid;
+    place-items: center;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .time {
+    margin-left: auto;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  .body-text {
+    font-size: 13.5px;
+    color: #64748b;
+    line-height: 1.45;
+  }
+
+  .controls {
+    margin-top: 40px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: background 0.15s;
+  }
+  .btn:hover {
+    background: #f8fafc;
+  }
+</style>
+</head>
+<body>
+
+<div class="stack-wrap" id="stack">
+  <div class="stack-card">
+    <div class="card-top">
+      <div class="avatar" style="background:#e0e7ff; color:#4338ca;">JS</div>
+      <span class="title">New Deployment</span>
+      <span class="time">Just now</span>
+    </div>
+    <div class="body-text">Production bundle deployed successfully to edge clusters.</div>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-top">
+      <div class="avatar" style="background:#fef3c7; color:#b45309;">AL</div>
+      <span class="title">Security Audit</span>
+      <span class="time">12m ago</span>
+    </div>
+    <div class="body-text">All static access policies conform to Baseline widely available.</div>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-top">
+      <div class="avatar" style="background:#dcfce7; color:#15803d;">PR</div>
+      <span class="title">Review Requested</span>
+      <span class="time">1h ago</span>
+    </div>
+    <div class="body-text">Elena requested your review on PR #412: "Liquid glass theme".</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="dismissBtn">Dismiss Top Card</button>
+  <button class="btn" id="resetBtn">Reset Stack</button>
+</div>
+
+<script>
+  const stack = document.getElementById("stack");
+  const dismissBtn = document.getElementById("dismissBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const initialCards = Array.from(stack.children).map(c => c.cloneNode(true));
+
+  function dismissTop() {
+    const first = stack.firstElementChild;
+    if (first) {
+      first.style.transform = "translateX(120%) rotate(10deg)";
+      first.style.opacity = "0";
+      setTimeout(() => first.remove(), 300);
+    }
+  }
+
+  dismissBtn.addEventListener("click", dismissTop);
+  resetBtn.addEventListener("click", () => {
+    stack.innerHTML = "";
+    initialCards.forEach(c => stack.appendChild(c.cloneNode(true)));
+  });
+</script>
+
+</body>
+</html>

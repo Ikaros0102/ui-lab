@@ -1,0 +1,21 @@
+{
+  "categories": [
+    { "id": "buttons",            "label": "Buttons" },
+    { "id": "cards",              "label": "Cards" },
+    { "id": "navigation",         "label": "Navigation" },
+    { "id": "modals",             "label": "Modals & Windows" },
+    { "id": "micro-interactions", "label": "Micro-interactions" },
+    { "id": "forms",              "label": "Forms & Inputs" },
+    { "id": "loaders",            "label": "Loaders" },
+    { "id": "widgets",            "label": "Widgets" },
+    { "id": "text-effects",       "label": "Text Effects" },
+    { "id": "backgrounds",        "label": "Backgrounds" }
+  ],
+  "themes": [
+    { "id": "dark",  "label": "Dark",              "color": "#5b6b85" },
+    { "id": "light", "label": "Light",             "color": "#e6ecf5" },
+    { "id": "retro", "label": "Cyberpunk / Retro", "color": "#ff3df2" },
+    { "id": "glass", "label": "Glass / Blur",      "color": "#7cc4ff" },
+    { "id": "mesh",  "label": "Colorful / Mesh",   "color": "#ffb347" }
+  ]
+}

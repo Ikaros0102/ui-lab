@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCD Stopwatch</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "LCD Stopwatch",
+  "category": "widgets",
+  "themes": ["retro", "dark"],
+  "tags": ["lcd", "stopwatch", "timer", "dseg7", "seven-segment", "digital", "laps", "scanlines"],
+  "description": "Retro LCD stopwatch device: ghost-segment display, glow, scanlines, start/stop/lap/reset buttons and a lap list.",
+  "techniques": ["DSEG7 web font", "ghost segments layer", "layered text-shadow glow", "repeating-linear-gradient scanlines", "layered box-shadow bezel", "OKLCH palette", "requestAnimationFrame timer", "tabular digits"],
+  "recipe": "Главный трюк — два слоя одного и того же шрифта DSEG7 в grid-ячейке: снизу тусклая строка «88:88.88» (все сегменты выключены), сверху — светящиеся цифры. Так как у DSEG все глифы одной ширины, слои совпадают сегмент в сегмент и получается настоящий эффект ЖК-индикатора. Свечение даёт многослойный text-shadow, а сканлайны — repeating-linear-gradient поверх экрана с mix-blend-mode.",
+  "preview": { "mode": "page", "width": 640, "height": 640 }
+}
+</script>
+
+<style>
+  /* ---------- Шрифт: DSEG7 с jsDelivr (CORS: *) ---------- */
+  @font-face {
+    font-family: "DSEG7";
+    src: url("https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff2") format("woff2");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "DSEG14";
+    src: url("https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Regular.woff2") format("woff2");
+    font-display: swap;
+  }
+
+  /* ---------- Токены ---------- */
+  :root {
+    --lcd: #7dffb0;                       /* fallback */
+    --lcd: oklch(0.9 0.19 155);
+    --lcd-ghost: color-mix(in oklab, var(--lcd) 9%, transparent);
+    --screen: oklch(0.2 0.03 160);
+    --body: oklch(0.24 0.01 250);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    color: #cfd6e2;
+    font: 13px/1.4 ui-monospace, "SFMono-Regular", Consolas, monospace;
+    /* дымка из двух радиальных пятен над тёмной сценой */
+    background:
+      radial-gradient(60% 50% at 50% 35%, oklch(0.35 0.08 160 / .35), transparent 70%),
+      radial-gradient(40% 40% at 80% 90%, oklch(0.3 0.1 300 / .25), transparent 70%),
+      #07090c;
+  }
+
+  /* ---------- Корпус устройства ---------- */
+  .device {
+    width: 560px;
+    padding: 28px;
+    border-radius: 28px;
+    background: linear-gradient(160deg, oklch(0.32 0.01 250), var(--body) 40%, oklch(0.17 0.01 250));
+    /* слоёная тень: контур, внутренний блик, контактная тень, дальняя тень */
+    box-shadow:
+      0 0 0 1px oklch(0.4 0.01 250),
+      inset 0 1px 0 oklch(1 0 0 / .15),
+      inset 0 -2px 6px oklch(0 0 0 / .5),
+      0 2px 3px oklch(0 0 0 / .6),
+      0 20px 40px -10px oklch(0 0 0 / .7),
+      0 60px 120px -30px oklch(0.4 0.15 160 / .35);
+    position: relative;
+  }
+  .device header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 0 6px 14px; letter-spacing: .2em; font-size: 11px; color: #8b95a7;
+  }
+  .device header b { color: #e7ecf4; font-weight: 700; }
+
+  /* ---------- Экран ---------- */
+  .bezel {
+    padding: 14px;
+    border-radius: 16px;
+    background: oklch(0.12 0.005 250);
+    box-shadow: inset 0 3px 8px oklch(0 0 0 / .9), inset 0 -1px 0 oklch(1 0 0 / .08);
+  }
+  .screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 18px 22px 14px;
+    background:
+      radial-gradient(120% 90% at 50% 0%, oklch(0.27 0.05 160), var(--screen) 70%);
+    box-shadow: inset 0 0 30px oklch(0 0 0 / .8);
+  }
+  /* сканлайны + лёгкий блик стекла */
+  .screen::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(170deg, oklch(1 0 0 / .08), transparent 35%),
+      repeating-linear-gradient(to bottom, oklch(0 0 0 / .28) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+  .status {
+    display: flex; justify-content: space-between;
+    font-family: "DSEG14", monospace; font-size: 12px;
+    color: var(--lcd-ghost);
+  }
+  .status .on { color: var(--lcd); text-shadow: 0 0 6px var(--lcd); }
+
+  /* два слоя в одной grid-ячейке */
+  .digits {
+    display: grid;
+    margin: 10px 0 4px;
+    font-family: "DSEG7", monospace;
+    font-size: 78px;
+    line-height: 1;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .digits > * { grid-area: 1 / 1; }
+  .ghost { color: var(--lcd-ghost); }
+  .lit {
+    color: var(--lcd);
+    text-shadow:
+      0 0 2px var(--lcd),
+      0 0 12px color-mix(in oklab, var(--lcd) 70%, transparent),
+      0 0 34px color-mix(in oklab, var(--lcd) 40%, transparent);
+  }
+  .digits small { font-size: .55em; }
+
+  /* ---------- Кнопки ---------- */
+  .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+  .controls button {
+    font: 700 11px/1 inherit; letter-spacing: .18em;
+    color: #d8dee9;
+    padding: 16px 0;
+    border: 0; border-radius: 12px;
+    background: linear-gradient(oklch(0.34 0.01 250), oklch(0.22 0.01 250));
+    box-shadow:
+      0 0 0 1px oklch(0 0 0 / .7),
+      inset 0 1px 0 oklch(1 0 0 / .18),
+      0 4px 0 oklch(0.13 0.01 250),
+      0 8px 14px oklch(0 0 0 / .5);
+    cursor: pointer;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .controls button:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 1px oklch(0 0 0 / .7), inset 0 1px 0 oklch(1 0 0 / .1), 0 1px 0 oklch(0.13 0.01 250), 0 2px 4px oklch(0 0 0 / .5);
+  }
+  .controls button.primary { color: var(--lcd); text-shadow: 0 0 8px color-mix(in oklab, var(--lcd) 60%, transparent); }
+  .controls button:focus-visible { outline: 2px solid var(--lcd); outline-offset: 3px; }
+
+  /* ---------- Список кругов ---------- */
+  .laps {
+    list-style: none; margin: 20px 0 0; padding: 0;
+    max-height: 150px; overflow: auto;
+    border-top: 1px solid oklch(1 0 0 / .07);
+    scrollbar-width: thin; scrollbar-color: oklch(0.4 0.02 160) transparent;
+  }
+  .laps li {
+    display: flex; justify-content: space-between;
+    padding: 8px 6px; border-bottom: 1px dashed oklch(1 0 0 / .06);
+    color: #9aa4b5;
+  }
+  .laps li span:last-child { font-family: "DSEG7", monospace; font-size: 14px; color: var(--lcd); opacity: .85; }
+  .laps li.best span:first-child::after { content: "  ▲ best"; color: var(--lcd); }
+  .laps:empty::before { content: "No laps yet — press LAP while running"; display: block; padding: 10px 6px; color: #5d6676; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .controls button { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="device" aria-label="Stopwatch">
+    <header><b>CHRONO-7</b><span>WATER RESIST · LAP MEMORY</span></header>
+    <div class="bezel">
+      <div class="screen">
+        <div class="status">
+          <span id="stRun">RUN</span><span id="stLap">LAP 00</span><span class="on">STW</span>
+        </div>
+        <div class="digits" aria-live="off">
+          <span class="ghost" aria-hidden="true">88:88<small>.88</small></span>
+          <span class="lit" id="time">00:00<small>.00</small></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="primary" id="startBtn">START</button>
+      <button id="lapBtn">LAP</button>
+      <button id="resetBtn">RESET</button>
+      <button id="lightBtn">LIGHT</button>
+    </div>
+    <ol class="laps" id="laps"></ol>
+  </section>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const timeEl = $("time"), lapsEl = $("laps");
+  let start = 0, elapsed = 0, running = false, raf = 0, lastLap = 0, laps = [];
+
+  // mm:ss.cc — DSEG7 понимает ':' и '.' как отдельные узкие глифы
+  const fmt = (ms) => {
+    const cs = Math.floor(ms / 10) % 100, s = Math.floor(ms / 1000) % 60, m = Math.floor(ms / 60000) % 100;
+    const p = (n) => String(n).padStart(2, "0");
+    return [`${p(m)}:${p(s)}`, `.${p(cs)}`];
+  };
+  const render = (ms) => {
+    const [a, b] = fmt(ms);
+    timeEl.innerHTML = `${a}<small>${b}</small>`;
+  };
+  const tick = () => { render(elapsed + performance.now() - start); raf = requestAnimationFrame(tick); };
+
+  $("startBtn").onclick = () => {
+    running = !running;
+    if (running) { start = performance.now(); tick(); }
+    else { elapsed += performance.now() - start; cancelAnimationFrame(raf); render(elapsed); }
+    $("startBtn").textContent = running ? "STOP" : "START";
+    $("stRun").classList.toggle("on", running);
+  };
+
+  $("lapBtn").onclick = () => {
+    if (!running) return;
+    const now = elapsed + performance.now() - start;
+    laps.unshift(now - lastLap); lastLap = now;
+    const best = Math.min(...laps);
+    lapsEl.innerHTML = laps.map((l, i) =>
+      `<li class="${l === best && laps.length > 1 ? "best" : ""}"><span>Lap ${String(laps.length - i).padStart(2, "0")}</span><span>${fmt(l).join("")}</span></li>`).join("");
+    $("stLap").textContent = "LAP " + String(laps.length).padStart(2, "0");
+    $("stLap").classList.add("on");
+  };
+
+  $("resetBtn").onclick = () => {
+    if (running) $("startBtn").click();
+    elapsed = 0; lastLap = 0; laps = []; lapsEl.innerHTML = ""; render(0);
+    $("stLap").textContent = "LAP 00"; $("stLap").classList.remove("on");
+  };
+
+  // подсветка: поднимаем яркость «стекла»
+  $("lightBtn").onclick = () => {
+    const s = document.querySelector(".screen");
+    s.style.filter = s.style.filter ? "" : "brightness(1.35) saturate(1.2)";
+  };
+
+  // демо: запускаем, чтобы превью было «живым»
+  $("startBtn").click();
+  setTimeout(() => $("lapBtn").click(), 1300);
+  setTimeout(() => $("lapBtn").click(), 2900);
+</script>
+</body>
+</html>

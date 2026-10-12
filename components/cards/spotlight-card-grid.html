@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spotlight Card Grid</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Spotlight Card Grid",
+  "category": "cards",
+  "themes": ["dark"],
+  "tags": ["cards", "spotlight", "hover", "border", "cursor-follow", "css-variables"],
+  "description": "Interactive card grid where moving the cursor illuminates borders and textures across neighboring cards synchronously.",
+  "techniques": ["dynamic CSS variables --x / --y", "radial-gradient border highlight", "mask-composite: exclude", "pointermove tracking", "backdrop-filter"],
+  "recipe": "На родительском контейнере отслеживается событие pointermove, вычисляющее координаты курсора относительно каждой карточки (--x, --y). На каждой карточке ::before использует radial-gradient с центром в (var(--x), var(--y)), вырезанный маской по контуру border. Соседние карточки освещаются единым мягким лучом света.",
+  "preview": { "mode": "page", "width": 1000, "height": 720 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #090b10;
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 940px;
+    width: 100%;
+  }
+
+  .spotlight-card {
+    position: relative;
+    background: rgba(16, 21, 31, 0.7);
+    border-radius: 18px;
+    padding: 30px 26px;
+    overflow: hidden;
+    cursor: default;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .spotlight-card:hover {
+    transform: translateY(-2px);
+    background: rgba(20, 26, 39, 0.85);
+  }
+
+  /* Spotlight border glow layer */
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: radial-gradient(
+      450px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      rgba(90, 160, 255, 0.65),
+      rgba(150, 80, 255, 0.25) 40%,
+      transparent 70%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Spotlight inner soft illumination */
+  .spotlight-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      rgba(90, 160, 255, 0.08),
+      transparent 75%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .spotlight-grid:hover .spotlight-card::before,
+  .spotlight-grid:hover .spotlight-card::after {
+    opacity: 1;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    display: grid;
+    place-items: center;
+    color: #60a5fa;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+
+<div class="spotlight-grid" id="grid">
+  <div class="spotlight-card">
+    <div class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13 2-2 2.5V8l3 2v4.5l-4 3-4-3V10l3-2V4.5L7 2"/></svg>
+    </div>
+    <h3>Unified Analytics</h3>
+    <p>Real-time stream telemetry with sub-millisecond query evaluation and automatic adaptive routing.</p>
+  </div>
+
+  <div class="spotlight-card">
+    <div class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+    </div>
+    <h3>Modular Architecture</h3>
+    <p>Zero coupling between interface units. Decoupled micro-state ensures seamless plug-and-play expansions.</p>
+  </div>
+
+  <div class="spotlight-card">
+    <div class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <h3>Sandboxed Isolation</h3>
+    <p>Total style encapsulation using hardware-accelerated offscreen render frames and memory containment.</p>
+  </div>
+</div>
+
+<script>
+  const grid = document.getElementById("grid");
+  grid.addEventListener("pointermove", (e) => {
+    const cards = grid.querySelectorAll(".spotlight-card");
+    for (const card of cards) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty("--mouse-x", `${x}px`);
+      card.style.setProperty("--mouse-y", `${y}px`);
+    }
+  });
+</script>
+
+</body>
+</html>

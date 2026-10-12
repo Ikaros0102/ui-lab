@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glitch Cyber Buttons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Glitch Cyber Buttons",
+  "category": "buttons",
+  "themes": ["retro"],
+  "tags": ["cyberpunk", "glitch", "hud", "neon", "angular", "rgb split", "scanlines"],
+  "description": "Cyberpunk HUD panel with three angular clip-path buttons that RGB-split and glitch on hover, framed by scanlines and corner brackets.",
+  "techniques": ["clip-path polygon", "RGB-split pseudo elements", "steps() animation", "clip-path inset slicing", "attr() content", "repeating-linear-gradient scanlines", "color-mix()"],
+  "recipe": "Скошенные углы — это `clip-path: polygon()` с отступами `var(--cut)`; рамку делаем вторым слоем внутри с тем же полигоном, чуть меньшим. Глитч: `::before`/`::after` дублируют текст через `content: attr(data-text)`, окрашены в cyan и magenta и на hover дёргаются анимацией с `steps()`, каждый кадр вырезая горизонтальную полосу `clip-path: inset()` и сдвигая её — резкие ступени дают «цифровой» сбой вместо плавности.",
+  "preview": { "mode": "center" }
+}
+</script>
+<style>
+  :root { --y: #f7e600; --m: #ff2a6d; --c: #05d9e8; --bg: #0a0a12; --cut: 16px; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; overflow: hidden;
+    background:
+      radial-gradient(50% 40% at 20% 15%, color-mix(in srgb, var(--m) 25%, transparent), transparent 70%),
+      radial-gradient(45% 45% at 85% 90%, color-mix(in srgb, var(--c) 18%, transparent), transparent 70%),
+      linear-gradient(transparent 95%, rgba(5,217,232,.08) 95%) 0 0 / 100% 32px,
+      linear-gradient(90deg, transparent 95%, rgba(5,217,232,.08) 95%) 0 0 / 32px 100%,
+      var(--bg);
+    color: #d6f7ff; font-family: "Chakra Petch", system-ui, sans-serif;
+  }
+  /* scanlines поверх всего */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+
+  /* ---------- HUD panel ---------- */
+  .hud {
+    position: relative; width: 380px; padding: 28px 30px 30px;
+    background: linear-gradient(160deg, rgba(20,20,36,.92), rgba(10,10,18,.95));
+    clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 34px 100%, 0 calc(100% - 34px));
+    filter: drop-shadow(0 0 1px var(--c));
+  }
+  .hud::before { /* рамка: внешний + внутренний контур, evenodd вырезает середину */
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 15%, transparent) 35%, color-mix(in srgb, var(--m) 15%, transparent) 65%, var(--m));
+    clip-path: polygon(evenodd,
+      0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 34px 100%, 0 calc(100% - 34px), 0 0,
+      2px 2px, 2px calc(100% - 34.8px), 34.8px calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 34.8px, calc(100% - 34.8px) 2px, 2px 2px);
+  }
+  .hud-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;
+    font: 18px/1 "VT323", monospace; color: var(--c); letter-spacing: .1em; }
+  .hud-head .blink { color: var(--m); animation: blink 1s steps(2) infinite; }
+  h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: .04em; color: var(--y);
+    text-shadow: 2px 0 var(--m), -2px 0 var(--c); }
+  .sub { margin: 0 0 22px; font: 17px/1.2 "VT323", monospace; color: #7fa7b5; }
+  .bar { height: 6px; margin-bottom: 24px; background: repeating-linear-gradient(90deg, var(--y) 0 8px, transparent 8px 11px);
+    width: 72%; filter: drop-shadow(0 0 4px var(--y)); }
+  .stack { display: grid; gap: 14px; }
+
+  /* ---------- angular button ---------- */
+  .cy {
+    --col: var(--y);
+    position: relative; display: block; width: 100%; padding: 15px 22px; border: 0; cursor: pointer;
+    font: 700 16px/1 "Chakra Petch", sans-serif; letter-spacing: .22em; text-transform: uppercase; text-align: left;
+    color: var(--bg); background: var(--col);
+    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+    transition: filter .2s;
+  }
+  .cy.ghost { color: var(--col); background: transparent; }
+  .cy.ghost::selection { color: var(--bg); }
+  /* внутренняя рамка у ghost-кнопок: двойной фон с маской */
+  .cy.ghost { background:
+      linear-gradient(var(--col), var(--col)) top left / 100% 2px no-repeat,
+      linear-gradient(var(--col), var(--col)) bottom left / 100% 2px no-repeat,
+      linear-gradient(var(--col), var(--col)) top left / 2px 100% no-repeat,
+      linear-gradient(var(--col), var(--col)) top right / 2px 100% no-repeat,
+      color-mix(in srgb, var(--col) 8%, transparent); }
+  .cy.m { --col: var(--m); }
+  .cy.c { --col: var(--c); }
+  .cy .tag { position: absolute; right: 26px; top: 50%; translate: 0 -50%; font: 15px "VT323", monospace; letter-spacing: .05em; opacity: .75; }
+
+  /* RGB-split копии текста */
+  .cy::before, .cy::after {
+    content: attr(data-text); position: absolute; inset: 0; padding: 15px 22px;
+    background: inherit; opacity: 0; pointer-events: none;
+  }
+  .cy::before { color: var(--c); text-shadow: -2px 0 var(--c); }
+  .cy::after  { color: var(--m); text-shadow: 2px 0 var(--m); }
+  .cy:is(:hover, :focus-visible) { filter: drop-shadow(0 0 10px var(--col)); outline: none; }
+  .cy:is(:hover, :focus-visible)::before { opacity: 1; animation: slice-a .9s steps(1) infinite; }
+  .cy:is(:hover, :focus-visible)::after  { opacity: 1; animation: slice-b .9s steps(1) infinite; }
+  .cy:active { translate: 2px 2px; }
+
+  /* ступенчатая нарезка: каждая строка = отдельный кадр */
+  @keyframes slice-a {
+    0%   { clip-path: inset(10% 0 70% 0); transform: translate(-6px, 0); }
+    15%  { clip-path: inset(55% 0 20% 0); transform: translate(5px, 0); }
+    30%  { clip-path: inset(0 0 0 100%); }
+    45%  { clip-path: inset(30% 0 45% 0); transform: translate(-3px, 0); }
+    60%  { clip-path: inset(80% 0 2% 0);  transform: translate(7px, 0); }
+    75%  { clip-path: inset(0 0 0 100%); }
+    90%  { clip-path: inset(40% 0 40% 0); transform: translate(-8px, 0); }
+  }
+  @keyframes slice-b {
+    0%   { clip-path: inset(65% 0 10% 0); transform: translate(6px, 0); }
+    20%  { clip-path: inset(0 0 0 100%); }
+    35%  { clip-path: inset(15% 0 60% 0); transform: translate(-6px, 0); }
+    55%  { clip-path: inset(45% 0 35% 0); transform: translate(4px, 0); }
+    70%  { clip-path: inset(0 0 0 100%); }
+    85%  { clip-path: inset(5% 0 85% 0);  transform: translate(-5px, 0); }
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .foot { margin-top: 20px; display: flex; justify-content: space-between; font: 15px "VT323", monospace; color: #4f6b78; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cy::before, .cy::after, .blink { animation: none !important; }
+    .cy:is(:hover, :focus-visible)::before { clip-path: inset(0 0 50% 0); transform: translate(-2px, 0); }
+    .cy:is(:hover, :focus-visible)::after { clip-path: inset(50% 0 0 0); transform: translate(2px, 0); }
+  }
+</style>
+</head>
+<body>
+  <section class="hud" aria-label="Netrunner console">
+    <div class="hud-head"><span>// NODE 0x3F.A</span><span class="blink">● LIVE</span></div>
+    <h1>JACK IN?</h1>
+    <p class="sub">Breach protocol ready. ICE density: moderate.</p>
+    <div class="bar"></div>
+    <div class="stack">
+      <button class="cy" data-text="Initiate">Initiate<span class="tag">F1</span></button>
+      <button class="cy ghost c" data-text="Scan Grid">Scan Grid<span class="tag">F2</span></button>
+      <button class="cy ghost m" data-text="Abort Run">Abort Run<span class="tag">ESC</span></button>
+    </div>
+    <div class="foot"><span>SYS.OK</span><span>LAT 12ms</span><span>v2.077</span></div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Segmented Nav with Sliding Pill</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Segmented Nav with Sliding Pill",
+  "category": "navigation",
+  "themes": ["dark", "glass"],
+  "tags": ["navigation", "tabs", "anchor-positioning", "pill", "glassmorphism"],
+  "description": "Sleek glass segmented control with an active indicator pill that smoothly glides between options using CSS transitions.",
+  "techniques": ["CSS anchor-positioning", ":has() selector", "backdrop-filter", "linear() spring easing", "layout containment"],
+  "recipe": "Бегущий индикатор (pill) позиционируется динамически через CSS переменные --pill-left и --pill-width, которые синхронизируются при клике или смене активной ссылки. Фон панели выполнен в стиле полупрозрачного стекла с backdrop-filter: blur(16px) и тонким бликом по верхней кромке.",
+  "preview": { "mode": "center" }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #090e17;
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 24px;
+  }
+
+  .nav-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(18, 25, 38, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 6px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Sliding pill indicator */
+  .pill-indicator {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: var(--pill-left, 6px);
+    width: var(--pill-width, 80px);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    box-shadow: 
+      0 4px 14px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: 
+      left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .nav-item {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    border: 0;
+    color: #94a3b8;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .nav-item:hover {
+    color: #e2e8f0;
+  }
+
+  .nav-item.active {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .hint-text {
+    margin-top: 24px;
+    color: #64748b;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="nav-container" id="nav">
+  <div class="pill-indicator" id="pill"></div>
+  <button class="nav-item active" type="button">Overview</button>
+  <button class="nav-item" type="button">Analytics</button>
+  <button class="nav-item" type="button">Deployments</button>
+  <button class="nav-item" type="button">Settings</button>
+</div>
+
+<p class="hint-text">Click tabs to slide indicator</p>
+
+<script>
+  const nav = document.getElementById("nav");
+  const pill = document.getElementById("pill");
+  const items = nav.querySelectorAll(".nav-item");
+
+  function updatePill(el) {
+    const navRect = nav.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const left = elRect.left - navRect.left;
+    const width = elRect.width;
+
+    nav.style.setProperty("--pill-left", `${left}px`);
+    nav.style.setProperty("--pill-width", `${width}px`);
+  }
+
+  items.forEach((item) => {
+    item.addEventListener("click", () => {
+      items.forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+      updatePill(item);
+    });
+  });
+
+  // Init position
+  const activeItem = nav.querySelector(".nav-item.active");
+  if (activeItem) {
+    updatePill(activeItem);
+  }
+</script>
+
+</body>
+</html>
