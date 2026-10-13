@@ -8,12 +8,33 @@
 {
   "title": "Scroll-Driven Reveal Feed",
   "category": "micro-interactions",
-  "themes": ["dark"],
-  "tags": ["scroll", "reveal", "feed", "progress bar", "timeline", "journal"],
+  "themes": [
+    "dark"
+  ],
+  "tags": [
+    "scroll",
+    "reveal",
+    "feed",
+    "progress bar",
+    "timeline",
+    "journal"
+  ],
   "description": "Dark editorial feed: cards rise and unblur as they enter the viewport, plus a glowing reading-progress bar at the top.",
-  "techniques": ["animation-timeline: view()", "animation-timeline: scroll()", "animation-range", "IntersectionObserver fallback", "@supports", "grain overlay", "OKLCH"],
-  "recipe": "Обычная @keyframes-анимация привязывается к прокрутке: `animation-timeline: view()` проигрывает её, пока элемент входит в область видимости (`animation-range: entry 0% cover 30%`), а `scroll(root)` связывает прогресс-бар с прокруткой страницы. Там, где это не поддерживается, `@supports not (animation-timeline: view())` включает классический путь: IntersectionObserver добавляет класс `.in`, а прогресс считается в scroll-обработчике.",
-  "preview": { "mode": "page", "width": 1000, "height": 720 }
+  "techniques": [
+    "animation-timeline: view()",
+    "animation-timeline: scroll()",
+    "animation-range",
+    "IntersectionObserver fallback",
+    "@supports",
+    "grain overlay",
+    "OKLCH"
+  ],
+  "recipe": "Standard CSS keyframe animations are bound to scroll position: animation-timeline: view() drives the reveal while the card enters the viewport (animation-range: entry 0% cover 30%), while scroll(root) drives the sticky top progress bar. In browsers without support, an IntersectionObserver fallback activates the .in class.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 720
+  }
 }
 </script>
 <style>

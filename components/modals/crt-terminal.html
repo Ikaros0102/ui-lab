@@ -9,12 +9,31 @@
 {
   "title": "CRT Terminal Window",
   "category": "modals",
-  "themes": ["retro"],
-  "tags": ["crt", "terminal", "scanlines", "flicker", "bloom", "retro"],
+  "themes": [
+    "retro"
+  ],
+  "tags": [
+    "crt",
+    "terminal",
+    "scanlines",
+    "flicker",
+    "bloom",
+    "retro"
+  ],
   "description": "Retro hacker terminal window with phosphor green glow, curved screen vignette, animated scanlines, and typewriter output.",
-  "techniques": ["text-shadow bloom", "repeating-linear-gradient scanlines", "screen curvature vignette", "steps() typing animation", "phosphor flicker"],
-  "recipe": "Эффект ЭЛТ-монитора достигается сочетанием radial-gradient по краям (виньетка кривизны экрана) и repeating-linear-gradient поверх всего с pointer-events: none (полосы развертки/scanlines). Свечение текста строится многослойным text-shadow (зелёный люминофор P1), а курсор мигает дискретно через steps(1).",
-  "preview": { "mode": "page", "width": 960, "height": 680 }
+  "techniques": [
+    "text-shadow bloom",
+    "repeating-linear-gradient scanlines",
+    "screen curvature vignette",
+    "steps() typing animation",
+    "phosphor flicker"
+  ],
+  "recipe": "The CRT monitor appearance is produced by combining a peripheral radial-gradient vignette (simulating glass screen curvature) with an overlay repeating-linear-gradient for cathode ray scanlines. The phosphor green glow uses layered text-shadows, while the command prompt cursor blinks discretely with steps(1).",
+  "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 680
+  }
 }
 </script>
 

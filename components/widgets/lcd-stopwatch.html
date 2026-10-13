@@ -9,12 +9,37 @@
 {
   "title": "LCD Stopwatch",
   "category": "widgets",
-  "themes": ["retro", "dark"],
-  "tags": ["lcd", "stopwatch", "timer", "dseg7", "seven-segment", "digital", "laps", "scanlines"],
+  "themes": [
+    "retro",
+    "dark"
+  ],
+  "tags": [
+    "lcd",
+    "stopwatch",
+    "timer",
+    "dseg7",
+    "seven-segment",
+    "digital",
+    "laps",
+    "scanlines"
+  ],
   "description": "Retro LCD stopwatch device: ghost-segment display, glow, scanlines, start/stop/lap/reset buttons and a lap list.",
-  "techniques": ["DSEG7 web font", "ghost segments layer", "layered text-shadow glow", "repeating-linear-gradient scanlines", "layered box-shadow bezel", "OKLCH palette", "requestAnimationFrame timer", "tabular digits"],
-  "recipe": "Главный трюк — два слоя одного и того же шрифта DSEG7 в grid-ячейке: снизу тусклая строка «88:88.88» (все сегменты выключены), сверху — светящиеся цифры. Так как у DSEG все глифы одной ширины, слои совпадают сегмент в сегмент и получается настоящий эффект ЖК-индикатора. Свечение даёт многослойный text-shadow, а сканлайны — repeating-linear-gradient поверх экрана с mix-blend-mode.",
-  "preview": { "mode": "page", "width": 640, "height": 640 }
+  "techniques": [
+    "DSEG7 web font",
+    "ghost segments layer",
+    "layered text-shadow glow",
+    "repeating-linear-gradient scanlines",
+    "layered box-shadow bezel",
+    "OKLCH palette",
+    "requestAnimationFrame timer",
+    "tabular digits"
+  ],
+  "recipe": "The authentic LCD display trick stacks two layers of the DSEG7 font in a single CSS grid cell: a dim ghost segment background reading 88:88.88 underneath, and bright illuminated digits on top. Because all DSEG glyphs share identical metrics, segments align perfectly with multi-layered text-shadow phosphor glow and scanlines.",
+  "preview": {
+    "mode": "page",
+    "width": 640,
+    "height": 640
+  }
 }
 </script>
 

@@ -10,12 +10,32 @@
 {
   "title": "Glitch Cyber Buttons",
   "category": "buttons",
-  "themes": ["retro"],
-  "tags": ["cyberpunk", "glitch", "hud", "neon", "angular", "rgb split", "scanlines"],
+  "themes": [
+    "retro"
+  ],
+  "tags": [
+    "cyberpunk",
+    "glitch",
+    "hud",
+    "neon",
+    "angular",
+    "rgb split",
+    "scanlines"
+  ],
   "description": "Cyberpunk HUD panel with three angular clip-path buttons that RGB-split and glitch on hover, framed by scanlines and corner brackets.",
-  "techniques": ["clip-path polygon", "RGB-split pseudo elements", "steps() animation", "clip-path inset slicing", "attr() content", "repeating-linear-gradient scanlines", "color-mix()"],
-  "recipe": "Скошенные углы — это `clip-path: polygon()` с отступами `var(--cut)`; рамку делаем вторым слоем внутри с тем же полигоном, чуть меньшим. Глитч: `::before`/`::after` дублируют текст через `content: attr(data-text)`, окрашены в cyan и magenta и на hover дёргаются анимацией с `steps()`, каждый кадр вырезая горизонтальную полосу `clip-path: inset()` и сдвигая её — резкие ступени дают «цифровой» сбой вместо плавности.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    "clip-path polygon",
+    "RGB-split pseudo elements",
+    "steps() animation",
+    "clip-path inset slicing",
+    "attr() content",
+    "repeating-linear-gradient scanlines",
+    "color-mix()"
+  ],
+  "recipe": "The polygon-chamfered silhouette is sculpted via clip-path: polygon(). The RGB split glitch effect is driven by two pseudoelements (::before, ::after) cloning the button text, offset slightly horizontally and clipped to thin slices with clip-path: inset() using a rapid steps() keyframe loop.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 <style>

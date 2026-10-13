@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-12T13:14:43.547Z",
- "count": 16,
+ "generated": "2026-10-13T11:24:32.785Z",
+ "count": 28,
  "items": [
   {
    "id": "mesh-hero",
@@ -26,7 +26,7 @@
     "mix-blend-mode: hard-light",
     "glassmorphism"
    ],
-   "recipe": "Мягкий переливчатый меш строится из нескольких крупных геометрических элементов (`.blob`) с цветами в пространстве OKLCH, которые медленно вращаются и перемещаются по разным траекториям. Родительский контейнер с `filter: blur(60px)` смешивает их в органичный градиент без артефактов растекания.",
+   "recipe": "The soft iridescent mesh is composed of several large geometric elements (.blob) colored in the OKLCH space, continuously moving and rotating along separate trajectory paths. The parent container with filter: blur(70px) organically blends them into a fluid gradient without muddy bleeding artifacts.",
    "preview": {
     "mode": "page",
     "width": 1000,
@@ -61,7 +61,7 @@
     "repeating-linear-gradient scanlines",
     "color-mix()"
    ],
-   "recipe": "Скошенные углы — это `clip-path: polygon()` с отступами `var(--cut)`; рамку делаем вторым слоем внутри с тем же полигоном, чуть меньшим. Глитч: `::before`/`::after` дублируют текст через `content: attr(data-text)`, окрашены в cyan и magenta и на hover дёргаются анимацией с `steps()`, каждый кадр вырезая горизонтальную полосу `clip-path: inset()` и сдвигая её — резкие ступени дают «цифровой» сбой вместо плавности.",
+   "recipe": "The polygon-chamfered silhouette is sculpted via clip-path: polygon(). The RGB split glitch effect is driven by two pseudoelements (::before, ::after) cloning the button text, offset slightly horizontally and clipped to thin slices with clip-path: inset() using a rapid steps() keyframe loop.",
    "preview": {
     "mode": "center"
    },
@@ -92,7 +92,7 @@
     "smooth hover transition",
     "color-mix()"
    ],
-   "recipe": "Ключевой приём — регистрация CSS свойства `@property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg }`. Это позволяет плавно анимировать угол градиента через стандартный `@keyframes`. Сзади лежит псевдоэлемент с `filter: blur(12px)`, который создаёт эффект динамического свечения ореола.",
+   "recipe": "The core mechanism relies on registering the custom CSS property @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }. This allows smooth keyframe animation of the conic gradient rotation angle. A blurred duplicate pseudoelement placed behind generates the dynamic glowing aura.",
    "preview": {
     "mode": "center"
    },
@@ -126,7 +126,7 @@
     "backdrop-filter",
     "theme via CSS variables"
    ],
-   "recipe": "Неоднородный border — это conic-gradient на ::before с padding: 1px, вырезанный маской (content-box XOR border-box), а прозрачные промежутки между цветными секторами дают «сегменты». Дымка — ::after с inset: -50px, тремя radial-gradient и filter: blur(25px). В светлой теме насыщенность кромок и дымки снижается, а не инвертируется — так стекло остаётся стеклом.",
+   "recipe": "The non-uniform glowing border is achieved with a conic-gradient on a ::before pseudoelement with 1px padding, hollowed out via mask-composite: exclude (content-box XOR border-box). The atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and blur(25px). In light mode, border segment saturation is lowered rather than inverted, preserving genuine glass physics.",
    "preview": {
     "mode": "page",
     "width": 1000,
@@ -159,11 +159,80 @@
     "dynamic pointer CSS vars",
     "specular glare highlights"
    ],
-   "recipe": "При движении мыши вычисляются углы наклона `--rx`, `--ry` и положение блика `--px`, `--py`. Радужный перелив (holographic foil) создаётся псевдоэлементом с `conic-gradient` в режиме наложения `mix-blend-mode: color-dodge`, а скользящий белый блик (`mix-blend-mode: overlay`) имитирует отражение источника света.",
+   "recipe": "As the cursor moves, tilt angles (--rx, --ry) and glare origins (--px, --py) are calculated in real time. The holographic rainbow shimmer is created with a conic/linear spectrum overlay using mix-blend-mode: color-dodge, while a moving specular radial gradient mimics ambient light reflection.",
    "preview": {
     "mode": "center"
    },
    "hasJs": true
+  },
+  {
+   "id": "khaki-obsidian-card",
+   "path": "components/cards/khaki-obsidian-card.html",
+   "title": "Khaki Obsidian Pitch Deck Card",
+   "category": "cards",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "true-black",
+    "pitch-black",
+    "khaki",
+    "moss",
+    "haze",
+    "glass",
+    "luxury",
+    "analytics"
+   ],
+   "description": "Ultra pitch-black card with deep murky swamp/khaki green haze glow, matte borders, and tactile telemetry widgets.",
+   "techniques": [
+    "pure OLED black (#000000 / #050604) background",
+    "conic swamp-green border mask",
+    "radial atmospheric haze pseudoelement",
+    "subtle khaki color-mix() badges",
+    "backdrop-filter: blur(20px)"
+   ],
+   "recipe": "The interface achieves a profound dark mode by using true OLED pitch-black (#040604) rather than slate gray. A deep murky moss-green atmospheric haze is generated via multiple layered radial gradients and a 30px gaussian blur on ::after. Border segments use subtle olive/khaki gradients with mask-composite: exclude.",
+   "preview": {
+    "mode": "center",
+    "width": 560,
+    "height": 480
+   },
+   "hasJs": false
+  },
+  {
+   "id": "solar-sunset-card",
+   "path": "components/cards/solar-sunset-card.html",
+   "title": "Solar Flare Sunset Black Card",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "mesh"
+   ],
+   "tags": [
+    "true-black",
+    "solar",
+    "sunset",
+    "amber",
+    "dawn",
+    "haze",
+    "glass",
+    "luxury"
+   ],
+   "description": "Pitch-black dashboard card bathed in an intense golden-hour solar flare haze, radiant amber rim light, and warm gradient typography.",
+   "techniques": [
+    "pure OLED black (#000000 / #050403) body",
+    "intense sunset radial-gradient flare",
+    "conic amber-to-crimson border glow",
+    "color-mix(in srgb, #ff7a00, transparent)",
+    "glassmorphic backdrop blur"
+   ],
+   "recipe": "The sunrise/sunset atmosphere is achieved by placing an expansive multi-color radial gradient (amber #ff9e00 to incandescent orange #ff4500 and deep purple) on a blurred ::after layer behind an absolute pitch-black (#040302) container. The upper rim features an acute conic highlight simulating direct sunlight glancing off chamfered glass.",
+   "preview": {
+    "mode": "center",
+    "width": 560,
+    "height": 480
+   },
+   "hasJs": false
   },
   {
    "id": "spotlight-card-grid",
@@ -189,11 +258,81 @@
     "pointermove tracking",
     "backdrop-filter"
    ],
-   "recipe": "На родительском контейнере отслеживается событие pointermove, вычисляющее координаты курсора относительно каждой карточки (--x, --y). На каждой карточке ::before использует radial-gradient с центром в (var(--x), var(--y)), вырезанный маской по контуру border. Соседние карточки освещаются единым мягким лучом света.",
+   "recipe": "A pointermove listener on the parent container computes cursor coordinates relative to each card (--mouse-x, --mouse-y). Each card's ::before layer renders a radial gradient positioned at those coordinates, masked to the border perimeter. Neighboring cards are lit synchronously by a single unified beam of light.",
    "preview": {
     "mode": "page",
     "width": 1000,
     "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "cyber-command-input",
+   "path": "components/forms/cyber-command-input.html",
+   "title": "Cyberpunk Terminal Search & Command Input",
+   "category": "forms",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "input",
+    "search",
+    "terminal",
+    "cyberpunk",
+    "hotkey",
+    "command-palette",
+    "kbd",
+    "forms"
+   ],
+   "description": "Tactical command palette input bar with slash command autocomplete tags, hotkey indicators, and neon scanline status bar.",
+   "techniques": [
+    "neon focus border glow",
+    "interactive keyboard badge triggers",
+    "pill autocomplete chips",
+    "monospace terminal styling",
+    "custom search clear action"
+   ],
+   "recipe": "The command search bar combines an elevated dark obsidian chassis with an animated neon cyan outline upon focus-within. It contains clickable quick-action chips that dynamically prepend commands (such as /search, /deploy, /config) directly into the input stream.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 380
+   },
+   "hasJs": true
+  },
+  {
+   "id": "glass-auth-otp-form",
+   "path": "components/forms/glass-auth-otp-form.html",
+   "title": "Glassmorphic Auth & OTP Input Form",
+   "category": "forms",
+   "themes": [
+    "glass",
+    "dark"
+   ],
+   "tags": [
+    "forms",
+    "otp",
+    "auth",
+    "inputs",
+    "floating-label",
+    "glassmorphism",
+    "password",
+    "verification"
+   ],
+   "description": "Tactile frosted glass sign-in card with floating label inputs, automatic multi-box OTP verification codes, and focus glow rings.",
+   "techniques": [
+    "CSS :focus-within glow elevation",
+    "floating label with :placeholder-shown",
+    "multi-box auto-advancing OTP inputs",
+    "backdrop-filter: blur(24px)",
+    "layered translucent borders"
+   ],
+   "recipe": "The authentication card employs modern floating labels using the :not(:placeholder-shown) ~ label selector pattern to animate labels without JavaScript. The 4-digit OTP code inputs automatically advance focus on digit entry and highlight the active cell with an animated cyan ring.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 520
    },
    "hasJs": true
   },
@@ -222,7 +361,7 @@
     "retro telemetry styling",
     "CSS grid tiles"
    ],
-   "recipe": "Каждый лоадер иллюстрирует отдельную технику анимации: от вращающегося полупрозрачного сектора радара (conic-gradient) и бегущей синусоиды осциллографа (SVG stroke-dashoffset) до сегментированного LCD-индикатора с пошаговой дискретной задержкой (`animation-delay`).",
+   "recipe": "Each telemetry loader demonstrates a distinct CSS animation technique: from rotating radar sweep sectors (conic-gradient mask) and oscilloscope sine waves (SVG stroke-dashoffset) to segmented LCD equalizer meters with staggered discrete animation-delay offsets.",
    "preview": {
     "mode": "page",
     "width": 960,
@@ -256,7 +395,7 @@
     "grain overlay",
     "OKLCH"
    ],
-   "recipe": "Обычная @keyframes-анимация привязывается к прокрутке: `animation-timeline: view()` проигрывает её, пока элемент входит в область видимости (`animation-range: entry 0% cover 30%`), а `scroll(root)` связывает прогресс-бар с прокруткой страницы. Там, где это не поддерживается, `@supports not (animation-timeline: view())` включает классический путь: IntersectionObserver добавляет класс `.in`, а прогресс считается в scroll-обработчике.",
+   "recipe": "Standard CSS keyframe animations are bound to scroll position: animation-timeline: view() drives the reveal while the card enters the viewport (animation-range: entry 0% cover 30%), while scroll(root) drives the sticky top progress bar. In browsers without support, an IntersectionObserver fallback activates the .in class.",
    "preview": {
     "mode": "page",
     "width": 1000,
@@ -290,7 +429,7 @@
     "@property",
     "inset shadows"
    ],
-   "recipe": "Неоморфизм строится из двух теней разного знака: светлая сверху-слева и тёмная снизу-справа, а «вдавленность» — те же тени с inset. Состояние панели меняется без JS: `.panel:has(#t-focus:checked)` переопределяет переменную `--accent`, и всё, что от неё зависит (свечение, индикаторы), перекрашивается. Пружинистость ползунка — это кривая `linear()` с перелётом за 1 и затухающими колебаниями, с fallback на cubic-bezier.",
+   "recipe": "Neumorphic tactile depth is crafted with dual opposing box-shadows: a bright specular highlight top-left and a soft dark shadow bottom-right. State is managed purely with modern CSS: .panel:has(#t-focus:checked) redefines the --accent variable. The springy knob bounce is defined via linear() easing with graceful cubic-bezier fallback.",
    "preview": {
     "mode": "center"
    },
@@ -320,7 +459,7 @@
     "steps() typing animation",
     "phosphor flicker"
    ],
-   "recipe": "Эффект ЭЛТ-монитора достигается сочетанием radial-gradient по краям (виньетка кривизны экрана) и repeating-linear-gradient поверх всего с pointer-events: none (полосы развертки/scanlines). Свечение текста строится многослойным text-shadow (зелёный люминофор P1), а курсор мигает дискретно через steps(1).",
+   "recipe": "The CRT monitor appearance is produced by combining a peripheral radial-gradient vignette (simulating glass screen curvature) with an overlay repeating-linear-gradient for cathode ray scanlines. The phosphor green glow uses layered text-shadows, while the command prompt cursor blinks discretely with steps(1).",
    "preview": {
     "mode": "page",
     "width": 960,
@@ -353,7 +492,7 @@
     "transition-behavior: allow-discrete",
     "backdrop-filter"
    ],
-   "recipe": "Диалог открывается через нативный `.showModal()`. Плавный вход из топ-слоя анимируется через `@starting-style` в паре с `transition-behavior: allow-discrete`. Осязаемая текстура матового стекла (noise/grain) создаётся фоновым SVG с фильтром `feTurbulence` и `feColorMatrix`, наложенным в режиме `mix-blend-mode: overlay`.",
+   "recipe": "The modal opens via the native HTML5 .showModal() API. Smooth top-layer entry transitions are animated with @starting-style and transition-behavior: allow-discrete. The tactile frosted glass grain texture is rendered by an inline SVG feTurbulence fractal noise filter composited with mix-blend-mode: overlay.",
    "preview": {
     "mode": "page",
     "width": 960,
@@ -386,7 +525,7 @@
     "soft glass reflections",
     "CSS transforms"
    ],
-   "recipe": "Эффект ступенчатого увеличения соседних иконок без JS строится на комбинации `:hover`, селектора следующего элемента `.item:hover + .item` и селектора предыдущего элемента через `.item:has(+ .item:hover)`. Размытый стеклянный корпус dock использует `backdrop-filter: blur(24px)` и легкий радиальный градиент.",
+   "recipe": "The graduated neighbor icon magnification without JavaScript is powered by pure CSS: combining :hover with the next-sibling selector (.item:hover + .item) and previous-sibling selector via :has() (.item:has(+ .item:hover)). The floating frosted glass dock chassis features backdrop-filter: blur(24px).",
    "preview": {
     "mode": "page",
     "width": 960,
@@ -418,7 +557,7 @@
     "keyboard arrow navigation",
     "steps(1) blinking arrow"
    ],
-   "recipe": "Пиксельная рамка вокруг меню строится через каскадный `box-shadow` без размытия, имитирующий уступчатые пиксели. Курсор (мигающий треугольник) управляется клавишами Up/Down/Enter с дискретной анимацией через `steps(1)`.",
+   "recipe": "The authentic 8-bit stepped pixel border is constructed using multiple zero-blur box-shadow offsets, rendering pixelated stepped corners without external images. The blinking triangle cursor is controlled by keyboard Up/Down/Enter keys with discrete steps(1) animation.",
    "preview": {
     "mode": "page",
     "width": 860,
@@ -450,9 +589,181 @@
     "linear() spring easing",
     "layout containment"
    ],
-   "recipe": "Бегущий индикатор (pill) позиционируется динамически через CSS переменные --pill-left и --pill-width, которые синхронизируются при клике или смене активной ссылки. Фон панели выполнен в стиле полупрозрачного стекла с backdrop-filter: blur(16px) и тонким бликом по верхней кромке.",
+   "recipe": "The active sliding pill indicator is positioned dynamically using CSS custom properties --pill-left and --pill-width, smoothly transitioning with cubic-bezier curves when tabs change. The glass container features backdrop-filter: blur(20px) and a subtle top-edge specular highlight.",
    "preview": {
     "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "chromatic-glitch-text",
+   "path": "components/text-effects/chromatic-glitch-text.html",
+   "title": "Chromatic Glitch RGB Split Typography",
+   "category": "text-effects",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "text-effects",
+    "glitch",
+    "rgb-split",
+    "chromatic",
+    "distortion",
+    "cyberpunk",
+    "typography"
+   ],
+   "description": "Distorted analog RGB-split chromatic glitch typography with horizontal scan slice tears and jitter displacement keyframes.",
+   "techniques": [
+    "attr(data-text) pseudo-element duplication",
+    "clip-path: inset() horizontal slices",
+    "mix-blend-mode: screen RGB chromatic separation",
+    "steps() jitter animation",
+    "scanline distortion grid"
+   ],
+   "recipe": "The chromatic aberration glitch is created without duplicating DOM nodes by utilizing data-text attributes on ::before and ::after pseudoelements. One layer carries a pure cyan text-shadow, the other red-magenta. Rapid @keyframes loops apply randomized clip-path: inset() horizontal slice windows, producing genuine VHS tracking tears.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 380
+   },
+   "hasJs": false
+  },
+  {
+   "id": "liquid-chrome-text",
+   "path": "components/text-effects/liquid-chrome-text.html",
+   "title": "Deep Liquid Sheen Metallic Typography",
+   "category": "text-effects",
+   "themes": [
+    "mesh",
+    "dark"
+   ],
+   "tags": [
+    "text-effects",
+    "metallic",
+    "liquid-chrome",
+    "shimmer",
+    "typography",
+    "luxury",
+    "specular"
+   ],
+   "description": "Liquid chrome specular typography featuring an animated gradient shimmer mask, 3D extruded lighting, and reflective edge bevels.",
+   "techniques": [
+    "background-clip: text liquid shine",
+    "animated background-position shimmer",
+    "layered drop-shadow extrusion",
+    "conic specular highlight reflection"
+   ],
+   "recipe": "Liquid metal typography is crafted by applying a multi-stop metallic linear gradient across background-clip: text with an animated background-position loop. A high-pass filter drop-shadow gives physical 3D extrusion while keeping text fully selectable and accessible.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 380
+   },
+   "hasJs": false
+  },
+  {
+   "id": "neon-signboard-text",
+   "path": "components/text-effects/neon-signboard-text.html",
+   "title": "Neon Signboard Glow Typography",
+   "category": "text-effects",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "text-effects",
+    "neon",
+    "signboard",
+    "glow",
+    "flicker",
+    "typography",
+    "cyberpunk",
+    "retro"
+   ],
+   "description": "Authentic neon tube signboard typography with multi-layer luminous text-shadows, gas discharge bloom, and realistic intermittent flicker.",
+   "techniques": [
+    "layered neon text-shadow spread",
+    "CSS @keyframes tube flicker",
+    "multi-tier color attenuation",
+    "glass tube bevel reflection",
+    "dark brick wall background"
+   ],
+   "recipe": "The authentic neon sign glow is engineered by combining five layered text-shadows ranging from a crisp white core to wide saturated neon magenta and violet halos. A sporadic @keyframes flicker animation randomly drops text opacity, simulating an irregular electrical discharge inside a noble gas neon tube.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 420
+   },
+   "hasJs": true
+  },
+  {
+   "id": "ae86-digital-dash",
+   "path": "components/widgets/ae86-digital-dash.html",
+   "title": "AE86 Retro Digital Dash Cluster",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "ae86",
+    "digital-cluster",
+    "jdm",
+    "initial-d",
+    "tachometer",
+    "speedometer",
+    "dseg7",
+    "backlight-switch",
+    "retro"
+   ],
+   "description": "Authentic Japanese 1980s digital instrument cluster featuring rising segmented tachometer curve, digital speedometer, chime warning, and switchable amber/green/cyan/white backlighting.",
+   "techniques": [
+    "DSEG7 7-segment digital font",
+    "dynamic CSS backlight theme variables",
+    "segmented linear-gradient tachometer bar",
+    "chime warning light",
+    "stepped throttle simulator"
+   ],
+   "recipe": "The iconic 1980s JDM digital cluster simulates an arched segmented tachometer using stepped flex bars and ghost 7-segment numbers. The entire cluster backlight color palette is controlled by a set of root CSS variables (--dash-glow, --dash-lit, --dash-ghost), allowing instant switching between authentic Amber (Toyota), Neo-Green, Synth-Cyan, and Ice-White.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
+   "id": "dynamic-island",
+   "path": "components/widgets/dynamic-island.html",
+   "title": "Dynamic Island HUD",
+   "category": "widgets",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "dynamic-island",
+    "ios",
+    "hud",
+    "morphing",
+    "micro-interactions",
+    "weather",
+    "music",
+    "spring"
+   ],
+   "description": "Morphing pill HUD inspired by iOS Dynamic Island with compact, media player, weather, and call states.",
+   "techniques": [
+    "spring physics with linear() easing",
+    "layout morphing transitions",
+    "layered pill glow",
+    "interactive state switcher",
+    "flex layout interpolation"
+   ],
+   "recipe": "The morphing pill dynamically interpolates its dimensions and internal layout across states (compact, weather, player, call) using physics-inspired linear() easing. Sub-views transition seamlessly with coordinated opacity and transform scale keyframes.",
+   "preview": {
+    "mode": "center",
+    "width": 540,
+    "height": 420
    },
    "hasJs": true
   },
@@ -486,7 +797,7 @@
     "requestAnimationFrame timer",
     "tabular digits"
    ],
-   "recipe": "Главный трюк — два слоя одного и того же шрифта DSEG7 в grid-ячейке: снизу тусклая строка «88:88.88» (все сегменты выключены), сверху — светящиеся цифры. Так как у DSEG все глифы одной ширины, слои совпадают сегмент в сегмент и получается настоящий эффект ЖК-индикатора. Свечение даёт многослойный text-shadow, а сканлайны — repeating-linear-gradient поверх экрана с mix-blend-mode.",
+   "recipe": "The authentic LCD display trick stacks two layers of the DSEG7 font in a single CSS grid cell: a dim ghost segment background reading 88:88.88 underneath, and bright illuminated digits on top. Because all DSEG glyphs share identical metrics, segments align perfectly with multi-layered text-shadow phosphor glow and scanlines.",
    "preview": {
     "mode": "page",
     "width": 640,
@@ -517,9 +828,116 @@
     "CSS sibling counters & nth-child",
     "swipe/click dismiss"
    ],
-   "recipe": "Многослойный эффект бумажной стопки строится за счёт сдвигов `transform: translateY(...) scale(...)` и тонкой комбинации теней `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.04)`. При наведении на стопку карточки плавно раскрываются веером.",
+   "recipe": "Tactile stacked paper cards are created using progressive transform: translateY() scale() offsets paired with subtle multi-layer box-shadows. Hovering over the stack fans out the cards smoothly, while clicking dismisses the active top card with an exit swipe transition.",
    "preview": {
     "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "police-radar",
+   "path": "components/widgets/police-radar.html",
+   "title": "Tactical Police Radar HUD",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "radar",
+    "police",
+    "hud",
+    "speed",
+    "doppler",
+    "military",
+    "dseg7",
+    "lcd",
+    "telemetry"
+   ],
+   "description": "Handheld police Doppler speed radar interface: sweep scope, speed lock, digital 7-segment readout, and audio-visual violation alert.",
+   "techniques": [
+    "DSEG7 7-segment font",
+    "conic-gradient radar sweep",
+    "polar coordinate targets",
+    "over-speed warning strobe",
+    "LCD ghost segment display"
+   ],
+   "recipe": "The police Doppler radar combines an active 360-degree sweep scope (conic-gradient beam with target blips) and a dual-layer DSEG7 digital speed readout. Exceeding the speed limit triggers an attention-grabbing strobing VIOLATION / LOCKED status alert.",
+   "preview": {
+    "mode": "page",
+    "width": 860,
+    "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "space-orbital-hud",
+   "path": "components/widgets/space-orbital-hud.html",
+   "title": "Orbital Space Navigation HUD",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "mesh"
+   ],
+   "tags": [
+    "space",
+    "hud",
+    "sci-fi",
+    "orbital",
+    "telemetry",
+    "galaxy",
+    "navigation",
+    "tactical"
+   ],
+   "description": "Futuristic orbital spacecraft cockpit HUD with gyro pitch ladder, planet target lock reticle, thrust throttle, and warp trajectory vector.",
+   "techniques": [
+    "SVG target reticle geometry",
+    "conic-gradient radar tracking",
+    "tactical HUD telemetry brackets",
+    "dynamic pitch horizon ladder",
+    "deep space starfield parallax"
+   ],
+   "recipe": "The sci-fi spacecraft HUD is composed of an interactive pitch horizon ladder and a rotating target reticle. Crisp vector optics are styled with semi-transparent cyan strokes, bracket borders, and monospace flight telemetry. Clicking the throttle adjusts warp engine velocity with visual shockwave pulses.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 680
+   },
+   "hasJs": true
+  },
+  {
+   "id": "vintage-car-radio",
+   "path": "components/widgets/vintage-car-radio.html",
+   "title": "Vintage Car Radio Head Unit",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "car-radio",
+    "head-unit",
+    "knobs",
+    "tactile",
+    "physical-controls",
+    "dseg14",
+    "lcd",
+    "audio",
+    "vintage"
+   ],
+   "description": "Tactile automotive stereo head unit with knurled rotary knobs, mechanical preset push-buttons, cassette slot, and 14-segment amber VFD display.",
+   "techniques": [
+    "DSEG14 14-segment alphanumeric font",
+    "conic-gradient knurled metal knobs",
+    "tactile skeuomorphic button shadows",
+    "interactive rotary knob dragging",
+    "amber vacuum fluorescent glow"
+   ],
+   "recipe": "The physical tactile aesthetic is achieved with knurled rotary knobs (radial teeth textured with repeating-conic-gradient) supporting interactive vertical pointer dragging. The 14-segment amber VFD display uses DSEG14 with warm phosphor text-shadow glow, unlit ghost segments, and scanlines.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 560
    },
    "hasJs": true
   }

@@ -8,12 +8,31 @@
 {
   "title": "Soft Toggle Set",
   "category": "micro-interactions",
-  "themes": ["light"],
-  "tags": ["neumorphism", "toggle", "switch", "settings", "segmented control", "soft ui"],
+  "themes": [
+    "light"
+  ],
+  "tags": [
+    "neumorphism",
+    "toggle",
+    "switch",
+    "settings",
+    "segmented control",
+    "soft ui"
+  ],
   "description": "Light neumorphic settings panel: 4 springy toggles + segmented mode picker; the panel accent reacts to checked state.",
-  "techniques": [":has(:checked)", "linear() spring easing", "layered soft shadows", "OKLCH", "color-mix()", "@property", "inset shadows"],
-  "recipe": "Неоморфизм строится из двух теней разного знака: светлая сверху-слева и тёмная снизу-справа, а «вдавленность» — те же тени с inset. Состояние панели меняется без JS: `.panel:has(#t-focus:checked)` переопределяет переменную `--accent`, и всё, что от неё зависит (свечение, индикаторы), перекрашивается. Пружинистость ползунка — это кривая `linear()` с перелётом за 1 и затухающими колебаниями, с fallback на cubic-bezier.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    ":has(:checked)",
+    "linear() spring easing",
+    "layered soft shadows",
+    "OKLCH",
+    "color-mix()",
+    "@property",
+    "inset shadows"
+  ],
+  "recipe": "Neumorphic tactile depth is crafted with dual opposing box-shadows: a bright specular highlight top-left and a soft dark shadow bottom-right. State is managed purely with modern CSS: .panel:has(#t-focus:checked) redefines the --accent variable. The springy knob bounce is defined via linear() easing with graceful cubic-bezier fallback.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 <style>

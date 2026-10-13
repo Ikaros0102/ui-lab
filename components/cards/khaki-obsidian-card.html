@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khaki Obsidian Pitch Deck Card</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Khaki Obsidian Pitch Deck Card",
+  "category": "cards",
+  "themes": ["dark"],
+  "tags": ["true-black", "pitch-black", "khaki", "moss", "haze", "glass", "luxury", "analytics"],
+  "description": "Ultra pitch-black card with deep murky swamp/khaki green haze glow, matte borders, and tactile telemetry widgets.",
+  "techniques": ["pure OLED black (#000000 / #050604) background", "conic swamp-green border mask", "radial atmospheric haze pseudoelement", "subtle khaki color-mix() badges", "backdrop-filter: blur(20px)"],
+  "recipe": "The interface achieves a profound dark mode by using true OLED pitch-black (#040604) rather than slate gray. A deep murky moss-green atmospheric haze is generated via multiple layered radial gradients and a 30px gaussian blur on ::after. Border segments use subtle olive/khaki gradients with mask-composite: exclude.",
+  "preview": { "mode": "center", "width": 560, "height": 480 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --black-void: #030403;
+    --khaki-bright: #84a98c;
+    --khaki-deep: #354f52;
+    --khaki-haze: rgba(47, 62, 53, 0.45);
+    --border-dim: rgba(132, 169, 140, 0.12);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #0d120f 0%, var(--black-void) 75%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #e8ede9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+  }
+
+  /* Deep Black Card */
+  .obsidian-card {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    background: #040504;
+    border-radius: 24px;
+    padding: 32px 28px;
+    border: 1px solid var(--border-dim);
+    box-shadow: 
+      0 30px 70px rgba(0, 0, 0, 0.95),
+      0 0 80px rgba(47, 62, 53, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Khaki Moss Swamp Haze (::after) */
+  .obsidian-card::after {
+    content: "";
+    position: absolute;
+    inset: -60px;
+    background: 
+      radial-gradient(circle at 20% 15%, rgba(132, 169, 140, 0.16) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(53, 79, 82, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(47, 62, 70, 0.15) 0%, transparent 40%);
+    filter: blur(35px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Segmented luminous border (::before) */
+  .obsidian-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from 160deg,
+      transparent 0deg,
+      rgba(132, 169, 140, 0.45) 60deg,
+      transparent 130deg,
+      rgba(82, 121, 111, 0.3) 220deg,
+      transparent 320deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .badge-khaki {
+    background: rgba(132, 169, 140, 0.1);
+    color: var(--khaki-bright);
+    border: 1px solid rgba(132, 169, 140, 0.25);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .title-group h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #f1f5f2;
+  }
+  .title-group p {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    color: #7b8e80;
+    line-height: 1.5;
+  }
+
+  /* Metrics Display Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 28px 0;
+  }
+
+  .metric-tile {
+    background: #080a08;
+    border: 1px solid rgba(132, 169, 140, 0.1);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  .metric-label {
+    font-size: 11px;
+    color: #728477;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .metric-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--khaki-bright);
+    margin: 8px 0 2px;
+  }
+  .metric-sub {
+    font-size: 11px;
+    color: #52796f;
+  }
+
+  .card-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 20px;
+  }
+
+  .btn-khaki {
+    background: linear-gradient(135deg, #354f52 0%, #2f3e46 100%);
+    border: 1px solid rgba(132, 169, 140, 0.35);
+    color: #e8ede9;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s;
+  }
+  .btn-khaki:hover {
+    background: #3f5e62;
+    border-color: var(--khaki-bright);
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<div class="obsidian-card">
+  <div class="card-header">
+    <span class="badge-khaki">Bio-Telemetry</span>
+    <span style="font-size: 12px; color: #52796f; font-family: monospace;">ENV // SECTOR-4</span>
+  </div>
+
+  <div class="title-group">
+    <h3>Canopy Regeneration</h3>
+    <p>Atmospheric density and moisture saturation telemetry in protected forest preservation zones.</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-tile">
+      <div class="metric-label">Soil Biome</div>
+      <div class="metric-val">98.4%</div>
+      <div class="metric-sub">+3.2% vs baseline</div>
+    </div>
+    <div class="metric-tile">
+      <div class="metric-label">Nitrogen Flux</div>
+      <div class="metric-val">0.42</div>
+      <div class="metric-sub">PPM optimal range</div>
+    </div>
+  </div>
+
+  <div class="card-action">
+    <span style="font-size: 12px; color: #728477;">Audit: All sensors online</span>
+    <button class="btn-khaki">Download Telemetry</button>
+  </div>
+</div>
+
+</body>
+</html>

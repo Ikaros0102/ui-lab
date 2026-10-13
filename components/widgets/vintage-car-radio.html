@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Car Radio Head Unit</title>
+
+<!-- Digital Font DSEG14 for alphanumeric station/track display -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Vintage Car Radio Head Unit",
+  "category": "widgets",
+  "themes": [
+    "retro",
+    "dark"
+  ],
+  "tags": [
+    "car-radio",
+    "head-unit",
+    "knobs",
+    "tactile",
+    "physical-controls",
+    "dseg14",
+    "lcd",
+    "audio",
+    "vintage"
+  ],
+  "description": "Tactile automotive stereo head unit with knurled rotary knobs, mechanical preset push-buttons, cassette slot, and 14-segment amber VFD display.",
+  "techniques": [
+    "DSEG14 14-segment alphanumeric font",
+    "conic-gradient knurled metal knobs",
+    "tactile skeuomorphic button shadows",
+    "interactive rotary knob dragging",
+    "amber vacuum fluorescent glow"
+  ],
+  "recipe": "The physical tactile aesthetic is achieved with knurled rotary knobs (radial teeth textured with repeating-conic-gradient) supporting interactive vertical pointer dragging. The 14-segment amber VFD display uses DSEG14 with warm phosphor text-shadow glow, unlit ghost segments, and scanlines.",
+  "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 560
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #1a1e27 0%, #080a0f 80%);
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    overflow: hidden;
+  }
+
+  /* 1-DIN / 2-DIN Stereo Chassis */
+  .stereo-chassis {
+    width: 100%;
+    max-width: 860px;
+    background: linear-gradient(180deg, #242933 0%, #151820 60%, #11131a 100%);
+    border: 3px solid #363c4a;
+    border-radius: 16px;
+    padding: 24px 30px;
+    box-shadow: 
+      0 35px 80px rgba(0, 0, 0, 0.85),
+      inset 0 2px 2px rgba(255, 255, 255, 0.15),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+  }
+
+  /* Decorative screws */
+  .screw {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #475569;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 1px #94a3b8, 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .screw-tl { top: 10px; left: 10px; }
+  .screw-tr { top: 10px; right: 10px; }
+  .screw-bl { bottom: 10px; left: 10px; }
+  .screw-br { bottom: 10px; right: 10px; }
+
+  /* Top Bar: Cassette slot + Brand */
+  .stereo-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+  }
+
+  .brand-logo {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: #94a3b8;
+    text-shadow: 0 1px 2px #000;
+  }
+  .brand-logo span { color: #f59e0b; }
+
+  .cassette-slot {
+    width: 320px;
+    height: 14px;
+    background: #090b10;
+    border: 2px solid #232732;
+    border-radius: 4px;
+    box-shadow: inset 0 3px 6px #000;
+    position: relative;
+  }
+  .cassette-slot::after {
+    content: "AUTO REVERSE · DOLBY B NR";
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    color: #4b5563;
+  }
+
+  /* Middle Section: Knobs and Main LCD Display */
+  .stereo-middle {
+    display: grid;
+    grid-template-columns: 100px 1fr 100px;
+    gap: 24px;
+    align-items: center;
+    margin-top: 6px;
+  }
+
+  /* Physical Rotary Knobs */
+  .knob-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .knob-outer {
+    position: relative;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: #11141c;
+    box-shadow: 
+      0 10px 18px rgba(0, 0, 0, 0.7),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    display: grid;
+    place-items: center;
+    cursor: grab;
+  }
+
+  .knob-knurled {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    /* Realistic metal knurling grip */
+    background: 
+      repeating-conic-gradient(#202533 0% 1%, #0d1017 1% 2%),
+      linear-gradient(135deg, #3a4153, #151821);
+    box-shadow: 
+      inset 0 0 0 2px rgba(255, 255, 255, 0.1),
+      0 4px 8px rgba(0, 0, 0, 0.6);
+    position: relative;
+    transform: rotate(var(--knob-rot, 0deg));
+    transition: transform 0.05s linear;
+  }
+
+  /* Indicator notch on knob */
+  .knob-notch {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 14px;
+    background: #f59e0b;
+    border-radius: 2px;
+    box-shadow: 0 0 6px #f59e0b;
+  }
+
+  .knob-cap {
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #363c4e, #13161f);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .knob-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  /* Amber Segmented LCD Display */
+  .radio-display {
+    background: #08090d;
+    border: 3px solid #1c202a;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 
+      inset 0 0 35px rgba(0, 0, 0, 0.95),
+      0 1px 1px rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Scanlines and soft grid */
+  .radio-display::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0px 2px, transparent 2px 4px);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .display-meta-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #b45309;
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .display-digits {
+    display: grid;
+    font-family: 'DSEG14-Classic', monospace, sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+  }
+  .display-digits > * { grid-area: 1 / 1; }
+
+  .digits-bg {
+    color: rgba(245, 158, 11, 0.06);
+    user-select: none;
+  }
+  .digits-fg {
+    color: #f59e0b;
+    text-shadow: 
+      0 0 8px rgba(245, 158, 11, 0.75),
+      0 0 20px rgba(245, 158, 11, 0.4);
+  }
+
+  .display-meta-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #78350f;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .display-meta-bottom .on {
+    color: #f59e0b;
+    text-shadow: 0 0 6px #f59e0b;
+  }
+
+  /* Bottom Row: Mechanical Preset Push Buttons (1 to 6 + Function buttons) */
+  .stereo-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 16px;
+  }
+
+  .presets-group {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .btn-mech {
+    flex: 1;
+    height: 40px;
+    background: linear-gradient(180deg, #2a313f 0%, #181c25 100%);
+    border: 1px solid #3d4659;
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 
+      0 4px 6px rgba(0, 0, 0, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    display: grid;
+    place-items: center;
+    transition: transform 0.08s, box-shadow 0.08s, color 0.1s;
+  }
+  .btn-mech:hover { color: #ffffff; }
+  .btn-mech:active, .btn-mech.active {
+    transform: translateY(2px);
+    box-shadow: 
+      0 1px 2px rgba(0, 0, 0, 0.5),
+      inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .action-group {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-action {
+    padding: 0 14px;
+    background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+  }
+</style>
+</head>
+<body>
+
+<div class="stereo-chassis">
+  <!-- Screws -->
+  <div class="screw screw-tl"></div>
+  <div class="screw screw-tr"></div>
+  <div class="screw screw-bl"></div>
+  <div class="screw screw-br"></div>
+
+  <!-- Top bar -->
+  <div class="stereo-top">
+    <div class="brand-logo">NAKAMICHI <span>TD-1200</span></div>
+    <div class="cassette-slot"></div>
+    <div class="brand-logo" style="font-size:11px;">HIGH FIDELITY TUNER</div>
+  </div>
+
+  <!-- Middle section with knobs & display -->
+  <div class="stereo-middle">
+    <!-- Left knob: Volume -->
+    <div class="knob-column">
+      <div class="knob-outer" id="volKnob">
+        <div class="knob-knurled" style="--knob-rot: -30deg;">
+          <div class="knob-notch"></div>
+          <div class="knob-cap"></div>
+        </div>
+      </div>
+      <span class="knob-label">VOL / PWR</span>
+    </div>
+
+    <!-- Center Display -->
+    <div class="radio-display">
+      <div class="display-meta-top">
+        <span>FM STEREO</span>
+        <span>PRESET 02</span>
+        <span id="bandName">FM-1</span>
+      </div>
+
+      <div class="display-digits">
+        <span class="digits-bg">~~~~~~~~~~~~</span>
+        <span class="digits-fg" id="mainReadout">104.7 SYNTH</span>
+      </div>
+
+      <div class="display-meta-bottom">
+        <span class="on">LOUD</span>
+        <span class="on">DOLBY</span>
+        <span>EJECT</span>
+        <span class="on">ST</span>
+        <span>AUTO-M</span>
+      </div>
+    </div>
+
+    <!-- Right knob: Tuning -->
+    <div class="knob-column">
+      <div class="knob-outer" id="tuneKnob">
+        <div class="knob-knurled" style="--knob-rot: 45deg;">
+          <div class="knob-notch"></div>
+          <div class="knob-cap"></div>
+        </div>
+      </div>
+      <span class="knob-label">TUNE / SEEK</span>
+    </div>
+  </div>
+
+  <!-- Bottom preset & mode buttons -->
+  <div class="stereo-bottom">
+    <div class="presets-group">
+      <button class="btn-mech" data-station="89.5 ROCK">1</button>
+      <button class="btn-mech active" data-station="104.7 SYNTH">2</button>
+      <button class="btn-mech" data-station="98.1 JAZZ">3</button>
+      <button class="btn-mech" data-station="101.2 WAVE">4</button>
+      <button class="btn-mech" data-station="92.4 DISCO">5</button>
+      <button class="btn-mech" data-station="107.9 RETRO">6</button>
+    </div>
+
+    <div class="action-group">
+      <button class="btn-mech btn-action" id="bandBtn">FM / AM</button>
+      <button class="btn-mech btn-action" id="tapeBtn">TAPE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const readout = document.getElementById("mainReadout");
+  const presetBtns = document.querySelectorAll(".presets-group .btn-mech");
+  const bandBtn = document.getElementById("bandBtn");
+  const bandName = document.getElementById("bandName");
+  let isFM = true;
+
+  // Preset button selection
+  presetBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      presetBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      readout.textContent = btn.dataset.station;
+    });
+  });
+
+  // Band switch
+  bandBtn.addEventListener("click", () => {
+    isFM = !isFM;
+    bandName.textContent = isFM ? "FM-1" : "AM-MW";
+    readout.textContent = isFM ? "104.7 SYNTH" : "1420 KHZ";
+  });
+
+  // Interactive Knob Dragging
+  function makeRotatable(knobEl, onRotate) {
+    const knurled = knobEl.querySelector(".knob-knurled");
+    let dragging = false;
+    let startY = 0;
+    let currentRot = 0;
+
+    knobEl.addEventListener("pointerdown", (e) => {
+      dragging = true;
+      startY = e.clientY;
+      knobEl.setPointerCapture(e.pointerId);
+    });
+
+    knobEl.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const deltaY = startY - e.clientY;
+      currentRot += deltaY * 2;
+      startY = e.clientY;
+      knurled.style.setProperty("--knob-rot", `${currentRot}deg`);
+      if (onRotate) onRotate(deltaY);
+    });
+
+    const stop = () => { dragging = false; };
+    knobEl.addEventListener("pointerup", stop);
+    knobEl.addEventListener("pointercancel", stop);
+  }
+
+  makeRotatable(document.getElementById("volKnob"));
+  makeRotatable(document.getElementById("tuneKnob"), (delta) => {
+    if (Math.abs(delta) > 2) {
+      const freq = (90 + Math.random() * 18).toFixed(1);
+      readout.textContent = `${freq} MHZ`;
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -680,6 +680,37 @@
   }
 
   .noscript { padding: 40px; text-align: center; color: var(--muted); }
+
+  /* ---- Footer ---- */
+  .footer {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-soft);
+    color: var(--faint);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .footer a {
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+    transition: color .15s, text-decoration-color .15s;
+
+    &:hover {
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+    }
+  }
+  .footer-meta {
+    color: var(--faint);
+    font-size: 12.5px;
+  }
 }
 
 /* ---------------- UTILITIES ---------------- */

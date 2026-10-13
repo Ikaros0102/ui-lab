@@ -9,12 +9,28 @@
 {
   "title": "Paper Notification Stack",
   "category": "widgets",
-  "themes": ["light"],
-  "tags": ["notifications", "stack", "paper", "shadows", "swipe", "cards"],
+  "themes": [
+    "light"
+  ],
+  "tags": [
+    "notifications",
+    "stack",
+    "paper",
+    "shadows",
+    "swipe",
+    "cards"
+  ],
   "description": "Tactile light-mode notification cards stacked with realistic layered paper shadows that fan out gracefully upon interaction.",
-  "techniques": ["layered paper box-shadows", "transform-origin fanning", "CSS sibling counters & nth-child", "swipe/click dismiss"],
-  "recipe": "Многослойный эффект бумажной стопки строится за счёт сдвигов `transform: translateY(...) scale(...)` и тонкой комбинации теней `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 15px -3px rgba(0,0,0,0.04)`. При наведении на стопку карточки плавно раскрываются веером.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    "layered paper box-shadows",
+    "transform-origin fanning",
+    "CSS sibling counters & nth-child",
+    "swipe/click dismiss"
+  ],
+  "recipe": "Tactile stacked paper cards are created using progressive transform: translateY() scale() offsets paired with subtle multi-layer box-shadows. Hovering over the stack fans out the cards smoothly, while clicking dismisses the active top card with an exit swipe transition.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 

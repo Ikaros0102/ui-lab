@@ -9,12 +9,29 @@
 {
   "title": "Segmented Nav with Sliding Pill",
   "category": "navigation",
-  "themes": ["dark", "glass"],
-  "tags": ["navigation", "tabs", "anchor-positioning", "pill", "glassmorphism"],
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "navigation",
+    "tabs",
+    "anchor-positioning",
+    "pill",
+    "glassmorphism"
+  ],
   "description": "Sleek glass segmented control with an active indicator pill that smoothly glides between options using CSS transitions.",
-  "techniques": ["CSS anchor-positioning", ":has() selector", "backdrop-filter", "linear() spring easing", "layout containment"],
-  "recipe": "Бегущий индикатор (pill) позиционируется динамически через CSS переменные --pill-left и --pill-width, которые синхронизируются при клике или смене активной ссылки. Фон панели выполнен в стиле полупрозрачного стекла с backdrop-filter: blur(16px) и тонким бликом по верхней кромке.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    "CSS anchor-positioning",
+    ":has() selector",
+    "backdrop-filter",
+    "linear() spring easing",
+    "layout containment"
+  ],
+  "recipe": "The active sliding pill indicator is positioned dynamically using CSS custom properties --pill-left and --pill-width, smoothly transitioning with cubic-bezier curves when tabs change. The glass container features backdrop-filter: blur(20px) and a subtle top-edge specular highlight.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 

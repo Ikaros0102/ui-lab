@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbital Space Navigation HUD</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Orbital Space Navigation HUD",
+  "category": "widgets",
+  "themes": ["dark", "mesh"],
+  "tags": ["space", "hud", "sci-fi", "orbital", "telemetry", "galaxy", "navigation", "tactical"],
+  "description": "Futuristic orbital spacecraft cockpit HUD with gyro pitch ladder, planet target lock reticle, thrust throttle, and warp trajectory vector.",
+  "techniques": ["SVG target reticle geometry", "conic-gradient radar tracking", "tactical HUD telemetry brackets", "dynamic pitch horizon ladder", "deep space starfield parallax"],
+  "recipe": "The sci-fi spacecraft HUD is composed of an interactive pitch horizon ladder and a rotating target reticle. Crisp vector optics are styled with semi-transparent cyan strokes, bracket borders, and monospace flight telemetry. Clicking the throttle adjusts warp engine velocity with visual shockwave pulses.",
+  "preview": { "mode": "page", "width": 960, "height": 680 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #020409;
+    color: #38bdf8;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 24px;
+  }
+
+  /* Deep space backdrop with nebulae and starfield */
+  .space-canvas {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 75% 25%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+      radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 60% 70%, #fff, transparent),
+      radial-gradient(1px 1px at 80% 15%, #93c5fd, transparent),
+      radial-gradient(1.5px 1.5px at 35% 85%, #fff, transparent),
+      #030712;
+    background-size: 100% 100%, 100% 100%, 300px 300px, 420px 420px, 250px 250px, 360px 360px;
+    z-index: 1;
+  }
+
+  /* Cockpit Visor Frame */
+  .hud-frame {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 860px;
+    height: 580px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: radial-gradient(circle at center, rgba(6, 182, 212, 0.04) 0%, rgba(2, 6, 23, 0.65) 90%);
+    box-shadow: 
+      0 0 50px rgba(6, 182, 212, 0.12),
+      inset 0 0 60px rgba(0, 0, 0, 0.9);
+    border-radius: 28px;
+    padding: 26px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Corner HUD Brackets */
+  .corner-bracket {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #38bdf8;
+    pointer-events: none;
+  }
+  .cb-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+  .cb-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+  .cb-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+  .cb-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+  /* Top Navigation Telemetry */
+  .hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    border-bottom: 1px dashed rgba(56, 189, 248, 0.25);
+    padding-bottom: 14px;
+  }
+  .system-status { display: flex; gap: 16px; }
+  .status-tag {
+    background: rgba(56, 189, 248, 0.12);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+  }
+
+  /* Central Reticle & Gyro Horizon */
+  .hud-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .reticle-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px dashed rgba(56, 189, 248, 0.4);
+    animation: rotateReticle 24s linear infinite;
+  }
+  .reticle-crosshair {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(56, 189, 248, 0.8);
+    display: grid;
+    place-items: center;
+  }
+  .reticle-crosshair::before, .reticle-crosshair::after {
+    content: "";
+    position: absolute;
+    background: #38bdf8;
+  }
+  .reticle-crosshair::before { width: 140px; height: 1px; }
+  .reticle-crosshair::after { height: 140px; width: 1px; }
+
+  .target-tag {
+    position: absolute;
+    top: 20px;
+    right: -40px;
+    font-size: 10px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.15em;
+    animation: targetPulse 1.2s infinite alternate;
+  }
+
+  @keyframes rotateReticle { to { transform: rotate(360deg); } }
+  @keyframes targetPulse { from { opacity: 0.6; } to { opacity: 1; } }
+
+  /* Pitch ladder marks */
+  .pitch-ladder {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    width: 160px;
+    opacity: 0.7;
+  }
+  .pitch-line {
+    width: 50px;
+    height: 1px;
+    background: #38bdf8;
+    position: relative;
+  }
+  .pitch-line.major { width: 90px; }
+  .pitch-line.major::before { content: "+10°"; position: absolute; left: -34px; top: -6px; font-size: 9px; }
+  .pitch-line.major::after { content: "+10°"; position: absolute; right: -34px; top: -6px; font-size: 9px; }
+
+  /* Bottom Controls & Throttle */
+  .hud-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px dashed rgba(56, 189, 248, 0.25);
+    padding-top: 14px;
+    z-index: 5;
+  }
+
+  .throttle-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .thrust-slider {
+    width: 140px;
+    height: 8px;
+    background: rgba(56, 189, 248, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .thrust-fill {
+    width: 65%;
+    height: 100%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+    transition: width 0.2s;
+  }
+
+  .btn-warp {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid #38bdf8;
+    color: #e0f2fe;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    transition: all 0.2s;
+  }
+  .btn-warp:hover {
+    background: #38bdf8;
+    color: #030712;
+    box-shadow: 0 0 25px #38bdf8;
+  }
+</style>
+</head>
+<body>
+
+<div class="space-canvas"></div>
+
+<div class="hud-frame">
+  <!-- Corner Brackets -->
+  <div class="corner-bracket cb-tl"></div>
+  <div class="corner-bracket cb-tr"></div>
+  <div class="corner-bracket cb-bl"></div>
+  <div class="corner-bracket cb-br"></div>
+
+  <!-- Top Telemetry -->
+  <div class="hud-top">
+    <div>
+      <div>SECTOR // 09-EPSILON</div>
+      <div style="color: #94a3b8; font-size: 10px; margin-top: 2px;">DEST: PROXIMA B · ORBIT INSERTION</div>
+    </div>
+    <div class="system-status">
+      <div class="status-tag">SHIELDS: 100%</div>
+      <div class="status-tag">WARP CORE: READY</div>
+    </div>
+  </div>
+
+  <!-- Center Reticle -->
+  <div class="hud-center">
+    <div class="reticle-ring"></div>
+    <div class="pitch-ladder">
+      <div class="pitch-line major"></div>
+      <div class="pitch-line"></div>
+      <div class="pitch-line"></div>
+      <div class="pitch-line major"></div>
+    </div>
+    <div class="reticle-crosshair"></div>
+    <div class="target-tag">TARGET LOCKED [ORB-12]</div>
+  </div>
+
+  <!-- Bottom Telemetry & Controls -->
+  <div class="hud-bottom">
+    <div class="throttle-block">
+      <div style="font-size: 11px;">THRUST: <span id="thrustVal">65%</span></div>
+      <div class="thrust-slider" id="thrustBar">
+        <div class="thrust-fill" id="thrustFill"></div>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn-warp" id="warpBtn">INITIATE WARP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const thrustBar = document.getElementById("thrustBar");
+  const thrustFill = document.getElementById("thrustFill");
+  const thrustVal = document.getElementById("thrustVal");
+  const warpBtn = document.getElementById("warpBtn");
+
+  thrustBar.addEventListener("click", (e) => {
+    const rect = thrustBar.getBoundingClientRect();
+    const pct = Math.round(Math.max(10, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+    thrustFill.style.width = pct + "%";
+    thrustVal.textContent = pct + "%";
+  });
+
+  warpBtn.addEventListener("click", () => {
+    warpBtn.textContent = "WARPING...";
+    warpBtn.style.background = "#22c55e";
+    warpBtn.style.borderColor = "#22c55e";
+    setTimeout(() => {
+      warpBtn.textContent = "WARP ACTIVE";
+    }, 800);
+  });
+</script>
+
+</body>
+</html>

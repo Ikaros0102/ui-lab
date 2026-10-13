@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE86 Retro Digital Dash Cluster</title>
+
+<!-- Digital Font DSEG7 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "AE86 Retro Digital Dash Cluster",
+  "category": "widgets",
+  "themes": ["retro", "dark"],
+  "tags": ["ae86", "digital-cluster", "jdm", "initial-d", "tachometer", "speedometer", "dseg7", "backlight-switch", "retro"],
+  "description": "Authentic Japanese 1980s digital instrument cluster featuring rising segmented tachometer curve, digital speedometer, chime warning, and switchable amber/green/cyan/white backlighting.",
+  "techniques": ["DSEG7 7-segment digital font", "dynamic CSS backlight theme variables", "segmented linear-gradient tachometer bar", "chime warning light", "stepped throttle simulator"],
+  "recipe": "The iconic 1980s JDM digital cluster simulates an arched segmented tachometer using stepped flex bars and ghost 7-segment numbers. The entire cluster backlight color palette is controlled by a set of root CSS variables (--dash-glow, --dash-lit, --dash-ghost), allowing instant switching between authentic Amber (Toyota), Neo-Green, Synth-Cyan, and Ice-White.",
+  "preview": { "mode": "page", "width": 960, "height": 620 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  /* Backlight Color Variables (Default: AE86 JDM Amber) */
+  :root {
+    --dash-lit: #ff9800;
+    --dash-glow: rgba(255, 152, 0, 0.7);
+    --dash-ghost: rgba(255, 152, 0, 0.08);
+  }
+
+  body[data-color="green"] {
+    --dash-lit: #22c55e;
+    --dash-glow: rgba(34, 197, 94, 0.7);
+    --dash-ghost: rgba(34, 197, 94, 0.08);
+  }
+
+  body[data-color="cyan"] {
+    --dash-lit: #06b6d4;
+    --dash-glow: rgba(6, 182, 212, 0.7);
+    --dash-ghost: rgba(6, 182, 212, 0.08);
+  }
+
+  body[data-color="white"] {
+    --dash-lit: #f8fafc;
+    --dash-glow: rgba(248, 250, 252, 0.7);
+    --dash-ghost: rgba(248, 250, 252, 0.08);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #050608;
+    color: var(--dash-lit);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    transition: color 0.3s ease;
+  }
+
+  /* Instrument Binnacle Housing */
+  .cluster-binnacle {
+    width: 100%;
+    max-width: 880px;
+    background: linear-gradient(180deg, #1c1f26 0%, #101217 60%, #090a0d 100%);
+    border: 3px solid #2d333f;
+    border-radius: 20px;
+    padding: 24px 30px;
+    box-shadow: 
+      0 35px 80px rgba(0, 0, 0, 0.95),
+      inset 0 2px 2px rgba(255, 255, 255, 0.12),
+      0 0 0 1px #040507;
+    position: relative;
+  }
+
+  /* Black Acrylic Display Glass */
+  .cluster-screen {
+    background: #020305;
+    border: 2px solid #1c212b;
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.95);
+  }
+
+  /* Subtle horizontal scanline overlay */
+  .cluster-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px 2px, transparent 2px 4px);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Top Tachometer Section */
+  .tacho-section {
+    position: relative;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .tacho-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #64748b;
+    margin-bottom: 12px;
+  }
+
+  /* Segmented Rev Curve Bar */
+  .tacho-bar {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 48px;
+    padding-bottom: 4px;
+  }
+
+  .rev-segment {
+    flex: 1;
+    background: var(--dash-ghost);
+    border-radius: 2px;
+    transition: background 0.1s, box-shadow 0.1s;
+  }
+  .rev-segment.lit {
+    background: var(--dash-lit);
+    box-shadow: 0 0 8px var(--dash-glow);
+  }
+  .rev-segment.redline.lit {
+    background: #ef4444;
+    box-shadow: 0 0 10px #ef4444;
+  }
+
+  .tacho-numbers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 6px;
+    color: #64748b;
+  }
+
+  /* Bottom Dual Gauge Cluster (Speedometer & Multi-Info) */
+  .cluster-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 24px;
+    align-items: center;
+  }
+
+  /* Speedometer Box */
+  .speedo-box {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .speed-digits-wrap {
+    display: grid;
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 82px;
+    line-height: 1;
+  }
+  .speed-digits-wrap > * { grid-area: 1 / 1; }
+
+  .speed-ghost { color: var(--dash-ghost); user-select: none; }
+  .speed-lit {
+    color: var(--dash-lit);
+    text-shadow: 0 0 14px var(--dash-glow), 0 0 28px var(--dash-glow);
+  }
+
+  .speed-unit-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  /* Chime warning lamp (AE86 > 105 km/h speed bell) */
+  .speed-chime-lamp {
+    font-size: 10px;
+    background: #1e1b18;
+    color: #52473b;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #33291f;
+    letter-spacing: 0.15em;
+  }
+  .speed-chime-lamp.active {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 14px #ef4444;
+    animation: flash 0.5s infinite alternate;
+  }
+
+  @keyframes flash { from { opacity: 0.6; } to { opacity: 1; } }
+
+  /* Right Gauge: Water Temp & Fuel */
+  .aux-gauges {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    padding-left: 24px;
+  }
+
+  .gauge-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .gauge-label { width: 50px; color: #64748b; }
+  .gauge-bar {
+    flex: 1;
+    display: flex;
+    gap: 3px;
+    height: 14px;
+  }
+  .gauge-bar span {
+    flex: 1;
+    background: var(--dash-ghost);
+    border-radius: 1px;
+  }
+  .gauge-bar span.lit {
+    background: var(--dash-lit);
+    box-shadow: 0 0 6px var(--dash-glow);
+  }
+
+  /* Switcher Toolbar */
+  .dash-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    width: 100%;
+    max-width: 880px;
+  }
+
+  .color-selector {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .color-selector span { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+
+  .btn-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .btn-color.active {
+    border-color: #ffffff;
+    transform: scale(1.15);
+  }
+
+  .btn-throttle {
+    background: #1e2430;
+    border: 1px solid #333d52;
+    color: #e2e8f0;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+  }
+  .btn-throttle:active { transform: translateY(2px); }
+</style>
+</head>
+<body data-color="amber">
+
+<div class="cluster-binnacle">
+  <div class="cluster-screen">
+    <!-- Tachometer -->
+    <div class="tacho-section">
+      <div class="tacho-header">
+        <span>TACHOMETER x1000 r/min</span>
+        <span>TWIN CAM 16V</span>
+      </div>
+
+      <div class="tacho-bar" id="tachoBar"></div>
+
+      <div class="tacho-numbers">
+        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span style="color:#ef4444;">8</span>
+      </div>
+    </div>
+
+    <!-- Bottom Speedometer & Aux -->
+    <div class="cluster-bottom">
+      <div class="speedo-box">
+        <div class="speed-digits-wrap">
+          <span class="speed-ghost">888</span>
+          <span class="speed-lit" id="speedReadout">084</span>
+        </div>
+        <div class="speed-unit-col">
+          <span>km/h</span>
+          <span class="speed-chime-lamp" id="chimeLamp">SPEED 105+</span>
+        </div>
+      </div>
+
+      <div class="aux-gauges">
+        <div class="gauge-row">
+          <span class="gauge-label">WATER</span>
+          <div class="gauge-bar" id="waterBar">
+            <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="gauge-row">
+          <span class="gauge-label">FUEL</span>
+          <div class="gauge-bar" id="fuelBar">
+            <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls Bar -->
+<div class="dash-controls">
+  <div class="color-selector">
+    <span>Backlight:</span>
+    <button class="btn-color active" data-theme="amber" style="background:#ff9800;" title="Toyota Amber"></button>
+    <button class="btn-color" data-theme="green" style="background:#22c55e;" title="Neo Green"></button>
+    <button class="btn-color" data-theme="cyan" style="background:#06b6d4;" title="Synth Cyan"></button>
+    <button class="btn-color" data-theme="white" style="background:#f8fafc;" title="Ice White"></button>
+  </div>
+
+  <button class="btn-throttle" id="revBtn">PRESS ACCELERATOR (REV)</button>
+</div>
+
+<script>
+  // Render Tachometer Segments (36 segments)
+  const tachoBar = document.getElementById("tachoBar");
+  const TOTAL_SEGMENTS = 36;
+  const REDLINE_START = 29;
+
+  for (let i = 0; i < TOTAL_SEGMENTS; i++) {
+    const seg = document.createElement("div");
+    seg.className = "rev-segment";
+    if (i >= REDLINE_START) seg.classList.add("redline");
+    // Stepped heights (rising curve)
+    const heightPct = 30 + Math.pow(i / TOTAL_SEGMENTS, 1.4) * 70;
+    seg.style.height = heightPct + "%";
+    tachoBar.appendChild(seg);
+  }
+
+  const speedReadout = document.getElementById("speedReadout");
+  const chimeLamp = document.getElementById("chimeLamp");
+  const segments = Array.from(tachoBar.children);
+
+  let currentRpmIdx = 16;
+  let currentSpeed = 84;
+
+  function updateCluster(rpmIdx, speed) {
+    segments.forEach((seg, idx) => {
+      seg.classList.toggle("lit", idx <= rpmIdx);
+    });
+    speedReadout.textContent = String(speed).padStart(3, "0");
+    chimeLamp.classList.toggle("active", speed >= 105);
+  }
+
+  updateCluster(currentRpmIdx, currentSpeed);
+
+  // Rev Throttle Button Action
+  const revBtn = document.getElementById("revBtn");
+  revBtn.addEventListener("pointerdown", () => {
+    updateCluster(33, 118);
+  });
+  window.addEventListener("pointerup", () => {
+    updateCluster(16, 84);
+  });
+
+  // Color Switcher
+  const colorBtns = document.querySelectorAll(".btn-color");
+  colorBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      colorBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.body.dataset.color = btn.dataset.theme;
+    });
+  });
+</script>
+
+</body>
+</html>

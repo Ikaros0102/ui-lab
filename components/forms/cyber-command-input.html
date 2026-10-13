@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyberpunk Terminal Search & Command Input</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Cyberpunk Terminal Search & Command Input",
+  "category": "forms",
+  "themes": ["retro", "dark"],
+  "tags": ["input", "search", "terminal", "cyberpunk", "hotkey", "command-palette", "kbd", "forms"],
+  "description": "Tactical command palette input bar with slash command autocomplete tags, hotkey indicators, and neon scanline status bar.",
+  "techniques": ["neon focus border glow", "interactive keyboard badge triggers", "pill autocomplete chips", "monospace terminal styling", "custom search clear action"],
+  "recipe": "The command search bar combines an elevated dark obsidian chassis with an animated neon cyan outline upon focus-within. It contains clickable quick-action chips that dynamically prepend commands (such as /search, /deploy, /config) directly into the input stream.",
+  "preview": { "mode": "center", "width": 540, "height": 380 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #04060a;
+    color: #e2e8f0;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .terminal-box {
+    width: 100%;
+    max-width: 500px;
+    background: #090e17;
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 
+      0 25px 60px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(6, 182, 212, 0.08);
+  }
+
+  .box-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  /* Command input container */
+  .cmd-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #020408;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 0 14px;
+    height: 52px;
+    transition: all 0.2s ease;
+  }
+
+  .cmd-bar:focus-within {
+    border-color: #06b6d4;
+    box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
+  }
+
+  .cmd-prompt {
+    color: #06b6d4;
+    font-size: 16px;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+
+  .cmd-input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #f1f5f9;
+    font-family: inherit;
+    font-size: 14.5px;
+  }
+  .cmd-input::placeholder { color: #475569; }
+
+  .cmd-kbd {
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #94a3b8;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+
+  /* Autocomplete chips */
+  .chips-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .cmd-chip {
+    background: #0e1524;
+    border: 1px solid #1e293b;
+    color: #94a3b8;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cmd-chip:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: #06b6d4;
+    color: #38bdf8;
+  }
+
+  .status-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px dashed #1e293b;
+    font-size: 11px;
+    color: #475569;
+  }
+</style>
+</head>
+<body>
+
+<div class="terminal-box">
+  <div class="box-label">
+    <span>COMMAND CONSOLE // v3.4</span>
+    <span>SYS: ACTIVE</span>
+  </div>
+
+  <div class="cmd-bar">
+    <span class="cmd-prompt">&gt;</span>
+    <input class="cmd-input" id="cmdInput" type="text" placeholder="Type a query or /command..." autocomplete="off">
+    <kbd class="cmd-kbd">ESC</kbd>
+  </div>
+
+  <div class="chips-row">
+    <button class="cmd-chip" data-cmd="/diagnostics">/diagnostics</button>
+    <button class="cmd-chip" data-cmd="/warp-drive">/warp-drive</button>
+    <button class="cmd-chip" data-cmd="/radar-scan">/radar-scan</button>
+    <button class="cmd-chip" data-cmd="/purge-cache">/purge-cache</button>
+  </div>
+
+  <div class="status-footer">
+    <span>USE [ENTER] TO EXECUTE</span>
+    <span>STATUS: READY</span>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById("cmdInput");
+  const chips = document.querySelectorAll(".cmd-chip");
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      input.value = chip.dataset.cmd + " ";
+      input.focus();
+    });
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value.trim()) {
+      alert(`EXECUTING: ${input.value}`);
+      input.value = "";
+    }
+  });
+</script>
+
+</body>
+</html>

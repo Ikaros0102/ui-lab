@@ -9,12 +9,32 @@
 {
   "title": "Glass Dock Menu",
   "category": "navigation",
-  "themes": ["glass", "light"],
-  "tags": ["dock", "navigation", "magnification", ":has()", "apple", "glassmorphism"],
+  "themes": [
+    "glass",
+    "light"
+  ],
+  "tags": [
+    "dock",
+    "navigation",
+    "magnification",
+    ":has()",
+    "apple",
+    "glassmorphism"
+  ],
   "description": "macOS inspired floating glass dock menu featuring neighbor icon magnification powered by modern CSS :has() selectors.",
-  "techniques": [":has(+ :hover) selector", ":hover + * selector", "backdrop-filter: blur()", "soft glass reflections", "CSS transforms"],
-  "recipe": "Эффект ступенчатого увеличения соседних иконок без JS строится на комбинации `:hover`, селектора следующего элемента `.item:hover + .item` и селектора предыдущего элемента через `.item:has(+ .item:hover)`. Размытый стеклянный корпус dock использует `backdrop-filter: blur(24px)` и легкий радиальный градиент.",
-  "preview": { "mode": "page", "width": 960, "height": 640 }
+  "techniques": [
+    ":has(+ :hover) selector",
+    ":hover + * selector",
+    "backdrop-filter: blur()",
+    "soft glass reflections",
+    "CSS transforms"
+  ],
+  "recipe": "The graduated neighbor icon magnification without JavaScript is powered by pure CSS: combining :hover with the next-sibling selector (.item:hover + .item) and previous-sibling selector via :has() (.item:has(+ .item:hover)). The floating frosted glass dock chassis features backdrop-filter: blur(24px).",
+  "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 640
+  }
 }
 </script>
 

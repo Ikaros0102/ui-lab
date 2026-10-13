@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassmorphic Auth & OTP Input Form</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Glassmorphic Auth & OTP Input Form",
+  "category": "forms",
+  "themes": ["glass", "dark"],
+  "tags": ["forms", "otp", "auth", "inputs", "floating-label", "glassmorphism", "password", "verification"],
+  "description": "Tactile frosted glass sign-in card with floating label inputs, automatic multi-box OTP verification codes, and focus glow rings.",
+  "techniques": ["CSS :focus-within glow elevation", "floating label with :placeholder-shown", "multi-box auto-advancing OTP inputs", "backdrop-filter: blur(24px)", "layered translucent borders"],
+  "recipe": "The authentication card employs modern floating labels using the :not(:placeholder-shown) ~ label selector pattern to animate labels without JavaScript. The 4-digit OTP code inputs automatically advance focus on digit entry and highlight the active cell with an animated cyan ring.",
+  "preview": { "mode": "center", "width": 540, "height": 520 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.18) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+      #090d16;
+    color: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 36px 32px;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .form-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .form-header p {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    color: #94a3b8;
+  }
+
+  /* Floating Label Input Group */
+  .input-field {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .input-field input {
+    width: 100%;
+    padding: 18px 16px 8px;
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .input-field label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: 14px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  /* Floating label state */
+  .input-field input:focus ~ label,
+  .input-field input:not(:placeholder-shown) ~ label {
+    top: 10px;
+    transform: translateY(0);
+    font-size: 11px;
+    font-weight: 600;
+    color: #38bdf8;
+    letter-spacing: 0.05em;
+  }
+
+  .input-field input:focus {
+    border-color: #38bdf8;
+    background: rgba(2, 6, 23, 0.8);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  }
+
+  /* OTP Code Boxes */
+  .otp-section {
+    margin: 24px 0 28px;
+  }
+  .otp-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+    text-align: center;
+  }
+  .otp-boxes {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .otp-input {
+    width: 52px;
+    height: 58px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .otp-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Submit Action */
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    border: 0;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35);
+    transition: all 0.2s;
+  }
+  .btn-submit:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 24px rgba(2, 132, 199, 0.5);
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<div class="form-card">
+  <div class="form-header">
+    <h2>Secure Checkpoint</h2>
+    <p>Sign in and verify with your two-factor security token</p>
+  </div>
+
+  <form onsubmit="event.preventDefault(); alert('Authentication Verified');">
+    <!-- Email Field -->
+    <div class="input-field">
+      <input type="email" id="email" placeholder=" " required>
+      <label for="email">Work Email</label>
+    </div>
+
+    <!-- OTP Section -->
+    <div class="otp-section">
+      <span class="otp-label">2FA One-Time Passcode</span>
+      <div class="otp-boxes">
+        <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>
+        <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+        <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+        <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+      </div>
+    </div>
+
+    <button class="btn-submit" type="submit">Verify &amp; Proceed</button>
+  </form>
+</div>
+
+<script>
+  // Auto-advance OTP box inputs
+  const inputs = document.querySelectorAll('.otp-input');
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      if (input.value && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

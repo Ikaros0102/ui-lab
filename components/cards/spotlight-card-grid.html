@@ -9,12 +9,31 @@
 {
   "title": "Spotlight Card Grid",
   "category": "cards",
-  "themes": ["dark"],
-  "tags": ["cards", "spotlight", "hover", "border", "cursor-follow", "css-variables"],
+  "themes": [
+    "dark"
+  ],
+  "tags": [
+    "cards",
+    "spotlight",
+    "hover",
+    "border",
+    "cursor-follow",
+    "css-variables"
+  ],
   "description": "Interactive card grid where moving the cursor illuminates borders and textures across neighboring cards synchronously.",
-  "techniques": ["dynamic CSS variables --x / --y", "radial-gradient border highlight", "mask-composite: exclude", "pointermove tracking", "backdrop-filter"],
-  "recipe": "На родительском контейнере отслеживается событие pointermove, вычисляющее координаты курсора относительно каждой карточки (--x, --y). На каждой карточке ::before использует radial-gradient с центром в (var(--x), var(--y)), вырезанный маской по контуру border. Соседние карточки освещаются единым мягким лучом света.",
-  "preview": { "mode": "page", "width": 1000, "height": 720 }
+  "techniques": [
+    "dynamic CSS variables --x / --y",
+    "radial-gradient border highlight",
+    "mask-composite: exclude",
+    "pointermove tracking",
+    "backdrop-filter"
+  ],
+  "recipe": "A pointermove listener on the parent container computes cursor coordinates relative to each card (--mouse-x, --mouse-y). Each card's ::before layer renders a radial gradient positioned at those coordinates, masked to the border perimeter. Neighboring cards are lit synchronously by a single unified beam of light.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 720
+  }
 }
 </script>
 

@@ -9,12 +9,35 @@
 {
   "title": "Glass-4 · Hazy Segmented Border",
   "category": "cards",
-  "themes": ["dark", "light", "glass"],
-  "tags": ["blur", "glow", "border", "haze", "timer", "stats", "theme switch"],
+  "themes": [
+    "dark",
+    "light",
+    "glass"
+  ],
+  "tags": [
+    "blur",
+    "glow",
+    "border",
+    "haze",
+    "timer",
+    "stats",
+    "theme switch"
+  ],
   "description": "Result panel: big timer, badge and three stat tiles, with a dark/light theme switch.",
-  "techniques": ["conic-gradient border", "mask-composite: exclude", "color-mix()", "blurred haze ::after", "backdrop-filter", "theme via CSS variables"],
-  "recipe": "Неоднородный border — это conic-gradient на ::before с padding: 1px, вырезанный маской (content-box XOR border-box), а прозрачные промежутки между цветными секторами дают «сегменты». Дымка — ::after с inset: -50px, тремя radial-gradient и filter: blur(25px). В светлой теме насыщенность кромок и дымки снижается, а не инвертируется — так стекло остаётся стеклом.",
-  "preview": { "mode": "page", "width": 1000, "height": 780 }
+  "techniques": [
+    "conic-gradient border",
+    "mask-composite: exclude",
+    "color-mix()",
+    "blurred haze ::after",
+    "backdrop-filter",
+    "theme via CSS variables"
+  ],
+  "recipe": "The non-uniform glowing border is achieved with a conic-gradient on a ::before pseudoelement with 1px padding, hollowed out via mask-composite: exclude (content-box XOR border-box). The atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and blur(25px). In light mode, border segment saturation is lowered rather than inverted, preserving genuine glass physics.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 780
+  }
 }
 </script>
 

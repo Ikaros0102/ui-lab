@@ -48,7 +48,7 @@ This scaffolds `components/buttons/neon-access.html` from the template.
   "tags": ["glow", "neon", "cyberpunk"],
   "description": "HUD access button with pulsing neon borders and audio click feedback.",
   "techniques": ["conic-gradient border", "box-shadow neon glow", "color-mix()"],
-  "recipe": "Как устроен трюк: объяснение в двух предложениях на русском языке для повторного использования.",
+  "recipe": "How the core trick works: a concise 2-3 sentence technical explanation in English for future reuse.",
   "preview": { "mode": "center" }
 }
 ```

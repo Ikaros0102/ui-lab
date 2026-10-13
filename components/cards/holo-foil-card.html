@@ -9,12 +9,30 @@
 {
   "title": "Holo Foil Card",
   "category": "cards",
-  "themes": ["mesh"],
-  "tags": ["3d", "card", "holo", "foil", "iridescent", "tilt", "color-dodge"],
+  "themes": [
+    "mesh"
+  ],
+  "tags": [
+    "3d",
+    "card",
+    "holo",
+    "foil",
+    "iridescent",
+    "tilt",
+    "color-dodge"
+  ],
   "description": "3D interactive collectible card with pointer-tracking tilt, iridescent holographic sheen, and dynamic specular glare.",
-  "techniques": ["transform: perspective() rotateX() rotateY()", "mix-blend-mode: color-dodge", "conic-gradient spectrum", "dynamic pointer CSS vars", "specular glare highlights"],
-  "recipe": "При движении мыши вычисляются углы наклона `--rx`, `--ry` и положение блика `--px`, `--py`. Радужный перелив (holographic foil) создаётся псевдоэлементом с `conic-gradient` в режиме наложения `mix-blend-mode: color-dodge`, а скользящий белый блик (`mix-blend-mode: overlay`) имитирует отражение источника света.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    "transform: perspective() rotateX() rotateY()",
+    "mix-blend-mode: color-dodge",
+    "conic-gradient spectrum",
+    "dynamic pointer CSS vars",
+    "specular glare highlights"
+  ],
+  "recipe": "As the cursor moves, tilt angles (--rx, --ry) and glare origins (--px, --py) are calculated in real time. The holographic rainbow shimmer is created with a conic/linear spectrum overlay using mix-blend-mode: color-dodge, while a moving specular radial gradient mimics ambient light reflection.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 

@@ -9,12 +9,30 @@
 {
   "title": "Orbit Border Button",
   "category": "buttons",
-  "themes": ["mesh", "dark"],
-  "tags": ["button", "border", "conic-gradient", "@property", "glow", "orbit"],
+  "themes": [
+    "mesh",
+    "dark"
+  ],
+  "tags": [
+    "button",
+    "border",
+    "conic-gradient",
+    "@property",
+    "glow",
+    "orbit"
+  ],
   "description": "Call-to-action button with rotating conic-gradient border powered by CSS @property and an outer glowing duplicate blur.",
-  "techniques": ["@property --angle", "conic-gradient()", "blur() glow layer", "smooth hover transition", "color-mix()"],
-  "recipe": "Ключевой приём — регистрация CSS свойства `@property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg }`. Это позволяет плавно анимировать угол градиента через стандартный `@keyframes`. Сзади лежит псевдоэлемент с `filter: blur(12px)`, который создаёт эффект динамического свечения ореола.",
-  "preview": { "mode": "center" }
+  "techniques": [
+    "@property --angle",
+    "conic-gradient()",
+    "blur() glow layer",
+    "smooth hover transition",
+    "color-mix()"
+  ],
+  "recipe": "The core mechanism relies on registering the custom CSS property @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }. This allows smooth keyframe animation of the conic gradient rotation angle. A blurred duplicate pseudoelement placed behind generates the dynamic glowing aura.",
+  "preview": {
+    "mode": "center"
+  }
 }
 </script>
 

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Liquid Sheen Metallic Typography</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Deep Liquid Sheen Metallic Typography",
+  "category": "text-effects",
+  "themes": ["mesh", "dark"],
+  "tags": ["text-effects", "metallic", "liquid-chrome", "shimmer", "typography", "luxury", "specular"],
+  "description": "Liquid chrome specular typography featuring an animated gradient shimmer mask, 3D extruded lighting, and reflective edge bevels.",
+  "techniques": ["background-clip: text liquid shine", "animated background-position shimmer", "layered drop-shadow extrusion", "conic specular highlight reflection"],
+  "recipe": "Liquid metal typography is crafted by applying a multi-stop metallic linear gradient across background-clip: text with an animated background-position loop. A high-pass filter drop-shadow gives physical 3D extrusion while keeping text fully selectable and accessible.",
+  "preview": { "mode": "center", "width": 540, "height": 380 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #0f172a 0%, #030508 80%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+  }
+
+  .chrome-card {
+    text-align: center;
+    padding: 30px;
+  }
+
+  .chrome-text {
+    font-size: clamp(44px, 9vw, 80px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    /* Animated liquid chrome gradient */
+    background: linear-gradient(
+      -45deg,
+      #94a3b8 0%,
+      #e2e8f0 25%,
+      #38bdf8 45%,
+      #ffffff 50%,
+      #c084fc 55%,
+      #cbd5e1 75%,
+      #94a3b8 100%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 15px 30px rgba(56, 189, 248, 0.25))
+            drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+    animation: liquidShine 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes liquidShine {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  .subtitle {
+    margin: 8px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome-card">
+  <h1 class="chrome-text">SPECTRUM</h1>
+  <p class="subtitle">Liquid Specular Chrome</p>
+</div>
+
+</body>
+</html>

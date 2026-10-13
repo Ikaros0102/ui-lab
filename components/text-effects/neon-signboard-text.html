@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Signboard Glow Typography</title>
+
+<!-- Neon Display Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Pacifico&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Neon Signboard Glow Typography",
+  "category": "text-effects",
+  "themes": ["retro", "dark"],
+  "tags": ["text-effects", "neon", "signboard", "glow", "flicker", "typography", "cyberpunk", "retro"],
+  "description": "Authentic neon tube signboard typography with multi-layer luminous text-shadows, gas discharge bloom, and realistic intermittent flicker.",
+  "techniques": ["layered neon text-shadow spread", "CSS @keyframes tube flicker", "multi-tier color attenuation", "glass tube bevel reflection", "dark brick wall background"],
+  "recipe": "The authentic neon sign glow is engineered by combining five layered text-shadows ranging from a crisp white core to wide saturated neon magenta and violet halos. A sporadic @keyframes flicker animation randomly drops text opacity, simulating an irregular electrical discharge inside a noble gas neon tube.",
+  "preview": { "mode": "center", "width": 540, "height": 420 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: 
+      radial-gradient(circle at center, rgba(236, 72, 153, 0.08) 0%, transparent 60%),
+      #030407;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+  }
+
+  .signboard {
+    text-align: center;
+    padding: 40px;
+    border: 3px solid rgba(236, 72, 153, 0.2);
+    border-radius: 28px;
+    box-shadow: 
+      0 0 30px rgba(236, 72, 153, 0.15),
+      inset 0 0 40px rgba(236, 72, 153, 0.1);
+    position: relative;
+    background: rgba(8, 10, 18, 0.7);
+    backdrop-filter: blur(8px);
+  }
+
+  .neon-text-primary {
+    font-family: 'Monoton', cursive, sans-serif;
+    font-size: clamp(48px, 9vw, 76px);
+    line-height: 1.1;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+    /* Layered Gas Discharge Glow */
+    text-shadow:
+      0 0 4px #fff,
+      0 0 10px #ff3df2,
+      0 0 20px #ff3df2,
+      0 0 40px #ff0077,
+      0 0 80px #d946ef;
+    animation: neonFlicker 4s infinite;
+  }
+
+  .neon-subtext {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(24px, 4vw, 36px);
+    color: #e0f2fe;
+    margin: 12px 0 0;
+    /* Cyan Secondary Tube */
+    text-shadow:
+      0 0 4px #fff,
+      0 0 10px #38bdf8,
+      0 0 20px #0284c7,
+      0 0 40px #0369a1;
+  }
+
+  @keyframes neonFlicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      opacity: 1;
+      text-shadow:
+        0 0 4px #fff,
+        0 0 10px #ff3df2,
+        0 0 20px #ff3df2,
+        0 0 40px #ff0077,
+        0 0 80px #d946ef;
+    }
+    20%, 24%, 55% {
+      opacity: 0.4;
+      text-shadow: none;
+    }
+  }
+
+  .flicker-toggle {
+    margin-top: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: ui-monospace, monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .flicker-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<div class="signboard">
+  <h1 class="neon-text-primary" id="neonTitle">CYBERPUNK</h1>
+  <p class="neon-subtext">Open 24 Hours</p>
+</div>
+
+<button class="flicker-toggle" id="togglePower">Switch Tube Power</button>
+
+<script>
+  const title = document.getElementById("neonTitle");
+  const toggleBtn = document.getElementById("togglePower");
+  let powerOn = true;
+
+  toggleBtn.addEventListener("click", () => {
+    powerOn = !powerOn;
+    if (powerOn) {
+      title.style.animation = "neonFlicker 4s infinite";
+      title.style.color = "#fff";
+    } else {
+      title.style.animation = "none";
+      title.style.color = "#475569";
+      title.style.textShadow = "none";
+    }
+  });
+</script>
+
+</body>
+</html>
