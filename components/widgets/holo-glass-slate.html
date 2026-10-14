@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holo-Glass Tactical Slate - Handheld Edge-Lit Terminal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Holo-Glass Edge-Lit Data Slate",
+  "category": "widgets",
+  "themes": [
+    "glass",
+    "dark"
+  ],
+  "tags": [
+    "holo-glass",
+    "transparent-display",
+    "data-slate",
+    "edge-lit",
+    "blackout",
+    "color-picker",
+    "terrain-relief",
+    "tactical",
+    "sci-fi"
+  ],
+  "description": "Futuristic handheld terminal featuring an opaque tactical grip with edge-projector LEDs, a transparent holographic glass display, wireframe 3D terrain, blackout mode, and arbitrary RGB backlight customization.",
+  "techniques": [
+    "edge-projected directional light beam across transparent glass",
+    "dynamic CSS variable lighting via native HTML color picker",
+    "room blackout mode emphasizing luminescent holographic lines",
+    "SVG 3D wireframe topographic relief mesh",
+    "opaque tactile handle with physical switches and status LEDs"
+  ],
+  "recipe": "The slate combines an opaque polymer left grip with an ultra-clear glass screen. The grip's inner seam projects a horizontal linear-gradient light cone powered by CSS custom properties (--glow-color). In blackout mode, the room darkens while the holographic wireframe, telemetry graphs, and edge-lighting intensify.",
+  "preview": {
+    "mode": "page",
+    "width": 1020,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --glow-color: #00ffcc;
+    --glow-soft: rgba(0, 255, 204, 0.25);
+    --glow-intense: rgba(0, 255, 204, 0.65);
+    --handle-dark: #12151b;
+    --handle-rim: #2d3341;
+    --glass-plate: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --room-bg: radial-gradient(circle at 60% 40%, #1c222e 0%, #0d1015 65%, #060709 100%);
+    --text-glass: #ffffff;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--room-bg);
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+    transition: background 0.4s ease;
+  }
+
+  /* Room Blackout Mode */
+  body.blackout-active {
+    --room-bg: #020304;
+    --glass-plate: rgba(0, 0, 0, 0.25);
+  }
+
+  /* Light Theme Variant */
+  body.light-theme {
+    --room-bg: radial-gradient(circle at 50% 30%, #e2e8f0 0%, #cbd5e1 60%, #94a3b8 100%);
+    --handle-dark: #20242e;
+    --text-glass: #0f172a;
+    --glass-plate: rgba(255, 255, 255, 0.35);
+    --glass-border: rgba(0, 0, 0, 0.15);
+  }
+
+  /* Handheld Data Slate Assembly */
+  .slate-assembly {
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    height: 520px;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+    border-radius: 18px;
+    overflow: visible;
+  }
+
+  /* 1. OPAQUE TACTICAL LEFT HANDLE / GRIP */
+  .tactical-grip {
+    width: 250px;
+    height: 100%;
+    background: linear-gradient(180deg, #1e232d 0%, var(--handle-dark) 50%, #0d0f13 100%);
+    border: 3px solid var(--handle-rim);
+    border-right: none;
+    border-radius: 18px 0 0 18px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
+    box-shadow:
+      inset 0 2px 3px rgba(255,255,255,0.1),
+      inset 0 -2px 3px rgba(0,0,0,0.8),
+      5px 0 25px rgba(0,0,0,0.7);
+  }
+
+  /* Finger Ergonomic Grooves on Left Outer Edge */
+  .tactical-grip::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 60px;
+    bottom: 60px;
+    width: 10px;
+    background: repeating-linear-gradient(180deg, #101217 0px, #101217 18px, #252a36 19px, #252a36 32px);
+    border-radius: 6px 0 0 6px;
+    border: 2px solid var(--handle-rim);
+    border-right: none;
+  }
+
+  /* EDGE-PROJECTOR LED SEAM (Projects light onto the glass!) */
+  .edge-projector-strip {
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    right: -2px;
+    width: 4px;
+    background: var(--glow-color);
+    box-shadow:
+      0 0 10px var(--glow-color),
+      0 0 25px var(--glow-color),
+      0 0 50px var(--glow-color);
+    border-radius: 2px;
+    z-index: 12;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .grip-header {
+    border-bottom: 2px solid #282f3c;
+    padding-bottom: 12px;
+  }
+
+  .grip-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--glow-color);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+
+  .grip-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 2px 0 0;
+  }
+
+  /* Controls Section on Handle */
+  .handle-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 12px 0;
+  }
+
+  .ctrl-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Blackout & Theme Buttons */
+  .switch-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .handle-btn {
+    flex: 1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 8px 6px;
+    background: #181d26;
+    border: 1px solid #363e4f;
+    border-radius: 6px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+  }
+
+  .handle-btn:hover {
+    background: #252c3a;
+    border-color: var(--glow-color);
+    color: #ffffff;
+  }
+
+  .handle-btn.is-active {
+    background: var(--glow-color);
+    color: #050b09;
+    border-color: var(--glow-color);
+    box-shadow: 0 0 10px var(--glow-soft);
+  }
+
+  /* Custom Color Palette Picker */
+  .color-picker-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .palette-chips {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .color-chip {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #333a4a;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .color-chip:hover {
+    transform: scale(1.2);
+    border-color: #ffffff;
+  }
+
+  .custom-color-input {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+    padding: 0;
+  }
+  .custom-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+  .custom-color-input::-webkit-color-swatch { border-radius: 50%; border: 2px solid #556177; }
+
+  /* Tactile Trigger Buttons */
+  .tactile-trigger {
+    width: 100%;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 11px;
+    background: linear-gradient(180deg, #2b3240 0%, #171b23 100%);
+    border: 1px solid var(--glow-color);
+    border-radius: 6px;
+    color: var(--glow-color);
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--glow-soft);
+    transition: all 0.15s ease;
+  }
+
+  .tactile-trigger:hover {
+    background: var(--glow-color);
+    color: #070e0c;
+    box-shadow: 0 0 20px var(--glow-intense);
+  }
+
+  .tactile-trigger:active {
+    transform: translateY(1px);
+  }
+
+  /* 2. TRANSPARENT HOLOGRAPHIC GLASS DISPLAY */
+  .holo-glass-display {
+    flex: 1;
+    height: 100%;
+    background: var(--glass-plate);
+    border: 2.5px solid var(--glass-border);
+    border-left: none;
+    border-radius: 0 18px 18px 0;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: relative;
+    overflow: hidden;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow:
+      inset 1px 0 0 rgba(255,255,255,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+
+  /* Projected Edge Light Cone Across the Glass! */
+  .projected-beam-cone {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--glow-soft) 0%, rgba(0,0,0,0.02) 65%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+    transition: background 0.3s ease;
+  }
+
+  body.blackout-active .projected-beam-cone {
+    background: linear-gradient(90deg, var(--glow-intense) 0%, var(--glow-soft) 35%, transparent 80%);
+  }
+
+  /* Top HUD Bar */
+  .glass-hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 12px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .sys-readout {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--glow-color);
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px var(--glow-color);
+    transition: color 0.3s ease;
+  }
+
+  .mission-meta h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-glass);
+    letter-spacing: 0.5px;
+  }
+
+  .mission-meta p {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  /* Central 3D Wireframe Terrain & Waveforms */
+  .glass-body-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    position: relative;
+    z-index: 3;
+    margin: 12px 0;
+  }
+
+  /* 3D Wireframe Relief Mesh */
+  .terrain-viewport {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px;
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .terrain-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--glow-color);
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 6px var(--glow-color);
+  }
+
+  .wireframe-svg {
+    width: 100%;
+    height: 180px;
+    filter: drop-shadow(0 0 5px var(--glow-color));
+    transition: filter 0.3s ease;
+  }
+
+  .terrain-wire-path {
+    stroke: var(--glow-color);
+    stroke-width: 1.5;
+    fill: none;
+    transition: stroke 0.3s ease;
+  }
+
+  /* Right Telemetry Gauges on Glass */
+  .telemetry-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .telemetry-cell {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cell-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .cell-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--glow-color);
+    text-shadow: 0 0 8px var(--glow-color);
+  }
+
+  .cell-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .cell-fill {
+    height: 100%;
+    background: var(--glow-color);
+    box-shadow: 0 0 8px var(--glow-color);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+
+  /* Glass Footer Bar */
+  .glass-hud-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 10px;
+    position: relative;
+    z-index: 3;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+
+<div class="slate-assembly">
+  <!-- 1. OPAQUE TACTICAL LEFT HANDLE -->
+  <div class="tactical-grip">
+    <div class="edge-projector-strip" id="projectorStrip"></div>
+
+    <div class="grip-header">
+      <div class="grip-id">SLATE UNIT // MK-IX</div>
+      <div class="grip-title">Tactical Grip Controller</div>
+    </div>
+
+    <!-- Lighting & Display Controls -->
+    <div class="handle-controls">
+      <span class="ctrl-label">Environment Lighting</span>
+      <div class="switch-row">
+        <button class="handle-btn" id="blackoutBtn">🌑 Blackout</button>
+        <button class="handle-btn" id="themeBtn">🌓 Light / Dark</button>
+      </div>
+
+      <!-- Color Palette Customizer -->
+      <div class="color-picker-box">
+        <span class="ctrl-label">Backlight Spectrum</span>
+        <div class="palette-chips">
+          <div class="color-chip" style="background: #00ffcc;" data-color="#00ffcc" title="Emerald Cyan"></div>
+          <div class="color-chip" style="background: #38bdf8;" data-color="#38bdf8" title="Electric Azure"></div>
+          <div class="color-chip" style="background: #c084fc;" data-color="#c084fc" title="Neon Violet"></div>
+          <div class="color-chip" style="background: #f59e0b;" data-color="#f59e0b" title="Solar Amber"></div>
+          <div class="color-chip" style="background: #ef4444;" data-color="#ef4444" title="Crimson Alert"></div>
+          <input type="color" value="#00ffcc" class="custom-color-input" id="customColorPicker" title="Custom Color Palette">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <button class="tactile-trigger" id="pulseRadarBtn">📡 Pulse Terrain Scan</button>
+    </div>
+  </div>
+
+  <!-- 2. TRANSPARENT HOLOGRAPHIC GLASS DISPLAY -->
+  <div class="holo-glass-display" id="glassDisplay">
+    <!-- Edge Projected Beam Ray -->
+    <div class="projected-beam-cone"></div>
+
+    <!-- HUD Top Bar -->
+    <div class="glass-hud-top">
+      <div class="mission-meta">
+        <h3>Aero-Topographic Reconnaissance Slate</h3>
+        <p>Sector 12 • Real-Time LiDAR Elevation Telemetry</p>
+      </div>
+      <div class="sys-readout" id="sysReadout">OPTICAL LINK // 99.4%</div>
+    </div>
+
+    <!-- Central Body: 3D Relief & Telemetry -->
+    <div class="glass-body-grid">
+      <!-- 3D Topographic Wireframe Relief Mesh -->
+      <div class="terrain-viewport">
+        <div class="terrain-label">3D SYNTHETIC APERTURE RELIEF</div>
+
+        <svg class="wireframe-svg" viewBox="0 0 320 180">
+          <!-- Multi-tier wireframe mountain ridges -->
+          <path d="M 10 160 Q 60 140 100 150 T 200 135 T 310 145" class="terrain-wire-path"/>
+          <path d="M 10 135 Q 50 105 110 115 T 190 90 T 310 110" class="terrain-wire-path"/>
+          <path d="M 15 110 Q 70 70 130 85 T 210 50 T 305 75" class="terrain-wire-path"/>
+          <path d="M 20 85 Q 90 35 150 55 T 230 25 T 300 45" class="terrain-wire-path" style="stroke-dasharray: 4 2;"/>
+          
+          <!-- Cross-grid perspective lines -->
+          <line x1="60" y1="170" x2="100" y2="40" class="terrain-wire-path" stroke-opacity="0.4" stroke-width="0.8"/>
+          <line x1="120" y1="170" x2="150" y2="40" class="terrain-wire-path" stroke-opacity="0.4" stroke-width="0.8"/>
+          <line x1="180" y1="170" x2="200" y2="40" class="terrain-wire-path" stroke-opacity="0.4" stroke-width="0.8"/>
+          <line x1="240" y1="170" x2="250" y2="40" class="terrain-wire-path" stroke-opacity="0.4" stroke-width="0.8"/>
+
+          <!-- Target Beacon Waypoint -->
+          <circle cx="210" cy="50" r="5" fill="none" stroke="var(--glow-color)" stroke-width="2"/>
+          <circle cx="210" cy="50" r="2" fill="var(--glow-color)"/>
+          <text x="220" y="54" font-family="'Share Tech Mono', monospace" font-size="9" fill="var(--glow-color)">BEACON #04</text>
+        </svg>
+
+        <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: 'Share Tech Mono', monospace; color: #94a3b8;">
+          <span>PEAK ELEV: +3,140 M</span>
+          <span>SLOPE: 24° NE</span>
+        </div>
+      </div>
+
+      <!-- Telemetry Stack -->
+      <div class="telemetry-stack">
+        <div class="telemetry-cell">
+          <div class="cell-head">
+            <span>SURFACE REFRACTANCE</span>
+            <span>98.2%</span>
+          </div>
+          <div class="cell-val" id="refractVal">1.54 η</div>
+          <div class="cell-bar"><div class="cell-fill" style="width: 85%;"></div></div>
+        </div>
+
+        <div class="telemetry-cell">
+          <div class="cell-head">
+            <span>EDGE LUMENS</span>
+            <span>4,800 LUX</span>
+          </div>
+          <div class="cell-val" id="luxVal">MAX GLOW</div>
+          <div class="cell-bar"><div class="cell-fill" style="width: 94%;"></div></div>
+        </div>
+
+        <div class="telemetry-cell">
+          <div class="cell-head">
+            <span>SPECTRAL FREQ</span>
+            <span>540 THz</span>
+          </div>
+          <div class="cell-val">NOMINAL</div>
+          <div class="cell-bar"><div class="cell-fill" style="width: 70%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD Bottom Bar -->
+    <div class="glass-hud-bottom">
+      <span>TRANSPARENT OPTICAL SUBSTRATE // GORILLA-X</span>
+      <span>HOLD HANDLE FIRMLY WITH LEFT HAND</span>
+      <span>STATUS: ACTIVE FEED</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const blackoutBtn = document.getElementById('blackoutBtn');
+  const themeBtn = document.getElementById('themeBtn');
+  const customColorPicker = document.getElementById('customColorPicker');
+  const colorChips = document.querySelectorAll('.color-chip');
+  const pulseBtn = document.getElementById('pulseRadarBtn');
+  const sysReadout = document.getElementById('sysReadout');
+  const wirePaths = document.querySelectorAll('.terrain-wire-path');
+
+  // Set Backlight Glow Color
+  function setGlowColor(hex) {
+    root.style.setProperty('--glow-color', hex);
+
+    // Convert hex to soft rgba for diffuse beam
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    root.style.setProperty('--glow-soft', `rgba(${r}, ${g}, ${b}, 0.25)`);
+    root.style.setProperty('--glow-intense', `rgba(${r}, ${g}, ${b}, 0.75)`);
+  }
+
+  // Color chips
+  colorChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const color = chip.dataset.color;
+      customColorPicker.value = color;
+      setGlowColor(color);
+    });
+  });
+
+  // Custom Color Input Picker
+  customColorPicker.addEventListener('input', (e) => {
+    setGlowColor(e.target.value);
+  });
+
+  // Blackout Toggle
+  let isBlackout = false;
+  blackoutBtn.addEventListener('click', () => {
+    isBlackout = !isBlackout;
+    document.body.classList.toggle('blackout-active', isBlackout);
+    blackoutBtn.classList.toggle('is-active', isBlackout);
+    blackoutBtn.textContent = isBlackout ? '💡 Lights On' : '🌑 Blackout';
+  });
+
+  // Light / Dark Theme Toggle
+  let isLight = false;
+  themeBtn.addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-theme', isLight);
+    themeBtn.classList.toggle('is-active', isLight);
+  });
+
+  // Pulse Terrain Scan
+  pulseBtn.addEventListener('click', () => {
+    sysReadout.textContent = 'PULSING SYNTHETIC RADAR...';
+    wirePaths.forEach(path => {
+      path.style.strokeWidth = '3';
+      path.style.filter = 'drop-shadow(0 0 10px var(--glow-color)) brightness(1.8)';
+    });
+
+    setTimeout(() => {
+      wirePaths.forEach(path => {
+        path.style.strokeWidth = '1.5';
+        path.style.filter = 'none';
+      });
+      sysReadout.textContent = 'ELEVATION TOPOGRAPHY SYNCED';
+    }, 600);
+  });
+</script>
+</body>
+</html>

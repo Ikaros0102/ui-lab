@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botanical Archive - Naturalist Herbarium Dossier</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Botanical Herbarium Dossier",
+  "category": "cards",
+  "themes": [
+    "light",
+    "retro"
+  ],
+  "tags": [
+    "botanical",
+    "herbarium",
+    "parchment",
+    "antique",
+    "nature",
+    "plants",
+    "victorian",
+    "archive",
+    "specimen",
+    "illustrated"
+  ],
+  "description": "Victorian naturalist herbarium specimen dossier on deckled parchment paper, featuring vector botanical illustrations, interactive anatomy pins, and a taxonomy archive ledger.",
+  "techniques": [
+    "deckled edge aged parchment texture",
+    "fine engraved double-line antique borders",
+    "vector SVG botanical specimen with hover pins",
+    "weathered red ink museum stamp",
+    "olive and aged-gold botanical color palette"
+  ],
+  "recipe": "The botanical archive aesthetic relies on warm aged-parchment linear gradients combined with delicate serif typography (Cormorant Garamond) and antique brass accents. The specimen card features interactive SVG anatomy pins that reveal naturalist observations and taxonomy classification stats.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --parchment-desk: #1e1610;
+    --paper-base: #f7f1e3;
+    --paper-shadow: #e5dac1;
+    --olive-dark: #2d3b2d;
+    --olive-tint: #4a5d4a;
+    --antique-gold: #b38f4d;
+    --gold-bright: #d4ab63;
+    --ink-black: #1a1510;
+    --ink-sepia: #4b3d32;
+    --stamp-crimson: #9e2a2b;
+    --paper-line: rgba(75, 61, 50, 0.22);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(179, 143, 77, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 10% 90%, rgba(45, 59, 45, 0.2) 0%, transparent 50%),
+      linear-gradient(180deg, #16110d 0%, #0d0a08 100%);
+    color: var(--ink-black);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* Naturalist Portfolio Folio */
+  .herbarium-folio {
+    width: 100%;
+    max-width: 960px;
+    background: var(--paper-base);
+    border-radius: 8px;
+    border: 1px solid #d5c8ad;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.8),
+      0 0 30px rgba(179, 143, 77, 0.15),
+      inset 0 0 50px rgba(139, 115, 75, 0.12);
+    padding: 24px 28px;
+    position: relative;
+  }
+
+  /* Antique Brass Top Clip */
+  .brass-clip {
+    position: absolute;
+    top: -14px;
+    left: 48px;
+    width: 70px;
+    height: 28px;
+    background: linear-gradient(180deg, #dfbc77 0%, #aa843b 60%, #6d501d 100%);
+    border-radius: 6px 6px 2px 2px;
+    border: 1px solid #fae3aa;
+    box-shadow:
+      0 4px 10px rgba(0,0,0,0.5),
+      inset 0 1px 1px rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brass-clip::after {
+    content: '';
+    width: 35px;
+    height: 4px;
+    background: #3e280c;
+    border-radius: 2px;
+  }
+
+  /* Outer Engraved Double Border */
+  .folio-border {
+    border: 2px solid var(--paper-line);
+    padding: 18px 20px;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  /* Ornate Corner Accents */
+  .corner-flourish {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--antique-gold);
+  }
+  .top-left { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+  .top-right { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+  .bottom-left { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+  .bottom-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+  /* Header */
+  .folio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--paper-line);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+
+  .archive-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--olive-tint);
+    text-transform: uppercase;
+  }
+
+  .botanical-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--olive-dark);
+    margin: 2px 0 0;
+    font-style: italic;
+  }
+
+  .common-name {
+    font-size: 12px;
+    color: var(--ink-sepia);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Weathered Museum Stamp */
+  .archive-stamp {
+    border: 2px solid var(--stamp-crimson);
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: var(--stamp-crimson);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+    opacity: 0.85;
+    box-shadow: 0 1px 3px rgba(158, 42, 43, 0.15);
+  }
+
+  /* Main Two-column Layout */
+  .folio-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.35fr;
+    gap: 24px;
+  }
+
+  /* Left: Pressed Botanical Specimen Canvas */
+  .specimen-stage {
+    background: #fdfaf2;
+    border: 1px solid #e2d6bf;
+    border-radius: 6px;
+    padding: 18px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: inset 0 0 20px rgba(160, 130, 80, 0.08);
+  }
+
+  .specimen-tag {
+    align-self: flex-start;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--olive-tint);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--paper-line);
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  /* SVG Botanical Illustration */
+  .plant-svg-container {
+    width: 100%;
+    height: 310px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .plant-svg {
+    height: 100%;
+    filter: drop-shadow(2px 6px 12px rgba(45, 59, 45, 0.2));
+  }
+
+  /* Interactive Anatomy Pins */
+  .anatomy-pin {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--paper-base);
+    border: 1.5px solid var(--olive-dark);
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--olive-dark);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
+  }
+
+  .anatomy-pin:hover, .anatomy-pin.active {
+    background: var(--olive-dark);
+    color: #ffffff;
+    transform: scale(1.25);
+    box-shadow: 0 4px 10px rgba(45, 59, 45, 0.4);
+  }
+
+  /* Pin Callout Box */
+  .pin-callout {
+    width: 100%;
+    margin-top: 10px;
+    background: #f4ecda;
+    border: 1px solid #d8caa7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    color: var(--ink-sepia);
+  }
+
+  .callout-title {
+    font-weight: 700;
+    color: var(--olive-dark);
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+
+  /* Right: Classification & Field Notes */
+  .dossier-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .taxonomy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+
+  .taxonomy-table tr {
+    border-bottom: 1px dotted var(--paper-line);
+  }
+
+  .taxonomy-table td {
+    padding: 6px 4px;
+  }
+
+  .taxonomy-table td:first-child {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--olive-tint);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    width: 35%;
+  }
+
+  .taxonomy-table td:last-child {
+    font-family: 'Playfair Display', serif;
+    color: var(--ink-black);
+    font-style: italic;
+  }
+
+  /* Field Journal Handwritten Log */
+  .field-journal {
+    background: #fbf7ec;
+    border: 1px solid #ded3ba;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .journal-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--olive-tint);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(75, 61, 50, 0.15);
+    padding-bottom: 4px;
+  }
+
+  .journal-entry {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #3b2c20;
+    font-style: italic;
+  }
+
+  /* Habitat Stats Pill Grid */
+  .habitat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .habitat-pill {
+    background: #f2e9d2;
+    border: 1px solid #d5c7a3;
+    border-radius: 4px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+
+  .habitat-val {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--olive-dark);
+  }
+
+  .habitat-label {
+    font-size: 9.5px;
+    color: var(--ink-sepia);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+  }
+
+  /* Gold & Olive Action Button */
+  .archive-btn {
+    width: 100%;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #374737 0%, #243024 100%);
+    border: 1px solid var(--antique-gold);
+    color: #f7f1e3;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .archive-btn:hover {
+    background: linear-gradient(180deg, #445844 0%, #2e3d2e 100%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<div class="herbarium-folio">
+  <div class="brass-clip"></div>
+
+  <div class="folio-border">
+    <div class="corner-flourish top-left"></div>
+    <div class="corner-flourish top-right"></div>
+    <div class="corner-flourish bottom-left"></div>
+    <div class="corner-flourish bottom-right"></div>
+
+    <!-- Header -->
+    <div class="folio-header">
+      <div>
+        <div class="archive-badge">Imperial Botanical Herbarium • Folio 84</div>
+        <div class="botanical-title">Adiantum pedatum L.</div>
+        <div class="common-name">Northern Maidenhair Fern • Five-Finger Fern</div>
+      </div>
+
+      <div class="archive-stamp">
+        Archived • 1884<br>
+        Verified
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="folio-grid">
+      <!-- Left: Specimen Canvas -->
+      <div class="specimen-stage">
+        <div class="specimen-tag">PRESSED SPECIMEN — EX HERBARIO COMMISSIO</div>
+
+        <div class="plant-svg-container">
+          <!-- Vector Botanical Fern Specimen -->
+          <svg class="plant-svg" viewBox="0 0 200 320">
+            <!-- Main central black stipe -->
+            <path d="M100 310 Q 100 230 95 160 Q 90 90 92 20" fill="none" stroke="#221b14" stroke-width="2.5" stroke-linecap="round"/>
+            
+            <!-- Left branches & frond pinnules -->
+            <path d="M96 220 Q 70 200 45 205" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M45 205 Q 35 190 25 200 Q 35 210 45 205" fill="#3f543f" stroke="#283828" stroke-width="0.8"/>
+            <path d="M60 212 Q 52 198 42 206 Q 52 216 60 212" fill="#4a614a" stroke="#283828" stroke-width="0.8"/>
+            <path d="M78 217 Q 70 205 60 213 Q 70 221 78 217" fill="#425842" stroke="#283828" stroke-width="0.8"/>
+
+            <path d="M94 170 Q 60 145 35 152" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M35 152 Q 22 138 15 148 Q 24 158 35 152" fill="#3f543f" stroke="#283828" stroke-width="0.8"/>
+            <path d="M52 158 Q 42 144 32 153 Q 42 163 52 158" fill="#4f664f" stroke="#283828" stroke-width="0.8"/>
+            <path d="M72 164 Q 62 150 52 159 Q 62 169 72 164" fill="#425842" stroke="#283828" stroke-width="0.8"/>
+
+            <path d="M92 120 Q 65 95 40 100" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M40 100 Q 28 88 20 96 Q 30 106 40 100" fill="#4a614a" stroke="#283828" stroke-width="0.8"/>
+            <path d="M62 108 Q 50 95 40 105 Q 50 114 62 108" fill="#587358" stroke="#283828" stroke-width="0.8"/>
+
+            <!-- Right branches & frond pinnules -->
+            <path d="M96 235 Q 125 215 150 220" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M150 220 Q 160 205 170 215 Q 160 225 150 220" fill="#3f543f" stroke="#283828" stroke-width="0.8"/>
+            <path d="M132 227 Q 142 213 152 221 Q 142 231 132 227" fill="#465c46" stroke="#283828" stroke-width="0.8"/>
+            <path d="M112 232 Q 122 218 132 226 Q 122 236 112 232" fill="#3f543f" stroke="#283828" stroke-width="0.8"/>
+
+            <path d="M93 180 Q 130 155 160 162" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M160 162 Q 172 148 182 158 Q 172 168 160 162" fill="#4a614a" stroke="#283828" stroke-width="0.8"/>
+            <path d="M138 168 Q 150 154 160 163 Q 150 173 138 168" fill="#546d54" stroke="#283828" stroke-width="0.8"/>
+
+            <path d="M92 135 Q 128 110 155 115" fill="none" stroke="#221b14" stroke-width="1.5"/>
+            <path d="M155 115 Q 167 100 176 110 Q 165 120 155 115" fill="#445b44" stroke="#283828" stroke-width="0.8"/>
+            <path d="M130 122 Q 142 108 152 117 Q 142 127 130 122" fill="#526b52" stroke="#283828" stroke-width="0.8"/>
+
+            <!-- Crown apex -->
+            <path d="M92 40 Q 82 25 75 32 Q 85 40 92 40" fill="#587358" stroke="#283828" stroke-width="0.8"/>
+            <path d="M92 35 Q 102 20 110 28 Q 100 36 92 35" fill="#526b52" stroke="#283828" stroke-width="0.8"/>
+          </svg>
+
+          <!-- Interactive Pins -->
+          <div class="anatomy-pin active" style="top: 25px; left: 82px;" data-title="Terminal Pinna" data-info="Delicate recurved frond tip with marginal sori nestled beneath the reflexed leaf margin.">1</div>
+          <div class="anatomy-pin" style="top: 140px; left: 145px;" data-title="Flabellate Pinnules" data-info="Fan-shaped leaflets with dichotomous free venation, repelling water beads efficiently.">2</div>
+          <div class="anatomy-pin" style="top: 245px; left: 95px;" data-title="Ebony Stipe" data-info="Distinctive lustrous dark chestnut to purple-black polished stalk, wiry yet remarkably resilient.">3</div>
+        </div>
+
+        <div class="pin-callout">
+          <div class="callout-title" id="calloutTitle">Terminal Pinna (1)</div>
+          <div id="calloutText">Delicate recurved frond tip with marginal sori nestled beneath the reflexed leaf margin.</div>
+        </div>
+      </div>
+
+      <!-- Right: Classification Dossier -->
+      <div class="dossier-panel">
+        <div>
+          <!-- Scientific Classification Table -->
+          <table class="taxonomy-table">
+            <tr>
+              <td>Division</td>
+              <td>Pteridophyta</td>
+            </tr>
+            <tr>
+              <td>Class</td>
+              <td>Polypodiopsida</td>
+            </tr>
+            <tr>
+              <td>Order</td>
+              <td>Polypodiales</td>
+            </tr>
+            <tr>
+              <td>Family</td>
+              <td>Pteridaceae</td>
+            </tr>
+            <tr>
+              <td>Genus</td>
+              <td>Adiantum (Tourn. ex L.)</td>
+            </tr>
+          </table>
+
+          <!-- Field Notes Diary -->
+          <div class="field-journal">
+            <div class="journal-head">
+              <span>Naturalist Field Log</span>
+              <span>Oct 14, 1884</span>
+            </div>
+            <div class="journal-entry">
+              "Found clustered along the shadowed limestone gorge of Blackwood Ravine. Fronds remained completely dry when immersed under water due to microscopic surface waxy papillae. A specimen of singular grace."
+            </div>
+          </div>
+
+          <!-- Habitat Telemetry -->
+          <div class="habitat-grid">
+            <div class="habitat-pill">
+              <div class="habitat-val">420 m</div>
+              <div class="habitat-label">Elevation</div>
+            </div>
+            <div class="habitat-pill">
+              <div class="habitat-val">88%</div>
+              <div class="habitat-label">Humidity</div>
+            </div>
+            <div class="habitat-pill">
+              <div class="habitat-val">7.2 pH</div>
+              <div class="habitat-label">Limestone</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="archive-btn" id="transcribeBtn">
+          <span>🌿 Catalog Into Herbarium Index</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pins = document.querySelectorAll('.anatomy-pin');
+  const title = document.getElementById('calloutTitle');
+  const text = document.getElementById('calloutText');
+
+  pins.forEach(pin => {
+    pin.addEventListener('click', () => {
+      pins.forEach(p => p.classList.remove('active'));
+      pin.classList.add('active');
+      title.textContent = `${pin.dataset.title} (${pin.textContent})`;
+      text.textContent = pin.dataset.info;
+    });
+  });
+
+  const transcribeBtn = document.getElementById('transcribeBtn');
+  transcribeBtn.addEventListener('click', () => {
+    transcribeBtn.innerHTML = '<span>✓ Specimen Registered in Index</span>';
+    transcribeBtn.style.background = 'linear-gradient(180deg, #2a402a 0%, #1a281a 100%)';
+    transcribeBtn.style.borderColor = '#68ffd8';
+  });
+</script>
+</body>
+</html>

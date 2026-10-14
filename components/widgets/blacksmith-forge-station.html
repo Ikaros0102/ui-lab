@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Blacksmith - Master Forge & Tempering Station</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Blacksmith Forge & Tempering Station",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "blacksmith",
+    "forge",
+    "anvil",
+    "sparks",
+    "embers",
+    "molten-metal",
+    "crafting",
+    "weapon-upgrade",
+    "rpg",
+    "fire"
+  ],
+  "description": "Heavy-duty forge crafting interface with glowing charcoal coals, molten metal temperature segments, interactive hammer strikes with flying sparks, and tempering runes.",
+  "techniques": [
+    "glowing molten heat gradients with box-shadow bloom",
+    "dynamic flying ember spark particles on strike",
+    "cast-iron soot texture via multi-stop linear-gradients",
+    "segmented molten heat gauge with threshold alerts",
+    "tactile metallic button press feedback"
+  ],
+  "recipe": "The forge atmosphere pairs charcoal-black stone textures with fiery amber and incandescent yellow glow. The heat gauge uses segmented blocks whose border and shadow bloom shift from dull red to intense molten yellow as temperature rises. Clicking the strike button animates an array of flying ember sparks with randomized trajectories.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --iron-dark: #0f1013;
+    --iron-mid: #1c1d24;
+    --iron-rim: #363945;
+    --charcoal-black: #090a0d;
+    --ember-red: #c0392b;
+    --ember-orange: #e67e22;
+    --molten-gold: #f39c12;
+    --heat-white: #fff3cc;
+    --text-steel: #e2e8f0;
+    --text-faded: #8c93a3;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Hearth heat glow */
+      radial-gradient(circle at 50% 85%, rgba(230, 126, 34, 0.28) 0%, rgba(192, 57, 43, 0.15) 35%, transparent 65%),
+      radial-gradient(circle at 20% 20%, rgba(243, 156, 18, 0.1) 0%, transparent 40%),
+      /* Soot stone walls */
+      linear-gradient(180deg, #090a0c 0%, #12141a 50%, #08090b 100%);
+    color: var(--text-steel);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Forge Station Container */
+  .forge-station {
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(180deg, #181a21 0%, #0e1014 100%);
+    border: 3px solid #2e323e;
+    border-radius: 14px;
+    padding: 22px 26px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.95),
+      0 0 45px rgba(230, 126, 34, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 0 25px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Header */
+  .forge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #282c37;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+
+  .brand-forge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .anvil-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: radial-gradient(circle at 40% 30%, #3a3f4d 0%, #17181f 100%);
+    border: 1.5px solid #ff9d3b;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: 0 0 16px rgba(230, 126, 34, 0.4);
+  }
+
+  .forge-title h1 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #ffc67a 50%, #e67e22 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .forge-title p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: var(--text-faded);
+  }
+
+  .hearth-gauge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #3d2919;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  .fire-icon {
+    font-size: 16px;
+    animation: flamePulse 1.2s infinite alternate ease-in-out;
+  }
+
+  @keyframes flamePulse {
+    0% { transform: scale(0.9); filter: drop-shadow(0 0 4px #e67e22); }
+    100% { transform: scale(1.15); filter: drop-shadow(0 0 10px #f39c12); }
+  }
+
+  .temp-display {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffaa42;
+    letter-spacing: 0.5px;
+  }
+
+  /* Two-column Layout */
+  .forge-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 22px;
+  }
+
+  /* Left: Anvil Workstation & Blade Preview */
+  .anvil-stage {
+    background: rgba(12, 13, 17, 0.7);
+    border: 1px solid #2a2e3a;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .weapon-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .weapon-tier {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #ff9d3b;
+    background: rgba(230, 126, 34, 0.15);
+    border: 1px solid rgba(230, 126, 34, 0.4);
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .weapon-name {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff4e0;
+    margin: 4px 0 2px;
+  }
+
+  .weapon-material {
+    font-size: 11px;
+    color: var(--text-faded);
+  }
+
+  /* Blade Graphic & Sparks Canvas */
+  .blade-display-box {
+    position: relative;
+    height: 180px;
+    margin: 16px 0;
+    background: radial-gradient(ellipse at 50% 60%, rgba(230, 126, 34, 0.18) 0%, rgba(15, 17, 22, 0.8) 70%);
+    border-radius: 8px;
+    border: 1px solid #262933;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .blade-svg {
+    width: 320px;
+    filter: drop-shadow(0 0 12px rgba(230, 126, 34, 0.45));
+    transition: filter 0.2s ease, transform 0.1s ease;
+  }
+
+  /* Flying Spark Particles */
+  .spark-burst {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff8db;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ffaa42, 0 0 16px #ff4500;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* Molten Heat Progress Bar */
+  .molten-meter-wrap {
+    margin-top: 10px;
+  }
+
+  .meter-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-faded);
+    margin-bottom: 6px;
+  }
+
+  .molten-track {
+    display: flex;
+    gap: 4px;
+    height: 8px;
+  }
+
+  .heat-segment {
+    flex: 1;
+    background: #181a20;
+    border-radius: 2px;
+    border: 1px solid #2a2d38;
+    transition: all 0.2s ease;
+  }
+
+  .heat-segment.lit {
+    background: linear-gradient(180deg, #ffea88 0%, #f39c12 50%, #c0392b 100%);
+    box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
+    border-color: #ffd875;
+  }
+
+  /* Strike Hammer Action Button */
+  .strike-btn {
+    width: 100%;
+    margin-top: 16px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #d35400 0%, #962d00 100%);
+    border: 1px solid #f39c12;
+    border-bottom: 3px solid #571600;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow:
+      0 4px 15px rgba(0, 0, 0, 0.7),
+      0 0 20px rgba(230, 126, 34, 0.35);
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .strike-btn:hover {
+    background: linear-gradient(180deg, #e67e22 0%, #b23b00 100%);
+    transform: translateY(-1px);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.8),
+      0 0 30px rgba(243, 156, 18, 0.6);
+  }
+
+  .strike-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+
+  /* Right: Tempering Upgrades & Stats */
+  .tempering-panel {
+    background: rgba(12, 13, 17, 0.7);
+    border: 1px solid #2a2e3a;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .panel-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ff9d3b;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #282b36;
+    padding-bottom: 6px;
+  }
+
+  /* Attributes list */
+  .stat-diff-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+
+  .stat-diff-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #15171e;
+    border: 1px solid #262934;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+
+  .stat-label {
+    color: var(--text-steel);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-increase {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: #4ade80;
+  }
+
+  /* Tempering Runes Toggles */
+  .runes-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .rune-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #14161d;
+    border: 1px solid #282b36;
+    padding: 9px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .rune-toggle:hover {
+    border-color: #f39c12;
+    background: #191c25;
+  }
+
+  .rune-toggle.is-active {
+    border-color: #ff9d3b;
+    background: rgba(230, 126, 34, 0.12);
+  }
+
+  .rune-symbol {
+    font-size: 16px;
+  }
+
+  .rune-text h4 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff0d4;
+  }
+
+  .rune-text p {
+    margin: 2px 0 0;
+    font-size: 10.5px;
+    color: var(--text-faded);
+  }
+
+  /* Quench Button */
+  .quench-btn {
+    width: 100%;
+    font-family: 'Cinzel', serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 11px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #242938 0%, #151821 100%);
+    border: 1px solid #41485d;
+    color: #ccd6e6;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.15s ease;
+  }
+
+  .quench-btn:hover {
+    background: linear-gradient(180deg, #30374a 0%, #1d212d 100%);
+    border-color: #60a5fa;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<div class="forge-station">
+  <!-- Header -->
+  <div class="forge-header">
+    <div class="brand-forge">
+      <div class="anvil-icon-badge">⚒️</div>
+      <div class="forge-title">
+        <h1>Brimstone Forge & Master Anvil</h1>
+        <p>Crest of Oakhaven • Tier IV Masterwork Crafting Bench</p>
+      </div>
+    </div>
+
+    <div class="hearth-gauge">
+      <span class="fire-icon">🔥</span>
+      <span class="temp-display" id="tempDisplay">1,180°C</span>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="forge-grid">
+    <!-- Left: Anvil & Molten Blade -->
+    <div class="anvil-stage" id="anvilStage">
+      <div>
+        <div class="weapon-card-top">
+          <div>
+            <div class="weapon-name">Obsidian Greatsword</div>
+            <div class="weapon-material">Dark Iron Core • Dragonfire Folded</div>
+          </div>
+          <span class="weapon-tier" id="sharpnessLevel">Rank +3 Masterwork</span>
+        </div>
+
+        <!-- Blade Display -->
+        <div class="blade-display-box" id="bladeBox">
+          <svg class="blade-svg" id="bladeSvg" viewBox="0 0 320 60">
+            <!-- Greatsword Blade Silhouette with Molten Edge -->
+            <defs>
+              <linearGradient id="bladeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#2d313d"/>
+                <stop offset="50%" stop-color="#4d5366"/>
+                <stop offset="85%" stop-color="#ff7b00"/>
+                <stop offset="100%" stop-color="#fff2a3"/>
+              </linearGradient>
+            </defs>
+            <!-- Hilt -->
+            <rect x="10" y="26" width="35" height="8" rx="2" fill="#1b1c21" stroke="#483827" stroke-width="1.5"/>
+            <rect x="42" y="16" width="6" height="28" rx="1.5" fill="#c28c38" stroke="#f6c268" stroke-width="1"/>
+            <!-- Blade Body -->
+            <polygon points="48,22 260,24 305,30 260,36 48,38" fill="url(#bladeGradient)" stroke="#ff9a3c" stroke-width="1.5"/>
+            <!-- Full groove channel -->
+            <line x1="56" y1="30" x2="250" y2="30" stroke="#181a20" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <!-- Molten Heat Progress Bar -->
+        <div class="molten-meter-wrap">
+          <div class="meter-label-row">
+            <span>Core Temperature</span>
+            <span id="heatStatusText">Optimal Forge Range</span>
+          </div>
+          <div class="molten-track" id="heatTrack">
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment lit"></div>
+            <div class="heat-segment"></div>
+            <div class="heat-segment"></div>
+            <div class="heat-segment"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="strike-btn" id="strikeBtn">
+        <span>⚒️ Strike Anvil Blow</span>
+      </button>
+    </div>
+
+    <!-- Right: Tempering Upgrades & Runes -->
+    <div class="tempering-panel">
+      <div>
+        <div class="panel-section-title">Tempering Enhancements</div>
+
+        <div class="stat-diff-list">
+          <div class="stat-diff-item">
+            <span class="stat-label">⚔️ Physical Damage</span>
+            <span class="stat-increase" id="atkStat">184 (+28)</span>
+          </div>
+          <div class="stat-diff-item">
+            <span class="stat-label">🔥 Dragonfire DOT</span>
+            <span class="stat-increase" id="fireStat">+45 / sec</span>
+          </div>
+          <div class="stat-diff-item">
+            <span class="stat-label">🛡️ Poise & Armor Break</span>
+            <span class="stat-increase">+35% Impact</span>
+          </div>
+        </div>
+
+        <div class="panel-section-title">Engraved Runes</div>
+
+        <div class="runes-group">
+          <div class="rune-toggle is-active" data-fire="15" data-atk="12">
+            <span class="rune-symbol">ᚠ</span>
+            <div class="rune-text">
+              <h4>Ignite Crest (Fehu)</h4>
+              <p>Adds intense flame blast upon critical strike</p>
+            </div>
+          </div>
+
+          <div class="rune-toggle" data-fire="0" data-atk="22">
+            <span class="rune-symbol">ᛏ</span>
+            <div class="rune-text">
+              <h4>Titan Edge (Tiwaz)</h4>
+              <p>Reinforces cutting edge against heavy armor</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="quench-btn" id="quenchBtn">
+        <span>❄️ Quench in Oil Basin</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const strikeBtn = document.getElementById('strikeBtn');
+  const bladeBox = document.getElementById('bladeBox');
+  const bladeSvg = document.getElementById('bladeSvg');
+  const tempDisplay = document.getElementById('tempDisplay');
+  const heatStatusText = document.getElementById('heatStatusText');
+  const heatSegments = document.querySelectorAll('.heat-segment');
+  const atkStat = document.getElementById('atkStat');
+  const sharpnessLevel = document.getElementById('sharpnessLevel');
+
+  let currentTemp = 1180;
+  let strikes = 0;
+
+  // Strike Hammer Sparks Animation
+  strikeBtn.addEventListener('click', () => {
+    strikes++;
+    currentTemp += 35;
+    tempDisplay.textContent = `${currentTemp}°C`;
+
+    // Impact wobble on blade
+    bladeSvg.style.transform = 'scale(0.96) rotate(-1deg)';
+    bladeSvg.style.filter = 'drop-shadow(0 0 25px #ffaa42) brightness(1.6)';
+    setTimeout(() => {
+      bladeSvg.style.transform = 'none';
+      bladeSvg.style.filter = 'drop-shadow(0 0 12px rgba(230, 126, 34, 0.45))';
+    }, 150);
+
+    // Spawn sparks
+    for (let i = 0; i < 16; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'spark-burst';
+      bladeBox.appendChild(spark);
+
+      const startX = 140 + (Math.random() - 0.5) * 40;
+      const startY = 80 + (Math.random() - 0.5) * 30;
+      const angle = (Math.random() * Math.PI * 2);
+      const dist = 50 + Math.random() * 90;
+      const targetX = startX + Math.cos(angle) * dist;
+      const targetY = startY + Math.sin(angle) * dist;
+
+      spark.style.left = `${startX}px`;
+      spark.style.top = `${startY}px`;
+      spark.style.opacity = '1';
+
+      spark.animate([
+        { transform: 'translate(0, 0) scale(1.4)', opacity: 1 },
+        { transform: `translate(${targetX - startX}px, ${targetY - startY}px) scale(0.2)`, opacity: 0 }
+      ], {
+        duration: 400 + Math.random() * 300,
+        easing: 'cubic-bezier(0, .9, .57, 1)'
+      }).onfinish = () => spark.remove();
+    }
+
+    // Update heat segments
+    const litCount = Math.min(10, 7 + Math.floor(strikes / 2));
+    heatSegments.forEach((seg, idx) => {
+      seg.classList.toggle('lit', idx < litCount);
+    });
+
+    if (currentTemp > 1300) {
+      heatStatusText.textContent = 'White-Hot Molten! Perfect for Quenching!';
+      heatStatusText.style.color = '#ffda79';
+    }
+  });
+
+  // Rune Toggles
+  const runes = document.querySelectorAll('.rune-toggle');
+  runes.forEach(rune => {
+    rune.addEventListener('click', () => {
+      rune.classList.toggle('is-active');
+      const activeRunes = document.querySelectorAll('.rune-toggle.is-active');
+      atkStat.textContent = `${184 + activeRunes.length * 15} (+${28 + activeRunes.length * 15})`;
+    });
+  });
+
+  // Quench Button
+  document.getElementById('quenchBtn').addEventListener('click', () => {
+    currentTemp = 320;
+    tempDisplay.textContent = '320°C (Quenched)';
+    heatStatusText.textContent = 'Blade Tempered & Solidified!';
+    sharpnessLevel.textContent = 'Rank +4 Masterwork Reforged';
+    sharpnessLevel.style.color = '#60a5fa';
+    sharpnessLevel.style.borderColor = '#60a5fa';
+    heatSegments.forEach(seg => seg.classList.remove('lit'));
+    bladeSvg.style.filter = 'drop-shadow(0 0 15px #60a5fa)';
+  });
+</script>
+</body>
+</html>

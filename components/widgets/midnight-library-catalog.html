@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight Library - Archival Research & Knowledge Console</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Midnight Library Archive Console",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "library",
+    "midnight",
+    "bankers-lamp",
+    "books",
+    "catalog",
+    "brass",
+    "emerald",
+    "archive",
+    "search",
+    "academic"
+  ],
+  "description": "Scholarly midnight library research workstation featuring an interactive emerald banker's lamp with pull chain, dark oak bookstacks, manuscript cataloging, and reading notes.",
+  "techniques": [
+    "interactive banker's lamp light cone with toggleable pull chain",
+    "emerald glass diffuse radial lighting",
+    "polished brass metallic bevels and trim",
+    "gothic rain window ambience backdrop",
+    "academic catalog search and manuscript inspector"
+  ],
+  "recipe": "The atmospheric research desk pairs dark mahogany woodgrain with an iconic green-glass banker's lamp that casts a directional warm pool of light. Clicking the brass pull-chain toggles the lamp's luminescent state via CSS variables, updating the ambient lighting across the desk and reading parchment.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --desk-dark: #120d09;
+    --desk-wood: #20150e;
+    --brass-trim: #c4984f;
+    --brass-glow: rgba(196, 152, 79, 0.3);
+    --lamp-emerald: #0b6848;
+    --lamp-emerald-bright: #10b981;
+    --lamp-amber-light: rgba(255, 235, 170, 0.22);
+    --paper-folio: #f6efe1;
+    --ink-charcoal: #211913;
+    --ink-faded: #6d5f53;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Ambient library pool of light */
+      radial-gradient(ellipse 60% 45% at 50% 30%, var(--lamp-amber-light) 0%, transparent 70%),
+      radial-gradient(circle at 10% 20%, rgba(11, 104, 72, 0.15) 0%, transparent 40%),
+      /* Gothic dark bookshelf shadows */
+      linear-gradient(180deg, #090705 0%, #130d09 60%, #060504 100%);
+    color: #e8ded1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+    transition: background 0.4s ease;
+  }
+
+  body.lamp-off {
+    --lamp-amber-light: rgba(0, 0, 0, 0);
+  }
+
+  /* Rain on Gothic Window Layer */
+  .window-rain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(100deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 45px);
+    opacity: 0.6;
+    animation: rainDown 1.3s linear infinite;
+  }
+
+  @keyframes rainDown {
+    0% { transform: translateY(-40px); }
+    100% { transform: translateY(40px); }
+  }
+
+  /* Main Workstation Container */
+  .library-desk {
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(180deg, #22160f 0%, #150d09 100%);
+    border: 3px solid #4a3020;
+    border-radius: 16px;
+    padding: 22px 28px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.95),
+      0 0 40px rgba(11, 104, 72, 0.12),
+      inset 0 1px 1px rgba(255, 230, 180, 0.2);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Header & Banker's Lamp Bar */
+  .desk-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #382315;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+
+  .archive-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .crest-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: radial-gradient(circle at 40% 30%, #3e2616 0%, #180f0a 100%);
+    border: 1.5px solid var(--brass-trim);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  }
+
+  .archive-titles h1 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #f7ead5;
+  }
+
+  .archive-titles p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #a89482;
+  }
+
+  /* The Banker's Lamp Control */
+  .lamp-fixture {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #170e09;
+    border: 1px solid #3d2617;
+    padding: 6px 14px;
+    border-radius: 24px;
+  }
+
+  .banker-glass {
+    width: 32px;
+    height: 14px;
+    background: linear-gradient(180deg, #10b981 0%, #064e3b 100%);
+    border-radius: 6px 6px 2px 2px;
+    border: 1px solid #34d399;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    transition: all 0.3s ease;
+  }
+
+  .lamp-off .banker-glass {
+    background: #092c21;
+    border-color: #124d3b;
+    box-shadow: none;
+    filter: brightness(0.6);
+  }
+
+  .pull-chain-btn {
+    background: linear-gradient(180deg, #c4984f 0%, #7e5c22 100%);
+    border: 1px solid #ffe1a0;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e1208;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    transition: transform 0.1s ease;
+  }
+
+  .pull-chain-btn:active {
+    transform: translateY(3px);
+  }
+
+  /* Layout Columns */
+  .desk-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1.35fr;
+    gap: 24px;
+  }
+
+  /* Left: Archival Catalog Search & Drawer */
+  .catalog-pane {
+    background: rgba(14, 9, 6, 0.7);
+    border: 1px solid #382416;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .search-wrapper {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: #1b110b;
+    border: 1px solid #4a301f;
+    border-radius: 6px;
+    padding: 10px 14px 10px 36px;
+    color: #f7ead5;
+    font-family: inherit;
+    font-size: 12.5px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--brass-trim);
+    box-shadow: 0 0 10px var(--brass-glow);
+    background: #23160e;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #a89482;
+  }
+
+  .drawer-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--brass-trim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #382416;
+    padding-bottom: 4px;
+  }
+
+  /* Catalog Cards List */
+  .manuscript-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .catalog-card {
+    background: #1c120c;
+    border: 1px solid #3d2718;
+    border-left: 3px solid #8e682e;
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .catalog-card:hover {
+    background: #261810;
+    border-color: var(--brass-trim);
+    transform: translateX(3px);
+  }
+
+  .catalog-card.is-active {
+    background: #2c1c13;
+    border-left-color: #10b981;
+    border-color: #5d3f29;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .card-call-no {
+    font-size: 10px;
+    font-family: monospace;
+    color: #a89482;
+    margin-bottom: 2px;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #f7ead5;
+  }
+
+  .card-author {
+    font-size: 11px;
+    color: #8f7c6e;
+    margin-top: 2px;
+  }
+
+  /* Right: Research Folio Reading Desk */
+  .reading-folio {
+    background: var(--paper-folio);
+    border: 1px solid #d5c7b3;
+    border-radius: 8px;
+    padding: 24px 26px;
+    color: var(--ink-charcoal);
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.6),
+      inset 0 0 35px rgba(160, 130, 85, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 410px;
+    position: relative;
+    transition: filter 0.3s ease;
+  }
+
+  .lamp-off .reading-folio {
+    filter: brightness(0.72) contrast(1.1);
+  }
+
+  /* Bookmark Ribbon */
+  .ribbon-marker {
+    position: absolute;
+    top: -6px;
+    right: 28px;
+    width: 20px;
+    height: 48px;
+    background: #8b1812;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+
+  .folio-head-meta {
+    border-bottom: 1px solid rgba(109, 95, 83, 0.25);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .folio-archive-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b5324;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .folio-main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #211913;
+    margin: 3px 0 2px;
+  }
+
+  .folio-author-line {
+    font-size: 12px;
+    color: var(--ink-faded);
+    font-style: italic;
+  }
+
+  /* Excerpt Text with Drop Cap */
+  .folio-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: #2b211a;
+  }
+
+  .drop-cap {
+    float: left;
+    font-size: 42px;
+    line-height: 0.8;
+    padding-right: 8px;
+    padding-top: 4px;
+    color: #8b1812;
+    font-weight: 700;
+  }
+
+  /* Locator Drawer Pill & Action */
+  .location-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ebe0cb;
+    border: 1px solid #d4c2a4;
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-top: 18px;
+    font-size: 11.5px;
+  }
+
+  .shelf-coords {
+    color: #5a483a;
+    font-weight: 600;
+  }
+
+  .folio-btn {
+    background: #332014;
+    border: 1px solid var(--brass-trim);
+    color: #f7ead5;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .folio-btn:hover {
+    background: #4a3020;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<div class="window-rain"></div>
+
+<div class="library-desk">
+  <!-- Top Bar -->
+  <div class="desk-top-bar">
+    <div class="archive-brand">
+      <div class="crest-box">📖</div>
+      <div class="archive-titles">
+        <h1>The Midnight Library & Archives</h1>
+        <p>Rare Folios, Illuminated Manuscripts & Classical Philosophy</p>
+      </div>
+    </div>
+
+    <!-- Banker's Lamp Switch -->
+    <div class="lamp-fixture">
+      <div class="banker-glass" id="bankerGlass"></div>
+      <span style="font-size: 11.5px; color: #ccbaa8;">Banker's Lamp</span>
+      <button class="pull-chain-btn" id="pullChainBtn">Pull Chain</button>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="desk-grid">
+    <!-- Left: Catalog Drawer -->
+    <div class="catalog-pane">
+      <div>
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search author, call number, or folio...">
+        </div>
+
+        <div class="drawer-heading">Catalog Drawer • Special Collections</div>
+
+        <div class="manuscript-list">
+          <div class="catalog-card is-active" data-call="MS-LAT-1473" data-title="De Rerum Natura (On the Nature of Things)" data-author="Titus Lucretius Carus (Edited by Ferrandus, Brescia 1473)" data-loc="Floor 3 • Vault Alpha • Cabinet 14 • Shelf B" data-cap="N" data-text="othing can be created out of nothing, nor can things once begotten be resolved back into void. Atoms drift through the boundless celestial void in perpetual dance, colliding and swerving in unseen harmony.">
+            <div class="card-call-no">MS-LAT-1473 • INCUNABULA</div>
+            <div class="card-title">De Rerum Natura</div>
+            <div class="card-author">Titus Lucretius Carus (1473)</div>
+          </div>
+
+          <div class="catalog-card" data-call="MS-GRK-0842" data-title="Timaeus & Critias Fragment" data-author="Plato (Byzantine Parchment Codex, 11th Century)" data-loc="Floor 4 • Locked Rare Annex • Case 03" data-cap="W" data-text="herefore we must declare that this universe indeed came to be through the providence of God, a living being with soul and reason, sculpted from eternal geometric archetypes.">
+            <div class="card-call-no">MS-GRK-0842 • PARCHMENT</div>
+            <div class="card-title">Timaeus & Critias Fragment</div>
+            <div class="card-author">Plato (Codex Parisinus 11th c.)</div>
+          </div>
+
+          <div class="catalog-card" data-call="MS-AST-1610" data-title="Sidereus Nuncius (Starry Messenger)" data-author="Galileo Galilei (Venice: Baglioni, 1610)" data-loc="Floor 2 • West Gallery • Press 22" data-cap="G" data-text="reat indeed are the matters which in this brief treatise I propose for the inspection and contemplation of all who search after truth: the rugged face of the Moon, and the four wandering stars revolving around Jupiter.">
+            <div class="card-call-no">MS-AST-1610 • FIRST EDITION</div>
+            <div class="card-title">Sidereus Nuncius</div>
+            <div class="card-author">Galileo Galilei (1610)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: #8e7b6d; text-align: center; border-top: 1px solid #331e11; padding-top: 8px;">
+        Archivist on Duty: Dr. M. Sterling • Silence Requested
+      </div>
+    </div>
+
+    <!-- Right: Reading Folio Desk -->
+    <div class="reading-folio" id="readingFolio">
+      <div class="ribbon-marker"></div>
+
+      <div>
+        <div class="folio-head-meta">
+          <div class="folio-archive-tag" id="folioCall">MS-LAT-1473 • INCUNABULA</div>
+          <div class="folio-main-title" id="folioTitle">De Rerum Natura</div>
+          <div class="folio-author-line" id="folioAuthor">Titus Lucretius Carus (Edited by Ferrandus, Brescia 1473)</div>
+        </div>
+
+        <div class="folio-body" id="folioBody">
+          <span class="drop-cap" id="dropCap">N</span>
+          <span id="folioText">othing can be created out of nothing, nor can things once begotten be resolved back into void. Atoms drift through the boundless celestial void in perpetual dance, colliding and swerving in unseen harmony.</span>
+        </div>
+      </div>
+
+      <div class="location-strip">
+        <div class="shelf-coords" id="shelfCoords">📍 Floor 3 • Vault Alpha • Cabinet 14 • Shelf B</div>
+        <button class="folio-btn" id="requestFolioBtn">Borrow for Reading Desk</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Banker's lamp toggle
+  const pullBtn = document.getElementById('pullChainBtn');
+  let lampOn = true;
+
+  pullBtn.addEventListener('click', () => {
+    lampOn = !lampOn;
+    document.body.classList.toggle('lamp-off', !lampOn);
+  });
+
+  // Catalog item click
+  const cards = document.querySelectorAll('.catalog-card');
+  const folioCall = document.getElementById('folioCall');
+  const folioTitle = document.getElementById('folioTitle');
+  const folioAuthor = document.getElementById('folioAuthor');
+  const dropCap = document.getElementById('dropCap');
+  const folioText = document.getElementById('folioText');
+  const shelfCoords = document.getElementById('shelfCoords');
+  const requestBtn = document.getElementById('requestFolioBtn');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('is-active'));
+      card.classList.add('is-active');
+
+      folioCall.textContent = card.dataset.call;
+      folioTitle.textContent = card.dataset.title;
+      folioAuthor.textContent = card.dataset.author;
+      dropCap.textContent = card.dataset.cap;
+      folioText.textContent = card.dataset.text;
+      shelfCoords.textContent = `📍 ${card.dataset.loc}`;
+      requestBtn.textContent = 'Borrow for Reading Desk';
+    });
+  });
+
+  requestBtn.addEventListener('click', () => {
+    requestBtn.textContent = '✓ Delivered to Desk 4';
+    requestBtn.style.background = '#10b981';
+    requestBtn.style.color = '#ffffff';
+  });
+</script>
+</body>
+</html>

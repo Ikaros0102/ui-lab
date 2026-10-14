@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enchanted Forest - Botanical Alchemy Tree</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Enchanted Alchemy Constellation",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "enchanted-forest",
+    "alchemy",
+    "botany",
+    "glow",
+    "turquoise",
+    "bioluminescence",
+    "fireflies",
+    "magic",
+    "rpg",
+    "tree"
+  ],
+  "description": "Bioluminescent botanical alchemy interface set in a deep conifer mist, featuring glowing constellation nodes, floating fireflies, and an interactive potion brewing alembic.",
+  "techniques": [
+    "bioluminescent cyan/emerald glow with filter: drop-shadow",
+    "floating firefly particle animations",
+    "frosted dark-glass panels with backdrop-filter",
+    "SVG constellation rune connectors",
+    "interactive fluid bubbling alembic flask",
+    "tactile potion synergy recipe engine"
+  ],
+  "recipe": "The enchanted forest mood combines deep pine-teal gradients with vibrant cyan/lime bioluminescence. Floating fireflies are driven by lightweight CSS keyframes with randomized sine drift and opacity pulsing. The central alembic potion bottle dynamically updates its fluid gradient and bubbling rate based on selected botanical nodes.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --bg-pine-deep: #050e0c;
+    --bg-pine-dark: #081714;
+    --moss-teal: #0d2c26;
+    --cyan-glow: #38efbd;
+    --cyan-bright: #68ffd8;
+    --turquoise-core: #138875;
+    --gold-spore: #ecd06f;
+    --text-pale: #e4f7f2;
+    --text-dim: #7da59c;
+    --glass-bg: rgba(6, 22, 19, 0.72);
+    --glass-border: rgba(56, 239, 189, 0.22);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(26, 92, 78, 0.35) 0%, transparent 60%),
+      radial-gradient(circle at 15% 75%, rgba(19, 136, 117, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(10, 48, 41, 0.4) 0%, transparent 50%),
+      linear-gradient(180deg, #040908 0%, #081714 50%, #030807 100%);
+    color: var(--text-pale);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Fireflies background layer */
+  .firefly {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #68ffd8;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 6px #38efbd) drop-shadow(0 0 12px #38efbd);
+    pointer-events: none;
+    opacity: 0;
+    animation: drift 8s infinite ease-in-out;
+  }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    30% { opacity: 0.9; }
+    70% { opacity: 0.7; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(1.1); opacity: 0; }
+  }
+
+  /* Forest Slate HUD Container */
+  .forest-sanctum {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(56, 239, 189, 0.08),
+      inset 0 1px 0 rgba(104, 255, 216, 0.2),
+      inset 0 0 30px rgba(7, 36, 30, 0.5);
+    z-index: 10;
+  }
+
+  /* Header */
+  .sanctum-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(56, 239, 189, 0.15);
+    padding-bottom: 16px;
+    margin-bottom: 22px;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sigil-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: radial-gradient(circle at 40% 30%, #154e43 0%, #061915 100%);
+    border: 1px solid rgba(56, 239, 189, 0.4);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 15px rgba(56, 239, 189, 0.25);
+  }
+
+  .sigil-mark svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--cyan-bright);
+    filter: drop-shadow(0 0 6px rgba(56, 239, 189, 0.6));
+  }
+
+  .title-group h1 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #b8f7e6 60%, #46deb5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .title-group p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .resonance-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(13, 44, 38, 0.6);
+    border: 1px solid rgba(56, 239, 189, 0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cyan-bright);
+    box-shadow: 0 0 12px rgba(56, 239, 189, 0.15);
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--cyan-bright);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--cyan-bright);
+    animation: pulseGlow 2s infinite alternate;
+  }
+
+  @keyframes pulseGlow {
+    from { transform: scale(0.9); opacity: 0.6; }
+    to { transform: scale(1.3); opacity: 1; }
+  }
+
+  /* Two-column Layout */
+  .sanctum-body {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 24px;
+  }
+
+  /* Left: Constellation Tree */
+  .tree-canvas-panel {
+    background: rgba(4, 15, 13, 0.65);
+    border: 1px solid rgba(56, 239, 189, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-subhead {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: var(--cyan-bright);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-instruction {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .nodes-field {
+    position: relative;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 16px;
+    align-items: center;
+  }
+
+  /* SVG branch lines overlay */
+  .branch-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .branch-line {
+    stroke: rgba(56, 239, 189, 0.2);
+    stroke-width: 2;
+    stroke-dasharray: 4 4;
+    transition: all 0.4s ease;
+  }
+
+  .branch-line.active {
+    stroke: var(--cyan-bright);
+    stroke-width: 2.5;
+    stroke-dasharray: none;
+    filter: drop-shadow(0 0 6px var(--cyan-bright));
+  }
+
+  /* Plant / Spore Node */
+  .flora-node {
+    position: relative;
+    z-index: 2;
+    background: rgba(10, 36, 30, 0.85);
+    border: 1px solid rgba(56, 239, 189, 0.3);
+    border-radius: 12px;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .flora-node:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: var(--cyan-bright);
+    background: rgba(14, 52, 44, 0.95);
+    box-shadow:
+      0 6px 18px rgba(0,0,0,0.6),
+      0 0 16px rgba(56, 239, 189, 0.3);
+  }
+
+  .flora-node.is-active {
+    border-color: var(--cyan-bright);
+    background: radial-gradient(circle at 50% 30%, rgba(56, 239, 189, 0.25) 0%, rgba(8, 30, 25, 0.9) 100%);
+    box-shadow:
+      0 0 20px rgba(56, 239, 189, 0.45),
+      inset 0 0 12px rgba(56, 239, 189, 0.2);
+  }
+
+  .node-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(4, 18, 15, 0.8);
+    border: 1px solid rgba(56, 239, 189, 0.4);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .flora-node.is-active .node-icon-wrap {
+    border-color: var(--cyan-bright);
+    box-shadow: 0 0 12px var(--cyan-bright);
+    transform: scale(1.1);
+  }
+
+  .node-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-pale);
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .node-element {
+    font-size: 10px;
+    color: var(--cyan-bright);
+    opacity: 0.8;
+  }
+
+  /* Right: The Moonwell Crucible */
+  .crucible-panel {
+    background: rgba(4, 15, 13, 0.65);
+    border: 1px solid rgba(56, 239, 189, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .flask-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 10px;
+    position: relative;
+  }
+
+  /* Glowing Alembic Flask (CSS & SVG) */
+  .alembic-vessel {
+    position: relative;
+    width: 90px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .vessel-neck {
+    position: absolute;
+    top: 0;
+    width: 24px;
+    height: 35px;
+    background: rgba(56, 239, 189, 0.1);
+    border: 1.5px solid rgba(104, 255, 216, 0.4);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    z-index: 2;
+  }
+
+  .vessel-lip {
+    position: absolute;
+    top: -4px;
+    width: 32px;
+    height: 6px;
+    background: rgba(56, 239, 189, 0.3);
+    border: 1.5px solid rgba(104, 255, 216, 0.6);
+    border-radius: 3px;
+    z-index: 3;
+  }
+
+  .vessel-bulb {
+    position: absolute;
+    bottom: 0;
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(104, 255, 216, 0.5);
+    background: rgba(5, 20, 18, 0.7);
+    overflow: hidden;
+    box-shadow:
+      0 0 25px rgba(56, 239, 189, 0.25),
+      inset 0 0 15px rgba(56, 239, 189, 0.15);
+  }
+
+  .liquid-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, #38efbd 0%, #106354 80%, #063129 100%);
+    box-shadow: 0 -4px 15px rgba(56, 239, 189, 0.6);
+    transition: height 0.5s ease, background 0.5s ease;
+  }
+
+  .bubble-particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    bottom: 4px;
+    animation: riseBubble 2s infinite ease-in;
+  }
+
+  @keyframes riseBubble {
+    0% { transform: translateY(0) scale(0.6); opacity: 0.8; }
+    100% { transform: translateY(-45px) scale(1.1); opacity: 0; }
+  }
+
+  /* Concoction Card Details */
+  .concoction-meta {
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  .elixir-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cyan-bright);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .elixir-flavor {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    min-height: 32px;
+  }
+
+  /* Stat Gauges */
+  .crucible-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .stat-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+  }
+
+  .stat-label-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-dim);
+  }
+
+  .stat-track {
+    height: 5px;
+    background: rgba(10, 36, 30, 0.8);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(56, 239, 189, 0.2);
+  }
+
+  .stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #138875 0%, #38efbd 100%);
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(56, 239, 189, 0.5);
+    transition: width 0.4s ease;
+  }
+
+  /* Transmute Button */
+  .transmute-btn {
+    width: 100%;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #187765 0%, #0d4a3e 100%);
+    border: 1px solid var(--cyan-bright);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow:
+      0 4px 15px rgba(0,0,0,0.5),
+      0 0 15px rgba(56, 239, 189, 0.3);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .transmute-btn:hover {
+    background: linear-gradient(180deg, #239982 0%, #125e50 100%);
+    box-shadow:
+      0 6px 20px rgba(0,0,0,0.6),
+      0 0 25px rgba(56, 239, 189, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .transmute-btn:active {
+    transform: translateY(1px);
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient Fireflies -->
+<div class="firefly" style="top: 20%; left: 15%; --dx: 30px; --dy: -60px; animation-delay: 0s;"></div>
+<div class="firefly" style="top: 60%; left: 80%; --dx: -40px; --dy: -80px; animation-delay: 1.5s;"></div>
+<div class="firefly" style="top: 75%; left: 30%; --dx: 50px; --dy: -70px; animation-delay: 3s;"></div>
+<div class="firefly" style="top: 35%; left: 70%; --dx: -30px; --dy: -50px; animation-delay: 4.5s;"></div>
+<div class="firefly" style="top: 85%; left: 55%; --dx: 20px; --dy: -90px; animation-delay: 2s;"></div>
+
+<div class="forest-sanctum">
+  <!-- Header -->
+  <div class="sanctum-header">
+    <div class="header-brand">
+      <div class="sigil-mark">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.5 2 2 6.5 2 12c0 3.58 2.5 6.55 6 7.5V22h8v-2.5c3.5-1 6-3.92 6-7.5 0-5.5-4.5-10-10-10m0 2c4.4 0 8 3.6 8 8 0 3-1.6 5.6-4 7V17h-2v2h-4v-2H8v2c-2.4-1.4-4-4-4-7 0-4.4 3.6-8 8-8m0 3a5 5 0 0 0-5 5c0 2 1.2 3.7 3 4.5V15h4v1.5c1.8-.8 3-2.5 3-4.5a5 5 0 0 0-5-5Z"/>
+        </svg>
+      </div>
+      <div class="title-group">
+        <h1>Enchanted Alchemy Constellation</h1>
+        <p>Apothecary Sanctum • Sylva Primeval Resonance</p>
+      </div>
+    </div>
+
+    <div class="resonance-badge">
+      <div class="pulse-dot"></div>
+      <span id="resonanceStatus">Mana Flux: Stable 98.4%</span>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="sanctum-body">
+    <!-- Left: Botanical Constellation -->
+    <div class="tree-canvas-panel">
+      <div class="panel-subhead">🌿 Botanical Ingredients</div>
+      <div class="panel-instruction">Select flora to link and transmute into the crucible</div>
+
+      <div class="nodes-field">
+        <!-- SVG connecting lines -->
+        <svg class="branch-svg">
+          <line x1="20%" y1="25%" x2="50%" y2="25%" class="branch-line active" id="line1" />
+          <line x1="50%" y1="25%" x2="80%" y2="25%" class="branch-line active" id="line2" />
+          <line x1="20%" y1="25%" x2="20%" y2="75%" class="branch-line" id="line3" />
+          <line x1="50%" y1="25%" x2="50%" y2="75%" class="branch-line active" id="line4" />
+          <line x1="80%" y1="25%" x2="80%" y2="75%" class="branch-line" id="line5" />
+          <line x1="20%" y1="75%" x2="50%" y2="75%" class="branch-line" id="line6" />
+          <line x1="50%" y1="75%" x2="80%" y2="75%" class="branch-line" id="line7" />
+        </svg>
+
+        <div class="flora-node is-active" data-id="moonlit-fern" data-potency="35" data-toxicity="5" data-glow="60" data-name="Moonlit Fern">
+          <div class="node-icon-wrap">🌿</div>
+          <div class="node-name">Moonlit Fern</div>
+          <div class="node-element">Luminescence +35</div>
+        </div>
+
+        <div class="flora-node is-active" data-id="azure-lichen" data-potency="50" data-toxicity="15" data-glow="45" data-name="Azure Lichen">
+          <div class="node-icon-wrap">🍄</div>
+          <div class="node-name">Azure Lichen</div>
+          <div class="node-element">Catalyst +50</div>
+        </div>
+
+        <div class="flora-node" data-id="celestial-dew" data-potency="70" data-toxicity="0" data-glow="90" data-name="Celestial Dew">
+          <div class="node-icon-wrap">💧</div>
+          <div class="node-name">Celestial Dew</div>
+          <div class="node-element">Purifier +70</div>
+        </div>
+
+        <div class="flora-node" data-id="eldertree-bark" data-potency="40" data-toxicity="20" data-glow="15" data-name="Elder Bark">
+          <div class="node-icon-wrap">🪵</div>
+          <div class="node-name">Elder Bark</div>
+          <div class="node-element">Fortitude +40</div>
+        </div>
+
+        <div class="flora-node is-active" data-id="nightshade-spore" data-potency="85" data-toxicity="55" data-glow="30" data-name="Shadow Spore">
+          <div class="node-icon-wrap">✨</div>
+          <div class="node-name">Shadow Spore</div>
+          <div class="node-element">Toxicity +55</div>
+        </div>
+
+        <div class="flora-node" data-id="sunfire-petal" data-potency="65" data-toxicity="10" data-glow="80" data-name="Sunfire Petal">
+          <div class="node-icon-wrap">🌺</div>
+          <div class="node-name">Sunfire Petal</div>
+          <div class="node-element">Warmth +65</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Alembic Crucible -->
+    <div class="crucible-panel">
+      <div>
+        <div class="panel-subhead">⚗️ The Moonwell Alembic</div>
+        <div class="panel-instruction">Active extraction vessel</div>
+
+        <div class="flask-stage">
+          <div class="alembic-vessel">
+            <div class="vessel-lip"></div>
+            <div class="vessel-neck"></div>
+            <div class="vessel-bulb">
+              <div class="liquid-body" id="flaskLiquid">
+                <div class="bubble-particle" style="left: 20%; animation-delay: 0.2s;"></div>
+                <div class="bubble-particle" style="left: 55%; animation-delay: 0.9s;"></div>
+                <div class="bubble-particle" style="left: 75%; animation-delay: 1.4s;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="concoction-meta">
+            <div class="elixir-title" id="elixirTitle">Elixir of Night Sight</div>
+            <div class="elixir-flavor" id="elixirFlavor">Permits mortal eyes to pierce subterranean and abyssal mists without torches.</div>
+          </div>
+        </div>
+
+        <!-- Potency Stats -->
+        <div class="crucible-stats">
+          <div class="stat-row">
+            <div class="stat-label-row">
+              <span>Alchemical Potency</span>
+              <span id="potencyVal">72%</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" id="potencyFill" style="width: 72%;"></div></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label-row">
+              <span>Bioluminescence</span>
+              <span id="glowVal">68%</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" id="glowFill" style="width: 68%; background: linear-gradient(90deg, #38efbd 0%, #68ffd8 100%);"></div></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label-row">
+              <span>Toxicity Risk</span>
+              <span id="toxVal">25%</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" id="toxFill" style="width: 25%; background: linear-gradient(90deg, #d8a735 0%, #ea5c5c 100%);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="transmute-btn" id="transmuteBtn">
+        <span>✨ Transmute Essence</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const nodes = document.querySelectorAll('.flora-node');
+  const potencyFill = document.getElementById('potencyFill');
+  const potencyVal = document.getElementById('potencyVal');
+  const glowFill = document.getElementById('glowFill');
+  const glowVal = document.getElementById('glowVal');
+  const toxFill = document.getElementById('toxFill');
+  const toxVal = document.getElementById('toxVal');
+  const elixirTitle = document.getElementById('elixirTitle');
+  const elixirFlavor = document.getElementById('elixirFlavor');
+  const flaskLiquid = document.getElementById('flaskLiquid');
+  const resonanceStatus = document.getElementById('resonanceStatus');
+
+  function updateAlchemy() {
+    const activeNodes = Array.from(document.querySelectorAll('.flora-node.is-active'));
+    
+    if (activeNodes.length === 0) {
+      potencyFill.style.width = '0%';
+      potencyVal.textContent = '0%';
+      glowFill.style.width = '0%';
+      glowVal.textContent = '0%';
+      toxFill.style.width = '0%';
+      toxVal.textContent = '0%';
+      elixirTitle.textContent = 'Pure Spring Water';
+      elixirFlavor.textContent = 'Alembic holds no magical essence. Select botanical nodes to begin infusion.';
+      flaskLiquid.style.height = '15%';
+      flaskLiquid.style.background = 'rgba(56, 239, 189, 0.2)';
+      return;
+    }
+
+    let totalPotency = 0;
+    let totalGlow = 0;
+    let totalTox = 0;
+
+    activeNodes.forEach(node => {
+      totalPotency += parseInt(node.dataset.potency, 10);
+      totalGlow += parseInt(node.dataset.glow, 10);
+      totalTox += parseInt(node.dataset.toxicity, 10);
+    });
+
+    const avgPotency = Math.min(100, Math.round(totalPotency / activeNodes.length));
+    const avgGlow = Math.min(100, Math.round(totalGlow / activeNodes.length));
+    const avgTox = Math.min(100, Math.round(totalTox / activeNodes.length));
+
+    potencyFill.style.width = `${avgPotency}%`;
+    potencyVal.textContent = `${avgPotency}%`;
+    glowFill.style.width = `${avgGlow}%`;
+    glowVal.textContent = `${avgGlow}%`;
+    toxFill.style.width = `${avgTox}%`;
+    toxVal.textContent = `${avgTox}%`;
+
+    flaskLiquid.style.height = `${Math.min(85, 30 + activeNodes.length * 12)}%`;
+
+    if (avgTox > 40) {
+      elixirTitle.textContent = 'Venom of the Gloomwood';
+      elixirFlavor.textContent = 'Highly volatile essence. Coats weapons with corrosive neuro-toxin.';
+      flaskLiquid.style.background = 'linear-gradient(180deg, #c78d1f 0%, #7d1c1c 80%, #3e0b0b 100%)';
+    } else if (avgGlow > 60) {
+      elixirTitle.textContent = 'Phial of Starlight Phantasm';
+      elixirFlavor.textContent = 'Bioluminescent draught capable of dispelling shadow hexes and warding forest wraiths.';
+      flaskLiquid.style.background = 'linear-gradient(180deg, #68ffd8 0%, #159c7f 70%, #08483b 100%)';
+    } else {
+      elixirTitle.textContent = 'Draught of Verdant Fortitude';
+      elixirFlavor.textContent = 'Infused with ancient bark and moss to mend traveler fatigue and withstand frost.';
+      flaskLiquid.style.background = 'linear-gradient(180deg, #38efbd 0%, #106354 80%, #063129 100%)';
+    }
+  }
+
+  nodes.forEach(node => {
+    node.addEventListener('click', () => {
+      node.classList.toggle('is-active');
+      updateAlchemy();
+    });
+  });
+
+  document.getElementById('transmuteBtn').addEventListener('click', () => {
+    resonanceStatus.textContent = 'Transmuting Essence...';
+    flaskLiquid.style.filter = 'brightness(1.8) drop-shadow(0 0 20px #68ffd8)';
+    setTimeout(() => {
+      flaskLiquid.style.filter = 'none';
+      resonanceStatus.textContent = 'Transmutation Complete!';
+      setTimeout(() => {
+        resonanceStatus.textContent = 'Mana Flux: Stable 99.1%';
+      }, 2000);
+    }, 600);
+  });
+</script>
+</body>
+</html>

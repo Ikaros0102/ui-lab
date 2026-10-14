@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satellite Fleet Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Satellite Fleet Control",
+  "category": "widgets",
+  "themes": ["dark", "glass"],
+  "tags": ["space", "satellite", "mission-control", "globe", "dashboard", "glass", "telemetry", "alert"],
+  "description": "Glossy mission control dashboard: satellite list with live stats, a dotted globe with orbiting rings and markers, signal bars, payload diagnostics and an anomaly alert card.",
+  "techniques": ["dotted sphere from radial-gradient dot pattern", "tilted orbit rings with rotateX", "backdrop-filter glass panels", "canvas-free signal bar chart", "selection state shared across list, markers and diagnostics"],
+  "recipe": "The globe is a circle filled with a tiny repeating radial-gradient dot pattern, masked by a radial gradient so the dots fade toward the edge like a lit sphere. Orbit rings are ellipses made with rotateX on bordered circles, and satellites ride a wrapper that rotates around the globe centre. Clicking a satellite anywhere updates one selected id; the list, the marker highlight and the diagnostics all read from it, so the three views never drift apart.",
+  "preview": { "mode": "page", "width": 1000, "height": 620 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #070a0c; --panel: rgba(255,255,255,.04); --line: rgba(255,255,255,.1);
+    --text: #e8eceb; --muted: #7d8884; --ok: #6fdc9a; --warn: #f0a63a; --bad: #e5484d; --live: #e5484d;
+  }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; background: #000; color: var(--text);
+    font: 11px/1.4 "Space Grotesk", system-ui, sans-serif; overflow: hidden;
+  }
+  .app {
+    position: relative; width: 960px; height: 580px; display: grid; grid-template-columns: 220px 1fr 220px; gap: 12px; padding: 14px;
+    background: radial-gradient(70% 70% at 50% 0%, #1a2420, var(--bg) 70%); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+  }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+    backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  h2 { margin: 0 0 8px; font-size: 15px; font-weight: 500; }
+  h3 { margin: 0 0 8px; font-size: 11px; font-weight: 500; color: var(--muted); }
+
+  /* ---------- left ---------- */
+  .left { display: flex; flex-direction: column; gap: 10px; }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; background: rgba(0,0,0,.35); border-radius: 8px; }
+  .tabs button { all: unset; text-align: center; padding: 5px 0; border-radius: 6px; cursor: pointer; color: var(--muted); font-size: 10px; }
+  .tabs button[aria-pressed="true"] { background: rgba(255,255,255,.12); color: #fff; }
+  .sats { display: grid; gap: 8px; overflow: hidden; }
+  .sat { all: unset; cursor: pointer; display: grid; grid-template-columns: 42px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.03); }
+  .sat[aria-pressed="true"] { border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.08); }
+  .thumb { grid-row: span 3; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #3a4642, #0c1210); position: relative; }
+  .thumb::after { content: ""; position: absolute; inset: 14px 6px; background: repeating-linear-gradient(90deg, #aeb7b2 0 2px, #505a55 2px 4px); transform: skewY(-10deg); }
+  .sat .row { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+  .sat .name { display: flex; justify-content: space-between; font-size: 11px; color: var(--text); }
+  .pill { font-size: 8px; padding: 1px 6px; border-radius: 99px; border: 1px solid var(--ok); color: var(--ok); }
+  .pill.warn { border-color: var(--warn); color: var(--warn); }
+
+  /* ---------- center ---------- */
+  .center { position: relative; display: grid; place-items: center; overflow: hidden; }
+  .globe-wrap { position: relative; width: 340px; height: 340px; margin-top: -20px; }
+  .globe {
+    position: absolute; inset: 0; border-radius: 50%;
+    background:
+      radial-gradient(circle at 36% 30%, rgba(255,255,255,.14), transparent 45%),
+      radial-gradient(circle, rgba(220,255,240,.55) 1px, transparent 1.4px) 0 0 / 7px 7px,
+      #0b100e;
+    -webkit-mask: radial-gradient(circle, #000 55%, rgba(0,0,0,.35) 100%); mask: radial-gradient(circle, #000 55%, rgba(0,0,0,.35) 100%);
+    box-shadow: inset -30px -20px 60px rgba(0,0,0,.85);
+  }
+  .halo { position: absolute; inset: -6px; border-radius: 50%; box-shadow: 0 0 60px rgba(160,255,215,.18), inset 0 0 0 1px rgba(200,255,230,.25); pointer-events: none; }
+  .ring { position: absolute; left: -40px; right: -40px; top: 50%; height: 260px; margin-top: -130px; border-radius: 50%; border: 1px solid rgba(255,255,255,.28); transform: rotateX(72deg) rotateZ(var(--r, 0deg)); }
+  .ring:nth-of-type(2) { --r: 28deg; border-color: rgba(255,255,255,.18); }
+  .ring:nth-of-type(3) { --r: -22deg; border-color: rgba(255,255,255,.14); }
+  .marker {
+    position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 2px solid #fff;
+    background: #1b2420; cursor: pointer; display: grid; place-items: center; font-size: 8px; transition: transform .2s, box-shadow .2s;
+  }
+  .marker::after { content: attr(data-label); position: absolute; left: 26px; white-space: nowrap; font-size: 9px; color: #dfe; }
+  .marker[aria-pressed="true"] { transform: scale(1.35); box-shadow: 0 0 0 4px rgba(255,255,255,.18), 0 0 18px #fff; }
+  .marker.warn { border-color: var(--warn); }
+  .marker.bad  { border-color: var(--bad); }
+  .modes { position: absolute; bottom: 8px; display: flex; gap: 6px; align-items: center; }
+  .modes button { all: unset; cursor: pointer; padding: 6px 16px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--muted); }
+  .modes button[aria-pressed="true"] { color: #fff; background: rgba(255,255,255,.16); }
+  .live { color: var(--live) !important; border-color: rgba(229,72,77,.5) !important; }
+  .utc { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- right ---------- */
+  .right { display: flex; flex-direction: column; gap: 10px; }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 54px; }
+  .bars i { flex: 1; background: linear-gradient(#eaf5ef, #5b6a63); border-radius: 2px; height: calc(var(--h) * 1%); transition: height .5s; }
+  .signal-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .signal-top b { font-size: 17px; font-weight: 500; }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; font-size: 10px; color: var(--muted); }
+  .kv dd { margin: 0; color: var(--text); }
+  .alert { border-color: rgba(240,166,58,.5); background: linear-gradient(180deg, rgba(240,166,58,.14), rgba(255,255,255,.03)); }
+  .alert h3 { color: var(--warn); display: flex; gap: 6px; align-items: center; font-size: 12px; }
+  .meter { margin: 8px 0; }
+  .meter .t { display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); }
+  .meter .b { height: 3px; margin-top: 3px; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
+  .meter .b i { display: block; height: 100%; width: var(--v); background: var(--warn); }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .actions button { all: unset; cursor: pointer; text-align: center; padding: 6px 0; border-radius: 8px; border: 1px solid var(--line); }
+  .actions .primary { background: var(--warn); color: #20150a; border-color: var(--warn); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel left">
+    <h2>Mission mode</h2>
+    <div class="tabs" id="mode"><button aria-pressed="false">Tracking</button><button aria-pressed="false">Inspection</button><button aria-pressed="true">Relay</button></div>
+    <div class="sats" id="sats"></div>
+  </aside>
+
+  <section class="center">
+    <div class="globe-wrap">
+      <div class="globe"></div><div class="halo"></div>
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div id="markers"></div>
+    </div>
+    <div class="modes" id="view">
+      <button aria-pressed="false">2D</button><button aria-pressed="true">3D</button><button aria-pressed="false">Ground</button>
+      <button class="live">● Live</button><span class="utc" id="utc">20:58:31 UTC</span>
+    </div>
+  </section>
+
+  <aside class="right">
+    <div class="panel">
+      <div class="signal-top"><h3>Signal strength</h3><b id="sig">−62 dBm</b></div>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="panel">
+      <h3>Payload diagnostics</h3>
+      <dl class="kv"><dt>Payload temp</dt><dd id="pTemp">49.4°C</dd><dt>TX power</dt><dd id="pTx">24.8 dBm</dd><dt>Selected</dt><dd id="pSel">Aurora-1</dd></dl>
+    </div>
+    <div class="panel alert">
+      <h3>⚠ Anomaly detected</h3>
+      <div class="meter" style="--v:62%"><div class="t"><span>Orbit deviation</span><span>12%</span></div><div class="b"><i></i></div></div>
+      <div class="meter" style="--v:88%"><div class="t"><span>Thermal threshold</span><span>88%</span></div><div class="b"><i></i></div></div>
+      <div class="meter" style="--v:46%"><div class="t"><span>Power budget</span><span>46%</span></div><div class="b"><i></i></div></div>
+      <div class="actions"><button id="dismiss">Dismiss</button><button class="primary" id="respond">Respond</button></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const SATS = [
+    { id: "Aurora-1", status: "Normal", alt: "5,520 km", sig: 86, bat: 91, x: 18, y: 26, temp: "49.4°C", tx: "24.8 dBm" },
+    { id: "Aurora-2", status: "Normal", alt: "5,532 km", sig: 74, bat: 83, x: 34, y: 54, temp: "47.1°C", tx: "23.9 dBm" },
+    { id: "Helios-A", status: "Warning", alt: "6,248 km", sig: 52, bat: 62, x: 52, y: 78, temp: "61.8°C", tx: "21.2 dBm", cls: "warn" },
+    { id: "Meridian-1", status: "Normal", alt: "6,090 km", sig: 80, bat: 77, x: 74, y: 30, temp: "48.8°C", tx: "24.1 dBm" },
+    { id: "Zenith-X", status: "Normal", alt: "7,410 km", sig: 68, bat: 88, x: 80, y: 60, temp: "50.2°C", tx: "23.0 dBm" }
+  ];
+  const $ = (id) => document.getElementById(id);
+  let sel = 0;
+
+  $("sats").innerHTML = SATS.map((s, i) => `
+    <button class="sat" data-i="${i}">
+      <div class="thumb"></div>
+      <div class="name"><span>${s.id}</span><span class="pill ${s.cls || ""}">${s.status}</span></div>
+      <div class="row"><span>Alt</span><span>${s.alt}</span></div>
+      <div class="row"><span>Signal</span><span>${s.sig}%</span></div>
+    </button>`).join("");
+  $("markers").innerHTML = SATS.map((s, i) => `<button class="marker ${s.cls || ""}" data-i="${i}" data-label="${s.id}" style="left:${s.x}%;top:${s.y}%"></button>`).join("");
+  $("bars").innerHTML = Array.from({ length: 28 }, () => "<i></i>").join("");
+
+  function paint() {
+    const s = SATS[sel];
+    document.querySelectorAll(".sat, .marker").forEach((el) => el.setAttribute("aria-pressed", +el.dataset.i === sel));
+    $("sig").textContent = "−" + (100 - s.sig) + " dBm";
+    $("pTemp").textContent = s.temp; $("pTx").textContent = s.tx; $("pSel").textContent = s.id;
+    document.querySelectorAll(".bars i").forEach((b, k) => b.style.setProperty("--h", Math.max(14, Math.min(100, s.sig - 20 + ((k * 37) % 40)))));
+  }
+  const pick = (e) => { const b = e.target.closest("[data-i]"); if (b) { sel = +b.dataset.i; paint(); } };
+  $("sats").addEventListener("click", pick); $("markers").addEventListener("click", pick);
+
+  const group = (id) => $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b || b.classList.contains("live")) return;
+    $(id).querySelectorAll("button:not(.live)").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  });
+  group("mode"); group("view");
+  $("dismiss").onclick = $("respond").onclick = (e) => { e.target.closest(".alert").style.opacity = ".45"; };
+
+  const tick = () => { const d = new Date(), p = (n) => String(n).padStart(2, "0"); $("utc").textContent = `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`; };
+  tick(); setInterval(tick, 1000); paint();
+</script>
+</body>
+</html>

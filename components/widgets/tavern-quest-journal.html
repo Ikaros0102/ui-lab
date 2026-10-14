@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Old Tavern - Quest Ledger & Provisions</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=MedievalSharp&family=Metamorphous&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Old Tavern Quest Ledger",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "tavern",
+    "rpg",
+    "fantasy",
+    "wood",
+    "brass",
+    "parchment",
+    "wax-seal",
+    "inventory",
+    "quests",
+    "medieval"
+  ],
+  "description": "Atmospheric RPG tavern desk with warm candlelight flicker, engraved brass plaques, wax seal stamps, an interactive quest bounty board, and an inventory provisions satchel.",
+  "techniques": [
+    "layered wood grain linear-gradients",
+    "skeuomorphic beveled brass plaques",
+    "crimson wax seal with drop shadow",
+    "dynamic candlelight flicker keyframes",
+    "carved wood sunken inventory slots",
+    "interactive gold coin pouch counter"
+  ],
+  "recipe": "The tavern interior ambiance is created through a flickering warm amber radial gradient centered like a tabletop candle. Wooden surfaces combine fine multi-stop linear gradients with subtle SVG turbulence noise, while metallic brass plaques and buttons use sharp multi-stop gradients with embossed box-shadows and inset bevels.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --wood-dark: #1b110b;
+    --wood-mid: #2e1c11;
+    --wood-light: #422919;
+    --wood-grain: #140d08;
+    --brass-dark: #6e4e1a;
+    --brass-mid: #b58934;
+    --brass-light: #f7d779;
+    --brass-shine: #fff2b2;
+    --parchment-base: #e9d8b4;
+    --parchment-dark: #caba94;
+    --ink-dark: #2a1e17;
+    --ink-faded: #5a4638;
+    --candle-glow: rgba(255, 170, 50, 0.22);
+    --crimson-seal: #8b1812;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 65% 55% at 50% 25%, rgba(255, 185, 80, 0.28) 0%, rgba(255, 140, 30, 0.12) 40%, rgba(10, 6, 4, 0.95) 100%),
+      radial-gradient(circle at 20% 80%, rgba(180, 90, 20, 0.15) 0%, transparent 50%),
+      repeating-linear-gradient(90deg, #180f0a 0px, #20140d 30px, #1a100a 60px, #120b07 100px);
+    color: #f1e3c8;
+    font-family: 'MedievalSharp', Georgia, serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* Candle Flicker Ambience */
+  .tavern-room {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    background:
+      linear-gradient(180deg, rgba(30, 18, 12, 0.92) 0%, rgba(18, 10, 6, 0.96) 100%);
+    border-radius: 12px;
+    border: 3px solid #4a301d;
+    box-shadow:
+      0 0 50px rgba(0, 0, 0, 0.9),
+      0 0 80px var(--candle-glow),
+      inset 0 0 40px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(247, 215, 121, 0.15);
+    padding: 20px 24px 24px;
+    animation: candleFlicker 6s infinite alternate ease-in-out;
+  }
+
+  @keyframes candleFlicker {
+    0% {
+      box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.9),
+        0 0 70px rgba(255, 170, 50, 0.18),
+        inset 0 0 40px rgba(0, 0, 0, 0.8);
+    }
+    25% {
+      box-shadow:
+        0 0 55px rgba(0, 0, 0, 0.92),
+        0 0 95px rgba(255, 180, 60, 0.28),
+        inset 0 0 40px rgba(0, 0, 0, 0.78);
+    }
+    50% {
+      box-shadow:
+        0 0 48px rgba(0, 0, 0, 0.88),
+        0 0 75px rgba(255, 160, 45, 0.20),
+        inset 0 0 42px rgba(0, 0, 0, 0.82);
+    }
+    75% {
+      box-shadow:
+        0 0 52px rgba(0, 0, 0, 0.9),
+        0 0 100px rgba(255, 190, 70, 0.30),
+        inset 0 0 38px rgba(0, 0, 0, 0.75);
+    }
+    100% {
+      box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.9),
+        0 0 80px rgba(255, 170, 50, 0.22),
+        inset 0 0 40px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  /* Tavern Header Banner */
+  .tavern-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #3d2617;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .signboard-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sign-icon {
+    width: 44px;
+    height: 44px;
+    background: radial-gradient(circle, #523720 0%, #20130b 100%);
+    border: 2px solid var(--brass-mid);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 1px 1px var(--brass-light);
+  }
+
+  .sign-icon svg {
+    width: 26px;
+    height: 26px;
+    fill: var(--brass-light);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.8));
+  }
+
+  .tavern-name {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff3cf 0%, #d8a84b 60%, #875c1c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  }
+
+  .tavern-sub {
+    font-size: 12px;
+    color: #a88a6d;
+    display: flex;
+    gap: 12px;
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .tavern-sub span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Brass Money Pouch & Tavern Stats */
+  .pouch-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brass-badge {
+    background: linear-gradient(180deg, #382415 0%, #20130b 100%);
+    border: 1px solid var(--brass-mid);
+    border-radius: 6px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 3px 6px rgba(0,0,0,0.5);
+  }
+
+  .coin-icon {
+    font-size: 16px;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.6));
+  }
+
+  .coin-amount {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--brass-light);
+    letter-spacing: 1px;
+  }
+
+  /* Layout Columns */
+  .tavern-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 20px;
+  }
+
+  /* Parchment Quest Bulletin */
+  .parchment-board {
+    background:
+      radial-gradient(circle at 50% 40%, rgba(255, 230, 180, 0.15) 0%, transparent 70%),
+      linear-gradient(175deg, #e7d5ad 0%, #d8bf8e 65%, #c5aa78 100%);
+    border-radius: 6px;
+    padding: 18px 20px;
+    color: var(--ink-dark);
+    position: relative;
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.7),
+      inset 0 0 30px rgba(120, 80, 30, 0.35),
+      inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    border: 1px solid #9d7d4c;
+  }
+
+  /* Ornate corner pins */
+  .parchment-board::before,
+  .parchment-board::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle at 35% 35%, #ffd276, #6b4e1d);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .parchment-board::before { top: 8px; left: 8px; }
+  .parchment-board::after { top: 8px; right: 8px; }
+
+  .board-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px dashed rgba(80, 50, 25, 0.35);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .board-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #432411;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .quest-counter {
+    font-size: 11px;
+    font-family: 'MedievalSharp', serif;
+    background: rgba(70, 40, 20, 0.12);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #55331a;
+  }
+
+  /* Quest Cards */
+  .quest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .quest-item {
+    background: rgba(255, 250, 240, 0.55);
+    border: 1px solid rgba(130, 95, 55, 0.4);
+    border-left: 4px solid #7c4c23;
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .quest-item:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateX(4px);
+    box-shadow: 0 4px 10px rgba(70, 40, 15, 0.2);
+  }
+
+  .quest-item.is-selected {
+    background: rgba(255, 255, 255, 0.95);
+    border-left-color: #a81c14;
+    box-shadow: 0 4px 12px rgba(120, 30, 20, 0.25);
+  }
+
+  .quest-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  .quest-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #3b1e0f;
+  }
+
+  .quest-reward {
+    font-size: 12px;
+    font-weight: bold;
+    color: #7b4a15;
+    background: #f7e6c0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #d0af6b;
+  }
+
+  .quest-desc {
+    font-size: 11.5px;
+    color: #4e392d;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .quest-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #745742;
+  }
+
+  /* Wax Seal Badge */
+  .wax-seal {
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle at 35% 35%, #b52b21 0%, #75140f 70%, #4a0c09 100%);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #ffd8d0;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow:
+      0 3px 6px rgba(0, 0, 0, 0.4),
+      inset 0 1px 2px rgba(255, 200, 200, 0.4),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.6);
+    border: 1px solid #57100b;
+  }
+
+  /* Right Side: Tavern Satchel & Provisions */
+  .satchel-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .oak-box {
+    background: linear-gradient(180deg, #2a1a11 0%, #1e120b 100%);
+    border: 2px solid #4a301e;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,0.6),
+      0 4px 10px rgba(0,0,0,0.5);
+  }
+
+  .oak-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #3d2617;
+  }
+
+  .oak-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--brass-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Sunken Inventory Grid */
+  .inventory-slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .slot {
+    aspect-ratio: 1;
+    background: #110905;
+    border: 2px solid #372314;
+    border-radius: 6px;
+    box-shadow:
+      inset 0 3px 6px rgba(0,0,0,0.9),
+      0 1px 0 rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+
+  .slot:hover {
+    border-color: var(--brass-mid);
+    background: #1c100a;
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 3px rgba(0,0,0,0.7),
+      0 4px 8px rgba(0,0,0,0.6),
+      0 0 12px rgba(247, 215, 121, 0.2);
+  }
+
+  .slot.is-active {
+    border-color: var(--brass-light);
+    box-shadow: 0 0 12px rgba(247, 215, 121, 0.35);
+  }
+
+  .slot-icon {
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  }
+
+  .slot-qty {
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brass-light);
+    text-shadow: 0 1px 2px #000;
+  }
+
+  /* Selected Item Info Box */
+  .item-inspect {
+    background: #170d07;
+    border: 1px solid #3f2717;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #ccb69a;
+  }
+
+  .item-inspect-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brass-light);
+    margin-bottom: 2px;
+  }
+
+  .item-inspect-desc {
+    font-size: 11px;
+    color: #9f8369;
+    line-height: 1.4;
+  }
+
+  /* Brass Action Bar */
+  .tavern-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .brass-btn {
+    flex: 1;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 11px 12px;
+    background: linear-gradient(180deg, #d8aa4e 0%, #9e7228 50%, #684814 100%);
+    border: 1px solid #f6d882;
+    border-bottom: 2px solid #3c2707;
+    border-radius: 6px;
+    color: #211206;
+    text-shadow: 0 1px 0 rgba(255, 240, 180, 0.6);
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.6),
+      inset 0 1px 1px rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .brass-btn:hover {
+    background: linear-gradient(180deg, #ebd076 0%, #b38531 50%, #7e5719 100%);
+    transform: translateY(-1px);
+    box-shadow:
+      0 6px 12px rgba(0,0,0,0.7),
+      0 0 10px rgba(247, 215, 121, 0.3);
+  }
+
+  .brass-btn:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
+  }
+
+  .brass-btn.secondary {
+    background: linear-gradient(180deg, #382417 0%, #22140b 100%);
+    border: 1px solid var(--brass-mid);
+    color: var(--brass-light);
+    text-shadow: 0 1px 2px #000;
+  }
+
+  .brass-btn.secondary:hover {
+    background: linear-gradient(180deg, #4d3320 0%, #2f1c10 100%);
+    color: #fff2b2;
+  }
+
+  /* Notification Toast */
+  .tavern-toast {
+    font-size: 11.5px;
+    color: #dfcaa7;
+    text-align: center;
+    padding: 6px;
+    margin-top: 10px;
+    border-top: 1px solid #331e11;
+    font-style: italic;
+    opacity: 0.9;
+  }
+</style>
+</head>
+<body>
+
+<div class="tavern-room">
+  <!-- Tavern Header -->
+  <div class="tavern-header">
+    <div class="signboard-title">
+      <div class="sign-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 3h14v3c0 3.86-3.14 7-7 7s-7-3.14-7-7V3m14 1v2c0 2.76-2.24 5-5 5s-5-2.24-5-5V4h10M4 18v3h16v-3c0-2-2-3-4-3H8c-2 0-4 1-4 3m8-5c-2.21 0-4 1.79-4 4h8c0-2.21-1.79-4-4-4Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="tavern-name">The Roaring Griffin</div>
+        <div class="tavern-sub">
+          <span>🕯️ Hearth Warm</span>
+          <span>🍺 Oak Kegs Tapped</span>
+          <span>📜 Innkeeper Grimwald</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pouch-status">
+      <div class="brass-badge">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="coinCounter">245 GP</span>
+      </div>
+      <div class="wax-seal" title="Royal Guild Licensed">⚔️</div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="tavern-grid">
+    <!-- Left: Parchment Bounty Board -->
+    <div class="parchment-board">
+      <div class="board-title-row">
+        <div class="board-heading">
+          <span>📜 Bounty & Quest Ledger</span>
+        </div>
+        <span class="quest-counter">3 Contracts Available</span>
+      </div>
+
+      <div class="quest-list">
+        <div class="quest-item is-selected" data-name="Barrow Crypt Investigation" data-reward="120" data-desc="Undead stirs beneath the old windmill graveyard. Eliminate the ghoul pack and retrieve the silver locket.">
+          <div class="quest-head">
+            <span class="quest-name">Barrow Crypt Investigation</span>
+            <span class="quest-reward">+120 GP</span>
+          </div>
+          <div class="quest-desc">Undead stirs beneath the old windmill graveyard. Eliminate the ghoul pack and retrieve the silver locket.</div>
+          <div class="quest-footer">
+            <span>Client: Mayor Thaddeus</span>
+            <span>Risk: ★★★☆☆</span>
+          </div>
+        </div>
+
+        <div class="quest-item" data-name="Timber Wolf Pack Bounty" data-reward="65" data-desc="Vicious wolves harass the merchant caravans on the North Forest pass. Bring back 4 thick pelts.">
+          <div class="quest-head">
+            <span class="quest-name">Timber Wolf Pack Bounty</span>
+            <span class="quest-reward">+65 GP</span>
+          </div>
+          <div class="quest-desc">Vicious wolves harass merchant caravans on the North Forest pass. Bring back 4 thick pelts.</div>
+          <div class="quest-footer">
+            <span>Client: Master Wainwright</span>
+            <span>Risk: ★★☆☆☆</span>
+          </div>
+        </div>
+
+        <div class="quest-item" data-name="Mountain Herb Foraging" data-reward="40" data-desc="Apothecary needs five fresh stems of Bloodroot moss before the full moon frost sets in.">
+          <div class="quest-head">
+            <span class="quest-name">Mountain Herb Foraging</span>
+            <span class="quest-reward">+40 GP</span>
+          </div>
+          <div class="quest-desc">Apothecary needs five fresh stems of Bloodroot moss before the full moon frost sets in.</div>
+          <div class="quest-footer">
+            <span>Client: Alchemist Karen</span>
+            <span>Risk: ★☆☆☆☆</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Traveler's Provisions & Satchel -->
+    <div class="satchel-panel">
+      <div class="oak-box">
+        <div class="oak-title-row">
+          <div class="oak-title">
+            <span>🎒 Provisions Satchel</span>
+          </div>
+          <span style="font-size: 11px; color: #a58463;">Slots: 8 / 12</span>
+        </div>
+
+        <div class="inventory-slots">
+          <div class="slot is-active" data-item="Dwarven Dark Mead" data-info="Hearty fermented beverage. Restores 35 Stamina and warms the spirit against mountain chills.">
+            <span class="slot-icon">🍺</span>
+            <span class="slot-qty">×3</span>
+          </div>
+          <div class="slot" data-item="Elixir of Vitality" data-info="Glowing crimson draught distilled by mountain herbalists. Restores 60 Health instantly.">
+            <span class="slot-icon">🧪</span>
+            <span class="slot-qty">×2</span>
+          </div>
+          <div class="slot" data-item="Smoked Boar Rations" data-info="Salted cured meat wrapped in dried dock leaves. Lasts weeks on the King's Highway.">
+            <span class="slot-icon">🍖</span>
+            <span class="slot-qty">×5</span>
+          </div>
+          <div class="slot" data-item="Wrought Iron Dagger" data-info="Sturdy balanced knife with leather-wrapped hilt. Standard blade for close encounters.">
+            <span class="slot-icon">🗡️</span>
+            <span class="slot-qty">1</span>
+          </div>
+          <div class="slot" data-item="Sunstone Hearth Amulet" data-info="Warm polished talisman that hums faintly when approaching the inn's hearthfire.">
+            <span class="slot-icon">🔮</span>
+            <span class="slot-qty">1</span>
+          </div>
+          <div class="slot" data-item="Brass Compass" data-info="Delicate magnetic needle mounted in beveled dwarven brass. Points true north.">
+            <span class="slot-icon">🧭</span>
+            <span class="slot-qty">1</span>
+          </div>
+          <div class="slot" data-item="Wax Torch" data-info="Tallow-soaked branch. Provides 2 hours of illumination in subterranean ruins.">
+            <span class="slot-icon">🕯️</span>
+            <span class="slot-qty">×4</span>
+          </div>
+          <div class="slot" data-item="Ancient Key" data-info="Rusted iron key engraved with a crow symbol, found in the marsh ruins.">
+            <span class="slot-icon">🗝️</span>
+            <span class="slot-qty">1</span>
+          </div>
+        </div>
+
+        <!-- Inspected Item Details -->
+        <div class="item-inspect" id="itemInspect">
+          <div class="item-inspect-title" id="inspectTitle">Dwarven Dark Mead</div>
+          <div class="item-inspect-desc" id="inspectDesc">Hearty fermented beverage. Restores 35 Stamina and warms the spirit against mountain chills.</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tavern-actions">
+        <button class="brass-btn" id="acceptBtn">
+          <span>Accept Contract</span>
+        </button>
+        <button class="brass-btn secondary" id="buyAleBtn">
+          <span>Order Pint (2 GP)</span>
+        </button>
+      </div>
+
+      <div class="tavern-toast" id="tavernToast">
+        Innkeeper Grimwald: "Welcome, traveler. Take a seat by the hearth and check the board."
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let coins = 245;
+  const coinCounter = document.getElementById('coinCounter');
+  const toast = document.getElementById('tavernToast');
+
+  // Quest Selection
+  const questItems = document.querySelectorAll('.quest-item');
+  let selectedQuest = questItems[0];
+
+  questItems.forEach(item => {
+    item.addEventListener('click', () => {
+      questItems.forEach(q => q.classList.remove('is-selected'));
+      item.classList.add('is-selected');
+      selectedQuest = item;
+      const title = item.dataset.name;
+      toast.textContent = `Grimwald: "Aye, '${title}'. Many have asked, few returned."`;
+    });
+  });
+
+  // Inventory Slot Inspection
+  const slots = document.querySelectorAll('.slot');
+  const inspectTitle = document.getElementById('inspectTitle');
+  const inspectDesc = document.getElementById('inspectDesc');
+
+  slots.forEach(slot => {
+    slot.addEventListener('click', () => {
+      slots.forEach(s => s.classList.remove('is-active'));
+      slot.classList.add('is-active');
+      inspectTitle.textContent = slot.dataset.item;
+      inspectDesc.textContent = slot.dataset.info;
+    });
+  });
+
+  // Action Buttons
+  document.getElementById('acceptBtn').addEventListener('click', () => {
+    if (!selectedQuest) return;
+    const name = selectedQuest.dataset.name;
+    const reward = selectedQuest.dataset.reward;
+    toast.textContent = `Contract signed! "${name}" added to active journal (+${reward} GP on return).`;
+    selectedQuest.style.opacity = '0.5';
+    selectedQuest.style.pointerEvents = 'none';
+  });
+
+  document.getElementById('buyAleBtn').addEventListener('click', () => {
+    if (coins >= 2) {
+      coins -= 2;
+      coinCounter.textContent = `${coins} GP`;
+      toast.textContent = 'Grimwald slides a frothing tankard of cold dark mead across the oak bar! (-2 GP)';
+    } else {
+      toast.textContent = 'Grimwald: "No coin, no ale, traveler. Take a bounty first."';
+    }
+  });
+</script>
+</body>
+</html>

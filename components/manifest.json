@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-13T11:24:32.785Z",
- "count": 28,
+ "generated": "2026-10-14T16:54:59.617Z",
+ "count": 49,
  "items": [
   {
    "id": "mesh-hero",
@@ -97,6 +97,116 @@
     "mode": "center"
    },
    "hasJs": false
+  },
+  {
+   "id": "alpine-chalet-dashboard",
+   "path": "components/cards/alpine-chalet-dashboard.html",
+   "title": "Alpine Chalet Expedition Dashboard",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "light"
+   ],
+   "tags": [
+    "alpine",
+    "chalet",
+    "mountains",
+    "wood",
+    "snow",
+    "weather",
+    "expedition",
+    "elevation",
+    "lodge",
+    "hike"
+   ],
+   "description": "High-altitude mountain chalet dashboard featuring rich walnut wood trims, summit weather telemetry, an interactive SVG elevation trail profile, and an expedition gear checklist.",
+   "techniques": [
+    "walnut wood gradient borders and bevels",
+    "cream and alpine navy high-contrast palette",
+    "interactive SVG mountain elevation trail profile",
+    "powder snow depth telemetry cards",
+    "fireplace hearth warmth accent glow"
+   ],
+   "recipe": "The aesthetic merges dark walnut timber frames with crisp warm-cream interior panels and deep alpine navy typography. The elevation chart uses responsive SVG with interactive waypoints that update trail distance and difficulty stats.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "blacksmith-weapon-card",
+   "path": "components/cards/blacksmith-weapon-card.html",
+   "title": "Blacksmith Weapon Dossier",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "blacksmith",
+    "weapon-card",
+    "rpg",
+    "iron",
+    "fire",
+    "runes",
+    "durability",
+    "stats",
+    "tempering"
+   ],
+   "description": "Heavy forged cast-iron weapon inspect card with glowing molten durability segments, socketed fire runes, and tactile metallic action buttons.",
+   "techniques": [
+    "soot-blackened iron texture with chamfered metallic borders",
+    "segmented molten heat durability bar",
+    "glowing ember socketed rune indicators",
+    "dynamic stat diff comparisons with badges",
+    "tactile forged steel button states"
+   ],
+   "recipe": "The card silhouette utilizes dark slate and cast-iron linear gradients accented with molten amber borders. The durability indicator uses individual segments with glowing box-shadows, and the interactive rune sockets dynamically toggle elemental attack damage bonuses.",
+   "preview": {
+    "mode": "page",
+    "width": 900,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
+   "id": "botanical-field-journal",
+   "path": "components/cards/botanical-field-journal.html",
+   "title": "Botanical Herbarium Dossier",
+   "category": "cards",
+   "themes": [
+    "light",
+    "retro"
+   ],
+   "tags": [
+    "botanical",
+    "herbarium",
+    "parchment",
+    "antique",
+    "nature",
+    "plants",
+    "victorian",
+    "archive",
+    "specimen",
+    "illustrated"
+   ],
+   "description": "Victorian naturalist herbarium specimen dossier on deckled parchment paper, featuring vector botanical illustrations, interactive anatomy pins, and a taxonomy archive ledger.",
+   "techniques": [
+    "deckled edge aged parchment texture",
+    "fine engraved double-line antique borders",
+    "vector SVG botanical specimen with hover pins",
+    "weathered red ink museum stamp",
+    "olive and aged-gold botanical color palette"
+   ],
+   "recipe": "The botanical archive aesthetic relies on warm aged-parchment linear gradients combined with delicate serif typography (Cormorant Garamond) and antique brass accents. The specimen card features interactive SVG anatomy pins that reveal naturalist observations and taxonomy classification stats.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
   },
   {
    "id": "glass-4-hazy-border",
@@ -198,6 +308,43 @@
     "height": 480
    },
    "hasJs": false
+  },
+  {
+   "id": "rainy-cafe-notes",
+   "path": "components/cards/rainy-cafe-notes.html",
+   "title": "Rainy Cafe Journal & Soundscape",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "cafe",
+    "coffee",
+    "rain",
+    "edison-bulb",
+    "journal",
+    "notes",
+    "soundscape",
+    "acoustic",
+    "warmth",
+    "amber"
+   ],
+   "description": "Cozy window-table cafe interface with glowing filament Edison bulbs, steaming coffee mug, lo-fi acoustic playlist, and coffeehouse journal notes.",
+   "techniques": [
+    "warm Edison filament glow with radial-gradient diffusion",
+    "steaming coffee cup particle animation",
+    "rain-slicked window glass overlay with car headlight bokeh",
+    "interactive acoustic lo-fi player with analog volume mixer",
+    "editorial cafe tasting notes and markdown scratchpad"
+   ],
+   "recipe": "The intimate cafe corner blends dark walnut tabletop textures with a glowing Edison pendant light. Animated SVG steam plumes rise from the porcelain coffee cup, while the background rain streaks and warm headlight bokeh evoke a quiet afternoon watching the storm from a bistro window.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
   },
   {
    "id": "solar-sunset-card",
@@ -501,6 +648,78 @@
    "hasJs": true
   },
   {
+   "id": "rainy-window-chat",
+   "path": "components/modals/rainy-window-chat.html",
+   "title": "Rainy Window Chat",
+   "category": "modals",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "rainy-night",
+    "chat",
+    "messenger",
+    "glassmorphism",
+    "rain",
+    "neon",
+    "noir",
+    "bokeh",
+    "frosted-glass"
+   ],
+   "description": "Atmospheric nocturnal messenger framed against rain-slicked window glass, featuring blurred streetlamp bokeh, translucent chat bubbles, and amber status indicators.",
+   "techniques": [
+    "frosted glass panels with backdrop-filter: blur(20px)",
+    "golden streetlamp and neon violet bokeh halos",
+    "animated rain condensation streak layer",
+    "translucent message bubble layout with smooth scroll",
+    "interactive message send input field"
+   ],
+   "recipe": "The interface mimics looking through a rain-streaked cafe window at night. Subtle vertical linear gradients animate rain streaks in the background, while the chat window uses deep midnight glass panels with amber accent borders and glowing presence indicators.",
+   "preview": {
+    "mode": "page",
+    "width": 900,
+    "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "tavern-innkeeper-dialogue",
+   "path": "components/modals/tavern-innkeeper-dialogue.html",
+   "title": "Tavern Innkeeper Dialogue",
+   "category": "modals",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "tavern",
+    "dialogue",
+    "rpg",
+    "innkeeper",
+    "brass",
+    "wood",
+    "medieval",
+    "story",
+    "conversations"
+   ],
+   "description": "RPG tavern interactive dialogue window framed in dark carved timber and beveled brass, with NPC dialogue, tavern rumors, and branching responses.",
+   "techniques": [
+    "carved dark oak bevel gradients",
+    "metallic brass filigree corner accents",
+    "branching RPG dialogue tree logic",
+    "candle-lit parchment speech scrolls",
+    "inset button pressed tactile feedback"
+   ],
+   "recipe": "The dialogue interface uses dark timber backgrounds with inset box-shadows to simulate heavy carved wood. The dialogue choices are rendered as brass-trimmed wooden plaques that depress on click, swapping dynamic NPC responses and tavern rumor updates.",
+   "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
    "id": "glass-dock",
    "path": "components/navigation/glass-dock.html",
    "title": "Glass Dock Menu",
@@ -734,6 +953,81 @@
    "hasJs": true
   },
   {
+   "id": "apothecary-shelf-shop",
+   "path": "components/widgets/apothecary-shelf-shop.html",
+   "title": "Apothecary Reagents & Tinctures",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "apothecary",
+    "alchemy",
+    "bottles",
+    "tinctures",
+    "potions",
+    "vials",
+    "labels",
+    "emerald",
+    "amber",
+    "violet",
+    "shop"
+   ],
+   "description": "Old-world apothecary workshop shelf with glowing potion vials, aged parchment bottle labels, fluid level indicators, and an interactive cauldron brewing ledger.",
+   "techniques": [
+    "glass vial reflections with SVG liquid gradients",
+    "aged apothecary paper label borders with serif typography",
+    "cauldron bubbling vapor particle animation",
+    "tactile copper shelf hardware accents",
+    "interactive cart mixing drawer with gold calculation"
+   ],
+   "recipe": "The apothecary shop atmosphere uses dark oak shelving frames accented with glowing fluid vials in emerald, amber, and violet. Each potion bottle is built using layered SVG silhouettes with animated liquid levels, accompanied by paper labels that depress when added to the cauldron mixing tray.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "blacksmith-forge-station",
+   "path": "components/widgets/blacksmith-forge-station.html",
+   "title": "Blacksmith Forge & Tempering Station",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "blacksmith",
+    "forge",
+    "anvil",
+    "sparks",
+    "embers",
+    "molten-metal",
+    "crafting",
+    "weapon-upgrade",
+    "rpg",
+    "fire"
+   ],
+   "description": "Heavy-duty forge crafting interface with glowing charcoal coals, molten metal temperature segments, interactive hammer strikes with flying sparks, and tempering runes.",
+   "techniques": [
+    "glowing molten heat gradients with box-shadow bloom",
+    "dynamic flying ember spark particles on strike",
+    "cast-iron soot texture via multi-stop linear-gradients",
+    "segmented molten heat gauge with threshold alerts",
+    "tactile metallic button press feedback"
+   ],
+   "recipe": "The forge atmosphere pairs charcoal-black stone textures with fiery amber and incandescent yellow glow. The heat gauge uses segmented blocks whose border and shadow bloom shift from dull red to intense molten yellow as temperature rises. Clicking the strike button animates an array of flying ember sparks with randomized trajectories.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
    "id": "dynamic-island",
    "path": "components/widgets/dynamic-island.html",
    "title": "Dynamic Island HUD",
@@ -764,6 +1058,80 @@
     "mode": "center",
     "width": 540,
     "height": 420
+   },
+   "hasJs": true
+  },
+  {
+   "id": "enchanted-alchemy-tree",
+   "path": "components/widgets/enchanted-alchemy-tree.html",
+   "title": "Enchanted Alchemy Constellation",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "enchanted-forest",
+    "alchemy",
+    "botany",
+    "glow",
+    "turquoise",
+    "bioluminescence",
+    "fireflies",
+    "magic",
+    "rpg",
+    "tree"
+   ],
+   "description": "Bioluminescent botanical alchemy interface set in a deep conifer mist, featuring glowing constellation nodes, floating fireflies, and an interactive potion brewing alembic.",
+   "techniques": [
+    "bioluminescent cyan/emerald glow with filter: drop-shadow",
+    "floating firefly particle animations",
+    "frosted dark-glass panels with backdrop-filter",
+    "SVG constellation rune connectors",
+    "interactive fluid bubbling alembic flask",
+    "tactile potion synergy recipe engine"
+   ],
+   "recipe": "The enchanted forest mood combines deep pine-teal gradients with vibrant cyan/lime bioluminescence. Floating fireflies are driven by lightweight CSS keyframes with randomized sine drift and opacity pulsing. The central alembic potion bottle dynamically updates its fluid gradient and bubbling rate based on selected botanical nodes.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "holo-glass-slate",
+   "path": "components/widgets/holo-glass-slate.html",
+   "title": "Holo-Glass Edge-Lit Data Slate",
+   "category": "widgets",
+   "themes": [
+    "glass",
+    "dark"
+   ],
+   "tags": [
+    "holo-glass",
+    "transparent-display",
+    "data-slate",
+    "edge-lit",
+    "blackout",
+    "color-picker",
+    "terrain-relief",
+    "tactical",
+    "sci-fi"
+   ],
+   "description": "Futuristic handheld terminal featuring an opaque tactical grip with edge-projector LEDs, a transparent holographic glass display, wireframe 3D terrain, blackout mode, and arbitrary RGB backlight customization.",
+   "techniques": [
+    "edge-projected directional light beam across transparent glass",
+    "dynamic CSS variable lighting via native HTML color picker",
+    "room blackout mode emphasizing luminescent holographic lines",
+    "SVG 3D wireframe topographic relief mesh",
+    "opaque tactile handle with physical switches and status LEDs"
+   ],
+   "recipe": "The slate combines an opaque polymer left grip with an ultra-clear glass screen. The grip's inner seam projects a horizontal linear-gradient light cone powered by CSS custom properties (--glow-color). In blackout mode, the room darkens while the holographic wireframe, telemetry graphs, and edge-lighting intensify.",
+   "preview": {
+    "mode": "page",
+    "width": 1020,
+    "height": 660
    },
    "hasJs": true
   },
@@ -802,6 +1170,153 @@
     "mode": "page",
     "width": 640,
     "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "mars-wireframe-hud",
+   "path": "components/widgets/mars-wireframe-hud.html",
+   "title": "Mars Wireframe HUD",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "space",
+    "hud",
+    "mars",
+    "planet",
+    "wireframe",
+    "canvas",
+    "sci-fi",
+    "mint",
+    "loading"
+   ],
+   "description": "Mint-on-black planetary HUD: a textured Mars sphere wrapped in a rotating canvas-drawn node mesh, with side gauges, equalizer strip, mini map, hex badge counter and a loading bar.",
+   "techniques": [
+    "canvas 3D point sphere with connecting lines",
+    "radial-gradient planet texture",
+    "clip-path chamfered panels",
+    "SVG circular gauges with stroke-dashoffset",
+    "requestAnimationFrame paused when off-screen"
+   ],
+   "recipe": "The mesh around the planet is drawn on a 2D canvas: points are distributed on a sphere with the golden-angle spiral, rotated each frame around the Y axis, projected with a simple perspective divide, and connected whenever two points are closer than a threshold. Line alpha depends on depth so the back of the sphere fades out. The planet itself is only radial-gradients, so the whole HUD stays small. The animation loop stops when the tab is hidden.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "midnight-library-catalog",
+   "path": "components/widgets/midnight-library-catalog.html",
+   "title": "Midnight Library Archive Console",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "library",
+    "midnight",
+    "bankers-lamp",
+    "books",
+    "catalog",
+    "brass",
+    "emerald",
+    "archive",
+    "search",
+    "academic"
+   ],
+   "description": "Scholarly midnight library research workstation featuring an interactive emerald banker's lamp with pull chain, dark oak bookstacks, manuscript cataloging, and reading notes.",
+   "techniques": [
+    "interactive banker's lamp light cone with toggleable pull chain",
+    "emerald glass diffuse radial lighting",
+    "polished brass metallic bevels and trim",
+    "gothic rain window ambience backdrop",
+    "academic catalog search and manuscript inspector"
+   ],
+   "recipe": "The atmospheric research desk pairs dark mahogany woodgrain with an iconic green-glass banker's lamp that casts a directional warm pool of light. Clicking the brass pull-chain toggles the lamp's luminescent state via CSS variables, updating the ambient lighting across the desk and reading parchment.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "nocturne-streetlamp-reader",
+   "path": "components/widgets/nocturne-streetlamp-reader.html",
+   "title": "Nocturne Gaslamp Night Reader",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "streetlamp",
+    "gaslamp",
+    "nocturne",
+    "midnight",
+    "indigo",
+    "purple-mist",
+    "reader",
+    "rain",
+    "realism",
+    "ambient"
+   ],
+   "description": "Atmospheric nighttime reader illuminated by a vintage three-headed cast iron gas streetlamp, featuring volumetric light cones, a rotary gas dimmer, and ambient street rain.",
+   "techniques": [
+    "vector vintage gaslamp silhouette with warm sodium lantern glow",
+    "conical volumetric light beam projected onto wet cobblestone ground",
+    "interactive rotary gas dimmer dial adjusting ambient light levels",
+    "rain droplet refraction in deep indigo-violet twilight mist",
+    "distraction-free literary night reading interface"
+   ],
+   "recipe": "The nocturnal scene features an antique wrought-iron streetlamp silhouette created with SVG paths. The lamp's lanterns emit radial and conical gradients representing volumetric light beaming down onto wet cobblestones, with an interactive dimmer knob that adjusts the reading ambient light.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "pacific-drive-dash",
+   "path": "components/widgets/pacific-drive-dash.html",
+   "title": "Pacific Drive Station Wagon Cluster",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "pacific-drive",
+    "car",
+    "dashboard",
+    "crt",
+    "gauges",
+    "speedometer",
+    "compass",
+    "battery",
+    "exclusion-zone",
+    "sci-fi"
+   ],
+   "description": "Retro-futuristic survival wagon cockpit inspired by Pacific Drive, featuring analog amber/red dials, CRT diagnostic car monitor, liquid compass ball, and vertical battery meters.",
+   "techniques": [
+    "analog gauge needles with CSS transform rotation",
+    "phosphor green CRT monitor with scanlines and curvature",
+    "liquid compass sphere with 3D radial gradients",
+    "vertical segmented LED battery and fuel bars",
+    "interactive throttle acceleration and car diagnostic telemetry"
+   ],
+   "recipe": "The jury-rigged exclusion zone cockpit is built with rugged textured polymer bezels, duct tape accents, and illuminated analog dials. The CRT diagnostic monitor displays a wireframe station wagon schematic with scanlines, while an interactive throttle pedal rotates the speedometer needle and drains fuel/battery.",
+   "preview": {
+    "mode": "page",
+    "width": 1020,
+    "height": 660
    },
    "hasJs": true
   },
@@ -871,6 +1386,149 @@
    "hasJs": true
   },
   {
+   "id": "rainy-night-player",
+   "path": "components/widgets/rainy-night-player.html",
+   "title": "Rainy Night Soundscape Console",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "rainy-night",
+    "lo-fi",
+    "ambient",
+    "player",
+    "rain",
+    "streetlamp",
+    "bokeh",
+    "glassmorphism",
+    "gold-light",
+    "soundscape"
+   ],
+   "description": "Atmospheric rainy city lo-fi music player and ambient sound mixer with animated rain streaks, streetlamp bokeh glow, and wet glass refraction.",
+   "techniques": [
+    "rain-on-glass bokeh atmosphere via layered radial-gradients",
+    "animated CSS equalizer frequency bars",
+    "frosted glassmorphism with backdrop-filter: blur(20px)",
+    "golden sodium vapor ambient lighting highlights",
+    "interactive ambient multi-channel soundscape mixer"
+   ],
+   "recipe": "The moody nocturnal street mood is simulated with deep indigo-violet gradients and diffuse amber radial flares mimicking sodium streetlamps through rain-slicked glass. The frosted player utilizes backdrop-filter with subtle golden edge borders and animated equalizer bars driven by staggered CSS keyframes.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "ranger-station-map",
+   "path": "components/widgets/ranger-station-map.html",
+   "title": "Ranger Station Topo Trail Dispatch",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "light"
+   ],
+   "tags": [
+    "ranger-station",
+    "maps",
+    "topography",
+    "compass",
+    "mountains",
+    "forest",
+    "trails",
+    "telemetry",
+    "wilderness",
+    "dispatch"
+   ],
+   "description": "High-altitude forest ranger station desk overlooking sunset mountain ridges, featuring an interactive topographic trail map, rotating brass compass, and trail status telemetry.",
+   "techniques": [
+    "sunset mountain silhouette SVG layered backdrop",
+    "SVG topographic contour line map with interactive trail waypoints",
+    "rotating brass compass needle synced to selected waypoints",
+    "tactile brass map corner weights and forest-green palette",
+    "real-time park trail dispatch and fire danger telemetry"
+   ],
+   "recipe": "The ranger station aesthetic combines weathered forest map parchment with pine-green trims and a panoramic sunset mountain silhouette. An interactive SVG contour map features trail waypoints that dynamically rotate a physical-styled brass compass needle to the waypoint's azimuth angle.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "satellite-fleet-control",
+   "path": "components/widgets/satellite-fleet-control.html",
+   "title": "Satellite Fleet Control",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "space",
+    "satellite",
+    "mission-control",
+    "globe",
+    "dashboard",
+    "glass",
+    "telemetry",
+    "alert"
+   ],
+   "description": "Glossy mission control dashboard: satellite list with live stats, a dotted globe with orbiting rings and markers, signal bars, payload diagnostics and an anomaly alert card.",
+   "techniques": [
+    "dotted sphere from radial-gradient dot pattern",
+    "tilted orbit rings with rotateX",
+    "backdrop-filter glass panels",
+    "canvas-free signal bar chart",
+    "selection state shared across list, markers and diagnostics"
+   ],
+   "recipe": "The globe is a circle filled with a tiny repeating radial-gradient dot pattern, masked by a radial gradient so the dots fade toward the edge like a lit sphere. Orbit rings are ellipses made with rotateX on bordered circles, and satellites ride a wrapper that rotates around the globe centre. Clicking a satellite anywhere updates one selected id; the list, the marker highlight and the diagnostics all read from it, so the three views never drift apart.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
+   "id": "solar-system-atlas",
+   "path": "components/widgets/solar-system-atlas.html",
+   "title": "Solar System Orbit Atlas",
+   "category": "widgets",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "space",
+    "solar-system",
+    "infographic",
+    "orbits",
+    "planets",
+    "poster",
+    "3d-transform",
+    "data-cards"
+   ],
+   "description": "Editorial solar system infographic: a tilted orbital plane with animated planets, surrounded by planet fact cards that highlight their orbit on hover.",
+   "techniques": [
+    "transform: rotateX() tilted orbit plane",
+    "nested rotating wrappers for orbits",
+    "radial-gradient planet spheres",
+    "hover-linked orbit highlighting via :has()",
+    "key-value fact tables"
+   ],
+   "recipe": "The orbit map is a flat container tilted with rotateX(68deg) so concentric circles read as ellipses. Each planet sits at the edge of a wrapper that spins around the centre, which gives an orbit without any JavaScript. Planet bodies are radial-gradients with an inset shadow for the terminator. Hovering a fact card toggles a data attribute on the stage, and :has() / attribute selectors brighten the matching orbit ring.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 700
+   },
+   "hasJs": true
+  },
+  {
    "id": "space-orbital-hud",
    "path": "components/widgets/space-orbital-hud.html",
    "title": "Orbital Space Navigation HUD",
@@ -902,6 +1560,79 @@
     "mode": "page",
     "width": 960,
     "height": 680
+   },
+   "hasJs": true
+  },
+  {
+   "id": "space-station-console",
+   "path": "components/widgets/space-station-console.html",
+   "title": "Station Blueprint Console",
+   "category": "widgets",
+   "themes": [
+    "dark"
+   ],
+   "tags": [
+    "space",
+    "sci-fi",
+    "hud",
+    "blueprint",
+    "teal",
+    "amber",
+    "dashboard",
+    "wireframe",
+    "orbital-station"
+   ],
+   "description": "Teal space-agency dashboard: module list, toolbar grid, wireframe station inside rotating rings, and construction time / cost readouts with amber accents.",
+   "techniques": [
+    "inline SVG wireframe",
+    "rotating dashed rings",
+    "dot-grid background via radial-gradient",
+    "CSS variables for teal + amber palette",
+    "data-driven module list"
+   ],
+   "recipe": "Everything sits on a faint dot grid made from a single radial-gradient. The wireframe station is plain SVG with thin white strokes and no fills, so it stays crisp at any scale. Concentric dashed circles rotate at different speeds in opposite directions to suggest instrumentation, while the amber arcs are stroke-dasharray segments on a circle. Selecting a module in the left list only swaps text and one CSS variable, so no re-layout is needed.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 620
+   },
+   "hasJs": true
+  },
+  {
+   "id": "tavern-quest-journal",
+   "path": "components/widgets/tavern-quest-journal.html",
+   "title": "Old Tavern Quest Ledger",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "tavern",
+    "rpg",
+    "fantasy",
+    "wood",
+    "brass",
+    "parchment",
+    "wax-seal",
+    "inventory",
+    "quests",
+    "medieval"
+   ],
+   "description": "Atmospheric RPG tavern desk with warm candlelight flicker, engraved brass plaques, wax seal stamps, an interactive quest bounty board, and an inventory provisions satchel.",
+   "techniques": [
+    "layered wood grain linear-gradients",
+    "skeuomorphic beveled brass plaques",
+    "crimson wax seal with drop shadow",
+    "dynamic candlelight flicker keyframes",
+    "carved wood sunken inventory slots",
+    "interactive gold coin pouch counter"
+   ],
+   "recipe": "The tavern interior ambiance is created through a flickering warm amber radial gradient centered like a tabletop candle. Wooden surfaces combine fine multi-stop linear gradients with subtle SVG turbulence noise, while metallic brass plaques and buttons use sharp multi-stop gradients with embossed box-shadows and inset bevels.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
    },
    "hasJs": true
   },
@@ -938,6 +1669,43 @@
     "mode": "page",
     "width": 960,
     "height": 560
+   },
+   "hasJs": true
+  },
+  {
+   "id": "zen-garden-timer",
+   "path": "components/widgets/zen-garden-timer.html",
+   "title": "Zen Dusk Meditation Garden",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "light"
+   ],
+   "tags": [
+    "zen",
+    "garden",
+    "dusk",
+    "japanese",
+    "meditation",
+    "habits",
+    "rain",
+    "lantern",
+    "mindfulness",
+    "calm"
+   ],
+   "description": "Japanese twilight tea pavilion interface for meditation and mindful daily rituals, with breathing rhythm guidance, warm paper lantern glow, and garden rain ambiance.",
+   "techniques": [
+    "washi paper lantern breathing glow animation",
+    "moss stone palette with polished cedarwood tones",
+    "smooth expanding/contracting SVG breath circle",
+    "rain streak overlay on dark veranda floor",
+    "minimalist wabi-sabi typography with spacious padding"
+   ],
+   "recipe": "The serene tea house aesthetic is achieved by framing the view with dark cedarwood tones and warm washi paper lanterns. The breathing circle animates smoothly between inhale, hold, and exhale phases with soft SVG radial glow transitions, accompanied by mindful habit stones.",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
    },
    "hasJs": true
   }

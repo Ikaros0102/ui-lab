@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpine Lodge & Mountain Expedition Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Alpine Chalet Expedition Dashboard",
+  "category": "cards",
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "tags": [
+    "alpine",
+    "chalet",
+    "mountains",
+    "wood",
+    "snow",
+    "weather",
+    "expedition",
+    "elevation",
+    "lodge",
+    "hike"
+  ],
+  "description": "High-altitude mountain chalet dashboard featuring rich walnut wood trims, summit weather telemetry, an interactive SVG elevation trail profile, and an expedition gear checklist.",
+  "techniques": [
+    "walnut wood gradient borders and bevels",
+    "cream and alpine navy high-contrast palette",
+    "interactive SVG mountain elevation trail profile",
+    "powder snow depth telemetry cards",
+    "fireplace hearth warmth accent glow"
+  ],
+  "recipe": "The aesthetic merges dark walnut timber frames with crisp warm-cream interior panels and deep alpine navy typography. The elevation chart uses responsive SVG with interactive waypoints that update trail distance and difficulty stats.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --walnut-dark: #22150e;
+    --walnut-border: #4d3322;
+    --cream-bg: #f9f5ed;
+    --cream-card: #f2ebd9;
+    --alpine-navy: #192a3e;
+    --alpine-blue: #2c5282;
+    --ice-cyan: #dceefb;
+    --hearth-amber: #e67e22;
+    --snow-white: #ffffff;
+    --text-muted: #6b6357;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(220, 238, 251, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 15% 90%, rgba(230, 126, 34, 0.12) 0%, transparent 45%),
+      linear-gradient(180deg, #16202c 0%, #0d141d 60%, #090e15 100%);
+    color: var(--alpine-navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* Walnut Timber Frame Container */
+  .chalet-station {
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(145deg, #2a1a11 0%, #1a100a 100%);
+    border: 3px solid #573a27;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.85),
+      0 0 40px rgba(230, 126, 34, 0.1),
+      inset 0 1px 1px rgba(255, 230, 190, 0.15);
+  }
+
+  /* Inner Cream Cream Parchment Card */
+  .station-inner {
+    background: var(--cream-bg);
+    border-radius: 12px;
+    padding: 22px 26px;
+    border: 1px solid #dcd3be;
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.05),
+      0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Header */
+  .chalet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e5dcce;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+
+  .lodge-meta h1 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: var(--alpine-navy);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lodge-meta p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .hearth-badge {
+    background: #fdf3e7;
+    border: 1px solid #f4cba0;
+    border-radius: 30px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a0490b;
+    box-shadow: 0 2px 6px rgba(230, 126, 34, 0.15);
+  }
+
+  .hearth-flame {
+    font-size: 14px;
+    animation: flameFlicker 1.5s infinite alternate ease-in-out;
+  }
+
+  @keyframes flameFlicker {
+    0% { transform: scale(0.9) rotate(-3deg); }
+    100% { transform: scale(1.15) rotate(3deg); filter: drop-shadow(0 0 4px #e67e22); }
+  }
+
+  /* Grid: 3 Metric Cards + Trail Elevation */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .metric-card {
+    background: var(--cream-card);
+    border: 1px solid #dfd4bf;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+    background: #ece3cf;
+  }
+
+  .metric-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #d6caa8;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  }
+
+  .metric-val {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--alpine-navy);
+    line-height: 1.1;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* Main Lower Section: Elevation Profile + Expedition Checklist */
+  .expedition-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+  }
+
+  /* Trail & Elevation Map */
+  .elevation-box {
+    background: #ffffff;
+    border: 1px solid #dfd6c4;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--alpine-navy);
+  }
+
+  .status-chip {
+    font-size: 11px;
+    font-weight: 600;
+    background: #e6f6ee;
+    color: #1a7442;
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid #b7e3ca;
+  }
+
+  /* Interactive SVG Trail Profile */
+  .elevation-svg-wrap {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(180deg, #f5f9fc 0%, #eaf2f8 100%);
+    border-radius: 8px;
+    border: 1px solid #d7e4ed;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .elevation-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .trail-waypoint {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .trail-waypoint:hover circle {
+    r: 7;
+    fill: #2c5282;
+  }
+
+  /* Waypoint Details Bar */
+  .waypoint-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #eee5d3;
+    font-size: 12px;
+  }
+
+  .waypoint-name {
+    font-weight: 700;
+    color: var(--alpine-navy);
+  }
+
+  .waypoint-stats {
+    color: var(--text-muted);
+  }
+
+  /* Gear Checklist */
+  .gear-box {
+    background: #ffffff;
+    border: 1px solid #dfd6c4;
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .gear-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 10px;
+  }
+
+  .gear-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--cream-bg);
+    border: 1px solid #e2dac7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--alpine-navy);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    user-select: none;
+  }
+
+  .gear-item:hover {
+    background: #ede3cc;
+  }
+
+  .gear-item input[type="checkbox"] {
+    accent-color: var(--alpine-blue);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+
+  .gear-item.checked {
+    text-decoration: line-through;
+    opacity: 0.65;
+  }
+
+  /* Expedition Action Button */
+  .lodge-btn {
+    width: 100%;
+    margin-top: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 11px;
+    border-radius: 8px;
+    background: var(--alpine-navy);
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(25, 42, 62, 0.25);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .lodge-btn:hover {
+    background: #233c59;
+    box-shadow: 0 6px 14px rgba(25, 42, 62, 0.35);
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body>
+
+<div class="chalet-station">
+  <div class="station-inner">
+    <!-- Header -->
+    <div class="chalet-header">
+      <div class="lodge-meta">
+        <h1>
+          <span>🏔️ Mont-Blanc Summit Lodge</span>
+        </h1>
+        <p>Val de Cordon • Altitude 2,150 m • Weather & Alpine Trail Telemetry</p>
+      </div>
+
+      <div class="hearth-badge">
+        <span class="hearth-flame">🔥</span>
+        <span>Hearth Fireplace Roaring</span>
+      </div>
+    </div>
+
+    <!-- Weather & Snow Metrics -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-icon-box">❄️</div>
+        <div>
+          <div class="metric-val">-5.4°C</div>
+          <div class="metric-label">Summit Temp • Crisp</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box">⛷️</div>
+        <div>
+          <div class="metric-val">168 cm</div>
+          <div class="metric-label">Powder Base • +18cm 24h</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-box">🛡️</div>
+        <div>
+          <div class="metric-val">Level 1</div>
+          <div class="metric-label">Avalanche Risk • Low</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Section: Elevation Trail & Gear Checklist -->
+    <div class="expedition-grid">
+      <!-- Trail & Elevation Chart -->
+      <div class="elevation-box">
+        <div class="section-head">
+          <div class="section-title">Aiguille Ridge Elevation Profile</div>
+          <span class="status-chip" id="trailStatus">Path Groomed & Open</span>
+        </div>
+
+        <div class="elevation-svg-wrap">
+          <svg class="elevation-svg" viewBox="0 0 500 160" preserveAspectRatio="none">
+            <!-- Mountain Silhouette Gradient Fill -->
+            <defs>
+              <linearGradient id="mountainFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2c5282" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#2c5282" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Elevation Mountain Polyline -->
+            <polygon points="0,160 0,130 90,115 180,85 280,100 380,45 460,30 500,40 500,160" fill="url(#mountainFill)"/>
+            <path d="M0,130 L90,115 L180,85 L280,100 L380,45 L460,30 L500,40" fill="none" stroke="#2c5282" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Waypoints -->
+            <g class="trail-waypoint" data-name="Chalet Base" data-alt="1,850 m" data-dist="0.0 km" data-status="Base Lodge • Warm Hearth">
+              <circle cx="90" cy="115" r="5" fill="#e67e22" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g class="trail-waypoint" data-name="Pine Tree Rest" data-alt="2,080 m" data-dist="2.4 km" data-status="Windbreak Shelter • Open">
+              <circle cx="180" cy="85" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g class="trail-waypoint" data-name="Glacier Saddle" data-alt="2,340 m" data-dist="4.8 km" data-status="Packed Snow • Crampons Suggested">
+              <circle cx="280" cy="100" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g class="trail-waypoint" data-name="Eagle Crest" data-alt="2,720 m" data-dist="7.1 km" data-status="Panoramic Lookout • High Wind">
+              <circle cx="380" cy="45" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g class="trail-waypoint" data-name="Summit Refuge" data-alt="2,890 m" data-dist="8.5 km" data-status="Peak Observatory • Teahouse">
+              <circle cx="460" cy="30" r="6" fill="#1a7442" stroke="#fff" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="waypoint-details">
+          <span class="waypoint-name" id="wpName">Pine Tree Rest (2,080 m)</span>
+          <span class="waypoint-stats" id="wpStats">Distance: 2.4 km • Windbreak Shelter • Open</span>
+        </div>
+      </div>
+
+      <!-- Gear Checklist -->
+      <div class="gear-box">
+        <div>
+          <div class="section-head" style="margin-bottom: 8px;">
+            <div class="section-title">Expedition Pack</div>
+            <span style="font-size: 11px; color: var(--text-muted);">4 / 4 Ready</span>
+          </div>
+
+          <div class="gear-list">
+            <label class="gear-item">
+              <input type="checkbox" checked>
+              <span>Avalanche Transceiver & Beacon</span>
+            </label>
+            <label class="gear-item">
+              <input type="checkbox" checked>
+              <span>Carbon Ice Ax & Microspikes</span>
+            </label>
+            <label class="gear-item">
+              <input type="checkbox" checked>
+              <span>Merino Wool Thermal Layer</span>
+            </label>
+            <label class="gear-item">
+              <input type="checkbox" checked>
+              <span>Thermos of Spiced Glühwein</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="lodge-btn" id="planBtn">
+          <span>🧭 Log Expedition Departure</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Interactive waypoints
+  const waypoints = document.querySelectorAll('.trail-waypoint');
+  const wpName = document.getElementById('wpName');
+  const wpStats = document.getElementById('wpStats');
+  const trailStatus = document.getElementById('trailStatus');
+
+  waypoints.forEach(wp => {
+    wp.addEventListener('click', () => {
+      const name = wp.dataset.name;
+      const alt = wp.dataset.alt;
+      const dist = wp.dataset.dist;
+      const status = wp.dataset.status;
+
+      wpName.textContent = `${name} (${alt})`;
+      wpStats.textContent = `Distance: ${dist} • ${status}`;
+      trailStatus.textContent = `Selected: ${name}`;
+    });
+  });
+
+  // Gear toggle style
+  const gearItems = document.querySelectorAll('.gear-item');
+  gearItems.forEach(item => {
+    const input = item.querySelector('input');
+    input.addEventListener('change', () => {
+      item.classList.toggle('checked', input.checked);
+    });
+  });
+
+  document.getElementById('planBtn').addEventListener('click', () => {
+    trailStatus.textContent = 'Departure Recorded with Ski Patrol';
+    trailStatus.style.background = '#e1effe';
+    trailStatus.style.color = '#1e429f';
+    trailStatus.style.borderColor = '#b4c6fc';
+  });
+</script>
+</body>
+</html>

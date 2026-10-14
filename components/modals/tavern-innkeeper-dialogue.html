@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Old Tavern - Innkeeper Dialogue & Rumors</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=MedievalSharp&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Tavern Innkeeper Dialogue",
+  "category": "modals",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "tavern",
+    "dialogue",
+    "rpg",
+    "innkeeper",
+    "brass",
+    "wood",
+    "medieval",
+    "story",
+    "conversations"
+  ],
+  "description": "RPG tavern interactive dialogue window framed in dark carved timber and beveled brass, with NPC dialogue, tavern rumors, and branching responses.",
+  "techniques": [
+    "carved dark oak bevel gradients",
+    "metallic brass filigree corner accents",
+    "branching RPG dialogue tree logic",
+    "candle-lit parchment speech scrolls",
+    "inset button pressed tactile feedback"
+  ],
+  "recipe": "The dialogue interface uses dark timber backgrounds with inset box-shadows to simulate heavy carved wood. The dialogue choices are rendered as brass-trimmed wooden plaques that depress on click, swapping dynamic NPC responses and tavern rumor updates.",
+  "preview": {
+    "mode": "page",
+    "width": 960,
+    "height": 620
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --brass-gold: #e2ba64;
+    --brass-dark: #6e4c16;
+    --wood-frame: #24140b;
+    --wood-inner: #150b06;
+    --parchment: #ece0c6;
+    --ink-dark: #2a1a0f;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255, 175, 60, 0.22) 0%, transparent 60%),
+      linear-gradient(180deg, #100a06 0%, #080503 100%);
+    color: #f7ead2;
+    font-family: 'MedievalSharp', Georgia, serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* Dialogue Modal Container */
+  .dialogue-box {
+    width: 100%;
+    max-width: 860px;
+    background: linear-gradient(180deg, #2c1a10 0%, #170d08 100%);
+    border: 3px solid #54371f;
+    border-radius: 14px;
+    padding: 22px 26px;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(255, 170, 50, 0.15),
+      inset 0 1px 1px rgba(255, 220, 140, 0.2);
+    position: relative;
+  }
+
+  /* Header Bar */
+  .dialogue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #3c2413;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+
+  .speaker-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .speaker-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: radial-gradient(circle, #523720 0%, #1f130b 100%);
+    border: 2px solid var(--brass-gold);
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+  }
+
+  .speaker-names h2 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--brass-gold);
+    letter-spacing: 1px;
+  }
+
+  .speaker-names p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #a88a6f;
+  }
+
+  .location-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: #d1b17b;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #4a321f;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* Speech Scroll */
+  .speech-parchment {
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 235, 190, 0.15) 0%, transparent 80%),
+      linear-gradient(180deg, #ede0c7 0%, #dfcea8 100%);
+    border: 1px solid #9e845c;
+    border-radius: 8px;
+    padding: 20px 24px;
+    color: var(--ink-dark);
+    box-shadow:
+      inset 0 0 30px rgba(130, 95, 45, 0.25),
+      0 4px 12px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+    min-height: 105px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .speech-text {
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Dialogue Choices List */
+  .dialogue-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .choice-btn {
+    background: linear-gradient(180deg, #372316 0%, #20130a 100%);
+    border: 1px solid #5d3f26;
+    border-left: 4px solid var(--brass-gold);
+    border-radius: 6px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #f1e4ce;
+    font-family: 'MedievalSharp', serif;
+    font-size: 14px;
+  }
+
+  .choice-btn:hover {
+    background: linear-gradient(180deg, #4d3320 0%, #2e1c10 100%);
+    border-color: var(--brass-gold);
+    transform: translateX(4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6), 0 0 10px rgba(226, 186, 100, 0.15);
+  }
+
+  .choice-btn:active {
+    transform: translateX(2px);
+  }
+
+  .choice-num {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--brass-gold);
+    margin-right: 10px;
+  }
+
+  .choice-arrow {
+    color: var(--brass-gold);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="dialogue-box">
+  <div class="dialogue-header">
+    <div class="speaker-title">
+      <div class="speaker-avatar">🧔🏻‍♂️</div>
+      <div class="speaker-names">
+        <h2>Grimwald Stonehand</h2>
+        <p>Proprietor of The Roaring Griffin • Master Brewer</p>
+      </div>
+    </div>
+
+    <div class="location-tag">📍 Hearthside Table</div>
+  </div>
+
+  <div class="speech-parchment">
+    <p class="speech-text" id="npcSpeech">
+      "Greetings, wanderer! Come in from the howling wind. Take off your cloak, sit by the embers, and tell me: what news brings you past the Blackwood Ridge?"
+    </p>
+  </div>
+
+  <div class="dialogue-choices" id="choicesList">
+    <div class="choice-btn" data-reply="Grimwald nods grimly. 'Aye, travelers speak of eerie blue lights dancing over the sunken ruins near the old river lock. Some say the marsh specters have awakened again.'" data-options="Rumors">
+      <div>
+        <span class="choice-num">1.</span>
+        <span>"Any interesting rumors circulating about the local roads?"</span>
+      </div>
+      <span class="choice-arrow">▶</span>
+    </div>
+
+    <div class="choice-btn" data-reply="Grimwald beams with pride, polishing a wooden mug. 'Fresh tapped this morning! Dark malt brewed with highland honey and wild juniper berries. A single draught will cure your fatigue!'" data-options="Ale">
+      <div>
+        <span class="choice-num">2.</span>
+        <span>"Pour me a pint of your famous dark stout, innkeeper."</span>
+      </div>
+      <span class="choice-arrow">▶</span>
+    </div>
+
+    <div class="choice-btn" data-reply="Grimwald leans across the bar counter in a whisper. 'The Village Elder left a sealed parchment on my bounty board. Pays 120 gold coins for any blade willing to clear the old crypt.'" data-options="Work">
+      <div>
+        <span class="choice-num">3.</span>
+        <span>"I am looking for paid mercenary contracts or bounties."</span>
+      </div>
+      <span class="choice-arrow">▶</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const speechText = document.getElementById('npcSpeech');
+  const choiceBtns = document.querySelectorAll('.choice-btn');
+
+  choiceBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      speechText.textContent = btn.dataset.reply;
+    });
+  });
+</script>
+</body>
+</html>

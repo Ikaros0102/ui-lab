@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rainy Night Noir Messenger</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Rainy Window Chat",
+  "category": "modals",
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "rainy-night",
+    "chat",
+    "messenger",
+    "glassmorphism",
+    "rain",
+    "neon",
+    "noir",
+    "bokeh",
+    "frosted-glass"
+  ],
+  "description": "Atmospheric nocturnal messenger framed against rain-slicked window glass, featuring blurred streetlamp bokeh, translucent chat bubbles, and amber status indicators.",
+  "techniques": [
+    "frosted glass panels with backdrop-filter: blur(20px)",
+    "golden streetlamp and neon violet bokeh halos",
+    "animated rain condensation streak layer",
+    "translucent message bubble layout with smooth scroll",
+    "interactive message send input field"
+  ],
+  "recipe": "The interface mimics looking through a rain-streaked cafe window at night. Subtle vertical linear gradients animate rain streaks in the background, while the chat window uses deep midnight glass panels with amber accent borders and glowing presence indicators.",
+  "preview": {
+    "mode": "page",
+    "width": 900,
+    "height": 640
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --night-bg: #090b14;
+    --amber-light: #ffbe59;
+    --amber-soft: rgba(255, 190, 89, 0.2);
+    --neon-violet: #a855f7;
+    --glass-panel: rgba(14, 18, 32, 0.72);
+    --glass-border: rgba(255, 200, 110, 0.2);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(255, 190, 89, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 75%, rgba(168, 85, 247, 0.25) 0%, transparent 55%),
+      linear-gradient(180deg, #090b14 0%, #101526 50%, #080910 100%);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Rain effect */
+  .rain-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(100deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 48px);
+    opacity: 0.75;
+    animation: rainFall 1s linear infinite;
+  }
+
+  @keyframes rainFall {
+    0% { transform: translateY(-40px); }
+    100% { transform: translateY(40px); }
+  }
+
+  /* Chat Window Frame */
+  .chat-window {
+    width: 100%;
+    max-width: 720px;
+    height: 520px;
+    background: var(--glass-panel);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.8),
+      0 0 35px rgba(255, 190, 89, 0.08),
+      inset 0 1px 1px rgba(255, 230, 180, 0.25);
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 200, 110, 0.12);
+    background: rgba(8, 11, 20, 0.4);
+  }
+
+  .user-status-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2b1f3d, #141726);
+    border: 1.5px solid var(--amber-light);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: 0 0 12px var(--amber-soft);
+  }
+
+  .online-pip {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: #ffbe59;
+    border: 2px solid #0e1220;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffbe59;
+  }
+
+  .contact-info h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff9ed;
+  }
+
+  .contact-info p {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .call-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .header-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 200, 110, 0.15);
+    color: var(--amber-light);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.15s ease;
+  }
+
+  .header-icon-btn:hover {
+    background: rgba(255, 190, 89, 0.15);
+    transform: translateY(-1px);
+  }
+
+  /* Messages Scroll Area */
+  .messages-area {
+    flex: 1;
+    padding: 18px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .date-divider {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255, 200, 110, 0.6);
+    margin: 4px 0;
+  }
+
+  .message {
+    max-width: 75%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .message.inbound {
+    align-self: flex-start;
+  }
+
+  .message.outbound {
+    align-self: flex-end;
+  }
+
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .message.inbound .bubble {
+    background: rgba(26, 33, 56, 0.7);
+    border: 1px solid rgba(255, 200, 110, 0.15);
+    border-bottom-left-radius: 3px;
+    color: #e2e8f0;
+  }
+
+  .message.outbound .bubble {
+    background: linear-gradient(135deg, rgba(255, 190, 89, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%);
+    border: 1px solid rgba(255, 200, 110, 0.35);
+    border-bottom-right-radius: 3px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .meta-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    align-self: flex-end;
+  }
+
+  /* Input Footer */
+  .chat-footer {
+    padding: 12px 18px;
+    border-top: 1px solid rgba(255, 200, 110, 0.12);
+    background: rgba(8, 11, 20, 0.4);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 200, 110, 0.2);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .chat-input:focus {
+    border-color: var(--amber-light);
+    box-shadow: 0 0 10px var(--amber-soft);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd782 0%, #d68910 100%);
+    border: none;
+    color: #0e1220;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(255, 190, 89, 0.4);
+    transition: all 0.15s ease;
+  }
+
+  .send-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(255, 190, 89, 0.6);
+  }
+</style>
+</head>
+<body>
+
+<div class="rain-layer"></div>
+
+<div class="chat-window">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="user-status-group">
+      <div class="avatar-wrap">
+        <span>🌧️</span>
+        <div class="online-pip"></div>
+      </div>
+      <div class="contact-info">
+        <h2>Elena Rostova</h2>
+        <p>Corner Cafe, Rue de Seine • Rain Ambiance</p>
+      </div>
+    </div>
+
+    <div class="call-actions">
+      <button class="header-icon-btn" title="Ambient Audio">📻</button>
+      <button class="header-icon-btn" title="Location Info">📍</button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages-area" id="messagesArea">
+    <div class="date-divider">Tonight • 23:42</div>
+
+    <div class="message inbound">
+      <div class="bubble">
+        The rain started pouring heavily over the cobblestones. I managed to duck into the bistro under the red awning.
+      </div>
+      <span class="meta-time">23:43</span>
+    </div>
+
+    <div class="message outbound">
+      <div class="bubble">
+        I see the amber lanterns glowing outside your window from across the square. Ordering a hot spiced tea for you.
+      </div>
+      <span class="meta-time">23:44</span>
+    </div>
+
+    <div class="message inbound">
+      <div class="bubble">
+        Perfect. The pianist here just started playing a quiet slow waltz. It matches the droplets on the glass perfectly.
+      </div>
+      <span class="meta-time">23:45</span>
+    </div>
+  </div>
+
+  <!-- Input Footer -->
+  <form class="chat-footer" id="chatForm">
+    <input type="text" class="chat-input" placeholder="Type a message into the night..." id="msgInput" autocomplete="off">
+    <button type="submit" class="send-btn">➤</button>
+  </form>
+</div>
+
+<script>
+  const chatForm = document.getElementById('chatForm');
+  const msgInput = document.getElementById('msgInput');
+  const messagesArea = document.getElementById('messagesArea');
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text) return;
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message outbound';
+    msgDiv.innerHTML = `
+      <div class="bubble">${text}</div>
+      <span class="meta-time">Just now</span>
+    `;
+
+    messagesArea.appendChild(msgDiv);
+    msgInput.value = '';
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+
+    // Simulated reply
+    setTimeout(() => {
+      const replyDiv = document.createElement('div');
+      replyDiv.className = 'message inbound';
+      replyDiv.innerHTML = `
+        <div class="bubble">Listening to the rhythm of the raindrops... stay warm out there.</div>
+        <span class="meta-time">Just now</span>
+      `;
+      messagesArea.appendChild(replyDiv);
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }, 1200);
+  });
+</script>
+</body>
+</html>

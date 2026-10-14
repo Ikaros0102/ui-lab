@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Station Blueprint Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Station Blueprint Console",
+  "category": "widgets",
+  "themes": ["dark"],
+  "tags": ["space", "sci-fi", "hud", "blueprint", "teal", "amber", "dashboard", "wireframe", "orbital-station"],
+  "description": "Teal space-agency dashboard: module list, toolbar grid, wireframe station inside rotating rings, and construction time / cost readouts with amber accents.",
+  "techniques": ["inline SVG wireframe", "rotating dashed rings", "dot-grid background via radial-gradient", "CSS variables for teal + amber palette", "data-driven module list"],
+  "recipe": "Everything sits on a faint dot grid made from a single radial-gradient. The wireframe station is plain SVG with thin white strokes and no fills, so it stays crisp at any scale. Concentric dashed circles rotate at different speeds in opposite directions to suggest instrumentation, while the amber arcs are stroke-dasharray segments on a circle. Selecting a module in the left list only swaps text and one CSS variable, so no re-layout is needed.",
+  "preview": { "mode": "page", "width": 1000, "height": 620 }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --teal: #3fd8d8;
+    --teal-dim: rgba(63, 216, 216, .35);
+    --teal-faint: rgba(63, 216, 216, .12);
+    --amber: #d9922e;
+    --bg: #04161d;
+    --text: #bfe9ea;
+    --muted: #5d8f95;
+  }
+  body {
+    margin: 0; min-height: 100vh;
+    display: grid; place-items: center;
+    background: #020a0e;
+    color: var(--text);
+    font: 11px/1.45 "Share Tech Mono", ui-monospace, monospace;
+    letter-spacing: .06em;
+    overflow: hidden;
+  }
+  .screen {
+    position: relative;
+    width: 960px; height: 580px;
+    background:
+      radial-gradient(circle, rgba(63,216,216,.16) 1px, transparent 1.4px) 0 0 / 22px 22px,
+      radial-gradient(80% 90% at 50% 50%, #0a2833, var(--bg) 75%);
+    border: 1px solid var(--teal-faint);
+    display: grid;
+    grid-template-columns: 200px 1fr 270px;
+    grid-template-rows: 34px 1fr 64px;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+  .topbar .sq { width: 30px; height: 30px; background: var(--teal); box-shadow: 0 0 16px var(--teal-dim); }
+  .topbar .coords { margin-left: 12px; color: var(--muted); flex: 1; }
+  .topbar .clock { font-size: 15px; letter-spacing: .18em; color: #e6fbfb; }
+
+  /* ---------- left list ---------- */
+  .modules { overflow: hidden; border-top: 1px solid var(--amber); }
+  .mod {
+    all: unset; display: block; box-sizing: border-box; width: 100%; cursor: pointer;
+    padding: 9px 4px 8px; border-bottom: 1px solid var(--teal-faint);
+  }
+  .mod h4 { margin: 0 0 4px; font-size: 12px; color: #fff; font-weight: 400; border-bottom: 1px solid var(--teal-dim); padding-bottom: 3px; }
+  .mod dl { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 12px; color: var(--muted); font-size: 9px; }
+  .mod dd { margin: 0; text-align: right; }
+  .mod:hover h4, .mod[aria-pressed="true"] h4 { color: var(--amber); border-color: var(--amber); }
+  .mod[aria-pressed="true"] { background: linear-gradient(90deg, rgba(217,146,46,.1), transparent); }
+
+  /* ---------- center ---------- */
+  .stage { position: relative; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--teal-faint); }
+  .menu { position: absolute; top: 0; left: 44px; right: 0; display: flex; border-bottom: 1px solid var(--teal-faint); }
+  .menu span { flex: 1; text-align: center; padding: 3px 0; border-left: 1px solid var(--teal-faint); color: var(--muted); font-size: 9px; }
+  .tools { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; display: grid; align-content: start; gap: 6px; padding: 6px; border-right: 1px solid var(--teal-faint); }
+  .tools i { display: block; height: 26px; border: 1px solid var(--teal-dim); position: relative; }
+  .tools i::after { content: ""; position: absolute; inset: 7px; border: 1px solid var(--teal-dim); border-radius: 2px; }
+  .tools i:nth-child(3n)::after { border-radius: 50%; }
+  svg.station { width: 100%; height: 100%; }
+  .ring-a { transform-origin: 250px 230px; animation: spin 60s linear infinite; }
+  .ring-b { transform-origin: 250px 230px; animation: spin 90s linear infinite reverse; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .readout { position: absolute; bottom: 8px; display: flex; flex-direction: column; }
+  .readout b { font-size: 30px; font-weight: 400; color: var(--amber); line-height: 1; text-shadow: 0 0 12px rgba(217,146,46,.5); }
+  .readout small { color: var(--muted); font-size: 8px; white-space: nowrap; }
+  .readout.l { left: 54px; } .readout.r { right: 10px; text-align: right; }
+
+  /* ---------- right ---------- */
+  .side { display: grid; grid-template-rows: 150px 1fr; gap: 12px; }
+  .preview {
+    position: relative; overflow: hidden; border: 1px solid var(--teal-dim);
+    background:
+      radial-gradient(120% 90% at 105% 110%, #5fb0ff 0 22%, #1c4f86 30%, #071a30 52%, transparent 53%),
+      radial-gradient(1px 1px at 30% 20%, #fff, transparent), radial-gradient(1px 1px at 60% 40%, #fff, transparent),
+      radial-gradient(1px 1px at 80% 15%, #fff, transparent), #02060d;
+  }
+  .preview::after { content: "RENDER // HOLDER"; position: absolute; bottom: 4px; right: 6px; font-size: 8px; color: var(--muted); }
+  .sat { position: absolute; left: 22%; top: 38%; width: 90px; height: 16px; background: #8a9099; transform: rotate(-24deg); box-shadow: 0 0 0 2px #1b2128 inset; }
+  .sat::before, .sat::after { content: ""; position: absolute; top: -20px; width: 40px; height: 56px; background: repeating-linear-gradient(90deg, #cdd3da 0 3px, #5b636d 3px 5px); transform: skewY(-12deg); }
+  .sat::before { left: -48px; } .sat::after { right: -48px; }
+
+  .info { position: relative; border: 1px solid var(--teal-dim); border-radius: 50% / 40%; padding: 18px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .info h3 { margin: 0 0 6px; font-weight: 400; font-size: 14px; letter-spacing: .3em; color: #e6fbfb; }
+  .info p { margin: 0 0 8px; font-size: 9px; color: var(--muted); }
+  .info ul { margin: auto 0 0; padding: 6px 8px; list-style: none; border: 1px solid var(--teal-dim); font-size: 9px; text-align: left; width: 100%; }
+
+  .footer { grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  .footer button { all: unset; cursor: pointer; padding: 6px 14px; border: 1px solid var(--teal-dim); color: var(--teal); }
+  .footer button:hover { background: var(--teal-faint); }
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="topbar">
+    <div class="sq"></div>
+    <div class="coords">51.4839101, -3.1640422</div>
+    <div class="clock" id="clock">02.10.2019 20:56</div>
+  </header>
+
+  <nav class="modules" id="modules" aria-label="Modules"></nav>
+
+  <section class="stage">
+    <div class="menu"><span>File</span><span>Edit</span><span>Create</span><span>Select</span><span>Modify</span><span>Render</span><span>Window</span><span>Help</span></div>
+    <div class="tools"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+    <svg class="station" viewBox="0 0 500 460" fill="none" stroke="#dff" stroke-width=".8">
+      <g class="ring-b" stroke="#3fd8d8" stroke-opacity=".5" stroke-dasharray="2 5"><circle cx="250" cy="230" r="205"/></g>
+      <g class="ring-a" stroke="#3fd8d8" stroke-opacity=".6"><circle cx="250" cy="230" r="170"/><circle cx="250" cy="230" r="150" stroke-dasharray="14 6"/></g>
+      <circle cx="250" cy="230" r="188" stroke="#d9922e" stroke-width="3" stroke-dasharray="90 200" stroke-opacity=".8" transform="rotate(-30 250 230)"/>
+      <!-- central truss -->
+      <g stroke-opacity=".9">
+        <rect x="236" y="40" width="28" height="30"/><rect x="243" y="70" width="14" height="150"/>
+        <rect x="228" y="120" width="44" height="12"/><rect x="238" y="220" width="24" height="22"/>
+        <ellipse cx="250" cy="300" rx="120" ry="34"/><ellipse cx="250" cy="300" rx="90" ry="22"/><ellipse cx="250" cy="300" rx="52" ry="12"/>
+        <rect x="244" y="300" width="12" height="150"/>
+        <path d="M130 300 L60 330 L110 345 L170 322 M370 300 L440 330 L390 345 L330 322"/>
+        <path d="M130 290 L60 262 L110 252 L172 278 M370 290 L440 262 L390 252 L328 278"/>
+      </g>
+      <g stroke-opacity=".55">
+        <path d="M60 330 L110 345 M60 262 L110 252 M440 330 L390 345 M440 262 L390 252"/>
+        <path d="M80 322 L128 336 M86 270 L130 262 M420 322 L372 336 M414 270 L370 262"/>
+      </g>
+    </svg>
+
+    <div class="readout l"><b id="rTime">2Y</b><small id="rDate">06/10/2021 · EST. TIME &amp; DATE</small></div>
+    <div class="readout r"><b id="rCost">50.000M</b><small id="rFull">49.873.290.017$ · EST. COST</small></div>
+  </section>
+
+  <aside class="side">
+    <div class="preview"><div class="sat"></div></div>
+    <div class="info">
+      <h3>&lt;//: <span id="iName">ATV</span> :///&gt;</h3>
+      <p id="iText">The Automated Transfer Vehicle was an expendable cargo spacecraft developed by the European Space Agency.</p>
+      <ul>
+        <li id="iTime">Estimated construction time: 2 month</li>
+        <li id="iDead">Estimated deadline: 06/12/2019</li>
+        <li id="iCost">Estimated cost: 295 $</li>
+      </ul>
+    </div>
+  </aside>
+
+  <footer class="footer"><button id="prev">↓ PREV</button><button id="next">NEXT ↑</button></footer>
+</div>
+
+<script>
+  const DATA = [
+    { id: "ATV_03_01", name: "ATV",  prog: "30%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "2Y",  d: "06/10/2021", total: "50.000M", full: "49.873.290.017$", text: "The Automated Transfer Vehicle was an expendable cargo spacecraft developed by the European Space Agency." },
+    { id: "FGB_10_03", name: "FGB",  prog: "12%", delay: "2 MONTH",  cost: "2M $",  dead: "15/04/2020", t: "3Y",  d: "11/03/2022", total: "72.400M", full: "72.388.120.412$", text: "Functional Cargo Block: the first module of the station, providing power, storage and propulsion." },
+    { id: "PMA_03_31", name: "PMA",  prog: "38%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "1Y",  d: "21/09/2020", total: "08.900M", full: "08.871.002.390$", text: "Pressurized Mating Adapter: converts the docking mechanism between modules." },
+    { id: "S1_01_20",  name: "S1",   prog: "48%", delay: "NO DELAY", cost: "190K $", dead: "23/08/2020", t: "4Y", d: "02/01/2023", total: "93.100M", full: "93.017.554.221$", text: "Starboard truss segment carrying radiators and solar array rotary joints." },
+    { id: "S2_01_40",  name: "S2",   prog: "28%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "2Y",  d: "17/05/2021", total: "41.250M", full: "41.199.730.865$", text: "Secondary truss segment housing thermal control and data relay equipment." }
+  ];
+  const $ = (id) => document.getElementById(id);
+  const list = $("modules");
+  let cur = 0;
+
+  list.innerHTML = DATA.map((m, i) => `
+    <button class="mod" data-i="${i}" aria-pressed="${i === 0}">
+      <h4>${m.id}</h4>
+      <dl><dt>GENERAL PROGRESS</dt><dd>${m.prog}</dd><dt>DELAY</dt><dd>${m.delay}</dd><dt>EXTRA COST</dt><dd>${m.cost}</dd><dt>DEADLINE</dt><dd>${m.dead}</dd></dl>
+    </button>`).join("");
+
+  function select(i) {
+    cur = (i + DATA.length) % DATA.length;
+    const m = DATA[cur];
+    list.querySelectorAll(".mod").forEach((b, k) => b.setAttribute("aria-pressed", k === cur));
+    $("iName").textContent = m.name; $("iText").textContent = m.text;
+    $("rTime").textContent = m.t; $("rDate").textContent = m.d + " · EST. TIME & DATE";
+    $("rCost").textContent = m.total; $("rFull").textContent = m.full + " · EST. COST";
+    $("iDead").textContent = "Estimated deadline: " + m.dead; $("iCost").textContent = "Estimated cost: " + m.cost;
+  }
+  list.addEventListener("click", (e) => { const b = e.target.closest(".mod"); if (b) select(+b.dataset.i); });
+  $("prev").onclick = () => select(cur - 1);
+  $("next").onclick = () => select(cur + 1);
+
+  const tick = () => {
+    const d = new Date(), p = (n) => String(n).padStart(2, "0");
+    $("clock").textContent = `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+  tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>

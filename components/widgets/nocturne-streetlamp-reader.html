@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nocturne Streetlamp - Twilight Reader & Gaslamp Console</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Nocturne Gaslamp Night Reader",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "streetlamp",
+    "gaslamp",
+    "nocturne",
+    "midnight",
+    "indigo",
+    "purple-mist",
+    "reader",
+    "rain",
+    "realism",
+    "ambient"
+  ],
+  "description": "Atmospheric nighttime reader illuminated by a vintage three-headed cast iron gas streetlamp, featuring volumetric light cones, a rotary gas dimmer, and ambient street rain.",
+  "techniques": [
+    "vector vintage gaslamp silhouette with warm sodium lantern glow",
+    "conical volumetric light beam projected onto wet cobblestone ground",
+    "interactive rotary gas dimmer dial adjusting ambient light levels",
+    "rain droplet refraction in deep indigo-violet twilight mist",
+    "distraction-free literary night reading interface"
+  ],
+  "recipe": "The nocturnal scene features an antique wrought-iron streetlamp silhouette created with SVG paths. The lamp's lanterns emit radial and conical gradients representing volumetric light beaming down onto wet cobblestones, with an interactive dimmer knob that adjusts the reading ambient light.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --indigo-night: #090b16;
+    --violet-mist: #231238;
+    --lamp-amber: #ffbe59;
+    --lamp-core: #fff5d1;
+    --lamp-beam: rgba(255, 195, 95, 0.22);
+    --cobble-wet: #12141f;
+    --text-lit: #fff7eb;
+    --text-faded: #9ca3af;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Volumetric streetlamp glow */
+      radial-gradient(circle at 25% 35%, var(--lamp-beam) 0%, rgba(255, 170, 50, 0.08) 35%, transparent 60%),
+      /* Violet twilight sky */
+      radial-gradient(circle at 75% 20%, rgba(138, 75, 175, 0.2) 0%, transparent 50%),
+      linear-gradient(180deg, #090a14 0%, #16152b 50%, #0c0d18 100%);
+    color: var(--text-lit);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+    transition: background 0.3s ease;
+  }
+
+  /* Rain Streak Filter */
+  .nocturne-rain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(105deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 42px);
+    opacity: 0.7;
+    animation: rainMist 1.1s linear infinite;
+  }
+
+  @keyframes rainMist {
+    0% { transform: translateY(-40px); }
+    100% { transform: translateY(40px); }
+  }
+
+  /* Main Stage Container */
+  .lamp-station {
+    width: 100%;
+    max-width: 960px;
+    background: rgba(13, 16, 28, 0.82);
+    border: 1px solid rgba(255, 200, 110, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.9),
+      0 0 35px rgba(255, 190, 89, 0.1),
+      inset 0 1px 1px rgba(255, 230, 180, 0.25);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Top Bar */
+  .station-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 200, 110, 0.15);
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+
+  .nocturne-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .lamp-pip-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, #ffd988 0%, #aa6c1b 100%);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px rgba(255, 190, 89, 0.45);
+  }
+
+  .nocturne-titles h1 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 23px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff6e5;
+  }
+
+  .nocturne-titles p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: var(--text-faded);
+  }
+
+  /* Dimmer Knob & Control */
+  .gas-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 200, 110, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+  }
+
+  .dimmer-label {
+    font-size: 11px;
+    color: var(--lamp-amber);
+    font-weight: 600;
+  }
+
+  .dimmer-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .dimmer-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--lamp-amber);
+    box-shadow: 0 0 8px var(--lamp-amber);
+    cursor: pointer;
+  }
+
+  /* Two Column Layout */
+  .nocturne-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.35fr;
+    gap: 26px;
+  }
+
+  /* Left: Gas Streetlamp Silhouette & Conical Beam */
+  .lamp-visual-stage {
+    background: radial-gradient(circle at 50% 30%, rgba(255, 190, 89, 0.15) 0%, rgba(10, 12, 22, 0.8) 75%);
+    border: 1px solid rgba(255, 200, 110, 0.12);
+    border-radius: 12px;
+    height: 380px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  /* Conical Volumetric Light Ray */
+  .volumetric-cone {
+    position: absolute;
+    top: 50px;
+    width: 220px;
+    height: 280px;
+    background: linear-gradient(180deg, rgba(255, 215, 120, 0.35) 0%, rgba(255, 190, 89, 0.15) 50%, rgba(255, 190, 89, 0.02) 100%);
+    clip-path: polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%);
+    pointer-events: none;
+    filter: blur(10px);
+    transition: opacity 0.2s ease;
+  }
+
+  /* Streetlamp SVG Silhouette */
+  .streetlamp-svg {
+    position: relative;
+    z-index: 2;
+    height: 340px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  }
+
+  /* Lantern Core Glows */
+  .lamp-glow-core {
+    fill: var(--lamp-amber);
+    filter: drop-shadow(0 0 8px var(--lamp-amber)) drop-shadow(0 0 16px var(--lamp-amber));
+    transition: all 0.2s ease;
+  }
+
+  /* Wet Cobblestones Floor Reflection */
+  .cobblestone-reflection {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 190, 89, 0.35) 0%, transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.6) 100%);
+    border-top: 1px solid rgba(255, 200, 110, 0.2);
+  }
+
+  /* Right: Literary Night Reading Slate */
+  .reader-slate {
+    background: rgba(18, 22, 38, 0.7);
+    border: 1px solid rgba(255, 200, 110, 0.15);
+    border-radius: 12px;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .passage-head {
+    border-bottom: 1px solid rgba(255, 200, 110, 0.12);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .passage-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: #fff5e0;
+    margin: 0;
+  }
+
+  .author-tag {
+    font-size: 11px;
+    color: var(--lamp-amber);
+    font-style: italic;
+  }
+
+  .literary-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #f1e9dc;
+    margin: 0;
+  }
+
+  .quote-verse {
+    border-left: 2px solid var(--lamp-amber);
+    padding-left: 14px;
+    margin: 12px 0;
+    font-style: italic;
+    color: #ffd899;
+  }
+
+  /* Audio Ambient Rain Pill Bar */
+  .audio-footer-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 200, 110, 0.12);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 12px;
+  }
+
+  .ambient-sound-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e2e8f0;
+  }
+
+  .toggle-audio-btn {
+    background: rgba(255, 190, 89, 0.15);
+    border: 1px solid var(--lamp-amber);
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .toggle-audio-btn:hover {
+    background: var(--lamp-amber);
+    color: #0d101c;
+  }
+</style>
+</head>
+<body>
+
+<div class="nocturne-rain"></div>
+
+<div class="lamp-station">
+  <!-- Top Bar -->
+  <div class="station-head">
+    <div class="nocturne-brand">
+      <div class="lamp-pip-icon">🏮</div>
+      <div class="nocturne-titles">
+        <h1>Nocturne Gaslamp Night Reader</h1>
+        <p>Late Night Literary Solitude • Sodium Vapor Ambience</p>
+      </div>
+    </div>
+
+    <!-- Gas Dimmer Knob -->
+    <div class="gas-controls">
+      <span class="dimmer-label">Gas Valve</span>
+      <input type="range" min="20" max="100" value="85" class="dimmer-slider" id="gasDimmer">
+      <span id="gasVal" style="font-size: 11px; color: #fff; min-width: 32px;">85%</span>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="nocturne-grid">
+    <!-- Left: Streetlamp & Light Cone -->
+    <div class="lamp-visual-stage" id="lampStage">
+      <div class="volumetric-cone" id="lightCone"></div>
+
+      <!-- Antique Cast Iron Streetlamp Vector -->
+      <svg class="streetlamp-svg" viewBox="0 0 160 320">
+        <!-- Post Base & Column -->
+        <polygon points="65,315 95,315 90,285 70,285" fill="#131620" stroke="#363d4f" stroke-width="1.5"/>
+        <rect x="76" y="90" width="8" height="195" fill="#191c28" stroke="#363d4f" stroke-width="1.5"/>
+        <circle cx="80" cy="180" r="7" fill="#1f2331" stroke="#485169" stroke-width="1"/>
+        <circle cx="80" cy="100" r="8" fill="#1f2331" stroke="#485169" stroke-width="1"/>
+
+        <!-- Three-Headed Lamp Arms -->
+        <!-- Center Head -->
+        <rect x="74" y="60" width="12" height="30" fill="#1b1e2a" stroke="#485169" stroke-width="1"/>
+        <polygon points="68,60 92,60 88,40 72,40" fill="#131620" stroke="#485169" stroke-width="1.5"/>
+        <!-- Center Lantern Glass Glow -->
+        <polygon points="71,60 89,60 86,42 74,42" class="lamp-glow-core" id="glowCenter"/>
+        <polygon points="66,40 94,40 80,24" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
+        <circle cx="80" cy="22" r="2.5" fill="#cfa85b"/>
+
+        <!-- Left Head Arm -->
+        <path d="M76,95 Q 50,90 40,75 L 40,65" fill="none" stroke="#363d4f" stroke-width="2.5"/>
+        <polygon points="32,65 48,65 45,48 35,48" class="lamp-glow-core" id="glowLeft"/>
+        <polygon points="30,48 50,48 40,36" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
+
+        <!-- Right Head Arm -->
+        <path d="M84,95 Q 110,90 120,75 L 120,65" fill="none" stroke="#363d4f" stroke-width="2.5"/>
+        <polygon points="112,65 128,65 125,48 115,48" class="lamp-glow-core" id="glowRight"/>
+        <polygon points="110,48 130,48 120,36" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
+      </svg>
+
+      <div class="cobblestone-reflection"></div>
+    </div>
+
+    <!-- Right: Literary Reader Slate -->
+    <div class="reader-slate">
+      <div>
+        <div class="passage-head">
+          <h2 class="passage-title">Evening Promenade in Fog</h2>
+          <span class="author-tag">Rainer Maria Rilke • Book of Hours</span>
+        </div>
+
+        <p class="literary-body">
+          The evening is folding into violet shadows around the dripping iron eaves. Streetlamps flicker into warm sodium brilliance along the wet cobblestone boulevard, scattering golden amber flares into the mist.
+        </p>
+
+        <div class="quote-verse">
+          "Quiet friend of many distances, feel how your breath<br>
+          enlarges all of space. Let this darkness be a bell tower<br>
+          and you the bell."
+        </div>
+
+        <p class="literary-body">
+          Underneath the shelter of the gaslamp, the city recedes into a soft distant murmur of carriage wheels and rain on black asphalt. Reading in this amber halo, the hours slow to a tranquil stillness.
+        </p>
+      </div>
+
+      <div class="audio-footer-strip">
+        <div class="ambient-sound-status">
+          <span>🌧️ 96 kbps Wet Cobblestones & Distant Bells</span>
+        </div>
+        <button class="toggle-audio-btn" id="ambientToggle">Toggle Rain Audio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const gasDimmer = document.getElementById('gasDimmer');
+  const gasVal = document.getElementById('gasVal');
+  const lightCone = document.getElementById('lightCone');
+  const glowCores = document.querySelectorAll('.lamp-glow-core');
+  const ambientToggle = document.getElementById('ambientToggle');
+
+  gasDimmer.addEventListener('input', () => {
+    const val = gasDimmer.value;
+    gasVal.textContent = `${val}%`;
+
+    const opacity = val / 100;
+    lightCone.style.opacity = opacity;
+
+    glowCores.forEach(core => {
+      core.style.filter = `drop-shadow(0 0 ${8 * opacity}px #ffbe59) drop-shadow(0 0 ${16 * opacity}px #ffbe59) brightness(${0.4 + 0.8 * opacity})`;
+    });
+
+    document.body.style.setProperty('--lamp-beam', `rgba(255, 195, 95, ${0.25 * opacity})`);
+  });
+
+  let audioPlaying = true;
+  ambientToggle.addEventListener('click', () => {
+    audioPlaying = !audioPlaying;
+    ambientToggle.textContent = audioPlaying ? 'Pause Audio' : 'Resume Audio';
+    ambientToggle.style.background = audioPlaying ? 'rgba(255, 190, 89, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+  });
+</script>
+</body>
+</html>

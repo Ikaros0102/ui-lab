@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garden at Dusk - Zen Meditation & Mindful Ritual</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Zen Dusk Meditation Garden",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "tags": [
+    "zen",
+    "garden",
+    "dusk",
+    "japanese",
+    "meditation",
+    "habits",
+    "rain",
+    "lantern",
+    "mindfulness",
+    "calm"
+  ],
+  "description": "Japanese twilight tea pavilion interface for meditation and mindful daily rituals, with breathing rhythm guidance, warm paper lantern glow, and garden rain ambiance.",
+  "techniques": [
+    "washi paper lantern breathing glow animation",
+    "moss stone palette with polished cedarwood tones",
+    "smooth expanding/contracting SVG breath circle",
+    "rain streak overlay on dark veranda floor",
+    "minimalist wabi-sabi typography with spacious padding"
+  ],
+  "recipe": "The serene tea house aesthetic is achieved by framing the view with dark cedarwood tones and warm washi paper lanterns. The breathing circle animates smoothly between inhale, hold, and exhale phases with soft SVG radial glow transitions, accompanied by mindful habit stones.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --cedar-dark: #14100c;
+    --cedar-board: #221a14;
+    --washi-cream: #f5efe6;
+    --washi-card: #ece4d7;
+    --moss-deep: #1b2820;
+    --moss-tint: #374e3e;
+    --lantern-amber: #ff9e42;
+    --lantern-glow: rgba(255, 158, 66, 0.28);
+    --ink-sumi: #1a1612;
+    --ink-faded: #6c645b;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Soft lantern glow */
+      radial-gradient(circle at 15% 20%, rgba(255, 158, 66, 0.25) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(55, 78, 62, 0.3) 0%, transparent 50%),
+      /* Twilight garden rainfall */
+      linear-gradient(180deg, #0e1215 0%, #151a1d 40%, #0d1012 100%);
+    color: var(--ink-sumi);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Rain Streaks */
+  .zen-rain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(98deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 50px);
+    opacity: 0.6;
+    animation: rainSoft 1.5s linear infinite;
+  }
+
+  @keyframes rainSoft {
+    0% { transform: translateY(-30px); }
+    100% { transform: translateY(30px); }
+  }
+
+  /* Main Veranda Pavilion Container */
+  .tea-pavilion {
+    width: 100%;
+    max-width: 940px;
+    background: linear-gradient(180deg, #241c16 0%, #17120e 100%);
+    border: 3px solid #3d2f24;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.85),
+      0 0 40px rgba(255, 158, 66, 0.1),
+      inset 0 1px 1px rgba(255, 220, 160, 0.15);
+    position: relative;
+    z-index: 5;
+  }
+
+  .pavilion-inner {
+    background: var(--washi-cream);
+    border-radius: 10px;
+    padding: 26px 32px;
+    box-shadow: inset 0 0 40px rgba(120, 100, 70, 0.08);
+  }
+
+  /* Top Bar */
+  .pavilion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(108, 100, 91, 0.2);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+
+  .zen-kanji-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .kanji-mark {
+    font-size: 26px;
+    color: var(--moss-tint);
+    font-family: serif;
+    opacity: 0.8;
+  }
+
+  .zen-names h1 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: var(--ink-sumi);
+  }
+
+  .zen-names p {
+    margin: 3px 0 0;
+    font-size: 11.5px;
+    color: var(--ink-faded);
+    letter-spacing: 0.5px;
+  }
+
+  /* Paper Lantern Badge */
+  .lantern-badge {
+    background: #fdf5ea;
+    border: 1px solid #f2cda5;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #9c5517;
+    box-shadow: 0 0 15px rgba(255, 158, 66, 0.2);
+  }
+
+  .lantern-light {
+    width: 10px;
+    height: 10px;
+    background: var(--lantern-amber);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--lantern-amber);
+    animation: lanternPulse 3s infinite alternate ease-in-out;
+  }
+
+  @keyframes lanternPulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 6px var(--lantern-amber)); }
+  }
+
+  /* Main Grid */
+  .meditation-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1.15fr;
+    gap: 28px;
+  }
+
+  /* Left: Breathing Circle & Timer */
+  .breathing-sanctum {
+    background: #fbf7f0;
+    border: 1px solid #ded5c5;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    min-height: 380px;
+  }
+
+  .breath-guide-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--moss-tint);
+    letter-spacing: 0.5px;
+  }
+
+  /* Expanding Breathing Circle SVG */
+  .breath-orb-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: grid;
+    place-items: center;
+    margin: 16px 0;
+  }
+
+  .breath-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, rgba(255, 158, 66, 0.25) 0%, rgba(55, 78, 62, 0.2) 60%, rgba(20, 30, 24, 0.05) 100%);
+    border: 1.5px solid rgba(55, 78, 62, 0.4);
+    box-shadow: 0 0 25px rgba(255, 158, 66, 0.25);
+    display: grid;
+    place-items: center;
+    transition: all 4s ease-in-out;
+    animation: breathingCycle 10s infinite ease-in-out;
+  }
+
+  @keyframes breathingCycle {
+    0% { transform: scale(0.85); box-shadow: 0 0 10px rgba(255, 158, 66, 0.15); }
+    40% { transform: scale(1.15); box-shadow: 0 0 35px rgba(255, 158, 66, 0.45); }
+    60% { transform: scale(1.15); box-shadow: 0 0 35px rgba(255, 158, 66, 0.45); }
+    100% { transform: scale(0.85); box-shadow: 0 0 10px rgba(255, 158, 66, 0.15); }
+  }
+
+  .timer-clock {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink-sumi);
+  }
+
+  .breath-phase-text {
+    font-size: 12px;
+    color: var(--ink-faded);
+    margin-top: 2px;
+  }
+
+  /* Preset Session Buttons */
+  .session-durations {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .duration-pill {
+    background: #f0e7d8;
+    border: 1px solid #d8cca4;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    color: var(--ink-faded);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .duration-pill:hover, .duration-pill.is-active {
+    background: var(--moss-tint);
+    border-color: var(--moss-deep);
+    color: #ffffff;
+  }
+
+  /* Start Button */
+  .zen-action-btn {
+    width: 100%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 11px;
+    border-radius: 8px;
+    background: var(--moss-tint);
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(55, 78, 62, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .zen-action-btn:hover {
+    background: #2a3c2f;
+    transform: translateY(-1px);
+  }
+
+  /* Right: Mindful Habit Stones & Garden Soundscape */
+  .garden-habits-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .panel-lead {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-sumi);
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(108, 100, 91, 0.15);
+    padding-bottom: 6px;
+  }
+
+  /* Habit Stones List */
+  .habits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 20px;
+  }
+
+  .habit-stone {
+    background: #fbf7f0;
+    border: 1px solid #ded5c5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .habit-stone:hover {
+    background: #ffffff;
+    border-color: #baa98f;
+    transform: translateX(2px);
+  }
+
+  .stone-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid #a3957f;
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    color: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .habit-stone.completed .stone-check {
+    background: var(--moss-tint);
+    border-color: var(--moss-tint);
+    color: #ffffff;
+  }
+
+  .habit-stone.completed .habit-title {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .habit-meta {
+    flex: 1;
+  }
+
+  .habit-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-sumi);
+  }
+
+  .habit-desc {
+    font-size: 10.5px;
+    color: var(--ink-faded);
+  }
+
+  /* Soundscape Toggles */
+  .sound-switches {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sound-btn {
+    flex: 1;
+    background: #f4ecdc;
+    border: 1px solid #d9ccb4;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--ink-faded);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .sound-btn:hover, .sound-btn.is-active {
+    background: #fdf5ea;
+    border-color: var(--lantern-amber);
+    color: #9c5517;
+  }
+</style>
+</head>
+<body>
+
+<div class="zen-rain"></div>
+
+<div class="tea-pavilion">
+  <div class="pavilion-inner">
+    <!-- Header -->
+    <div class="pavilion-header">
+      <div class="zen-kanji-title">
+        <span class="kanji-mark">静寂</span>
+        <div class="zen-names">
+          <h1>Garden at Dusk • Yuugure</h1>
+          <p>Rainwater Pavillion • Mindful Breathing & Tea Sanctuary</p>
+        </div>
+      </div>
+
+      <div class="lantern-badge">
+        <div class="lantern-light"></div>
+        <span>Paper Lantern Lit</span>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="meditation-grid">
+      <!-- Left: Breathing & Timer -->
+      <div class="breathing-sanctum">
+        <div class="breath-guide-label" id="breathLabel">Follow the breathing circle</div>
+
+        <div class="breath-orb-wrap">
+          <div class="breath-circle" id="breathCircle">
+            <div>
+              <div class="timer-clock" id="timerClock">10:00</div>
+              <div class="breath-phase-text" id="phaseText">Inhale gently</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width: 100%;">
+          <div class="session-durations">
+            <button class="duration-pill" data-mins="5">5 Min</button>
+            <button class="duration-pill is-active" data-mins="10">10 Min</button>
+            <button class="duration-pill" data-mins="20">20 Min</button>
+            <button class="duration-pill" data-mins="45">45 Min</button>
+          </div>
+
+          <button class="zen-action-btn" id="sessionBtn">
+            <span>Begin Contemplation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Habit Stones & Soundscape -->
+      <div class="garden-habits-panel">
+        <div>
+          <div class="panel-lead">Mindful Daily Rituals</div>
+
+          <div class="habits-list">
+            <div class="habit-stone completed">
+              <div class="stone-check">✓</div>
+              <div class="habit-meta">
+                <div class="habit-title">Morning Sencha Tea Ceremony</div>
+                <div class="habit-desc">Savoring first brew in silence</div>
+              </div>
+            </div>
+
+            <div class="habit-stone completed">
+              <div class="stone-check">✓</div>
+              <div class="habit-meta">
+                <div class="habit-title">Moss Garden Raking</div>
+                <div class="habit-desc">Aligning stone ripples by the pond</div>
+              </div>
+            </div>
+
+            <div class="habit-stone">
+              <div class="stone-check">✓</div>
+              <div class="habit-meta">
+                <div class="habit-title">Twilight Evening Breathwork</div>
+                <div class="habit-desc">Listening to rain on cedar shingles</div>
+              </div>
+            </div>
+
+            <div class="habit-stone">
+              <div class="stone-check">✓</div>
+              <div class="habit-meta">
+                <div class="habit-title">Calligraphy Journal Reflection</div>
+                <div class="habit-desc">Three sentences of gratitude</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-lead">Garden Soundscape</div>
+          <div class="sound-switches">
+            <button class="sound-btn is-active">🌧️ Shingle Rain</button>
+            <button class="sound-btn">🔔 Temple Bell</button>
+            <button class="sound-btn">🎋 Bamboo Fountain</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Duration Pill selection
+  const pills = document.querySelectorAll('.duration-pill');
+  const timerClock = document.getElementById('timerClock');
+  let currentMinutes = 10;
+  let timerInterval = null;
+  let remainingSeconds = 600;
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('is-active'));
+      pill.classList.add('is-active');
+      currentMinutes = parseInt(pill.dataset.mins, 10);
+      remainingSeconds = currentMinutes * 60;
+      timerClock.textContent = `${currentMinutes}:00`;
+    });
+  });
+
+  // Habit Stones Toggle
+  const habitStones = document.querySelectorAll('.habit-stone');
+  habitStones.forEach(stone => {
+    stone.addEventListener('click', () => {
+      stone.classList.toggle('completed');
+    });
+  });
+
+  // Soundscape Buttons
+  const soundBtns = document.querySelectorAll('.sound-btn');
+  soundBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('is-active');
+    });
+  });
+
+  // Session Start / Pause
+  const sessionBtn = document.getElementById('sessionBtn');
+  const phaseText = document.getElementById('phaseText');
+  let isRunning = false;
+
+  sessionBtn.addEventListener('click', () => {
+    isRunning = !isRunning;
+    if (isRunning) {
+      sessionBtn.textContent = 'Pause Contemplation';
+      sessionBtn.style.background = '#8a4f21';
+
+      timerInterval = setInterval(() => {
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          const m = Math.floor(remainingSeconds / 60);
+          const s = remainingSeconds % 60;
+          timerClock.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+          // Breath phase text cycle (10s total: 4s inhale, 2s hold, 4s exhale)
+          const cycleSec = remainingSeconds % 10;
+          if (cycleSec > 6) phaseText.textContent = 'Inhale deeply...';
+          else if (cycleSec > 4) phaseText.textContent = 'Hold gently...';
+          else phaseText.textContent = 'Exhale and release...';
+        } else {
+          clearInterval(timerInterval);
+          sessionBtn.textContent = 'Session Complete • Bell Tolls';
+        }
+      }, 1000);
+    } else {
+      clearInterval(timerInterval);
+      sessionBtn.textContent = 'Resume Contemplation';
+      sessionBtn.style.background = 'var(--moss-tint)';
+    }
+  });
+</script>
+</body>
+</html>

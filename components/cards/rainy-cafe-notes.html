@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rainy Café - Acoustic Soundscape & Coffeehouse Notes</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Rainy Cafe Journal & Soundscape",
+  "category": "cards",
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "cafe",
+    "coffee",
+    "rain",
+    "edison-bulb",
+    "journal",
+    "notes",
+    "soundscape",
+    "acoustic",
+    "warmth",
+    "amber"
+  ],
+  "description": "Cozy window-table cafe interface with glowing filament Edison bulbs, steaming coffee mug, lo-fi acoustic playlist, and coffeehouse journal notes.",
+  "techniques": [
+    "warm Edison filament glow with radial-gradient diffusion",
+    "steaming coffee cup particle animation",
+    "rain-slicked window glass overlay with car headlight bokeh",
+    "interactive acoustic lo-fi player with analog volume mixer",
+    "editorial cafe tasting notes and markdown scratchpad"
+  ],
+  "recipe": "The intimate cafe corner blends dark walnut tabletop textures with a glowing Edison pendant light. Animated SVG steam plumes rise from the porcelain coffee cup, while the background rain streaks and warm headlight bokeh evoke a quiet afternoon watching the storm from a bistro window.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --cafe-table: #1e130c;
+    --table-wood: #2c1a11;
+    --edison-amber: #ffaa3b;
+    --edison-glow: rgba(255, 170, 59, 0.28);
+    --coffee-crema: #d89f68;
+    --paper-note: #f8f3ea;
+    --ink-espresso: #24170f;
+    --ink-muted: #786658;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Amber Edison light overhead */
+      radial-gradient(circle at 75% 15%, rgba(255, 170, 59, 0.3) 0%, rgba(220, 120, 30, 0.12) 40%, transparent 65%),
+      /* City bokeh through rain */
+      radial-gradient(circle at 20% 70%, rgba(255, 200, 100, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 35% 40%, rgba(220, 70, 50, 0.15) 0%, transparent 40%),
+      linear-gradient(180deg, #100b08 0%, #19110c 50%, #0a0705 100%);
+    color: #f7ede2;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Rain on Glass Overlay */
+  .cafe-rain-glass {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(102deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 40px),
+      repeating-linear-gradient(92deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 65px);
+    opacity: 0.7;
+    animation: rainSlide 1.2s linear infinite;
+  }
+
+  @keyframes rainSlide {
+    0% { transform: translateY(-35px); }
+    100% { transform: translateY(35px); }
+  }
+
+  /* Table Station Container */
+  .cafe-station {
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(180deg, #281910 0%, #170d07 100%);
+    border: 3px solid #4a2e1c;
+    border-radius: 16px;
+    padding: 22px 28px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.95),
+      0 0 45px var(--edison-glow),
+      inset 0 1px 1px rgba(255, 220, 150, 0.25);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Top Bar */
+  .cafe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #3c2314;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+
+  .cafe-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .mug-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, #54341c 0%, #1e1107 100%);
+    border: 1.5px solid var(--edison-amber);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: 0 0 16px var(--edison-glow);
+  }
+
+  .cafe-titles h1 {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff1db;
+    letter-spacing: 0.5px;
+  }
+
+  .cafe-titles p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #ad947f;
+  }
+
+  /* Steaming Cup & Edison Bulb Meta */
+  .corner-atmosphere-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #170d07;
+    border: 1px solid #452816;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ffdca3;
+  }
+
+  .edison-bulb-icon {
+    width: 12px;
+    height: 12px;
+    background: var(--edison-amber);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--edison-amber);
+    animation: filamentBreathe 2.5s infinite alternate ease-in-out;
+  }
+
+  @keyframes filamentBreathe {
+    0% { opacity: 0.7; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 18px var(--edison-amber); }
+  }
+
+  /* Two Column Layout */
+  .cafe-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.35fr;
+    gap: 24px;
+  }
+
+  /* Left: Acoustic Soundscape & Coffee Origin */
+  .soundboard-panel {
+    background: rgba(18, 10, 6, 0.75);
+    border: 1px solid #3c2415;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .now-playing-box {
+    margin-bottom: 18px;
+  }
+
+  .subhead-small {
+    font-family: 'Playfair Display', serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--coffee-crema);
+    margin-bottom: 10px;
+    border-bottom: 1px solid #382113;
+    padding-bottom: 4px;
+  }
+
+  .track-card {
+    background: #201309;
+    border: 1px solid #432817;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .vinyl-cover {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    background: radial-gradient(circle, #ffaa3b 15%, #2a1608 16%, #150904 70%);
+    border: 1px solid #824f28;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  }
+
+  .track-meta h3 {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff4e3;
+  }
+
+  .track-meta p {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: #9d836e;
+  }
+
+  /* Audio Equalizer Bars */
+  .audio-waveform {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 36px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  .wave-bar {
+    flex: 1;
+    background: linear-gradient(180deg, #ffc87a 0%, #d87d2a 100%);
+    border-radius: 2px 2px 0 0;
+    height: 30%;
+    animation: waveDance 1.2s infinite alternate ease-in-out;
+  }
+
+  @keyframes waveDance {
+    0% { height: 15%; }
+    100% { height: 85%; }
+  }
+
+  /* Coffee Tasting Origin Card */
+  .roast-card {
+    background: #170d06;
+    border: 1px solid #3a2213;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .roast-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f7d5a5;
+    margin-bottom: 2px;
+  }
+
+  .roast-notes {
+    font-size: 11.5px;
+    color: #9d836e;
+    line-height: 1.4;
+  }
+
+  .flavor-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .flavor-tag {
+    font-size: 9.5px;
+    background: rgba(216, 159, 104, 0.15);
+    border: 1px solid rgba(216, 159, 104, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #e5b98a;
+  }
+
+  /* Right: Editorial Journal & Notepad */
+  .notebook-panel {
+    background: var(--paper-note);
+    border: 1px solid #dcd1be;
+    border-radius: 10px;
+    padding: 22px 24px;
+    color: var(--ink-espresso);
+    box-shadow:
+      0 6px 18px rgba(0,0,0,0.4),
+      inset 0 0 40px rgba(160, 130, 80, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 410px;
+  }
+
+  .notebook-top {
+    border-bottom: 1px solid rgba(120, 102, 88, 0.2);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .chapter-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f1208;
+    margin: 0;
+  }
+
+  .timestamp-tag {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* Journal Textarea & Content */
+  .journal-textarea {
+    width: 100%;
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #26160c;
+    min-height: 200px;
+  }
+
+  /* Footer Save Bar */
+  .notebook-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(120, 102, 88, 0.2);
+    padding-top: 12px;
+    margin-top: 12px;
+    font-size: 11.5px;
+  }
+
+  .word-counter {
+    color: var(--ink-muted);
+  }
+
+  .save-note-btn {
+    background: #2a180e;
+    border: 1px solid #6b4124;
+    color: #f7ede2;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .save-note-btn:hover {
+    background: #422615;
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+<div class="cafe-rain-glass"></div>
+
+<div class="cafe-station">
+  <!-- Top Bar -->
+  <div class="cafe-header">
+    <div class="cafe-brand">
+      <div class="mug-icon-badge">☕</div>
+      <div class="cafe-titles">
+        <h1>Café des Deux Rêves • Table 4</h1>
+        <p>Corner Window Seat • Rainy Afternoon Acoustics & Journaling</p>
+      </div>
+    </div>
+
+    <div class="corner-atmosphere-pill">
+      <div class="edison-bulb-icon"></div>
+      <span>Warm Edison Glow • 14°C Light Rain</span>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="cafe-grid">
+    <!-- Left: Soundscape & Tasting Notes -->
+    <div class="soundboard-panel">
+      <div>
+        <div class="now-playing-box">
+          <div class="subhead-small">Acoustic Vinyl Stream</div>
+          <div class="track-card">
+            <div class="vinyl-cover">🎷</div>
+            <div class="track-meta">
+              <h3>Rue de Rennes • Quiet Rain</h3>
+              <p>Acoustic Nylon Guitar & Soft Vinyl Crackle</p>
+            </div>
+          </div>
+
+          <div class="audio-waveform">
+            <div class="wave-bar" style="animation-delay: 0.1s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.4s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.2s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.6s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.3s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.5s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.25s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.7s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.15s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.45s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.35s;"></div>
+            <div class="wave-bar" style="animation-delay: 0.55s;"></div>
+          </div>
+        </div>
+
+        <!-- Coffee Origin -->
+        <div class="roast-card">
+          <div class="roast-name">Single Origin: Ethiopia Yirgacheffe</div>
+          <div class="roast-notes">Washed heirloom beans roasted in small batches. Steaming in thick ceramic cup beside the rain-streaked pane.</div>
+          <div class="flavor-tags">
+            <span class="flavor-tag">Bergamot</span>
+            <span class="flavor-tag">Jasmine</span>
+            <span class="flavor-tag">Candied Peach</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: #8e7460; text-align: center; border-top: 1px solid #331d10; padding-top: 8px;">
+        "Rain is grace; rain is the sky descending to the earth."
+      </div>
+    </div>
+
+    <!-- Right: Editorial Notepad -->
+    <div class="notebook-panel">
+      <div>
+        <div class="notebook-top">
+          <h2 class="chapter-heading">The Architecture of Rainy Afternoons</h2>
+          <span class="timestamp-tag">October 14 • 16:35</span>
+        </div>
+
+        <textarea class="journal-textarea" id="cafeJournal" placeholder="Jot down quiet thoughts as the storm passes over the boulevard...">There is an uncommon luxury in sitting by a misted window while heavy autumn raindrops race across the glass. The hum of the espresso grinder, the smell of damp wool coats, and the warm amber halo of the Edison bulb overhead make this small table an island apart from the bustling world.</textarea>
+      </div>
+
+      <div class="notebook-bottom">
+        <span class="word-counter" id="wordCount">54 words</span>
+        <button class="save-note-btn" id="saveNoteBtn">Save to Notes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const journal = document.getElementById('cafeJournal');
+  const wordCount = document.getElementById('wordCount');
+  const saveBtn = document.getElementById('saveNoteBtn');
+
+  function updateWords() {
+    const text = journal.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    wordCount.textContent = `${words} words`;
+  }
+
+  journal.addEventListener('input', updateWords);
+
+  saveBtn.addEventListener('click', () => {
+    saveBtn.textContent = '✓ Saved to Archive';
+    saveBtn.style.background = '#10b981';
+    saveBtn.style.borderColor = '#34d399';
+    setTimeout(() => {
+      saveBtn.textContent = 'Save to Notes';
+      saveBtn.style.background = '#2a180e';
+      saveBtn.style.borderColor = '#6b4124';
+    }, 2000);
+  });
+</script>
+</body>
+</html>

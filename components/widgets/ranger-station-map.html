@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranger Station - Wilderness Dispatch & Topo Trail Monitor</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Ranger Station Topo Trail Dispatch",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "tags": [
+    "ranger-station",
+    "maps",
+    "topography",
+    "compass",
+    "mountains",
+    "forest",
+    "trails",
+    "telemetry",
+    "wilderness",
+    "dispatch"
+  ],
+  "description": "High-altitude forest ranger station desk overlooking sunset mountain ridges, featuring an interactive topographic trail map, rotating brass compass, and trail status telemetry.",
+  "techniques": [
+    "sunset mountain silhouette SVG layered backdrop",
+    "SVG topographic contour line map with interactive trail waypoints",
+    "rotating brass compass needle synced to selected waypoints",
+    "tactile brass map corner weights and forest-green palette",
+    "real-time park trail dispatch and fire danger telemetry"
+  ],
+  "recipe": "The ranger station aesthetic combines weathered forest map parchment with pine-green trims and a panoramic sunset mountain silhouette. An interactive SVG contour map features trail waypoints that dynamically rotate a physical-styled brass compass needle to the waypoint's azimuth angle.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --pine-deep: #0f1c16;
+    --pine-frame: #1b2e25;
+    --pine-border: #2e4d3f;
+    --brass-dark: #6e5223;
+    --brass-gold: #cfa85b;
+    --brass-glow: rgba(207, 168, 91, 0.25);
+    --map-parchment: #f4edd9;
+    --map-shadow: #e2d7be;
+    --text-pine: #112019;
+    --text-faded: #62756b;
+    --contour-line: rgba(70, 95, 75, 0.35);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Sunset mountain glow */
+      radial-gradient(circle at 50% 15%, rgba(243, 140, 80, 0.25) 0%, rgba(180, 80, 100, 0.12) 35%, transparent 60%),
+      linear-gradient(180deg, #111a18 0%, #0d1412 50%, #070a09 100%);
+    color: #eaf3ee;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Ranger Station Lookout Shell */
+  .station-desk {
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(180deg, #201712 0%, #150f0b 100%);
+    border: 3px solid #4a372a;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(207, 168, 91, 0.1),
+      inset 0 1px 1px rgba(255, 220, 160, 0.2);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Lookout Window Header */
+  .lookout-window {
+    height: 110px;
+    background: linear-gradient(180deg, #3d2338 0%, #a44f3d 40%, #e58b54 75%, #f7c98b 100%);
+    border-radius: 10px 10px 4px 4px;
+    border: 1px solid #734533;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    margin-bottom: 16px;
+  }
+
+  .window-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .window-header-overlay {
+    position: absolute;
+    top: 12px;
+    left: 18px;
+    right: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .station-badge {
+    background: rgba(18, 14, 11, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(207, 168, 91, 0.35);
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .station-badge h2 {
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    color: #ffdca3;
+    letter-spacing: 0.5px;
+  }
+
+  .telemetry-strip {
+    display: flex;
+    gap: 8px;
+  }
+
+  .telemetry-chip {
+    background: rgba(18, 14, 11, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(207, 168, 91, 0.25);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #f7edd9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Lower Main Board: Topo Map & Dispatch Compass */
+  .station-board {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 20px;
+  }
+
+  /* Left: Weathered Topo Map */
+  .topo-map-sheet {
+    background: var(--map-parchment);
+    border: 1px solid #d4c7a9;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.5),
+      inset 0 0 40px rgba(130, 110, 70, 0.15);
+    color: var(--text-pine);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 420px;
+  }
+
+  /* Brass Corner Map Weights */
+  .map-weight {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffdca3 0%, #875c1c 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .mw-tl { top: 8px; left: 8px; }
+  .mw-tr { top: 8px; right: 8px; }
+  .mw-bl { bottom: 8px; left: 8px; }
+  .mw-br { bottom: 8px; right: 8px; }
+
+  .map-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px dashed rgba(70, 95, 75, 0.25);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  .map-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3024;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .map-grid-ref {
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--text-faded);
+  }
+
+  /* Interactive Topo SVG */
+  .topo-svg-container {
+    width: 100%;
+    height: 240px;
+    position: relative;
+    background: #fbf7ec;
+    border: 1px solid #ded5be;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .topo-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .waypoint-node {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .waypoint-node:hover circle {
+    r: 8;
+    fill: #e67e22;
+  }
+
+  .waypoint-node.is-active circle {
+    fill: #c0392b;
+    stroke: #ffffff;
+    stroke-width: 2.5;
+  }
+
+  /* Waypoint Details Bar */
+  .active-trail-box {
+    margin-top: 14px;
+    background: #eae1cb;
+    border: 1px solid #d1c3a2;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .trail-name-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    color: #1a3024;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 2px;
+  }
+
+  .trail-status-sub {
+    font-size: 11px;
+    color: #55695e;
+  }
+
+  /* Right: Dispatch Console & Compass */
+  .dispatch-console {
+    background: #141f1a;
+    border: 1px solid #2a4034;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .compass-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  /* Brass Magnetic Compass (SVG) */
+  .brass-compass {
+    width: 110px;
+    height: 110px;
+    position: relative;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 30%, #ffdca3 0%, #b88a38 45%, #593b0f 100%);
+    padding: 6px;
+    box-shadow:
+      0 6px 18px rgba(0,0,0,0.6),
+      0 0 20px rgba(207, 168, 91, 0.25);
+    display: grid;
+    place-items: center;
+  }
+
+  .compass-dial {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0f1613;
+    border: 1.5px solid #cfa85b;
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  .needle-svg {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .compass-cardinal {
+    position: absolute;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: #cfa85b;
+  }
+  .cc-n { top: 4px; }
+  .cc-s { bottom: 4px; }
+  .cc-e { right: 5px; }
+  .cc-w { left: 5px; }
+
+  .azimuth-readout {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffdca3;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* Patrol Checklist */
+  .patrol-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .patrol-item {
+    background: #1b2822;
+    border: 1px solid #283e33;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+  }
+
+  .patrol-item span:first-child {
+    color: #d1dfd8;
+  }
+
+  .patrol-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .tag-clear { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+  .tag-alert { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+
+  /* Log Report Button */
+  .dispatch-btn {
+    width: 100%;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 12px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #2e5944 0%, #1a382a 100%);
+    border: 1px solid #4ade80;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: all 0.15s ease;
+  }
+
+  .dispatch-btn:hover {
+    background: linear-gradient(180deg, #386d53 0%, #224735 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(46, 89, 68, 0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="station-desk">
+  <!-- Panoramic Sunset Window with Mountain Silhouette -->
+  <div class="lookout-window">
+    <div class="window-header-overlay">
+      <div class="station-badge">
+        <span>🌲</span>
+        <h2>Blackwood Ridge Station • Tower 07</h2>
+      </div>
+
+      <div class="telemetry-strip">
+        <div class="telemetry-chip">
+          <span>🌄 Sunset: 18:42</span>
+        </div>
+        <div class="telemetry-chip">
+          <span>👁️ Vis: 45 km</span>
+        </div>
+        <div class="telemetry-chip">
+          <span style="color: #4ade80;">● Fire Hazard: Low</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mountain Silhouettes SVG -->
+    <svg class="window-svg" viewBox="0 0 800 110" preserveAspectRatio="none">
+      <!-- Distant Range in Twilight Purple -->
+      <polygon points="0,110 0,60 120,40 220,55 340,30 460,50 580,25 690,45 800,35 800,110" fill="#2d1729" opacity="0.6"/>
+      <!-- Mid Range in Sunset Terracotta -->
+      <polygon points="0,110 0,75 90,65 180,50 270,70 380,45 500,65 620,40 730,60 800,50 800,110" fill="#1b1216" opacity="0.85"/>
+      <!-- Foreground Pine Silhouettes -->
+      <polygon points="0,110 0,90 40,82 70,88 110,80 150,92 200,85 280,95 360,82 450,90 540,84 630,94 720,86 800,88 800,110" fill="#0d0a0c"/>
+    </svg>
+  </div>
+
+  <!-- Lower Board -->
+  <div class="station-board">
+    <!-- Left: Topo Map -->
+    <div class="topo-map-sheet">
+      <div class="map-weight mw-tl"></div>
+      <div class="map-weight mw-tr"></div>
+      <div class="map-weight mw-bl"></div>
+      <div class="map-weight mw-br"></div>
+
+      <div>
+        <div class="map-title-row">
+          <div class="map-heading">Topographic Trail Network & Sentry Waypoints</div>
+          <div class="map-grid-ref">QUAD 44°12'N 121°48'W</div>
+        </div>
+
+        <div class="topo-svg-container">
+          <svg class="topo-svg" viewBox="0 0 500 240">
+            <!-- Contour Lines -->
+            <path d="M-20,120 Q 120,40 260,80 T 520,60" fill="none" stroke="rgba(46,77,63,0.25)" stroke-width="1.5"/>
+            <path d="M-20,150 Q 140,70 280,110 T 520,90" fill="none" stroke="rgba(46,77,63,0.25)" stroke-width="1.5"/>
+            <path d="M-20,180 Q 160,100 300,140 T 520,120" fill="none" stroke="rgba(46,77,63,0.25)" stroke-width="1.5"/>
+            <path d="M50,220 Q 200,130 350,170 T 520,150" fill="none" stroke="rgba(46,77,63,0.3)" stroke-width="2"/>
+            <path d="M120,240 Q 250,160 400,200" fill="none" stroke="rgba(46,77,63,0.2)" stroke-width="1"/>
+
+            <!-- Trail Paths -->
+            <path d="M70,160 L160,120 L270,140 L380,85 L440,110" fill="none" stroke="#b45309" stroke-width="2.5" stroke-dasharray="5 3"/>
+
+            <!-- Waypoint Nodes -->
+            <g class="waypoint-node is-active" data-name="Lookout Tower 07 (Base)" data-angle="0" data-elev="1,850 m" data-status="Staffed • Radio Clear">
+              <circle cx="70" cy="160" r="6" fill="#0f766e" stroke="#fff" stroke-width="2"/>
+              <text x="70" y="180" font-size="10" font-weight="bold" fill="#1b2e25" text-anchor="middle">Base Tower</text>
+            </g>
+
+            <g class="waypoint-node" data-name="Whispering Pines Camp" data-angle="42" data-elev="2,120 m" data-status="Spring Water Running • 3 Tents">
+              <circle cx="160" cy="120" r="6" fill="#0f766e" stroke="#fff" stroke-width="2"/>
+              <text x="160" y="105" font-size="10" font-weight="bold" fill="#1b2e25" text-anchor="middle">Pines Camp</text>
+            </g>
+
+            <g class="waypoint-node" data-name="Black Bear Ravine" data-angle="115" data-elev="2,280 m" data-status="Creek Crossing High • Caution">
+              <circle cx="270" cy="140" r="6" fill="#0f766e" stroke="#fff" stroke-width="2"/>
+              <text x="270" y="160" font-size="10" font-weight="bold" fill="#1b2e25" text-anchor="middle">Bear Ravine</text>
+            </g>
+
+            <g class="waypoint-node" data-name="Eagle Crest Observatory" data-angle="68" data-elev="2,740 m" data-status="Wind 22 kn • Summit Clear">
+              <circle cx="380" cy="85" r="6" fill="#0f766e" stroke="#fff" stroke-width="2"/>
+              <text x="380" y="70" font-size="10" font-weight="bold" fill="#1b2e25" text-anchor="middle">Eagle Crest</text>
+            </g>
+
+            <g class="waypoint-node" data-name="Alpine Ridge Refuge" data-angle="85" data-elev="2,610 m" data-status="Emergency Shelter • Firewood Stocked">
+              <circle cx="440" cy="110" r="6" fill="#0f766e" stroke="#fff" stroke-width="2"/>
+              <text x="440" y="130" font-size="10" font-weight="bold" fill="#1b2e25" text-anchor="middle">Ridge Refuge</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="active-trail-box">
+        <div class="trail-name-row">
+          <span id="trailTitle">Lookout Tower 07 (Base)</span>
+          <span id="trailElev">Elevation: 1,850 m</span>
+        </div>
+        <div class="trail-status-sub" id="trailDesc">Staffed • Radio Frequency 146.520 MHz • Clear</div>
+      </div>
+    </div>
+
+    <!-- Right: Dispatch Console -->
+    <div class="dispatch-console">
+      <div>
+        <div class="compass-stage">
+          <div class="brass-compass">
+            <div class="compass-dial">
+              <span class="compass-cardinal cc-n">N</span>
+              <span class="compass-cardinal cc-s">S</span>
+              <span class="compass-cardinal cc-e">E</span>
+              <span class="compass-cardinal cc-w">W</span>
+
+              <!-- Needle SVG -->
+              <svg class="needle-svg" id="compassNeedle" viewBox="0 0 100 100">
+                <!-- North Red Arrow -->
+                <polygon points="50,15 44,50 56,50" fill="#dc2626"/>
+                <!-- South Brass Arrow -->
+                <polygon points="50,85 44,50 56,50" fill="#cfa85b"/>
+                <circle cx="50" cy="50" r="4" fill="#ffdca3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="azimuth-readout" id="azimuthText">AZIMUTH: 000° TRUE NORTH</div>
+        </div>
+
+        <div class="patrol-list">
+          <div class="patrol-item">
+            <span>Trailhead Gate A</span>
+            <span class="patrol-tag tag-clear">Secure & Open</span>
+          </div>
+          <div class="patrol-item">
+            <span>Bear Ravine Footbridge</span>
+            <span class="patrol-tag tag-alert">Inspect at Dawn</span>
+          </div>
+          <div class="patrol-item">
+            <span>Eagle Crest Weather Stn</span>
+            <span class="patrol-tag tag-clear">Online 99.8%</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="dispatch-btn" id="dispatchBtn">
+        <span>📻 Broadcast Ranger Log Entry</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const waypoints = document.querySelectorAll('.waypoint-node');
+  const trailTitle = document.getElementById('trailTitle');
+  const trailElev = document.getElementById('trailElev');
+  const trailDesc = document.getElementById('trailDesc');
+  const needle = document.getElementById('compassNeedle');
+  const azimuthText = document.getElementById('azimuthText');
+  const dispatchBtn = document.getElementById('dispatchBtn');
+
+  waypoints.forEach(wp => {
+    wp.addEventListener('click', () => {
+      waypoints.forEach(w => w.classList.remove('is-active'));
+      wp.classList.add('is-active');
+
+      const name = wp.dataset.name;
+      const elev = wp.dataset.elev;
+      const status = wp.dataset.status;
+      const angle = wp.dataset.angle;
+
+      trailTitle.textContent = name;
+      trailElev.textContent = `Elevation: ${elev}`;
+      trailDesc.textContent = status;
+
+      // Rotate compass needle
+      needle.style.transform = `rotate(${angle}deg)`;
+      const paddedAngle = angle.toString().padStart(3, '0');
+      azimuthText.textContent = `AZIMUTH: ${paddedAngle}° BEARING`;
+    });
+  });
+
+  dispatchBtn.addEventListener('click', () => {
+    dispatchBtn.textContent = '✓ Broadcast Logged with HQ';
+    dispatchBtn.style.background = '#0f766e';
+    setTimeout(() => {
+      dispatchBtn.textContent = '📻 Broadcast Ranger Log Entry';
+      dispatchBtn.style.background = 'linear-gradient(180deg, #2e5944 0%, #1a382a 100%)';
+    }, 2500);
+  });
+</script>
+</body>
+</html>

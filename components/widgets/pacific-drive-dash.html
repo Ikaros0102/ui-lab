@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pacific Drive - Station Wagon Dashboard Cluster</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Pacific Drive Station Wagon Cluster",
+  "category": "widgets",
+  "themes": [
+    "retro",
+    "dark"
+  ],
+  "tags": [
+    "pacific-drive",
+    "car",
+    "dashboard",
+    "crt",
+    "gauges",
+    "speedometer",
+    "compass",
+    "battery",
+    "exclusion-zone",
+    "sci-fi"
+  ],
+  "description": "Retro-futuristic survival wagon cockpit inspired by Pacific Drive, featuring analog amber/red dials, CRT diagnostic car monitor, liquid compass ball, and vertical battery meters.",
+  "techniques": [
+    "analog gauge needles with CSS transform rotation",
+    "phosphor green CRT monitor with scanlines and curvature",
+    "liquid compass sphere with 3D radial gradients",
+    "vertical segmented LED battery and fuel bars",
+    "interactive throttle acceleration and car diagnostic telemetry"
+  ],
+  "recipe": "The jury-rigged exclusion zone cockpit is built with rugged textured polymer bezels, duct tape accents, and illuminated analog dials. The CRT diagnostic monitor displays a wireframe station wagon schematic with scanlines, while an interactive throttle pedal rotates the speedometer needle and drains fuel/battery.",
+  "preview": {
+    "mode": "page",
+    "width": 1020,
+    "height": 660
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --dash-plastic: #1a1c22;
+    --dash-trim: #282c37;
+    --bezel-rim: #3d4353;
+    --gauge-red: #ff3333;
+    --gauge-amber: #ff9e1b;
+    --gauge-glow: rgba(255, 158, 27, 0.45);
+    --crt-phosphor: #38efbd;
+    --crt-glow: rgba(56, 239, 189, 0.35);
+    --battery-cyan: #38bdf8;
+    --tape-silver: #7e8793;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      /* Windshield misty tree silhouette */
+      radial-gradient(circle at 50% 30%, rgba(240, 230, 210, 0.25) 0%, rgba(140, 160, 150, 0.15) 45%, transparent 75%),
+      linear-gradient(180deg, #1f272a 0%, #151b1e 40%, #0d1113 100%);
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Windshield Fog & Wiper Marks */
+  .windshield-fog {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 35% at 50% 25%, rgba(255,255,255,0.06) 0%, transparent 60%),
+      repeating-linear-gradient(98deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 2px, transparent 55px);
+  }
+
+  /* Main Cockpit Cluster Frame */
+  .wagon-cockpit {
+    width: 100%;
+    max-width: 980px;
+    background: linear-gradient(180deg, #20242c 0%, #13151a 100%);
+    border: 3px solid #363c4a;
+    border-radius: 18px;
+    padding: 20px 24px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.95),
+      0 0 40px rgba(0, 0, 0, 0.8),
+      inset 0 2px 3px rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Top Dashboard Rail with Anomaly Sensor */
+  .dash-top-rail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #292d38;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+
+  .zone-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .zone-badge {
+    background: #0e1116;
+    border: 1px solid #ff9e1b;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ff9e1b;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(255, 158, 27, 0.2);
+  }
+
+  .station-title h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.5px;
+  }
+
+  .station-title p {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  /* ARC Device Glowing Pod */
+  .arc-receiver-pod {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0f1217;
+    border: 1.5px solid #28303d;
+    border-radius: 20px;
+    padding: 5px 14px;
+  }
+
+  .arc-emitter-bar {
+    width: 60px;
+    height: 10px;
+    background: #064e3b;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #10b981;
+    box-shadow: 0 0 12px #38efbd;
+  }
+
+  .arc-emitter-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, #68ffd8, transparent);
+    animation: arcPulse 2s infinite ease-in-out;
+  }
+
+  @keyframes arcPulse {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Three Column Dashboard Layout */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr 340px;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  /* 1. Left Wing: Battery & Fuel/Survival Slots */
+  .left-cluster {
+    background: #151820;
+    border: 2px solid #2c3240;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .cluster-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #232833;
+    padding-bottom: 4px;
+  }
+
+  /* Vertical LED Battery Meter */
+  .battery-assembly {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .led-bar-vertical {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 3px;
+    width: 22px;
+    height: 140px;
+    background: #090b10;
+    padding: 3px;
+    border: 1.5px solid #2e3848;
+    border-radius: 4px;
+  }
+
+  .led-seg {
+    flex: 1;
+    background: #141b24;
+    border-radius: 1px;
+  }
+
+  .led-seg.lit {
+    background: var(--battery-cyan);
+    box-shadow: 0 0 6px var(--battery-cyan);
+  }
+
+  .battery-readout h4 {
+    margin: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    color: var(--battery-cyan);
+  }
+
+  .battery-readout p {
+    margin: 2px 0 0;
+    font-size: 10px;
+    color: #94a3b8;
+  }
+
+  /* Quick Inventory Slots */
+  .dash-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .dash-slot-item {
+    aspect-ratio: 1;
+    background: #0d0f14;
+    border: 1px solid #2a303d;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .dash-slot-item:hover {
+    border-color: #38bdf8;
+    background: #161a22;
+  }
+
+  .slot-name {
+    font-size: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  /* 2. Center Column: Gauges & Compass */
+  .center-cluster {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Spherical Liquid Compass */
+  .compass-bracket {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .liquid-compass-ball {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, #0a1012 30%, #1b262a 75%, #050708 100%);
+    border: 2px solid #3c4554;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.9);
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
+  .compass-float-card {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #38efbd;
+    text-shadow: 0 0 6px #38efbd;
+    border: 1px solid rgba(56, 239, 189, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Twin Circular Analog Gauges */
+  .analog-cluster-mount {
+    display: flex;
+    gap: 18px;
+    background: #12141a;
+    border: 2.5px solid #292e3a;
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+  }
+
+  .analog-gauge {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, #111317 60%, #07080a 100%);
+    border: 3px solid #383e4e;
+    position: relative;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 4px 10px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gauge-face-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gauge-needle {
+    position: absolute;
+    width: 3px;
+    height: 52px;
+    bottom: 50%;
+    left: calc(50% - 1.5px);
+    background: linear-gradient(180deg, #ff3333 0%, #ff8888 100%);
+    border-radius: 2px 2px 0 0;
+    transform-origin: bottom center;
+    transform: rotate(-120deg);
+    box-shadow: 0 0 6px #ff3333;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .fuel-needle {
+    background: linear-gradient(180deg, #ff9e1b 0%, #ffc87a 100%);
+    box-shadow: 0 0 6px #ff9e1b;
+    transform: rotate(20deg);
+  }
+
+  .gauge-center-cap {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: radial-gradient(circle at 40% 40%, #586072 0%, #1e222b 100%);
+    border-radius: 50%;
+    border: 1px solid #7c879d;
+    z-index: 2;
+  }
+
+  .gauge-brand {
+    position: absolute;
+    bottom: 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .gauge-value-text {
+    position: absolute;
+    top: 38px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* Gas Pedal Action */
+  .throttle-pedal-bar {
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .throttle-btn {
+    flex: 1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px;
+    background: linear-gradient(180deg, #383f4f 0%, #222732 100%);
+    border: 1px solid #545e75;
+    border-radius: 6px;
+    color: #e2e8f0;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+    transition: all 0.1s ease;
+  }
+
+  .throttle-btn:hover {
+    background: #475065;
+  }
+
+  .throttle-btn:active {
+    transform: translateY(2px);
+    background: #ff9e1b;
+    color: #000;
+    box-shadow: 0 0 12px #ff9e1b;
+  }
+
+  /* 3. Right Column: CRT Car Diagnostics Monitor */
+  .crt-car-terminal {
+    background: #0d1211;
+    border: 3px solid #2e3b38;
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow:
+      inset 0 0 30px rgba(56, 239, 189, 0.15),
+      0 6px 18px rgba(0,0,0,0.7);
+    overflow: hidden;
+  }
+
+  /* CRT Scanlines Overlay */
+  .crt-car-terminal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(180deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 2px, transparent 4px);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .crt-top-line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--crt-phosphor);
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid rgba(56, 239, 189, 0.3);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 6px var(--crt-phosphor);
+  }
+
+  /* Station Wagon Wireframe Graphic */
+  .wagon-wireframe-wrap {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .wagon-svg {
+    height: 130px;
+    filter: drop-shadow(0 0 6px var(--crt-phosphor));
+  }
+
+  /* Component Health List */
+  .component-matrix {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .comp-cell {
+    background: rgba(56, 239, 189, 0.08);
+    border: 1px solid rgba(56, 239, 189, 0.25);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    display: flex;
+    justify-content: space-between;
+    color: #e6fffa;
+  }
+
+  .comp-cell span:last-child {
+    color: var(--crt-phosphor);
+    font-weight: 700;
+  }
+
+  .repair-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: rgba(56, 239, 189, 0.15);
+    border: 1.5px solid var(--crt-phosphor);
+    color: var(--crt-phosphor);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(56, 239, 189, 0.2);
+    transition: all 0.15s ease;
+  }
+
+  .repair-btn:hover {
+    background: var(--crt-phosphor);
+    color: #081a16;
+    box-shadow: 0 0 16px var(--crt-phosphor);
+  }
+</style>
+</head>
+<body>
+
+<div class="windshield-fog"></div>
+
+<div class="wagon-cockpit">
+  <!-- Top Bar -->
+  <div class="dash-top-rail">
+    <div class="zone-meta">
+      <div class="zone-badge">ZONE: DEEP WOODS 04</div>
+      <div class="station-title">
+        <h1>1984 Custom Estate Wagon • Pacific Exclusion Zone</h1>
+        <p>Remnant Chassis • Olympic Peninsula Anomaly Telemetry</p>
+      </div>
+    </div>
+
+    <!-- ARC Anomaly Receiver -->
+    <div class="arc-receiver-pod">
+      <span style="font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #68ffd8;">ARC LINK:</span>
+      <div class="arc-emitter-bar"></div>
+      <span style="font-size: 11px; color: #ff9e1b; font-weight: bold;">STABLE</span>
+    </div>
+  </div>
+
+  <!-- Dashboard 3 Columns -->
+  <div class="dashboard-grid">
+    <!-- 1. Left Cluster: Battery & Quick Slots -->
+    <div class="left-cluster">
+      <div>
+        <div class="cluster-label">Auxiliary Battery</div>
+        <div class="battery-assembly">
+          <div class="led-bar-vertical" id="batteryBar">
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg lit"></div>
+            <div class="led-seg"></div>
+          </div>
+          <div class="battery-readout">
+            <h4 id="battVal">89%</h4>
+            <p>12.6 V DC</p>
+            <p>Alternator OK</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="cluster-label">Quick Utility Slots</div>
+        <div class="dash-slots">
+          <div class="dash-slot-item" title="Scrapper / Welder">
+            <span>🔧</span>
+            <span class="slot-name">REPAIR</span>
+          </div>
+          <div class="dash-slot-item" title="Fuel Canister">
+            <span>⛽</span>
+            <span class="slot-name">+15L</span>
+          </div>
+          <div class="dash-slot-item" title="Headlight Flare">
+            <span>💡</span>
+            <span class="slot-name">LIGHTS</span>
+          </div>
+          <div class="dash-slot-item" title="Plasma Charge">
+            <span>⚡</span>
+            <span class="slot-name">CHARGE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Center Column: Gauges & Compass -->
+    <div class="center-cluster">
+      <!-- 3D Liquid Compass Ball -->
+      <div class="compass-bracket">
+        <div class="liquid-compass-ball">
+          <div class="compass-float-card" id="compassHeading">NW 315°</div>
+        </div>
+        <div style="font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #94a3b8;">
+          MAGNETIC BEARING<br>
+          <span style="color: #38efbd;">SECTOR HIGH PASS</span>
+        </div>
+      </div>
+
+      <!-- Twin Dials -->
+      <div class="analog-cluster-mount">
+        <!-- Speedometer -->
+        <div class="analog-gauge">
+          <svg class="gauge-face-svg" viewBox="0 0 100 100">
+            <!-- Speed Ticks -->
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#252a38" stroke-width="3"/>
+            <path d="M 20 78 A 42 42 0 1 1 80 78" fill="none" stroke="#ff3333" stroke-width="2.5" stroke-dasharray="2 6"/>
+          </svg>
+          <div class="gauge-needle" id="speedNeedle"></div>
+          <div class="gauge-center-cap"></div>
+          <div class="gauge-value-text" style="color: #ff5555;" id="speedNum">0</div>
+          <div class="gauge-brand" style="color: #ff5555;">KPH SPEED</div>
+        </div>
+
+        <!-- Fuel Gauge -->
+        <div class="analog-gauge">
+          <svg class="gauge-face-svg" viewBox="0 0 100 100">
+            <path d="M 25 70 A 40 40 0 0 1 75 70" fill="none" stroke="#ff9e1b" stroke-width="3" stroke-dasharray="4 6"/>
+          </svg>
+          <div class="gauge-needle fuel-needle" id="fuelNeedle"></div>
+          <div class="gauge-center-cap"></div>
+          <div class="gauge-value-text" style="color: #ffaa3b;" id="fuelNum">74%</div>
+          <div class="gauge-brand" style="color: #ffaa3b;">UNLEADED FUEL</div>
+        </div>
+      </div>
+
+      <!-- Throttle Pedal -->
+      <div class="throttle-pedal-bar">
+        <button class="throttle-btn" id="gasPedal">Accelerate (Hold Gas)</button>
+        <button class="throttle-btn" id="brakePedal">Brake</button>
+      </div>
+    </div>
+
+    <!-- 3. Right Column: CRT Car Diagnostics Monitor -->
+    <div class="crt-car-terminal">
+      <div>
+        <div class="crt-top-line">
+          <span>COMPONENT ANALYSIS V1.2.6</span>
+          <span>HULL 92%</span>
+        </div>
+
+        <!-- Wagon Wireframe SVG -->
+        <div class="wagon-wireframe-wrap">
+          <svg class="wagon-svg" viewBox="0 0 100 140">
+            <!-- Outer Car Shell Top View -->
+            <rect x="22" y="10" width="56" height="120" rx="10" fill="none" stroke="#38efbd" stroke-width="2"/>
+            <!-- Hood & Windshield -->
+            <line x1="22" y1="40" x2="78" y2="40" stroke="#38efbd" stroke-width="1.5"/>
+            <line x1="28" y1="40" x2="32" y2="60" stroke="#38efbd" stroke-width="1"/>
+            <line x1="72" y1="40" x2="68" y2="60" stroke="#38efbd" stroke-width="1"/>
+            <line x1="32" y1="60" x2="68" y2="60" stroke="#38efbd" stroke-width="1.5"/>
+            <!-- Roof & Rear Hatch -->
+            <rect x="30" y="66" width="40" height="42" fill="none" stroke="#38efbd" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="22" y1="115" x2="78" y2="115" stroke="#38efbd" stroke-width="1.5"/>
+            <!-- 4 Tires -->
+            <rect x="14" y="24" width="7" height="18" rx="2" fill="#38efbd"/>
+            <rect x="79" y="24" width="7" height="18" rx="2" fill="#38efbd"/>
+            <rect x="14" y="96" width="7" height="18" rx="2" fill="#38efbd"/>
+            <rect x="79" y="96" width="7" height="18" rx="2" fill="#38efbd"/>
+            <!-- Engine & Battery Icons -->
+            <circle cx="50" cy="25" r="4" fill="#ff9e1b"/>
+            <rect x="44" y="78" width="12" height="8" rx="1" fill="#38bdf8"/>
+          </svg>
+        </div>
+
+        <!-- Health Grid -->
+        <div class="component-matrix">
+          <div class="comp-cell">
+            <span>ENGINE</span>
+            <span>98°C OK</span>
+          </div>
+          <div class="comp-cell">
+            <span>TIRES</span>
+            <span>32 PSI</span>
+          </div>
+          <div class="comp-cell">
+            <span>RAD SHIELD</span>
+            <span>NOMINAL</span>
+          </div>
+          <div class="comp-cell">
+            <span>ARC CORE</span>
+            <span>SYNCED</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="repair-btn" id="diagnosticsScanBtn">RUN ANOMALY DIAGNOSTIC</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let speed = 0;
+  let fuel = 74;
+  let isAccelerating = false;
+  let accelTimer = null;
+
+  const speedNeedle = document.getElementById('speedNeedle');
+  const speedNum = document.getElementById('speedNum');
+  const fuelNeedle = document.getElementById('fuelNeedle');
+  const fuelNum = document.getElementById('fuelNum');
+  const gasPedal = document.getElementById('gasPedal');
+  const brakePedal = document.getElementById('brakePedal');
+  const compassHeading = document.getElementById('compassHeading');
+  const scanBtn = document.getElementById('diagnosticsScanBtn');
+
+  function updateDials() {
+    // Map speed 0-160 kph to needle angles (-120deg to 120deg)
+    const angle = -120 + (speed / 160) * 240;
+    speedNeedle.style.transform = `rotate(${angle}deg)`;
+    speedNum.textContent = Math.round(speed);
+
+    // Fuel needle
+    const fuelAngle = -50 + (fuel / 100) * 100;
+    fuelNeedle.style.transform = `rotate(${fuelAngle}deg)`;
+    fuelNum.textContent = `${Math.round(fuel)}%`;
+  }
+
+  // Throttle events
+  function startAccelerate() {
+    isAccelerating = true;
+    accelTimer = setInterval(() => {
+      if (speed < 140) speed += 3.5;
+      if (fuel > 5) fuel -= 0.05;
+      updateDials();
+    }, 50);
+  }
+
+  function stopAccelerate() {
+    isAccelerating = false;
+    clearInterval(accelTimer);
+    accelTimer = setInterval(() => {
+      if (speed > 0) {
+        speed -= 2;
+        if (speed < 0) speed = 0;
+        updateDials();
+      } else {
+        clearInterval(accelTimer);
+      }
+    }, 50);
+  }
+
+  gasPedal.addEventListener('mousedown', startAccelerate);
+  gasPedal.addEventListener('mouseup', stopAccelerate);
+  gasPedal.addEventListener('mouseleave', stopAccelerate);
+
+  brakePedal.addEventListener('click', () => {
+    speed = 0;
+    updateDials();
+  });
+
+  // Anomaly Scan
+  const headings = ['NW 315°', 'NNW 335°', 'N 002°', 'WNW 290°'];
+  let hIdx = 0;
+  scanBtn.addEventListener('click', () => {
+    scanBtn.textContent = 'SCANNING ZONE FREQUENCIES...';
+    scanBtn.style.background = '#38efbd';
+    scanBtn.style.color = '#000';
+
+    setTimeout(() => {
+      hIdx = (hIdx + 1) % headings.length;
+      compassHeading.textContent = headings[hIdx];
+      scanBtn.textContent = 'SYSTEMS STABLE • NO CRITICAL BREACH';
+      scanBtn.style.background = 'rgba(56, 239, 189, 0.15)';
+      scanBtn.style.color = '#38efbd';
+    }, 800);
+  });
+
+  updateDials();
+</script>
+</body>
+</html>
