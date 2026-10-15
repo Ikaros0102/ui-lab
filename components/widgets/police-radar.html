@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tactical Police Radar HUD</title>
+<title>Stalker DSR-2X // Tactical Police Doppler Radar HUD</title>
 
-<!-- Digital Font DSEG7 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<!-- Digital 7-Segment Font DSEG7 & Tactical Mono -->
+<link rel="stylesheet" href="[https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css](https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css)">
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@500;700;800&display=swap](https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@500;700;800&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -25,21 +28,23 @@
     "military",
     "dseg7",
     "lcd",
-    "telemetry"
+    "telemetry",
+    "lidar",
+    "interceptor"
   ],
-  "description": "Handheld police Doppler speed radar interface: sweep scope, speed lock, digital 7-segment readout, and audio-visual violation alert.",
+  "description": "Multi-window highway interceptor Doppler radar & LIDAR speed enforcement console featuring a 3-window DSEG7 digital cluster (Target, Locked Peak, Patrol Speed), interactive polar target scope with velocity vectors, live Doppler audio/waveform synthesizer, and automated ALPR citation log.",
   "techniques": [
-    "DSEG7 7-segment font",
-    "conic-gradient radar sweep",
-    "polar coordinate targets",
-    "over-speed warning strobe",
-    "LCD ghost segment display"
+    "Triple DSEG7 7-segment displays with ghost segments (888) and color-coded LED states",
+    "Interactive polar radar scope with clickable moving vehicles, range rings, and LIDAR optical reticle",
+    "Police red/blue pursuit strobe lightbar reflections on ruggedized aluminum bezels",
+    "Real-time HTML5 Canvas Doppler frequency shift waveform and signal strength bargraph",
+    "Web Audio API pitch-proportional Doppler audio tone and violation lock buzzer"
   ],
-  "recipe": "The police Doppler radar combines an active 360-degree sweep scope (conic-gradient beam with target blips) and a dual-layer DSEG7 digital speed readout. Exceeding the speed limit triggers an attention-grabbing strobing VIOLATION / LOCKED status alert.",
+  "recipe": "Inspired by Stalker Dual SL police cruisers, the console separates the polar Doppler/LIDAR scope, the triple 7-segment display head, and the ALPR violation logger into rugged dash-mounted pods. Fixing the original JS template literal bug, the unit calculates real closing speeds in Stationary or Moving patrol modes and lets operators click blips or fire instant-on RF triggers.",
   "preview": {
     "mode": "page",
-    "width": 860,
-    "height": 720
+    "width": 1080,
+    "height": 780
   }
 }
 </script>
@@ -47,81 +52,337 @@
 <style>
   * { box-sizing: border-box; }
 
+  :root {
+    --bg-cruiser: #05080d;
+    --chassis-top: #18202c;
+    --chassis-bot: #0c1118;
+    --bezel-border: #2a374b;
+    --scope-cyan: #38bdf8;
+    --led-red: #ef4444;
+    --led-amber: #f59e0b;
+    --led-green: #22c55e;
+    --led-cyan: #38bdf8;
+    --ghost-opacity: 0.08;
+    --sweep-speed: 2.4s;
+  }
+
   body {
     margin: 0;
     min-height: 100vh;
-    background: #06090e;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(30, 58, 138, 0.18) 0%, transparent 55%),
+      radial-gradient(circle at 50% 85%, rgba(15, 23, 42, 0.9) 0%, #04060a 100%);
     color: #e2e8f0;
-    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    overflow: hidden;
-  }
-
-  .radar-unit {
-    width: 100%;
-    max-width: 780px;
-    background: linear-gradient(175deg, #161c28 0%, #0d121c 100%);
-    border: 2px solid #283347;
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: 
-      0 30px 70px rgba(0, 0, 0, 0.8),
-      inset 0 1px 1px rgba(255, 255, 255, 0.15),
-      0 0 0 1px #05070a;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    position: relative;
-  }
-
-  @media (max-width: 760px) {
-    .radar-unit { grid-template-columns: 1fr; }
-  }
-
-  /* Left Panel: Scope Display */
-  .scope-box {
-    background: #070d14;
-    border: 2px solid #1f2b3e;
-    border-radius: 18px;
-    padding: 20px;
+    font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 20px 18px 28px;
+    overflow-x: hidden;
     position: relative;
-    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
   }
 
+  /* Highway Night Grid Backdrop */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(56, 189, 248, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.025) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Police Interceptor Strobe Lightbar Ambient Reflections (Active on Violation Lock) */
+  .pursuit-strobe-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 14px;
+    display: flex;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  body.pursuit-active .pursuit-strobe-overlay {
+    opacity: 1;
+  }
+
+  .strobe-half {
+    flex: 1;
+    height: 100%;
+  }
+
+  .strobe-red {
+    background: linear-gradient(90deg, transparent, #ef4444, #ff7b7b);
+    box-shadow: 0 8px 45px 12px rgba(239, 68, 68, 0.65);
+    animation: policeStrobeRed 0.36s infinite alternate;
+  }
+
+  .strobe-blue {
+    background: linear-gradient(90deg, #60a5fa, #2563eb, transparent);
+    box-shadow: 0 8px 45px 12px rgba(37, 99, 235, 0.65);
+    animation: policeStrobeBlue 0.36s infinite alternate;
+  }
+
+  @keyframes policeStrobeRed {
+    0%, 45% { opacity: 1; }
+    55%, 100% { opacity: 0.1; }
+  }
+  @keyframes policeStrobeBlue {
+    0%, 45% { opacity: 0.1; }
+    55%, 100% { opacity: 1; }
+  }
+
+  /* Main Console Rack */
+  .interceptor-rack {
+    width: 100%;
+    max-width: 1040px;
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Top Interceptor Header Bar */
+  .cruiser-top-bar {
+    background: linear-gradient(180deg, #1b2432 0%, #0f151f 100%);
+    border: 2px solid var(--bezel-border);
+    border-radius: 14px;
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .unit-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .badge-shield {
+    background: #090d14;
+    border: 1.5px solid #38bdf8;
+    color: #38bdf8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  }
+
+  .unit-title h1 {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: #f8fafc;
+  }
+
+  .unit-title p {
+    margin: 2px 0 0;
+    font-size: 10.5px;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+  }
+
+  .top-status-pills {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .rf-pill {
+    background: #080c12;
+    border: 1px solid #263346;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #cbd5e1;
+  }
+
+  .rf-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+  }
+
+  .rf-dot.hold {
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+  }
+
+  /* ==========================================
+     MAIN DUAL-MODULE RADAR UNIT
+  ========================================== */
+  .radar-unit {
+    width: 100%;
+    background: linear-gradient(175deg, var(--chassis-top) 0%, var(--chassis-bot) 100%);
+    border: 2.5px solid var(--bezel-border);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow:
+      0 28px 65px rgba(0, 0, 0, 0.85),
+      inset 0 1px 1px rgba(255, 255, 255, 0.14),
+      0 0 0 1px #040609;
+    display: grid;
+    grid-template-columns: 370px 1fr;
+    gap: 20px;
+    position: relative;
+  }
+
+  @media (max-width: 900px) {
+    .radar-unit { grid-template-columns: 1fr; }
+  }
+
+  /* Corner Mounting Screws */
+  .screw {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #5b6b82, #1b2432);
+    border: 1px solid #090d12;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.12);
+    pointer-events: none;
+  }
+  .screw.tl { top: 9px; left: 9px; }
+  .screw.tr { top: 9px; right: 9px; }
+  .screw.bl { bottom: 9px; left: 9px; }
+  .screw.br { bottom: 9px; right: 9px; }
+
+  /* ==========================================
+     LEFT PANEL: POLAR DOPPLER / LIDAR SCOPE
+  ========================================== */
+  .scope-box {
+    background: #060b11;
+    border: 2px solid #1e2a3c;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: inset 0 0 45px rgba(0, 0, 0, 0.95);
+  }
+
+  .scope-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #94a3b8;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .antenna-switch {
+    display: flex;
+    gap: 4px;
+    background: #0c131d;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #233146;
+  }
+
+  .ant-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ant-btn.active {
+    background: #38bdf8;
+    color: #04080e;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+  }
+
+  /* Polar Scope Viewport */
   .scope-circle {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: 260px;
+    height: 260px;
     border-radius: 50%;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    background: 
-      radial-gradient(circle, rgba(56, 189, 248, 0.05) 1px, transparent 1px) 0 0 / 20px 20px,
-      radial-gradient(circle at center, transparent 30%, rgba(14, 165, 233, 0.08) 70%, transparent 71%);
+    border: 1.5px solid rgba(56, 189, 248, 0.38);
+    background:
+      radial-gradient(circle, rgba(56, 189, 248, 0.06) 1px, transparent 1px) 0 0 / 18px 18px,
+      radial-gradient(circle at center, rgba(14, 165, 233, 0.04) 0%, rgba(14, 165, 233, 0.1) 68%, transparent 71%);
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.12), inset 0 0 25px rgba(0, 0, 0, 0.85);
+    cursor: crosshair;
   }
 
-  /* Concentric distance rings */
-  .scope-circle::before {
-    content: "";
+  /* Concentric Range Rings (250m, 500m, 750m) */
+  .range-ring {
     position: absolute;
-    inset: 35px;
     border-radius: 50%;
-    border: 1px dashed rgba(56, 189, 248, 0.25);
+    border: 1px dashed rgba(56, 189, 248, 0.22);
+    pointer-events: none;
+  }
+  .ring-1 { inset: 32px; }
+  .ring-2 { inset: 68px; }
+  .ring-3 { inset: 102px; border-style: solid; border-color: rgba(56, 189, 248, 0.18); }
+
+  /* Highway Lane Corridor Lines inside Scope */
+  .lane-corridor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 68px;
+    transform: translateX(-50%);
+    border-left: 1px dashed rgba(56, 189, 248, 0.18);
+    border-right: 1px dashed rgba(56, 189, 248, 0.18);
+    pointer-events: none;
   }
 
-  /* Rotating radar beam */
+  /* Rotating Radar Sweep Beam */
   .scope-beam {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 75%, rgba(14, 165, 233, 0.5) 100%);
-    animation: sweep 2.5s linear infinite;
+    background: conic-gradient(from 0deg, transparent 72%, rgba(14, 165, 233, 0.45) 98%, rgba(125, 211, 252, 0.85) 100%);
+    animation: sweep var(--sweep-speed) linear infinite;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  /* RF HOLD Standby hides sweep */
+  .scope-circle.rf-hold .scope-beam {
+    opacity: 0.06;
+    animation-play-state: paused;
+  }
+
+  /* LIDAR Narrow Optical Laser Cone */
+  .scope-circle.lidar-mode .scope-beam {
+    animation: none;
+    background: conic-gradient(from 348deg, transparent 0deg, rgba(239, 68, 68, 0.45) 12deg, transparent 24deg);
   }
 
   /* Crosshairs */
@@ -131,7 +392,8 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.24);
+    pointer-events: none;
   }
   .cross-v {
     position: absolute;
@@ -139,260 +401,1109 @@
     top: 0;
     bottom: 0;
     width: 1px;
-    background: rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.24);
+    pointer-events: none;
   }
 
-  /* Blips / targets */
-  .blip {
+  /* Degree Numbers around perimeter */
+  .deg-label {
     position: absolute;
+    font-size: 9px;
+    color: rgba(56, 189, 248, 0.55);
+    pointer-events: none;
+  }
+  .deg-n { top: 4px; left: 50%; transform: translateX(-50%); }
+  .deg-e { right: 6px; top: 50%; transform: translateY(-50%); }
+  .deg-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+  .deg-w { left: 6px; top: 50%; transform: translateY(-50%); }
+
+  /* Interactive Target Blips */
+  .target-blip {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    margin-top: -7px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    transition: transform 0.15s ease;
+  }
+
+  .target-blip::before {
+    content: "";
     width: 8px;
     height: 8px;
-    background: #ef4444;
     border-radius: 50%;
-    box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444;
-    animation: blipPulse 1.2s infinite ease-out;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor, 0 0 18px currentColor;
   }
-  .blip-1 { top: 35%; left: 65%; }
-  .blip-2 { top: 70%; left: 30%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+
+  /* Target Reticle Ring when Selected */
+  .target-blip.selected-target::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ffffff;
+    animation: reticleSpin 3s linear infinite;
+  }
+
+  .target-tag {
+    position: absolute;
+    left: 14px;
+    top: -6px;
+    background: rgba(4, 9, 16, 0.85);
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 9px;
+    white-space: nowrap;
+    color: #f8fafc;
+    pointer-events: none;
+  }
 
   @keyframes sweep { to { transform: rotate(360deg); } }
-  @keyframes blipPulse {
-    0% { transform: scale(0.8); opacity: 0.4; }
-    50% { transform: scale(1.4); opacity: 1; }
-    100% { transform: scale(0.8); opacity: 0.4; }
+  @keyframes reticleSpin {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(0.92); }
+  }
+
+  /* Doppler Signal Strength & Audio Waveform Strip */
+  .doppler-wave-box {
+    width: 100%;
+    margin-top: 12px;
+    background: #04070b;
+    border: 1px solid #1b2636;
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+
+  .wave-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  #dopplerCanvas {
+    width: 100%;
+    height: 36px;
+    display: block;
   }
 
   .scope-footer {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin-top: 14px;
+    margin-top: 10px;
     font-size: 11px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: #38bdf8;
   }
 
-  /* Right Panel: Telemetry Readouts */
+  /* ==========================================
+     RIGHT PANEL: TRIPLE DSEG7 TELEMETRY & LOG
+  ========================================== */
   .telemetry-box {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 12px;
   }
 
   .brand-bar {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
-    margin-bottom: 16px;
+    padding-bottom: 8px;
   }
   .brand-bar h3 {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0.12em;
-    color: #94a3b8;
+    color: #cbd5e1;
   }
+
+  .band-badges {
+    display: flex;
+    gap: 6px;
+  }
+
   .band-tag {
-    font-size: 11px;
-    background: #1e293b;
-    padding: 2px 8px;
+    font-size: 10.5px;
+    background: #172130;
+    padding: 3px 8px;
     border-radius: 4px;
     color: #f59e0b;
     border: 1px solid #334155;
+    font-weight: 700;
   }
 
-  /* Digital Speed Display */
-  .speed-display {
-    background: #03070d;
+  /* TRIPLE 7-SEGMENT LCD DISPLAY CLUSTER (TARGET / LOCKED / PATROL) */
+  .dseg-cluster-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 0.9fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 620px) {
+    .dseg-cluster-grid { grid-template-columns: 1fr; }
+  }
+
+  .lcd-window {
+    background: #03060b;
     border: 2px solid #1e293b;
-    border-radius: 14px;
-    padding: 16px 20px;
+    border-radius: 12px;
+    padding: 10px 14px 12px;
     position: relative;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.95);
+    box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .lcd-window.locked-window {
+    border-color: rgba(245, 158, 11, 0.45);
+  }
+
+  .lcd-window.patrol-window {
+    border-color: rgba(34, 197, 94, 0.35);
   }
 
   .speed-label-row {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    color: #64748b;
-    letter-spacing: 0.15em;
-    margin-bottom: 4px;
+    align-items: center;
+    font-size: 10px;
+    color: #94a3b8;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .dir-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
   }
 
   .digits-wrap {
     display: grid;
     place-items: end start;
     font-family: 'DSEG7-Classic', monospace, sans-serif;
-    font-size: 68px;
+    font-size: 54px;
     line-height: 1;
+    padding-top: 2px;
   }
+
+  .lcd-window.secondary .digits-wrap {
+    font-size: 42px;
+  }
+
   .digits-wrap > * { grid-area: 1 / 1; }
 
   .digits-ghost {
-    color: rgba(239, 68, 68, 0.08);
+    color: rgba(255, 255, 255, var(--ghost-opacity));
+    user-select: none;
   }
+
+  /* Target Window LED Colors */
   .digits-lit {
-    color: #ef4444;
-    text-shadow: 
+    color: var(--led-red);
+    text-shadow:
       0 0 10px rgba(239, 68, 68, 0.8),
-      0 0 25px rgba(239, 68, 68, 0.5);
-    transition: color 0.3s;
+      0 0 24px rgba(239, 68, 68, 0.45);
+    transition: color 0.2s ease, text-shadow 0.2s ease;
   }
+
   .digits-lit.normal {
-    color: #38bdf8;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    color: var(--led-cyan);
+    text-shadow:
+      0 0 10px rgba(56, 189, 248, 0.8),
+      0 0 22px rgba(56, 189, 248, 0.4);
+  }
+
+  .digits-lit.amber-lock {
+    color: var(--led-amber);
+    text-shadow:
+      0 0 10px rgba(245, 158, 11, 0.85),
+      0 0 22px rgba(245, 158, 11, 0.4);
+  }
+
+  .digits-lit.green-patrol {
+    color: var(--led-green);
+    text-shadow:
+      0 0 10px rgba(34, 197, 94, 0.8),
+      0 0 20px rgba(34, 197, 94, 0.35);
   }
 
   .speed-unit {
     position: absolute;
-    right: 20px;
-    bottom: 20px;
-    font-size: 16px;
+    right: 12px;
+    bottom: 10px;
+    font-size: 11px;
     font-weight: 700;
-    color: #94a3b8;
+    color: #64748b;
   }
 
-  /* Warning Status Banner */
+  /* Violation & Telemetry Alert Banner */
   .status-banner {
-    margin-top: 14px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid #ef4444;
-    color: #ef4444;
+    padding: 9px 14px;
+    border-radius: 9px;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1.5px solid #ef4444;
+    color: #fca5a5;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    animation: flashAlert 0.8s infinite alternate;
+    animation: flashAlert 0.75s infinite alternate;
+  }
+
+  .status-banner.clear-banner {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.45);
+    color: #86efac;
+    animation: none;
+  }
+
+  .status-banner.hold-banner {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #fde68a;
+    animation: none;
   }
 
   @keyframes flashAlert {
-    from { opacity: 0.7; }
-    to { opacity: 1; background: rgba(239, 68, 68, 0.28); }
+    from { opacity: 0.75; }
+    to { opacity: 1; background: rgba(239, 68, 68, 0.3); box-shadow: 0 0 18px rgba(239, 68, 68, 0.35); }
   }
 
-  /* Hardware Buttons */
+  /* ALPR Plate Reader & Citation Evidence Log */
+  .alpr-evidence-panel {
+    background: #070b12;
+    border: 1.5px solid #1f2b3d;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .alpr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: #94a3b8;
+    border-bottom: 1px solid #162030;
+    padding-bottom: 5px;
+  }
+
+  .plate-badge {
+    background: #f8fafc;
+    color: #0f172a;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    border: 1.5px solid #38bdf8;
+    letter-spacing: 0.08em;
+  }
+
+  .citation-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 76px;
+    overflow-y: auto;
+    font-size: 10.5px;
+  }
+
+  .log-entry {
+    display: grid;
+    grid-template-columns: 65px 85px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 3px 6px;
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 4px;
+    border-left: 2px solid #38bdf8;
+  }
+
+  .log-entry.violation-entry {
+    border-left-color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  /* Tactile Hardware Remote Buttons */
   .radar-controls {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 18px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 620px) {
+    .radar-controls { grid-template-columns: repeat(2, 1fr); }
   }
 
   .btn-tac {
-    background: linear-gradient(180deg, #27354a 0%, #172233 100%);
-    border: 1px solid #3b4e6b;
+    background: linear-gradient(180deg, #263449 0%, #151f2e 100%);
+    border: 1.5px solid #3b4e6b;
     border-radius: 8px;
-    color: #cbd5e1;
-    font-size: 11px;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 12px 6px;
+    letter-spacing: 0.08em;
+    padding: 10px 6px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: transform 0.1s, background 0.15s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
+    transition: transform 0.1s, background 0.15s, border-color 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
   }
+
+  .btn-tac span.sub-key {
+    font-size: 8.5px;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .btn-tac:hover {
+    border-color: #60a5fa;
+    background: linear-gradient(180deg, #2e3f57 0%, #1b273a 100%);
+  }
+
   .btn-tac:active {
     transform: translateY(2px);
     box-shadow: 0 1px 2px rgba(0,0,0,0.4);
   }
+
   .btn-tac.lock-active {
-    background: #ef4444;
+    background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
     color: #ffffff;
     border-color: #f87171;
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+  }
+  .btn-tac.lock-active span.sub-key {
+    color: #fecaca;
+  }
+
+  .btn-tac.hold-active {
+    background: linear-gradient(180deg, #d97706 0%, #92400e 100%);
+    border-color: #fbbf24;
+    color: #fff;
+  }
+
+  /* ==========================================
+     BOTTOM UI-LAB WORKBENCH TUNER
+  ========================================== */
+  .uilab-workbench {
+    background: rgba(11, 16, 24, 0.92);
+    border: 1.5px solid #263346;
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    font-size: 11px;
+  }
+
+  .wb-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .wb-slider {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #94a3b8;
+  }
+
+  .wb-slider input[type="range"] {
+    accent-color: #38bdf8;
+    width: 85px;
+    cursor: pointer;
+  }
+
+  .wb-toggle-btn {
+    background: #172130;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 10.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .wb-toggle-btn:hover {
+    border-color: #38bdf8;
+    color: #38bdf8;
   }
 </style>
 </head>
-<body>
+<body class="pursuit-active">
 
-<div class="radar-unit">
-  <!-- Left Side: Radar Scope -->
-  <div class="scope-box">
-    <div class="scope-circle">
-      <div class="scope-beam"></div>
-      <div class="cross-h"></div>
-      <div class="cross-v"></div>
-      <div class="blip blip-1" title="Target A"></div>
-      <div class="blip blip-2" title="Patrol Unit"></div>
-    </div>
-    <div class="scope-footer">
-      <span>AZIMUTH: 042°</span>
-      <span>RANGE: 850M</span>
-    </div>
-  </div>
+<!-- Top Police Interceptor Lightbar Reflection -->
+<div class="pursuit-strobe-overlay">
+  <div class="strobe-half strobe-red"></div>
+  <div class="strobe-half strobe-blue"></div>
+</div>
 
-  <!-- Right Side: Doppler Telemetry -->
-  <div class="telemetry-box">
-    <div>
-      <div class="brand-bar">
-        <h3>STALKER D-IV // KA-BAND</h3>
-        <span class="band-tag">34.7 GHz</span>
+<div class="interceptor-rack">
+
+  <!-- Cruiser Header Bar -->
+  <header class="cruiser-top-bar">
+    <div class="unit-identity">
+      <div class="badge-shield">INTERCEPTOR // UNIT 409</div>
+      <div class="unit-title">
+        <h1>STALKER DSR-2X DIRECTIONAL DOPPLER &amp; LIDAR CONSOLE</h1>
+        <p>HIGHWAY PATROL ENFORCEMENT • AUTOMATIC SAME/OPPOSITE LANE TRACKING</p>
       </div>
+    </div>
 
-      <!-- Speed readout -->
-      <div class="speed-display">
-        <div class="speed-label-row">
-          <span>TARGET SPEED</span>
-          <span>LIMIT: 80</span>
+    <div class="top-status-pills">
+      <div class="rf-pill">
+        <span class="rf-dot" id="rfDot"></span>
+        <span id="rfStateText">XMIT: ACTIVE</span>
+      </div>
+      <div class="rf-pill">
+        <span>SPEED LIMIT: <strong style="color:#f59e0b;" id="limitTopText">90 KM/H</strong></span>
+      </div>
+      <div class="rf-pill">
+        <span>CALIBRATION: <strong style="color:#22c55e;">TUNING FORK OK</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Radar Hardware Unit -->
+  <main class="radar-unit">
+    <div class="screw tl"></div>
+    <div class="screw tr"></div>
+    <div class="screw bl"></div>
+    <div class="screw br"></div>
+
+    <!-- ==========================================
+         LEFT SIDE: POLAR DOPPLER / LIDAR SCOPE
+    =========================================== -->
+    <section class="scope-box">
+      <div class="scope-header">
+        <span>POLAR SECTOR // CLICK BLIP TO TRACK</span>
+        <div class="antenna-switch">
+          <button class="ant-btn active" data-ant="FRONT">FRONT</button>
+          <button class="ant-btn" data-ant="REAR">REAR</button>
         </div>
-        <div class="digits-wrap">
-          <span class="digits-ghost">888</span>
-          <span class="digits-lit" id="speedValue">114</span>
+      </div>
+
+      <div class="scope-circle" id="scopeCircle">
+        <div class="range-ring ring-1"></div>
+        <div class="range-ring ring-2"></div>
+        <div class="range-ring ring-3"></div>
+        <div class="lane-corridor"></div>
+
+        <div class="scope-beam" id="scopeBeam"></div>
+        <div class="cross-h"></div>
+        <div class="cross-v"></div>
+
+        <span class="deg-label deg-n">000°</span>
+        <span class="deg-label deg-e">090°</span>
+        <span class="deg-label deg-s">180°</span>
+        <span class="deg-label deg-w">270°</span>
+
+        <!-- Dynamic Vehicle Blips Layer -->
+        <div id="blipsContainer"></div>
+      </div>
+
+      <!-- Live Doppler Frequency Shift Waveform -->
+      <div class="doppler-wave-box">
+        <div class="wave-head">
+          <span id="dopplerFreqText">DOPPLER SHIFT: +2,410 Hz</span>
+          <span id="rssiText">RSSI: -42 dBm (STRONG)</span>
         </div>
-        <span class="speed-unit">KM/H</span>
+        <canvas id="dopplerCanvas" width="320" height="36"></canvas>
       </div>
 
-      <!-- Alert indicator -->
-      <div class="status-banner" id="statusBanner">
-        <span>⚠ VIOLATION: +34 KM/H</span>
-        <span>LOCKED</span>
+      <div class="scope-footer">
+        <span id="azimuthText">AZIMUTH: 014° NNE</span>
+        <span id="rangeText">RANGE: 340 M</span>
       </div>
+    </section>
+
+    <!-- ==========================================
+         RIGHT SIDE: TRIPLE DSEG7 TELEMETRY & LOG
+    =========================================== -->
+    <section class="telemetry-box">
+      <div>
+        <div class="brand-bar">
+          <h3>STALKER D-IV // DUAL ANTENNA</h3>
+          <div class="band-badges">
+            <span class="band-tag" id="bandModeTag">KA-BAND // 34.7 GHz</span>
+            <span class="band-tag" style="color:#38bdf8;" id="patrolModeTag">MOVING MODE</span>
+          </div>
+        </div>
+
+        <!-- TRIPLE 7-SEGMENT DISPLAY WINDOWS -->
+        <div class="dseg-cluster-grid" style="margin-top: 12px;">
+
+          <!-- 1. TARGET LIVE SPEED -->
+          <div class="lcd-window">
+            <div class="speed-label-row">
+              <span>TARGET SPEED</span>
+              <span class="dir-badge" id="targetDirBadge">▼ CLOSING</span>
+            </div>
+            <div class="digits-wrap">
+              <span class="digits-ghost">888</span>
+              <span class="digits-lit" id="targetSpeedEl">134</span>
+            </div>
+            <span class="speed-unit" id="unitLabel1">KM/H</span>
+          </div>
+
+          <!-- 2. LOCKED / FASTEST PEAK SPEED -->
+          <div class="lcd-window secondary locked-window">
+            <div class="speed-label-row">
+              <span style="color:#f59e0b;">LOCKED PEAK</span>
+              <span id="lockTimeTag" style="color:#f59e0b;">HOLD</span>
+            </div>
+            <div class="digits-wrap">
+              <span class="digits-ghost">888</span>
+              <span class="digits-lit amber-lock" id="lockedSpeedEl">134</span>
+            </div>
+            <span class="speed-unit" id="unitLabel2">KM/H</span>
+          </div>
+
+          <!-- 3. PATROL CRUISER SPEED -->
+          <div class="lcd-window secondary patrol-window">
+            <div class="speed-label-row">
+              <span style="color:#22c55e;">PATROL SPD</span>
+              <span>CRUISER</span>
+            </div>
+            <div class="digits-wrap">
+              <span class="digits-ghost">888</span>
+              <span class="digits-lit green-patrol" id="patrolSpeedEl">105</span>
+            </div>
+            <span class="speed-unit" id="unitLabel3">KM/H</span>
+          </div>
+
+        </div>
+
+        <!-- Alert Status Banner -->
+        <div class="status-banner" id="statusBanner" style="margin-top: 12px;">
+          <span id="bannerLeftText">⚠ VIOLATION: +44 KM/H OVER LIMIT</span>
+          <span id="bannerRightText">LOCKED // CITATION READY</span>
+        </div>
+      </div>
+
+      <!-- ALPR License Plate Recognition & Evidence Log -->
+      <div class="alpr-evidence-panel">
+        <div class="alpr-header">
+          <span>ALPR CAMERA SNAPSHOT // <strong style="color:#e2e8f0;" id="vehClassText">BLACK SPORTS COUPE</strong></span>
+          <span class="plate-badge" id="plateBadge">01 A 774 AA</span>
+        </div>
+        <div class="citation-log-list" id="citationLogList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 5 Tactile Hardware Controls -->
+      <div class="radar-controls">
+        <button class="btn-tac lock-active" id="lockBtn">
+          <span>LOCK / REL</span>
+          <span class="sub-key">[SPACE]</span>
+        </button>
+        <button class="btn-tac" id="modeBtn">
+          <span>KA / LIDAR</span>
+          <span class="sub-key">[M] BAND</span>
+        </button>
+        <button class="btn-tac" id="patrolToggleBtn">
+          <span>MOV / STA</span>
+          <span class="sub-key">[P] PATROL</span>
+        </button>
+        <button class="btn-tac" id="rfHoldBtn">
+          <span>RF HOLD</span>
+          <span class="sub-key">[H] STEALTH</span>
+        </button>
+        <button class="btn-tac" id="simBtn">
+          <span>NEXT TARGET</span>
+          <span class="sub-key">[T] SCAN</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom UI-Lab Workbench Bar -->
+  <footer class="uilab-workbench">
+    <div class="wb-group">
+      <span style="color:#38bdf8; font-weight:700;">UI-LAB // RADAR CALIBRATOR</span>
+
+      <label class="wb-slider">
+        <span>SPEED LIMIT</span>
+        <input type="range" id="limitSlider" min="50" max="130" step="10" value="90">
+        <strong style="color:#f59e0b;" id="limitValLabel">90</strong>
+      </label>
+
+      <label class="wb-slider">
+        <span>LCD GHOSTING</span>
+        <input type="range" id="ghostSlider" min="0.03" max="0.22" step="0.01" value="0.08">
+      </label>
     </div>
 
-    <!-- Controls -->
-    <div class="radar-controls">
-      <button class="btn-tac lock-active" id="lockBtn">LOCK</button>
-      <button class="btn-tac" id="modeBtn">KA / LASER</button>
-      <button class="btn-tac" id="simBtn">TRIGGER</button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="wb-toggle-btn" id="unitToggleBtn">UNIT: KM/H</button>
+      <button class="wb-toggle-btn" id="audioToggleBtn">🔊 DOPPLER AUDIO: ON</button>
+      <button class="wb-toggle-btn" id="forkTestBtn">🔔 888 SELF-TEST</button>
     </div>
-  </div>
+  </footer>
+
 </div>
 
 <script>
-  const speedEl = document.getElementById("speedValue");
-  const banner = document.getElementById("statusBanner");
-  const lockBtn = document.getElementById("lockBtn");
-  const simBtn = document.getElementById("simBtn");
-  let locked = true;
+  // ==========================================
+  // TARGET VEHICLES SIMULATION MODEL
+  // ==========================================
+  const targets = [
+    {
+      id: 'TGT-01',
+      plate: '01 A 774 AA',
+      desc: 'BLACK SPORTS COUPE',
+      speedKmh: 138,
+      dir: '▼ CLOSING',
+      azimuth: 14,
+      rangeM: 320,
+      x: 56,
+      y: 26,
+      vx: -0.04,
+      vy: 0.16
+    },
+    {
+      id: 'TGT-02',
+      plate: '10 M 902 BB',
+      desc: 'WHITE CARGO VAN',
+      speedKmh: 82,
+      dir: '▲ AWAY',
+      azimuth: 342,
+      rangeM: 510,
+      x: 38,
+      y: 42,
+      vx: 0.02,
+      vy: -0.11
+    },
+    {
+      id: 'TGT-03',
+      plate: '01 Z 009 ZZ',
+      desc: 'RED SUPERBIKE',
+      speedKmh: 164,
+      dir: '▼ CLOSING',
+      azimuth: 6,
+      rangeM: 210,
+      x: 52,
+      y: 66,
+      vx: 0.01,
+      vy: 0.24
+    },
+    {
+      id: 'TGT-04',
+      plate: '30 C 418 KA',
+      desc: 'SILVER SEDAN',
+      speedKmh: 76,
+      dir: '▼ CLOSING',
+      azimuth: 28,
+      rangeM: 640,
+      x: 68,
+      y: 54,
+      vx: -0.05,
+      vy: 0.09
+    }
+  ];
 
-  function updateSpeed(val) {
-    speedEl.textContent = String(val).padStart(3, " ");
-    if (val > 80) {
-      speedEl.classList.remove("normal");
-      banner.style.display = "flex";
-      banner.innerHTML = `<span>⚠ VIOLATION: +${val - 80} KM/H</span><span>LOCKED</span>`;
-    } else {
-      speedEl.classList.add("normal");
-      banner.style.display = "none";
+  let selectedTargetIdx = 0;
+  let speedLimitKmh = 90;
+  let lockedSpeedKmh = 138;
+  let patrolSpeedKmh = 105;
+  let isLocked = true;
+  let isMovingMode = true;
+  let isRfHold = false;
+  let isMph = false;
+  let bandIndex = 0; // 0: KA-BAND, 1: K-BAND, 2: LIDAR
+  let audioEnabled = true;
+
+  const bands = [
+    { name: 'KA-BAND // 34.7 GHz', sweep: '2.4s', lidar: false },
+    { name: 'K-BAND // 24.15 GHz', sweep: '1.7s', lidar: false },
+    { name: 'LIDAR // 905nm LASER', sweep: '0s', lidar: true }
+  ];
+
+  // ==========================================
+  // WEB AUDIO DOPPLER & BEEP SYNTHESIZER
+  // ==========================================
+  let audioCtx = null;
+  function playRadarTone(type, speedVal = 100) {
+    if (!audioEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'lock') {
+        // Double police radar lock beep
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1850, now);
+        osc.frequency.setValueAtTime(2400, now + 0.07);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.16);
+        osc.start(now);
+        osc.stop(now + 0.17);
+      } else if (type === 'doppler') {
+        // Pitch proportional to target speed
+        osc.type = 'sine';
+        const freq = 320 + speedVal * 8.5;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.start(now);
+        osc.stop(now + 0.13);
+      } else if (type === 'click') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(620, now);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+        osc.start(now);
+        osc.stop(now + 0.045);
+      }
+    } catch (e) {}
+  }
+
+  // ==========================================
+  // DOM ELEMENTS
+  // ==========================================
+  const targetSpeedEl = document.getElementById('targetSpeedEl');
+  const lockedSpeedEl = document.getElementById('lockedSpeedEl');
+  const patrolSpeedEl = document.getElementById('patrolSpeedEl');
+  const statusBanner = document.getElementById('statusBanner');
+  const bannerLeftText = document.getElementById('bannerLeftText');
+  const bannerRightText = document.getElementById('bannerRightText');
+  const blipsContainer = document.getElementById('blipsContainer');
+  const citationLogList = document.getElementById('citationLogList');
+  const scopeCircle = document.getElementById('scopeCircle');
+
+  function formatUnit(kmh) {
+    const val = isMph ? Math.round(kmh * 0.621371) : Math.round(kmh);
+    return String(val).padStart(3, ' ');
+  }
+
+  function convertVal(kmh) {
+    return isMph ? Math.round(kmh * 0.621371) : Math.round(kmh);
+  }
+
+  // ==========================================
+  // RENDER POLAR TARGET BLIPS
+  // ==========================================
+  function renderBlips() {
+    blipsContainer.innerHTML = '';
+    targets.forEach((t, idx) => {
+      const blip = document.createElement('div');
+      const isViolation = t.speedKmh > speedLimitKmh;
+      blip.className = `target-blip ${idx === selectedTargetIdx ? 'selected-target' : ''}`;
+      blip.style.left = `${t.x}%`;
+      blip.style.top = `${t.y}%`;
+      blip.style.color = isViolation ? '#ef4444' : '#22c55e';
+
+      const tag = document.createElement('span');
+      tag.className = 'target-tag';
+      tag.textContent = `${convertVal(t.speedKmh)}${isMph ? 'MPH' : ''}`;
+      blip.appendChild(tag);
+
+      blip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedTargetIdx = idx;
+        playRadarTone('doppler', t.speedKmh);
+        updateRadarHUD();
+      });
+
+      blipsContainer.appendChild(blip);
+    });
+  }
+
+  // ==========================================
+  // ADD ENTRY TO ALPR CITATION LOG
+  // ==========================================
+  function logCitation(target) {
+    const unitStr = isMph ? 'MPH' : 'KM/H';
+    const spd = convertVal(target.speedKmh);
+    const lim = convertVal(speedLimitKmh);
+    const over = spd - lim;
+    const isViolation = over > 0;
+
+    const row = document.createElement('div');
+    row.className = `log-entry ${isViolation ? 'violation-entry' : ''}`;
+    const timeStr = new Date().toTimeString().slice(0, 8);
+    row.innerHTML = `
+      <span style="color:#64748b;">${timeStr}</span>
+      <span style="color:#f8fafc; font-weight:700;">${target.plate}</span>
+      <span>${target.desc}</span>
+      <span style="color:${isViolation ? '#ef4444' : '#22c55e'}; font-weight:700;">
+        ${spd} ${unitStr} (${isViolation ? '+' + over : 'OK'})
+      </span>
+    `;
+    citationLogList.prepend(row);
+    while (citationLogList.children.length > 4) {
+      citationLogList.lastChild.remove();
     }
   }
 
-  simBtn.addEventListener("click", () => {
-    const speeds = [64, 78, 92, 114, 138, 55, 84];
-    const pick = speeds[Math.floor(Math.random() * speeds.length)];
-    updateSpeed(pick);
+  // ==========================================
+  // UPDATE MAIN DSEG7 & HUD READOUTS
+  // ==========================================
+  function updateRadarHUD() {
+    const tgt = targets[selectedTargetIdx];
+    const unitStr = isMph ? 'MPH' : 'KM/H';
+
+    document.getElementById('unitLabel1').textContent = unitStr;
+    document.getElementById('unitLabel2').textContent = unitStr;
+    document.getElementById('unitLabel3').textContent = unitStr;
+
+    const dispLimit = convertVal(speedLimitKmh);
+    document.getElementById('limitTopText').textContent = `${dispLimit}${unitStr}`;
+    document.getElementById('limitValLabel').textContent = dispLimit;
+
+    if (isRfHold) {
+      targetSpeedEl.textContent = '---';
+      targetSpeedEl.classList.add('normal');
+      statusBanner.className = 'status-banner hold-banner';
+      bannerLeftText.textContent = '📡 RF TRANSMITTER ON STANDBY (STEALTH)';
+      bannerRightText.textContent = 'ANTI-DETECTOR HOLD';
+      document.body.classList.remove('pursuit-active');
+      renderBlips();
+      return;
+    }
+
+    // Target Speed
+    targetSpeedEl.textContent = formatUnit(tgt.speedKmh);
+    lockedSpeedEl.textContent = isLocked ? formatUnit(lockedSpeedKmh) : '---';
+    patrolSpeedEl.textContent = isMovingMode ? formatUnit(patrolSpeedKmh) : '  0';
+
+    document.getElementById('targetDirBadge').textContent = tgt.dir;
+    document.getElementById('azimuthText').textContent = `AZIMUTH: ${String(tgt.azimuth).padStart(3, '0')}°`;
+    document.getElementById('rangeText').textContent = `RANGE: ${Math.round(tgt.rangeM)} M`;
+    document.getElementById('vehClassText').textContent = tgt.desc;
+    document.getElementById('plateBadge').textContent = tgt.plate;
+
+    const shiftHz = Math.round(tgt.speedKmh * 19.2);
+    document.getElementById('dopplerFreqText').textContent = `DOPPLER SHIFT: +${shiftHz.toLocaleString()} Hz`;
+
+    const overKmh = tgt.speedKmh - speedLimitKmh;
+    const overDisp = convertVal(tgt.speedKmh) - dispLimit;
+
+    if (overKmh > 0) {
+      targetSpeedEl.classList.remove('normal');
+      statusBanner.className = 'status-banner';
+      bannerLeftText.textContent = `⚠ VIOLATION: +${overDisp}${unitStr} OVER LIMIT`;
+      bannerRightText.textContent = isLocked ? 'LOCKED // PURSUIT' : 'TRACKING FAST';
+      document.body.classList.toggle('pursuit-active', isLocked);
+    } else {
+      targetSpeedEl.classList.add('normal');
+      statusBanner.className = 'status-banner clear-banner';
+      bannerLeftText.textContent = `✓ LEGAL SPEED (${convertVal(tgt.speedKmh)} / ${dispLimit}${unitStr})`;
+      bannerRightText.textContent = 'COMPLIANT FLOW';
+      document.body.classList.remove('pursuit-active');
+    }
+
+    renderBlips();
+  }
+
+  // ==========================================
+  // LIVE TARGET MOTION & DOPPLER OSCILLOSCOPE
+  // ==========================================
+  const canvas = document.getElementById('dopplerCanvas');
+  const ctx = canvas.getContext('2d');
+  let phase = 0;
+
+  function animateWaveAndBlips() {
+    // Move blips smoothly inside radar scope
+    if (!isRfHold) {
+      targets.forEach(t => {
+        t.x += t.vx;
+        t.y += t.vy;
+        if (t.y > 84) t.y = 16;
+        if (t.y < 16) t.y = 84;
+        if (t.x > 82) t.x = 20;
+        if (t.x < 20) t.x = 82;
+      });
+      renderBlips();
+    }
+
+    // Draw Doppler Sine Wave
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const tgt = targets[selectedTargetIdx];
+    const isViol = tgt.speedKmh > speedLimitKmh;
+
+    ctx.strokeStyle = isRfHold ? '#475569' : (isViol ? '#ef4444' : '#38bdf8');
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+
+    const freqFactor = isRfHold ? 0.02 : (tgt.speedKmh / 900);
+    const amp = isRfHold ? 2 : 12;
+
+    for (let x = 0; x < canvas.width; x++) {
+      const y = canvas.height / 2 + Math.sin(x * freqFactor + phase) * amp * Math.sin(x / canvas.width * Math.PI);
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    phase += isRfHold ? 0.05 : (tgt.speedKmh / 420);
+
+    requestAnimationFrame(animateWaveAndBlips);
+  }
+
+  // ==========================================
+  // HARDWARE CONTROLS & KEYBOARD BINDINGS
+  // ==========================================
+  const lockBtn = document.getElementById('lockBtn');
+  lockBtn.addEventListener('click', () => {
+    isLocked = !isLocked;
+    lockBtn.classList.toggle('lock-active', isLocked);
+    if (isLocked) {
+      lockedSpeedKmh = targets[selectedTargetIdx].speedKmh;
+      document.getElementById('lockTimeTag').textContent = 'LOCKED';
+      playRadarTone('lock');
+      logCitation(targets[selectedTargetIdx]);
+    } else {
+      document.getElementById('lockTimeTag').textContent = 'RELEASED';
+      playRadarTone('click');
+    }
+    updateRadarHUD();
   });
 
-  lockBtn.addEventListener("click", () => {
-    locked = !locked;
-    lockBtn.classList.toggle("lock-active", locked);
+  // Band / LIDAR Mode Switch
+  document.getElementById('modeBtn').addEventListener('click', () => {
+    playRadarTone('click');
+    bandIndex = (bandIndex + 1) % bands.length;
+    const b = bands[bandIndex];
+    document.getElementById('bandModeTag').textContent = b.name;
+    document.documentElement.style.setProperty('--sweep-speed', b.sweep);
+    scopeCircle.classList.toggle('lidar-mode', b.lidar);
   });
+
+  // Moving / Stationary Patrol Mode
+  document.getElementById('patrolToggleBtn').addEventListener('click', () => {
+    playRadarTone('click');
+    isMovingMode = !isMovingMode;
+    document.getElementById('patrolModeTag').textContent = isMovingMode ? 'MOVING MODE' : 'STATIONARY';
+    updateRadarHUD();
+  });
+
+  // RF Hold (Stealth Anti-Radar-Detector Standby)
+  const rfHoldBtn = document.getElementById('rfHoldBtn');
+  rfHoldBtn.addEventListener('click', () => {
+    playRadarTone('click');
+    isRfHold = !isRfHold;
+    rfHoldBtn.classList.toggle('hold-active', isRfHold);
+    scopeCircle.classList.toggle('rf-hold', isRfHold);
+    document.getElementById('rfDot').className = isRfHold ? 'rf-dot hold' : 'rf-dot';
+    document.getElementById('rfStateText').textContent = isRfHold ? 'XMIT: RF HOLD' : 'XMIT: ACTIVE';
+    updateRadarHUD();
+  });
+
+  // Next Target / Instant-On Trigger
+  document.getElementById('simBtn').addEventListener('click', () => {
+    if (isRfHold) rfHoldBtn.click(); // Instant-On wakes radar from RF hold
+    selectedTargetIdx = (selectedTargetIdx + 1) % targets.length;
+    // Randomize slight speed variation
+    const jitter = Math.floor(Math.random() * 11) - 5;
+    targets[selectedTargetIdx].speedKmh = Math.max(48, Math.min(185, targets[selectedTargetIdx].speedKmh + jitter));
+    if (isLocked) lockedSpeedKmh = targets[selectedTargetIdx].speedKmh;
+
+    playRadarTone('doppler', targets[selectedTargetIdx].speedKmh);
+    logCitation(targets[selectedTargetIdx]);
+    updateRadarHUD();
+  });
+
+  // Antenna Front/Rear Switch
+  document.querySelectorAll('.ant-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playRadarTone('click');
+      document.querySelectorAll('.ant-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ==========================================
+  // UI-LAB WORKBENCH CONTROLS
+  // ==========================================
+  document.getElementById('limitSlider').addEventListener('input', (e) => {
+    speedLimitKmh = Number(e.target.value);
+    updateRadarHUD();
+  });
+
+  document.getElementById('ghostSlider').addEventListener('input', (e) => {
+    document.documentElement.style.setProperty('--ghost-opacity', e.target.value);
+  });
+
+  const unitToggleBtn = document.getElementById('unitToggleBtn');
+  unitToggleBtn.addEventListener('click', () => {
+    playRadarTone('click');
+    isMph = !isMph;
+    unitToggleBtn.textContent = isMph ? 'UNIT: MPH' : 'UNIT: KM/H';
+    updateRadarHUD();
+  });
+
+  const audioToggleBtn = document.getElementById('audioToggleBtn');
+  audioToggleBtn.addEventListener('click', () => {
+    audioEnabled = !audioEnabled;
+    audioToggleBtn.textContent = audioEnabled ? '🔊 DOPPLER AUDIO: ON' : '🔇 DOPPLER AUDIO: OFF';
+  });
+
+  // 888 Segment Self-Test & Tuning Fork Calibration
+  document.getElementById('forkTestBtn').addEventListener('click', () => {
+    playRadarTone('lock');
+    targetSpeedEl.textContent = '888';
+    lockedSpeedEl.textContent = '888';
+    patrolSpeedEl.textContent = '888';
+    bannerLeftText.textContent = '🔔 INTERNAL QUARTZ + 65.0 KM/H TUNING FORK TEST';
+    bannerRightText.textContent = 'CALIBRATING...';
+    setTimeout(() => updateRadarHUD(), 900);
+  });
+
+  // Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); lockBtn.click(); }
+    if (e.key.toLowerCase() === 'm') document.getElementById('modeBtn').click();
+    if (e.key.toLowerCase() === 'p') document.getElementById('patrolToggleBtn').click();
+    if (e.key.toLowerCase() === 'h') rfHoldBtn.click();
+    if (e.key.toLowerCase() === 't') document.getElementById('simBtn').click();
+  });
+
+  // Initialize
+  logCitation(targets[0]);
+  logCitation(targets[1]);
+  updateRadarHUD();
+  animateWaveAndBlips();
 </script>
 
 </body>

@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liquid Glass — Dark / Light</title>
+<title>Liquid Glass — Dark / Light · UI-Lab Pro</title>
 
+<!-- Метаданные компонента для твоей библиотеки UI-Lab -->
 <script type="application/json" data-uilab-meta>
 {
-  "title": "Glass-4 · Hazy Segmented Border",
+  "title": "Glass-4 · Hazy Segmented Border (Interactive Pro)",
   "category": "cards",
   "themes": [
     "dark",
@@ -21,59 +22,130 @@
     "haze",
     "timer",
     "stats",
-    "theme switch"
+    "theme switch",
+    "3d xray",
+    "spotlight",
+    "interactive inspector"
   ],
-  "description": "Result panel: big timer, badge and three stat tiles, with a dark/light theme switch.",
+  "description": "Result panel: interactive speedrun timer with telemetry sparkline, specular cursor spotlight, 3D X-Ray layer anatomy mode, and real-time CSS Physics Workbench.",
   "techniques": [
+    "@property --border-angle",
     "conic-gradient border",
     "mask-composite: exclude",
     "color-mix()",
     "blurred haze ::after",
     "backdrop-filter",
-    "theme via CSS variables"
+    "SVG fractalNoise grain",
+    "3D Layer X-Ray Decomposition",
+    "Specular mouse tracking"
   ],
-  "recipe": "The non-uniform glowing border is achieved with a conic-gradient on a ::before pseudoelement with 1px padding, hollowed out via mask-composite: exclude (content-box XOR border-box). The atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and blur(25px). In light mode, border segment saturation is lowered rather than inverted, preserving genuine glass physics.",
+  "recipe": "The non-uniform glowing border uses a registered @property --border-angle driving a conic-gradient on ::before with 1px-2px padding, hollowed out via mask-composite: exclude. Atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and dynamic blur. Enhanced with cursor-tracked specular lighting, micro-grain SVG noise, and an interactive 3D layer decomposition view.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 780
+    "width": 1040,
+    "height": 920
   }
 }
 </script>
 
-<style>
-:root {
-  --bg: #070b12;
-  --bg2: #0d1420;
-  --text: #e8eef8;
-  --muted: #8491a7;
+<!-- Подключаем шрифты Inter и JetBrains Mono для идеальных табличных цифр -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-  --glass: rgba(14, 21, 34, .66);
-  --glass-border: rgba(255,255,255,.08);
+<style>
+/* ---------------------------
+   CSS HOUDINI @PROPERTY
+   Позволяет плавно анимировать угол градиента
+---------------------------- */
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 220deg;
+}
+
+@property --spotlight-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  --bg: #060a11;
+  --bg2: #0d1422;
+  --text: #eef3fc;
+  --muted: #8492a9;
+
+  --glass: rgba(14, 21, 35, 0.66);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --panel-surface: rgba(255, 255, 255, 0.03);
+  --panel-border: rgba(255, 255, 255, 0.075);
+
+  /* Акцентная палитра (по умолчанию: Cyber Cyan / Purple) */
+  --c1: 70, 140, 255;   /* Синий */
+  --c2: 135, 80, 255;   /* Фиолетовый */
+  --c3: 45, 215, 195;   /* Бирюзовый */
 
   --blue: #4d8dff;
   --purple: #9a63ff;
   --cyan: #43d9df;
-  --green: #43dfb5;
+  --green: #3ee0b5;
 
-  --shadow: rgba(0,0,0,.30);
+  --shadow: rgba(0, 0, 0, 0.38);
+
+  /* Управляемые параметры из UI-Lab Inspector */
+  --border-angle: 220deg;
+  --border-width: 1.25px;
+  --glass-blur: 22px;
+  --haze-blur: 26px;
+  --haze-opacity: 0.88;
+  --noise-opacity: 0.035;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
 }
 
 body.light {
-  --bg: #edf2f8;
+  --bg: #ecf1f8;
   --bg2: #f7f9fc;
-  --text: #172033;
-  --muted: #69758a;
+  --text: #141d2e;
+  --muted: #647187;
 
-  --glass: rgba(255,255,255,.54);
-  --glass-border: rgba(255,255,255,.72);
+  --glass: rgba(255, 255, 255, 0.56);
+  --glass-border: rgba(255, 255, 255, 0.78);
+  --panel-surface: rgba(255, 255, 255, 0.42);
+  --panel-border: rgba(255, 255, 255, 0.72);
 
-  --shadow: rgba(50,65,90,.14);
+  --shadow: rgba(45, 62, 90, 0.13);
 
-  --blue: #5b8cff;
-  --purple: #9a72ee;
-  --cyan: #38bfc8;
-  --green: #38bd98;
+  --blue: #487ef5;
+  --purple: #8c62e8;
+  --cyan: #2ab0ba;
+  --green: #22b08a;
+  --noise-opacity: 0.025;
+}
+
+/* Палитры для тестирования в Лаборатории */
+body[data-palette="emerald"] {
+  --c1: 45, 212, 160;
+  --c2: 245, 180, 55;
+  --c3: 56, 189, 248;
+}
+body[data-palette="crimson"] {
+  --c1: 255, 75, 115;
+  --c2: 255, 145, 50;
+  --c3: 185, 80, 255;
+}
+body[data-palette="mono"] {
+  --c1: 220, 230, 245;
+  --c2: 140, 155, 180;
+  --c3: 255, 255, 255;
+}
+body.light[data-palette="mono"] {
+  --c1: 70, 90, 120;
+  --c2: 120, 140, 175;
+  --c3: 50, 65, 95;
 }
 
 * {
@@ -84,68 +156,160 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system,
-        BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 14px/1.5 "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
 
   background:
-    radial-gradient(circle at 10% 10%, rgba(65,135,255,.13), transparent 28%),
-    radial-gradient(circle at 88% 82%, rgba(150,80,255,.10), transparent 30%),
+    radial-gradient(circle at 12% 12%, rgba(var(--c1), 0.14), transparent 30%),
+    radial-gradient(circle at 88% 78%, rgba(var(--c2), 0.11), transparent 32%),
+    radial-gradient(circle at 52% 100%, rgba(var(--c3), 0.07), transparent 30%),
     var(--bg);
 
   transition:
-    background .45s ease,
-    color .35s ease;
+    background 0.5s ease,
+    color 0.35s ease;
 }
 
 body.light {
   background:
-    radial-gradient(circle at 8% 12%, rgba(75,145,255,.14), transparent 30%),
-    radial-gradient(circle at 88% 82%, rgba(170,110,255,.13), transparent 30%),
-    radial-gradient(circle at 55% 100%, rgba(55,205,180,.08), transparent 28%),
+    radial-gradient(circle at 10% 12%, rgba(var(--c1), 0.15), transparent 32%),
+    radial-gradient(circle at 88% 82%, rgba(var(--c2), 0.13), transparent 32%),
+    radial-gradient(circle at 55% 100%, rgba(var(--c3), 0.09), transparent 30%),
     var(--bg);
 }
 
+/* Фоновая сетка чертежа для атмосферы UI-Lab */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: 
+    linear-gradient(to right, rgba(130, 150, 180, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(130, 150, 180, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at 50% 35%, #000 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 35%, #000 20%, transparent 80%);
+}
+
 .page {
-  width: min(920px, calc(100% - 40px));
+  width: min(940px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 55px 0 80px;
+  padding: 48px 0 84px;
 }
 
 /* ---------------------------
-   HEADER
+   HEADER & CONTROLS
 ---------------------------- */
 
 .hero {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 30px;
-  margin-bottom: 34px;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .eyebrow {
-  color: #68dbe8;
+  color: rgb(var(--c3));
   text-transform: uppercase;
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
   font-size: 11px;
   font-weight: 700;
 }
 
 body.light .eyebrow {
-  color: #438fb5;
+  color: color-mix(in srgb, rgb(var(--c1)) 75%, #0f172a);
+}
+
+.version-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--c1), 0.14);
+  border: 1px solid rgba(var(--c1), 0.28);
+  color: var(--text);
 }
 
 h1 {
   margin: 8px 0 10px;
-  font-size: clamp(34px, 5vw, 54px);
-  line-height: 1;
-  letter-spacing: -.045em;
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  font-weight: 800;
 }
 
 .hero p {
-  max-width: 620px;
+  max-width: 600px;
   margin: 0;
   color: var(--muted);
+  font-size: 14.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Кнопка режима 3D X-Ray */
+.action-pill {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 25px var(--shadow);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.light .action-pill {
+  background: rgba(255, 255, 255, 0.52);
+  border-color: rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 25px var(--shadow);
+}
+
+.action-pill:hover {
+  color: var(--text);
+  transform: translateY(-1px);
+  border-color: rgba(var(--c1), 0.4);
+}
+
+.action-pill.active {
+  color: var(--text);
+  background: rgba(var(--c1), 0.18);
+  border-color: rgba(var(--c1), 0.55);
+  box-shadow: 0 0 24px rgba(var(--c1), 0.25);
+}
+
+.action-pill svg {
+  width: 15px;
+  height: 15px;
 }
 
 /* ---------------------------
@@ -157,15 +321,15 @@ h1 {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px;
+  gap: 4px;
+  padding: 4px;
   border-radius: 999px;
 
-  background: rgba(255,255,255,.045);
-  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 8px 25px var(--shadow);
 
   backdrop-filter: blur(16px);
@@ -173,11 +337,11 @@ h1 {
 }
 
 body.light .theme-switch {
-  background: rgba(255,255,255,.48);
-  border-color: rgba(255,255,255,.72);
+  background: rgba(255, 255, 255, 0.52);
+  border-color: rgba(255, 255, 255, 0.76);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
     0 8px 25px var(--shadow);
 }
 
@@ -195,30 +359,29 @@ body.light .theme-switch {
   background: transparent;
 
   cursor: pointer;
-  transition: .25s ease;
+  transition: 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .theme-button:hover {
   color: var(--text);
-  background: rgba(255,255,255,.07);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 body.light .theme-button:hover {
-  background: rgba(80,110,150,.08);
+  background: rgba(80, 110, 150, 0.08);
 }
 
 .theme-button.active {
   color: var(--text);
-  background: rgba(255,255,255,.09);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08);
+  background: rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 body.light .theme-button.active {
-  background: rgba(255,255,255,.72);
+  background: rgba(255, 255, 255, 0.85);
   box-shadow:
-    0 2px 8px rgba(50,70,100,.10),
-    inset 0 1px 0 rgba(255,255,255,.9);
+    0 2px 8px rgba(50, 70, 100, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .theme-button svg {
@@ -227,7 +390,16 @@ body.light .theme-button.active {
 }
 
 /* ---------------------------
-   GLASS-4
+   STAGE & 3D X-RAY MODE
+---------------------------- */
+
+.stage-perspective {
+  perspective: 1400px;
+  position: relative;
+}
+
+/* ---------------------------
+   GLASS-4 CORE COMPONENT
 ---------------------------- */
 
 .glass {
@@ -235,31 +407,46 @@ body.light .theme-button.active {
   isolation: isolate;
   overflow: hidden;
 
-  min-height: 370px;
+  min-height: 390px;
   padding: 34px;
 
-  border-radius: 24px;
+  border-radius: 26px;
   border: 1px solid transparent;
 
   background:
     linear-gradient(
       145deg,
       var(--glass),
-      color-mix(in srgb, var(--glass) 76%, transparent)
+      color-mix(in srgb, var(--glass) 74%, transparent)
     );
 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 
   box-shadow:
-    0 24px 65px var(--shadow),
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 -1px 0 rgba(0,0,0,.18);
+    0 26px 70px var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
 
   transition:
-    background .45s ease,
-    box-shadow .45s ease,
-    border-color .45s ease;
+    background 0.45s ease,
+    box-shadow 0.45s ease,
+    border-color 0.45s ease,
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Автоматическое вращение угла градиента, если включен режим Orbit */
+@keyframes orbitBorder {
+  to {
+    --border-angle: 580deg;
+  }
+}
+
+.glass.orbit-mode {
+  animation: orbitBorder 9s linear infinite;
 }
 
 /*
@@ -270,49 +457,41 @@ body.light .theme-button.active {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
 
-  padding: 1px;
+  padding: var(--border-width);
   border-radius: inherit;
 
   background:
     conic-gradient(
-      from 220deg,
-
+      from var(--border-angle),
       transparent 0deg,
-
-      rgba(70,140,255,.55) 50deg,
-      transparent 110deg,
-
-      rgba(130,80,255,.40) 180deg,
+      rgba(var(--c1), 0.65) 50deg,
+      transparent 115deg,
+      rgba(var(--c2), 0.48) 185deg,
       transparent 250deg,
-
-      rgba(50,210,190,.32) 310deg,
+      rgba(var(--c3), 0.40) 315deg,
       transparent 360deg
     );
 
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
-
   -webkit-mask-composite: xor;
 
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
-
   mask-composite: exclude;
 
-  opacity: .78;
-
+  opacity: 0.88;
   pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /*
-  Дымка внутри.
-  В тёмной теме она чуть насыщеннее.
-  В светлой — сильно мягче, чтобы не получилась
-  "неоновая карточка".
+  Дымка внутри (Atmospheric Inner Haze).
+  В тёмной теме насыщеннее, в светлой — воздушная и пастельная.
 */
 .glass::after {
   content: "";
@@ -325,176 +504,163 @@ body.light .theme-button.active {
   background:
     radial-gradient(
       circle at 18% 15%,
-      rgba(70,140,255,.20),
-      transparent 34%
+      rgba(var(--c1), 0.22),
+      transparent 35%
     ),
-
     radial-gradient(
       circle at 82% 70%,
-      rgba(130,70,255,.16),
-      transparent 38%
+      rgba(var(--c2), 0.18),
+      transparent 39%
     ),
-
     radial-gradient(
       circle at 52% 105%,
-      rgba(35,220,195,.09),
-      transparent 34%
+      rgba(var(--c3), 0.11),
+      transparent 35%
     );
 
-  filter: blur(25px);
-  opacity: .85;
+  filter: blur(var(--haze-blur));
+  opacity: var(--haze-opacity);
+  transition: opacity 0.35s ease, filter 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.light .glass::before {
   background:
     conic-gradient(
-      from 220deg,
-
+      from var(--border-angle),
       transparent 0deg,
-
-      rgba(65,130,255,.32) 50deg,
-      transparent 110deg,
-
-      rgba(145,95,235,.25) 180deg,
+      rgba(var(--c1), 0.38) 50deg,
+      transparent 115deg,
+      rgba(var(--c2), 0.30) 185deg,
       transparent 250deg,
-
-      rgba(45,185,165,.22) 310deg,
+      rgba(var(--c3), 0.26) 315deg,
       transparent 360deg
     );
 
-  opacity: .72;
+  opacity: 0.78;
 }
 
 body.light .glass::after {
   background:
     radial-gradient(
       circle at 18% 15%,
-      rgba(70,140,255,.15),
-      transparent 34%
+      rgba(var(--c1), 0.16),
+      transparent 35%
     ),
-
     radial-gradient(
       circle at 82% 70%,
-      rgba(145,90,235,.11),
-      transparent 38%
+      rgba(var(--c2), 0.12),
+      transparent 39%
     ),
-
     radial-gradient(
       circle at 52% 105%,
-      rgba(35,190,165,.07),
-      transparent 34%
+      rgba(var(--c3), 0.08),
+      transparent 35%
     );
+}
 
-  filter: blur(32px);
-  opacity: .75;
+/* Интерактивный Specular Spotlight (следует за курсором) */
+.specular-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--spotlight-opacity, 0);
+  background:
+    radial-gradient(
+      480px circle at var(--mouse-x) var(--mouse-y),
+      rgba(255, 255, 255, 0.085),
+      rgba(var(--c1), 0.04) 40%,
+      transparent 70%
+    );
+  transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.light .specular-spotlight {
+  background:
+    radial-gradient(
+      480px circle at var(--mouse-x) var(--mouse-y),
+      rgba(255, 255, 255, 0.55),
+      rgba(var(--c1), 0.05) 45%,
+      transparent 72%
+    );
+}
+
+/* Микро-текстура матового стекла (SVG Noise) */
+.glass-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: var(--noise-opacity);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* ---------------------------
-   CONTENT
+   3D X-RAY DECOMPOSITION MODE
+   Разбирает карточку на слои в 3D
 ---------------------------- */
 
-.content {
-  position: relative;
-  z-index: 3;
+.stage-perspective.xray-active .glass {
+  overflow: visible;
+  transform: rotateX(24deg) rotateZ(-14deg) rotateY(12deg) scale(0.9);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
 }
 
-.panel-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 25px;
+.stage-perspective.xray-active .glass::after {
+  transform: translateZ(-70px);
+  outline: 1px dashed rgba(var(--c2), 0.45);
+  border-radius: 36px;
 }
 
-.label {
-  color: var(--muted);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .13em;
+.stage-perspective.xray-active .specular-spotlight {
+  transform: translateZ(35px);
+  outline: 1px dashed rgba(255, 255, 255, 0.25);
+}
+
+.stage-perspective.xray-active .glass::before {
+  transform: translateZ(75px);
+  opacity: 1;
+  box-shadow: 0 0 30px rgba(var(--c1), 0.2);
+}
+
+.stage-perspective.xray-active .content {
+  transform: translateZ(115px);
+}
+
+/* Подписи слоёв в режиме 3D X-Ray */
+.xray-tag {
+  position: absolute;
+  right: -14px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.03em;
+  background: rgba(10, 15, 26, 0.88);
+  color: #fff;
+  border: 1px solid rgba(var(--c1), 0.5);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: all 0.4s ease;
+  z-index: 20;
+  white-space: nowrap;
 }
 
-.title {
-  margin-top: 5px;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -.025em;
+.stage-perspective.xray-active .xray-tag {
+  opacity: 1;
 }
 
-.badge {
-  padding: 7px 11px;
-  border-radius: 999px;
-
-  color: var(--text);
-  background: rgba(255,255,255,.055);
-  border: 1px solid rgba(255,255,255,.10);
-
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-body.light .badge {
-  background: rgba(255,255,255,.48);
-  border-color: rgba(255,255,255,.76);
-
-  box-shadow:
-    0 3px 12px rgba(50,70,100,.06),
-    inset 0 1px 0 rgba(255,255,255,.9);
-}
-
-.timer {
-  margin: 55px 0 30px;
-
-  font-size: clamp(48px, 9vw, 82px);
-  line-height: 1;
-  letter-spacing: -.055em;
-  font-weight: 750;
-
-  text-shadow:
-    0 0 30px rgba(70,170,255,.10);
-}
-
-body.light .timer {
-  text-shadow:
-    0 5px 25px rgba(70,110,180,.13);
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.stat {
-  padding: 15px 16px;
-
-  border-radius: 15px;
-
-  background: rgba(255,255,255,.035);
-  border: 1px solid rgba(255,255,255,.065);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.035);
-}
-
-body.light .stat {
-  background: rgba(255,255,255,.34);
-  border-color: rgba(255,255,255,.70);
-
-  box-shadow:
-    0 4px 15px rgba(50,70,100,.035),
-    inset 0 1px 0 rgba(255,255,255,.82);
-}
-
-.stat strong {
-  display: block;
-  font-size: 17px;
-}
-
-.stat span {
-  display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11px;
-}
+.xray-tag.tag-haze { top: 15%; transform: translateZ(-70px); border-color: rgba(var(--c2), 0.6); }
+.xray-tag.tag-body { top: 38%; transform: translateZ(0px); }
+.xray-tag.tag-border { top: 62%; transform: translateZ(75px); border-color: rgba(var(--c3), 0.7); }
+.xray-tag.tag-ui { top: 84%; transform: translateZ(115px); }
 
 /* ---------------------------
    EXTRA BORDER HIGHLIGHTS
@@ -505,19 +671,548 @@ body.light .stat {
   z-index: 2;
   pointer-events: none;
 
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
 
-  background: rgba(80,160,255,.13);
-  filter: blur(30px);
+  background: rgba(var(--c1), 0.18);
+  filter: blur(32px);
 
-  top: -45px;
-  left: 17%;
+  top: -50px;
+  left: 16%;
+  transition: background 0.4s ease;
 }
 
 body.light .highlight {
-  background: rgba(100,160,255,.10);
+  background: rgba(var(--c1), 0.13);
+}
+
+/* ---------------------------
+   CONTENT INSIDE GLASS CARD
+---------------------------- */
+
+.content {
+  position: relative;
+  z-index: 3;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+.status-dot.running {
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan);
+  animation: pulseDot 0.9s infinite alternate;
+}
+
+@keyframes pulseDot {
+  from { transform: scale(0.85); opacity: 0.6; }
+  to { transform: scale(1.25); opacity: 1; }
+}
+
+.title {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.top-right-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Интерактивная кнопка проигрывания забега */
+.replay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(var(--c1), 0.14);
+  border: 1px solid rgba(var(--c1), 0.32);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.replay-btn:hover {
+  background: rgba(var(--c1), 0.24);
+  border-color: rgba(var(--c1), 0.55);
+  transform: translateY(-1px);
+}
+
+.replay-btn:active {
+  transform: translateY(0);
+}
+
+.replay-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: all 0.35s ease;
+}
+
+.badge.celebrate {
+  background: rgba(62, 224, 181, 0.16);
+  border-color: rgba(62, 224, 181, 0.55);
+  box-shadow: 0 0 25px rgba(62, 224, 181, 0.25);
+}
+
+body.light .badge {
+  background: rgba(255, 255, 255, 0.54);
+  border-color: rgba(255, 255, 255, 0.8);
+
+  box-shadow:
+    0 3px 12px rgba(50, 70, 100, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Блок таймера + мини-телеметрия */
+.timer-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 42px 0 28px;
+  flex-wrap: wrap;
+}
+
+.timer {
+  font-size: clamp(48px, 8.5vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+
+  text-shadow: 0 0 34px rgba(var(--c1), 0.16);
+  transition: text-shadow 0.3s ease;
+}
+
+.timer .ms {
+  font-size: 0.58em;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+body.light .timer {
+  text-shadow: 0 6px 26px rgba(70, 110, 180, 0.14);
+}
+
+/* Мини-график телеметрии (Sparkline) */
+.telemetry-box {
+  flex: 0 1 230px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body.light .telemetry-box {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(255, 255, 255, 0.65);
+}
+
+.telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.telemetry-header span:last-child {
+  color: var(--green);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.sparkline-svg {
+  width: 100%;
+  height: 32px;
+  overflow: visible;
+  display: block;
+}
+
+.sparkline-path {
+  fill: none;
+  stroke: rgb(var(--c3));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 240;
+  stroke-dashoffset: 0;
+  transition: stroke 0.3s ease;
+}
+
+.sparkline-area {
+  fill: rgba(var(--c3), 0.12);
+}
+
+/* Прогресс-полоса сплитов */
+.split-progress-track {
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+body.light .split-progress-track {
+  background: rgba(20, 35, 60, 0.08);
+}
+
+.split-progress-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--c1)), rgb(var(--c2)), rgb(var(--c3)));
+  transform-origin: left center;
+  transform: scaleX(1);
+  transition: transform 0.08s linear;
+}
+
+/* ---------------------------
+   STATS TILES (Стеклянные мини-плитки)
+---------------------------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  position: relative;
+  padding: 16px 18px;
+  border-radius: 16px;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.stat:hover,
+.stat.active-split {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--c1), 0.38);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+body.light .stat {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.74);
+
+  box-shadow:
+    0 4px 15px rgba(50, 70, 100, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+body.light .stat:hover,
+body.light .stat.active-split {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(var(--c1), 0.45);
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.stat-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.stat-tag.positive {
+  color: var(--green);
+  background: rgba(62, 224, 181, 0.12);
+}
+
+.stat span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+/* ---------------------------
+   UI-LAB WORKBENCH (Инспектор параметров)
+---------------------------- */
+
+.workbench {
+  margin-top: 26px;
+  padding: 24px 26px;
+  border-radius: 22px;
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px var(--shadow);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.workbench-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(140, 160, 190, 0.12);
+}
+
+.workbench-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.workbench-title svg {
+  width: 17px;
+  height: 17px;
+  color: rgb(var(--c1));
+}
+
+.workbench-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-secondary,
+.btn-primary {
+  padding: 7px 13px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(140, 160, 190, 0.18);
+  color: var(--muted);
+}
+
+body.light .btn-secondary {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(100, 120, 150, 0.2);
+}
+
+.btn-secondary:hover {
+  color: var(--text);
+  border-color: rgba(140, 160, 190, 0.35);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(var(--c1), 0.9), rgba(var(--c2), 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(var(--c1), 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(var(--c1), 0.35);
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px 24px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.control-value {
+  color: var(--text);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(140, 160, 190, 0.18);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgb(var(--c1));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Переключатели режимов (Segmented Pills) */
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(140, 160, 190, 0.10);
+}
+
+.seg-btn {
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seg-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+body.light .seg-btn.active {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(40, 60, 90, 0.1);
+}
+
+/* Палитра кружков */
+.palette-swatches {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch.active {
+  border-color: var(--text);
+  transform: scale(1.12);
 }
 
 /* ---------------------------
@@ -530,30 +1225,66 @@ body.light .highlight {
 
   color: var(--muted);
 
-  border-left: 2px solid rgba(70,180,220,.45);
+  border-left: 2px solid rgba(var(--c3), 0.55);
   border-radius: 0 12px 12px 0;
 
-  background: rgba(255,255,255,.025);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 13px;
 }
 
 body.light .note {
-  background: rgba(255,255,255,.30);
-  border-left-color: rgba(65,140,190,.35);
+  background: rgba(255, 255, 255, 0.36);
+  border-left-color: rgba(var(--c1), 0.45);
 }
 
 code {
   color: var(--text);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: rgba(140, 160, 190, 0.12);
 }
 
-@media (max-width: 680px) {
+/* Уведомление о копировании рецепта */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(14, 21, 35, 0.92);
+  border: 1px solid rgba(var(--c3), 0.45);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  transform: translateY(80px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
   .page {
     width: min(100% - 24px, 620px);
-    padding-top: 30px;
+    padding-top: 28px;
   }
 
   .hero {
     flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .stats {
@@ -561,7 +1292,15 @@ code {
   }
 
   .glass {
-    padding: 25px;
+    padding: 24px;
+  }
+
+  .timer-row {
+    margin: 30px 0 22px;
+  }
+
+  .telemetry-box {
+    flex: 1 1 100%;
   }
 }
 </style>
@@ -571,75 +1310,248 @@ code {
 
 <main class="page">
 
+  <!-- ШАПКА СТРАНИЦЫ -->
   <header class="hero">
     <div>
-      <div class="eyebrow">Liquid Glass / Theme Lab</div>
+      <div class="eyebrow-row">
+        <span class="eyebrow">Liquid Glass / Theme Lab</span>
+        <span class="version-pill">v2.4 Interactive</span>
+      </div>
       <h1>Glass-4</h1>
       <p>
-        Неоднородный border с цветными участками,
-        мягкой дымкой внутри и двумя вариантами освещения.
+        Неоднородный border с цветными участками на <code>@property</code>,
+        мягкой дымкой внутри, динамическим бликом и режимом 3D-рентгена слоёв.
       </p>
     </div>
 
-    <div class="theme-switch" aria-label="Theme switch">
-      <button class="theme-button active" id="darkBtn" title="Тёмная тема">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-          <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-          <circle cx="12" cy="12" r="4"/>
+    <div class="header-actions">
+      <!-- Кнопка 3D-разбора слоёв карточки -->
+      <button class="action-pill" id="xrayBtn" title="Разложить карточку на CSS-слои в 3D">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 12 12 17 22 12"/>
+          <polyline points="2 17 12 22 22 17"/>
         </svg>
+        <span>3D Слои</span>
       </button>
 
-      <button class="theme-button" id="lightBtn" title="Светлая тема">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-          <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3a8.5 8.5 0 1 0 9.8 9.8Z"/>
-        </svg>
-      </button>
+      <!-- Переключатель Тёмной / Светлой темы (иконки Луны и Солнца на своих местах) -->
+      <div class="theme-switch" aria-label="Theme switch">
+        <button class="theme-button active" id="darkBtn" title="Тёмная тема">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3a8.5 8.5 0 1 0 9.8 9.8Z"/>
+          </svg>
+        </button>
+
+        <button class="theme-button" id="lightBtn" title="Светлая тема">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
 
-  <section class="glass">
+  <!-- СЦЕНА С КАРТОЧКОЙ GLASS-4 -->
+  <div class="stage-perspective" id="stagePerspective">
+    <section class="glass" id="glassCard">
 
-    <div class="highlight"></div>
+      <!-- Маркеры для 3D X-Ray режима -->
+      <div class="xray-tag tag-haze">::after · Radial Haze + blur(26px)</div>
+      <div class="xray-tag tag-body">.glass · Backdrop Blur + SVG Grain</div>
+      <div class="xray-tag tag-border">::before · Conic XOR Border</div>
+      <div class="xray-tag tag-ui">.content · Tabular UI Layer</div>
 
-    <div class="content">
+      <!-- Световой блик на верхней грани -->
+      <div class="highlight" id="topHighlight"></div>
 
-      <div class="panel-top">
-        <div>
-          <div class="label">Maze Daily</div>
-          <div class="title">#1004 · Key &amp; Door</div>
+      <!-- Следящий за курсором Specular-блик -->
+      <div class="specular-spotlight"></div>
+
+      <!-- Микро-шум матового стекла -->
+      <div class="glass-grain"></div>
+
+      <!-- КОНТЕНТ КАРТОЧКИ -->
+      <div class="content">
+
+        <div class="panel-top">
+          <div>
+            <div class="label">
+              <span class="status-dot" id="statusDot"></span>
+              <span>Maze Daily</span>
+            </div>
+            <div class="title">#1004 · Key &amp; Door</div>
+          </div>
+
+          <div class="top-right-group">
+            <button class="replay-btn" id="replayBtn" title="Симулировать прохождение таймера">
+              <svg viewBox="0 0 24 24">
+                <polygon points="6 4 20 12 6 20 6 4"/>
+              </svg>
+              <span id="replayLabel">Replay Run</span>
+            </button>
+
+            <div class="badge" id="pbBadge">
+              Personal Best
+            </div>
+          </div>
         </div>
 
-        <div class="badge">
-          Personal Best
+        <!-- ТАЙМЕР И МИНИ-СПАРКЛАЙН ТЕЛЕМЕТРИИ -->
+        <div class="timer-row">
+          <div class="timer" id="timerDisplay">
+            00:32<span class="ms">.41</span>
+          </div>
+
+          <div class="telemetry-box">
+            <div class="telemetry-header">
+              <span>Pace Telemetry</span>
+              <span id="telemetryDelta">TOP 0.4%</span>
+            </div>
+            <svg class="sparkline-svg" viewBox="0 0 200 32" preserveAspectRatio="none">
+              <path class="sparkline-area" d="M0,32 L0,25 C30,24 55,14 85,17 C115,20 140,8 170,10 C185,11 195,4 200,3 L200,32 Z"></path>
+              <path class="sparkline-path" id="sparklinePath" d="M0,25 C30,24 55,14 85,17 C115,20 140,8 170,10 C185,11 195,4 200,3"></path>
+            </svg>
+          </div>
         </div>
+
+        <!-- ИНДИКАТОР ПРОГРЕССА СПЛИТОВ -->
+        <div class="split-progress-track">
+          <div class="split-progress-bar" id="splitProgressBar"></div>
+        </div>
+
+        <!-- ПЛИТКИ СТАТИСТИКИ -->
+        <div class="stats">
+          <div class="stat" data-split="delta">
+            <div class="stat-top">
+              <strong id="statDelta">-2.18s</strong>
+              <span class="stat-tag positive">PB Δ</span>
+            </div>
+            <span>vs. Previous (34.59s)</span>
+          </div>
+
+          <div class="stat" data-split="quarter">
+            <div class="stat-top">
+              <strong id="statSplit">08.21s</strong>
+              <span class="stat-tag">SEG 1</span>
+            </div>
+            <span>25% Key Split</span>
+          </div>
+
+          <div class="stat" data-split="finish">
+            <div class="stat-top">
+              <strong id="statFinish">32.41s</strong>
+              <span class="stat-tag">100%</span>
+            </div>
+            <span>Door Finish</span>
+          </div>
+        </div>
+
       </div>
 
-      <div class="timer">
-        00:32.41
+    </section>
+  </div>
+
+
+  <!-- ИНСПЕКТОР ПАРАМЕТРОВ UI-LAB -->
+  <section class="workbench" aria-label="UI-Lab Physics Workbench">
+    <div class="workbench-header">
+      <div class="workbench-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14"/>
+          <line x1="4" y1="10" x2="4" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12" y2="3"/>
+          <line x1="20" y1="21" x2="20" y2="16"/>
+          <line x1="20" y1="12" x2="20" y2="3"/>
+          <line x1="1" y1="14" x2="7" y2="14"/>
+          <line x1="9" y1="8" x2="15" y2="8"/>
+          <line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
+        <span>UI-Lab Workbench · Настройка физики стекла</span>
       </div>
 
-      <div class="stats">
-        <div class="stat">
-          <strong>-2.18s</strong>
-          <span>vs. Previous</span>
-        </div>
-
-        <div class="stat">
-          <strong>08.21s</strong>
-          <span>25% Split</span>
-        </div>
-
-        <div class="stat">
-          <strong>32.41s</strong>
-          <span>Finish</span>
-        </div>
+      <div class="workbench-actions">
+        <button class="btn-secondary" id="resetLabBtn">Сбросить</button>
+        <button class="btn-primary" id="copyCssBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Копировать CSS-рецепт</span>
+        </button>
       </div>
-
     </div>
 
+    <div class="controls-grid">
+      <!-- Режим поведения кромки -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Режим свечения грани</span>
+          <span class="control-value" id="modeLabel">Cursor</span>
+        </div>
+        <div class="segmented-control" id="borderModeControl">
+          <button class="seg-btn active" data-mode="cursor">Курсор</button>
+          <button class="seg-btn" data-mode="orbit">Орбита</button>
+          <button class="seg-btn" data-mode="static">Статика</button>
+        </div>
+      </div>
+
+      <!-- Угол света -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Угол сегментов (<code>--border-angle</code>)</span>
+          <span class="control-value" id="angleVal">220°</span>
+        </div>
+        <input type="range" id="angleSlider" min="0" max="360" value="220">
+      </div>
+
+      <!-- Размытие стекла -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Размытие фона (<code>backdrop-filter</code>)</span>
+          <span class="control-value" id="blurVal">22px</span>
+        </div>
+        <input type="range" id="blurSlider" min="4" max="44" value="22">
+      </div>
+
+      <!-- Насыщенность дымки -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Атмосферная дымка (<code>::after</code>)</span>
+          <span class="control-value" id="hazeVal">88%</span>
+        </div>
+        <input type="range" id="hazeSlider" min="0" max="100" value="88">
+      </div>
+
+      <!-- Толщина кромки -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Толщина грани (<code>padding</code>)</span>
+          <span class="control-value" id="widthVal">1.25px</span>
+        </div>
+        <input type="range" id="widthSlider" min="0.75" max="2.5" step="0.25" value="1.25">
+      </div>
+
+      <!-- Цветовые пресеты -->
+      <div class="control-group">
+        <div class="control-label">
+          <span>Спектр преломления</span>
+          <span class="control-value" id="paletteVal">Cyber</span>
+        </div>
+        <div class="palette-swatches" id="paletteSwatches">
+          <button class="swatch active" data-palette="cyber" title="Cyber Blue & Purple" style="background: linear-gradient(135deg, #468cff, #8750ff, #2dd7c3);"></button>
+          <button class="swatch" data-palette="emerald" title="Emerald & Gold" style="background: linear-gradient(135deg, #2dd4a0, #f5b437, #38bdf8);"></button>
+          <button class="swatch" data-palette="crimson" title="Crimson & Sunset" style="background: linear-gradient(135deg, #ff4b73, #ff9132, #b950ff);"></button>
+          <button class="swatch" data-palette="mono" title="Monochrome Frost" style="background: linear-gradient(135deg, #dce6f5, #64748b, #ffffff);"></button>
+        </div>
+      </div>
+    </div>
   </section>
 
+  <!-- ПОЯСНИТЕЛЬНАЯ ЗАМЕТКА -->
   <div class="note">
     В светлой теме border намеренно стал менее насыщенным:
     вместо яркого неона — полупрозрачные голубые, фиолетовые и cyan-кромки.
@@ -649,27 +1561,312 @@ code {
 
 </main>
 
+<!-- Всплывающее уведомление -->
+<div class="toast" id="toast">CSS-рецепт скопирован в буфер обмена</div>
 
 <script>
+/* ---------------------------
+   1. ПЕРЕКЛЮЧЕНИЕ ТЕМЫ
+---------------------------- */
 const darkBtn = document.getElementById("darkBtn");
 const lightBtn = document.getElementById("lightBtn");
 
 function setTheme(theme) {
   const light = theme === "light";
 
-  document.body.classList.toggle("light", light);
+  const applyTheme = () => {
+    document.body.classList.toggle("light", light);
+    darkBtn.classList.toggle("active", !light);
+    lightBtn.classList.toggle("active", light);
+    localStorage.setItem("glass-theme", theme);
+  };
 
-  darkBtn.classList.toggle("active", !light);
-  lightBtn.classList.toggle("active", light);
-
-  localStorage.setItem("glass-theme", theme);
+  if (document.startViewTransition) {
+    document.startViewTransition(applyTheme);
+  } else {
+    applyTheme();
+  }
 }
 
 darkBtn.addEventListener("click", () => setTheme("dark"));
 lightBtn.addEventListener("click", () => setTheme("light"));
 
-const saved = localStorage.getItem("glass-theme");
-setTheme(saved === "light" ? "light" : "dark");
+const savedTheme = localStorage.getItem("glass-theme");
+setTheme(savedTheme === "light" ? "light" : "dark");
+
+
+/* ---------------------------
+   2. ИНТЕРАКТИВНОЕ ОСВЕЩЕНИЕ И 3D TILT
+---------------------------- */
+const glassCard = document.getElementById("glassCard");
+const stagePerspective = document.getElementById("stagePerspective");
+const angleSlider = document.getElementById("angleSlider");
+const angleVal = document.getElementById("angleVal");
+const modeLabel = document.getElementById("modeLabel");
+
+let borderMode = "cursor"; // 'cursor' | 'orbit' | 'static'
+let isXray = false;
+
+glassCard.addEventListener("mousemove", (e) => {
+  if (isXray) return;
+
+  const rect = glassCard.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Координаты для Specular Spotlight
+  glassCard.style.setProperty("--mouse-x", `${x}px`);
+  glassCard.style.setProperty("--mouse-y", `${y}px`);
+  glassCard.style.setProperty("--spotlight-opacity", "1");
+
+  // Лёгкий физический 3D-наклон карточки
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+  const tiltX = ((centerY - y) / centerY) * 2.8;
+  const tiltY = ((x - centerX) / centerX) * 2.8;
+
+  glassCard.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
+  glassCard.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
+
+  // Если включен режим слежения кромки за курсором
+  if (borderMode === "cursor") {
+    const rad = Math.atan2(y - centerY, x - centerX);
+    let deg = Math.round(rad * (180 / Math.PI) + 90);
+    if (deg < 0) deg += 360;
+
+    document.documentElement.style.setProperty("--border-angle", `${deg}deg`);
+    angleSlider.value = deg;
+    angleVal.textContent = `${deg}°`;
+  }
+});
+
+glassCard.addEventListener("mouseleave", () => {
+  glassCard.style.setProperty("--spotlight-opacity", "0");
+  glassCard.style.setProperty("--tilt-x", "0deg");
+  glassCard.style.setProperty("--tilt-y", "0deg");
+});
+
+
+/* ---------------------------
+   3. РЕЖИМ 3D X-RAY (АНАТОМИЯ СЛОЁВ)
+---------------------------- */
+const xrayBtn = document.getElementById("xrayBtn");
+
+xrayBtn.addEventListener("click", () => {
+  isXray = !isXray;
+  xrayBtn.classList.toggle("active", isXray);
+  stagePerspective.classList.toggle("xray-active", isXray);
+
+  if (isXray) {
+    glassCard.style.setProperty("--spotlight-opacity", "1");
+    glassCard.style.setProperty("--mouse-x", "50%");
+    glassCard.style.setProperty("--mouse-y", "50%");
+  } else {
+    glassCard.style.setProperty("--spotlight-opacity", "0");
+  }
+});
+
+
+/* ---------------------------
+   4. СИМУЛЯЦИЯ ЗАБЕГА ТАЙМЕРА (REPLAY RUN)
+---------------------------- */
+const replayBtn = document.getElementById("replayBtn");
+const replayLabel = document.getElementById("replayLabel");
+const timerDisplay = document.getElementById("timerDisplay");
+const splitProgressBar = document.getElementById("splitProgressBar");
+const statusDot = document.getElementById("statusDot");
+const pbBadge = document.getElementById("pbBadge");
+const statsCards = document.querySelectorAll(".stat");
+
+let animFrame = null;
+const TARGET_TIME = 32.41;
+const DURATION_MS = 2200; // Длительность ускоренного реплея
+
+function formatTimerHTML(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  const hundredths = Math.floor((seconds % 1) * 100);
+
+  const mm = String(mins).padStart(2, "0");
+  const ss = String(secs).padStart(2, "0");
+  const ms = String(hundredths).padStart(2, "0");
+
+  return `${mm}:${ss}<span class="ms">.${ms}</span>`;
+}
+
+replayBtn.addEventListener("click", () => {
+  if (animFrame) cancelAnimationFrame(animFrame);
+
+  const startTime = performance.now();
+  statusDot.classList.add("running");
+  pbBadge.classList.remove("celebrate");
+  replayLabel.textContent = "Running...";
+  statsCards.forEach((c) => c.classList.remove("active-split"));
+
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / DURATION_MS, 1);
+
+    // Плавная кривая easeOutCubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const currentSeconds = eased * TARGET_TIME;
+
+    timerDisplay.innerHTML = formatTimerHTML(currentSeconds);
+    splitProgressBar.style.transform = `scaleX(${progress.toFixed(3)})`;
+
+    // Подсветка карточек сплитов по ходу дистанции
+    if (currentSeconds >= 8.21 && currentSeconds < 24) {
+      statsCards[1].classList.add("active-split");
+    } else if (currentSeconds >= 24 && progress < 1) {
+      statsCards[1].classList.remove("active-split");
+      statsCards[0].classList.add("active-split");
+    }
+
+    if (progress < 1) {
+      animFrame = requestAnimationFrame(tick);
+    } else {
+      timerDisplay.innerHTML = `00:32<span class="ms">.41</span>`;
+      statusDot.classList.remove("running");
+      pbBadge.classList.add("celebrate");
+      replayLabel.textContent = "Replay Run";
+      statsCards.forEach((c) => c.classList.remove("active-split"));
+      statsCards[2].classList.add("active-split");
+      setTimeout(() => {
+        pbBadge.classList.remove("celebrate");
+        statsCards[2].classList.remove("active-split");
+      }, 1500);
+    }
+  }
+
+  animFrame = requestAnimationFrame(tick);
+});
+
+
+/* ---------------------------
+   5. UI-LAB WORKBENCH (НАСТРОЙКИ В РЕАЛЬНОМ ВРЕМЕНИ)
+---------------------------- */
+const blurSlider = document.getElementById("blurSlider");
+const blurVal = document.getElementById("blurVal");
+const hazeSlider = document.getElementById("hazeSlider");
+const hazeVal = document.getElementById("hazeVal");
+const widthSlider = document.getElementById("widthSlider");
+const widthVal = document.getElementById("widthVal");
+const borderModeControl = document.getElementById("borderModeControl");
+const paletteSwatches = document.getElementById("paletteSwatches");
+const paletteVal = document.getElementById("paletteVal");
+const resetLabBtn = document.getElementById("resetLabBtn");
+const copyCssBtn = document.getElementById("copyCssBtn");
+const toast = document.getElementById("toast");
+
+function setBorderMode(mode) {
+  borderMode = mode;
+  glassCard.classList.toggle("orbit-mode", mode === "orbit");
+  modeLabel.textContent =
+    mode === "cursor" ? "Cursor" : mode === "orbit" ? "Orbit" : "Static";
+
+  borderModeControl.querySelectorAll(".seg-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+}
+
+borderModeControl.addEventListener("click", (e) => {
+  const btn = e.target.closest(".seg-btn");
+  if (!btn) return;
+  setBorderMode(btn.dataset.mode);
+});
+
+angleSlider.addEventListener("input", (e) => {
+  setBorderMode("static");
+  const val = e.target.value;
+  document.documentElement.style.setProperty("--border-angle", `${val}deg`);
+  angleVal.textContent = `${val}°`;
+});
+
+blurSlider.addEventListener("input", (e) => {
+  const val = e.target.value;
+  document.documentElement.style.setProperty("--glass-blur", `${val}px`);
+  blurVal.textContent = `${val}px`;
+});
+
+hazeSlider.addEventListener("input", (e) => {
+  const val = e.target.value;
+  document.documentElement.style.setProperty("--haze-opacity", (val / 100).toFixed(2));
+  hazeVal.textContent = `${val}%`;
+});
+
+widthSlider.addEventListener("input", (e) => {
+  const val = e.target.value;
+  document.documentElement.style.setProperty("--border-width", `${val}px`);
+  widthVal.textContent = `${val}px`;
+});
+
+paletteSwatches.addEventListener("click", (e) => {
+  const swatch = e.target.closest(".swatch");
+  if (!swatch) return;
+
+  const pal = swatch.dataset.palette;
+  if (pal === "cyber") {
+    document.body.removeAttribute("data-palette");
+  } else {
+    document.body.setAttribute("data-palette", pal);
+  }
+
+  paletteSwatches.querySelectorAll(".swatch").forEach((s) => {
+    s.classList.toggle("active", s === swatch);
+  });
+
+  paletteVal.textContent = pal.charAt(0).toUpperCase() + pal.slice(1);
+});
+
+resetLabBtn.addEventListener("click", () => {
+  setBorderMode("cursor");
+  document.documentElement.style.setProperty("--border-angle", "220deg");
+  document.documentElement.style.setProperty("--glass-blur", "22px");
+  document.documentElement.style.setProperty("--haze-opacity", "0.88");
+  document.documentElement.style.setProperty("--border-width", "1.25px");
+  document.body.removeAttribute("data-palette");
+
+  angleSlider.value = 220;
+  angleVal.textContent = "220°";
+  blurSlider.value = 22;
+  blurVal.textContent = "22px";
+  hazeSlider.value = 88;
+  hazeVal.textContent = "88%";
+  widthSlider.value = 1.25;
+  widthVal.textContent = "1.25px";
+  paletteVal.textContent = "Cyber";
+
+  paletteSwatches.querySelectorAll(".swatch").forEach((s, i) => {
+    s.classList.toggle("active", i === 0);
+  });
+});
+
+/* Экспорт готового CSS-рецепта в буфер обмена */
+copyCssBtn.addEventListener("click", () => {
+  const angle = angleSlider.value;
+  const blur = blurSlider.value;
+  const haze = (hazeSlider.value / 100).toFixed(2);
+  const width = widthSlider.value;
+
+  const cssSnippet = `/* UI-Lab · Glass-4 Recipe */
+.glass-4 {
+  --border-angle: ${angle}deg;
+  --border-width: ${width}px;
+  --glass-blur: ${blur}px;
+  --haze-opacity: ${haze};
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}`;
+
+  const textarea = document.createElement("textarea");
+  textarea.value = cssSnippet;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2400);
+});
 </script>
 
 </body>
