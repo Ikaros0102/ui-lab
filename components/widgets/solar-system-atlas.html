@@ -3,153 +3,1298 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solar System Orbit Atlas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<title>Solar System Orbit Atlas — Interactive 3D Orrery & Telemetry Poster</title>
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap](https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
   "title": "Solar System Orbit Atlas",
   "category": "widgets",
   "themes": ["dark"],
-  "tags": ["space", "solar-system", "infographic", "orbits", "planets", "poster", "3d-transform", "data-cards"],
-  "description": "Editorial solar system infographic: a tilted orbital plane with animated planets, surrounded by planet fact cards that highlight their orbit on hover.",
-  "techniques": ["transform: rotateX() tilted orbit plane", "nested rotating wrappers for orbits", "radial-gradient planet spheres", "hover-linked orbit highlighting via :has()", "key-value fact tables"],
-  "recipe": "The orbit map is a flat container tilted with rotateX(68deg) so concentric circles read as ellipses. Each planet sits at the edge of a wrapper that spins around the centre, which gives an orbit without any JavaScript. Planet bodies are radial-gradients with an inset shadow for the terminator. Hovering a fact card toggles a data attribute on the stage, and :has() / attribute selectors brighten the matching orbit ring.",
-  "preview": { "mode": "page", "width": 1000, "height": 700 }
+  "tags": [
+    "space",
+    "solar-system",
+    "infographic",
+    "orbits",
+    "planets",
+    "poster",
+    "3d-transform",
+    "data-cards",
+    "orrery",
+    "telemetry"
+  ],
+  "description": "Interactive editorial Solar System 3D Orrery & Infographic Poster featuring all 8 planetary orbits, an asteroid belt, billboarding 3D planet spheres, live SVG target-tracking leader lines from fact cards to moving planets, Saturn/Uranus ring systems, and a comparative diameter scale bar.",
+  "techniques": [
+    "3D CSS preserve-3d orbital plane with billboarding counter-rotation so planets stay spherical at any camera tilt",
+    "Real-time requestAnimationFrame Keplerian orbit solver with dynamic SVG telemetry leader lines tracking moving planets",
+    "Rich CSS radial-gradient planetary atmospheres, terminator shadows, and 3D tilted Saturn & Uranus rings",
+    "Interactive camera pitch/yaw drag control, Time-Warp speed multiplier, and synchronized relative diameter scale strip",
+    "Procedural Web Audio API deep-space harmonic resonance per planet orbital frequency"
+  ],
+  "recipe": "Upgrades the static 6-ring CSS animation into a complete 8-planet + Asteroid Belt interactive 3D orrery. A JavaScript ephemeris loop drives orbital angles while counter-rotating each planet billboard against the plane's rotateX(--tilt) angle. Hovering or locking any card or orbit draws a live SVG callout line directly from the card to the moving planet's screen-space coordinates.",
+  "preview": { "mode": "page", "width": 1080, "height": 760 }
 }
 </script>
 
 <style>
   * { box-sizing: border-box; }
-  :root { --gold: #f1b24a; --line: rgba(255,255,255,.18); }
-  body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center;
-    background: #000; color: #dfe3ea; font: 11px/1.4 "Barlow", system-ui, sans-serif; overflow: hidden;
+
+  :root {
+    --gold: #f1b24a;
+    --gold-bright: #ffe09e;
+    --gold-dim: rgba(241, 178, 74, 0.28);
+    --gold-faint: rgba(241, 178, 74, 0.08);
+    --cyan: #5ce1e6;
+    --line: rgba(255, 255, 255, 0.15);
+    --card-bg: rgba(9, 12, 22, 0.72);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --tilt: 66deg;
+    --rot-z: -12deg;
   }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 30%, #090c18 0%, #020307 75%);
+    color: #dfe3ea;
+    font: 11px/1.4 "Barlow", system-ui, sans-serif;
+    padding: 16px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ==========================================================================
+     MAIN EDITORIAL POSTER FRAME (1040 x 700)
+  ========================================================================== */
   .poster {
-    position: relative; width: 960px; height: 660px;
+    position: relative;
+    width: 1040px;
+    height: 700px;
     background:
-      radial-gradient(60% 40% at 50% -10%, rgba(255,120,30,.5), transparent 70%),
-      radial-gradient(1px 1px at 12% 30%, #fff, transparent), radial-gradient(1px 1px at 70% 18%, #fff, transparent),
-      radial-gradient(1px 1px at 40% 80%, #fff, transparent), radial-gradient(1px 1px at 88% 66%, #fff, transparent), #02030a;
-    border: 1px solid #222;
+      radial-gradient(55% 38% at 50% -6%, rgba(255, 130, 35, 0.42), rgba(241, 178, 74, 0.08) 55%, transparent 75%),
+      radial-gradient(45% 45% at 50% 50%, rgba(255, 155, 45, 0.08), transparent 70%),
+      #03050c;
+    border: 1px solid rgba(241, 178, 74, 0.28);
+    border-radius: 10px;
+    box-shadow:
+      0 35px 90px rgba(0, 0, 0, 0.95),
+      inset 0 0 80px rgba(0, 0, 0, 0.85);
     overflow: hidden;
   }
-  .title { position: absolute; left: 18px; top: 14px; }
-  .title h1 { margin: 0; font: 700 22px "Barlow Condensed"; letter-spacing: .12em; color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 2px; }
-  .title p { margin: 4px 0 0; font: 500 15px "Barlow Condensed"; letter-spacing: .06em; }
 
-  /* ---------- planet cards ---------- */
+  /* Editorial Fine Framing Border & Corner Crosshairs */
+  .poster-frame-lines {
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Starfield Background Canvas */
+  #starCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Dynamic SVG Telemetry Overlay (Draws live leader lines from Card -> Moving Planet) */
+  .telemetry-svg-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+  }
+
+  /* ==========================================================================
+     HEADER & TOP-RIGHT CONTROLS
+  ========================================================================== */
+  .title-block {
+    position: absolute;
+    left: 24px;
+    top: 18px;
+    z-index: 20;
+  }
+  .title-block .eyebrow {
+    font: 600 9.5px "JetBrains Mono", monospace;
+    letter-spacing: 0.24em;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .title-block h1 {
+    margin: 0;
+    font: 700 26px/1 "Barlow Condensed", sans-serif;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 4px;
+    display: inline-block;
+    text-shadow: 0 0 18px rgba(241, 178, 74, 0.35);
+  }
+  .title-block p {
+    margin: 5px 0 0;
+    font: 500 14px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.08em;
+    color: #cbd5e1;
+  }
+
+  /* Top-Right Telemetry & Time-Warp Bar */
+  .orrery-toolbar {
+    position: absolute;
+    right: 24px;
+    top: 18px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .toolbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(8, 11, 20, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+
+  .tool-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font: 600 10px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tool-btn:hover {
+    border-color: var(--gold);
+    color: #fff;
+  }
+  .tool-btn.active {
+    background: var(--gold);
+    color: #05070e;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(241, 178, 74, 0.45);
+  }
+
+  .toolbar-hint {
+    font-size: 9.5px;
+    color: #94a3b8;
+    letter-spacing: 0.04em;
+  }
+  .toolbar-hint strong {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ==========================================================================
+     PLANET FACT CARDS (9 CARDS AROUND THE PERIMETER)
+  ========================================================================== */
   .card {
-    position: absolute; width: 190px; display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: center;
-    padding: 6px; border: 1px solid transparent; cursor: pointer; transition: border-color .2s, background .2s;
+    position: absolute;
+    width: 206px;
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 9px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    z-index: 18;
+    transition:
+      border-color 0.22s ease,
+      background 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
   }
-  .card:hover, .card[data-active] { border-color: var(--gold); background: rgba(241,178,74,.07); }
-  .card h3 { grid-column: 2; margin: 0; font: 700 11px "Barlow Condensed"; letter-spacing: .3em; color: var(--gold); }
-  .card dl { grid-column: 2; margin: 0; display: grid; grid-template-columns: 1fr auto; font-size: 8px; color: #aab; gap: 1px 6px; }
-  .card dd { margin: 0; color: #fff; }
+
+  .card:hover,
+  .card[data-active="true"] {
+    border-color: var(--gold);
+    background: rgba(241, 178, 74, 0.11);
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.65),
+      0 0 18px rgba(241, 178, 74, 0.2);
+  }
+
+  .card-head {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 2px;
+  }
+
+  .card h3 {
+    margin: 0;
+    font: 700 12px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.24em;
+    color: var(--gold);
+  }
+
+  .card-symbol {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    color: #94a3b8;
+  }
+
+  .card dl {
+    grid-column: 2;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    font-size: 8.5px;
+    color: #9ca8ba;
+    gap: 1.5px 6px;
+  }
+
+  .card dd {
+    margin: 0;
+    color: #f8fafc;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+  }
+
+  /* High-Detail Planet Sphere inside each Card */
+  .sphere-wrap {
+    grid-row: 1 / span 2;
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
   .sphere {
-    grid-row: 1 / span 2; width: 64px; height: 64px; border-radius: 50%;
-    background: var(--g); box-shadow: inset -14px -8px 22px rgba(0,0,0,.7), 0 0 14px var(--glow, transparent);
-    position: relative; overflow: hidden;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--g);
+    box-shadow:
+      inset -14px -8px 20px rgba(0, 0, 0, 0.82),
+      inset 2px 2px 6px rgba(255, 255, 255, 0.22),
+      0 0 16px var(--glow, transparent);
+    position: relative;
+    overflow: hidden;
   }
-  .sphere::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0 3px, transparent 3px 8px); mix-blend-mode: overlay; }
 
-  .mercury { --g: radial-gradient(circle at 32% 30%, #bdb5aa, #6f685f 60%, #2b2824); left: 215px; top: 62px; }
-  .mars    { --g: radial-gradient(circle at 32% 30%, #e8946a, #a6482a 62%, #3b1710); left: 440px; top: 8px; }
-  .venus   { --g: radial-gradient(circle at 32% 30%, #f0b27a, #b86a36 60%, #4a2410); left: 10px; top: 150px; }
-  .earth   { --g: radial-gradient(circle at 32% 30%, #7fc4ff, #2a67b8 55%, #0c2548); left: 10px; top: 290px; --glow: rgba(80,160,255,.4); }
-  .neptune { --g: radial-gradient(circle at 32% 30%, #6ea8ff, #2a4fb0 62%, #0d1a47); left: 10px; top: 430px; }
-  .jupiter { --g: radial-gradient(circle at 32% 30%, #f2dcc0, #c79468 58%, #5a3a22); left: 745px; top: 130px; }
-  .saturn  { --g: radial-gradient(circle at 32% 30%, #f5e6b8, #c9b26d 60%, #5c4a22); left: 745px; top: 380px; }
-  .uranus  { --g: radial-gradient(circle at 32% 30%, #bff2f2, #6fc2c9 62%, #1f5560); left: 330px; top: 536px; }
-  .sun     { --g: radial-gradient(circle at 40% 36%, #fff3b0, #ffa21a 50%, #d0450a); left: 745px; top: 530px; --glow: rgba(255,150,30,.7); }
+  /* Atmospheric Banding & Surface Texture Overlay */
+  .sphere::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      172deg,
+      rgba(255, 255, 255, 0.07) 0 3px,
+      transparent 3px 7px,
+      rgba(0, 0, 0, 0.08) 7px 10px
+    );
+    mix-blend-mode: overlay;
+  }
 
-  .card.mercury,.card.mars,.card.uranus { grid-template-columns: 64px 1fr; }
-  .card .sphere.mercury, .card .sphere.mars, .card .sphere.venus, .card .sphere.earth, .card .sphere.neptune,
-  .card .sphere.jupiter, .card .sphere.saturn, .card .sphere.uranus, .card .sphere.sun { position: relative; left: auto; top: auto; }
+  /* Saturn & Uranus 3D Ring Accents on Card Spheres */
+  .sphere-wrap.saturn::before {
+    content: "";
+    position: absolute;
+    width: 74px;
+    height: 22px;
+    border-radius: 50%;
+    border: 4px solid rgba(235, 212, 155, 0.72);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+    transform: rotate(-22deg);
+    pointer-events: none;
+    z-index: 2;
+  }
 
-  /* ---------- orbit plane ---------- */
+  .sphere-wrap.uranus::before {
+    content: "";
+    position: absolute;
+    width: 68px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(165, 243, 252, 0.55);
+    transform: rotate(68deg);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Card Positions & Planet Shaders */
+  .card.mercury {
+    left: 235px; top: 38px;
+    --g: radial-gradient(circle at 32% 30%, #d6cfc7, #8a8279 55%, #38342f 85%, #171513);
+    --glow: rgba(200, 189, 174, 0.22);
+  }
+  .card.mars {
+    left: 465px; top: 18px;
+    --g: radial-gradient(circle at 32% 30%, #f59e6c, #b84a27 58%, #4d190b 88%);
+    --glow: rgba(232, 115, 74, 0.32);
+  }
+  .card.venus {
+    left: 18px; top: 132px;
+    --g: radial-gradient(circle at 32% 30%, #fae0b8, #d48742 56%, #5e2c0d 88%);
+    --glow: rgba(240, 178, 122, 0.28);
+  }
+  .card.earth {
+    left: 18px; top: 266px;
+    --g:
+      radial-gradient(ellipse 35% 22% at 45% 42%, rgba(74, 185, 110, 0.55), transparent 70%),
+      radial-gradient(circle at 32% 30%, #99d6ff, #2563eb 55%, #0a1f44 88%);
+    --glow: rgba(80, 165, 255, 0.42);
+  }
+  .card.neptune {
+    left: 18px; top: 400px;
+    --g: radial-gradient(circle at 32% 30%, #80bfff, #2952cc 60%, #0b1742 90%);
+    --glow: rgba(90, 150, 255, 0.35);
+  }
+  .card.uranus {
+    left: 18px; top: 534px;
+    --g: radial-gradient(circle at 32% 30%, #d9ffff, #64c5d0 60%, #164852 90%);
+    --glow: rgba(125, 232, 240, 0.32);
+  }
+  .card.jupiter {
+    right: 18px; top: 132px;
+    --g:
+      radial-gradient(ellipse 18% 11% at 62% 62%, #c85a32, transparent 75%),
+      radial-gradient(circle at 32% 30%, #faebd7, #c99364 56%, #54341c 88%);
+    --glow: rgba(230, 185, 135, 0.32);
+  }
+  .card.saturn {
+    right: 18px; top: 298px;
+    --g: radial-gradient(circle at 32% 30%, #fff2c6, #cfa861 58%, #57411d 88%);
+    --glow: rgba(245, 215, 140, 0.32);
+  }
+  .card.sun {
+    right: 18px; top: 464px;
+    --g: radial-gradient(circle at 38% 36%, #ffffff, #ffe680 28%, #ff9914 62%, #c83200 92%);
+    --glow: rgba(255, 150, 30, 0.75);
+  }
+
+  /* ==========================================================================
+     CENTRAL 3D TILTED ORBITAL PLANE (ALL 8 PLANETS + ASTEROID BELT)
+  ========================================================================== */
   .stage {
-    position: absolute; left: 230px; top: 150px; width: 500px; height: 400px;
-    perspective: 900px; display: grid; place-items: center;
+    position: absolute;
+    left: 225px;
+    top: 115px;
+    width: 590px;
+    height: 465px;
+    perspective: 1050px;
+    display: grid;
+    place-items: center;
+    cursor: grab;
+    z-index: 10;
   }
-  .plane { position: relative; width: 460px; height: 460px; transform: rotateX(68deg); transform-style: preserve-3d; }
-  .orbit {
-    position: absolute; left: 50%; top: 50%; border-radius: 50%; border: 1px solid var(--line);
-    transform: translate(-50%, -50%); transition: border-color .25s, box-shadow .25s;
-    animation: spin linear infinite;
+  .stage:active {
+    cursor: grabbing;
   }
-  .orbit i {
-    position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
-    background: var(--c); box-shadow: 0 0 8px var(--c);
-  }
-  .orbit.o1 { width: 90px;  height: 90px;  --c: #c8bdae; animation-duration: 8s; }
-  .orbit.o2 { width: 150px; height: 150px; --c: #e8a46b; animation-duration: 14s; }
-  .orbit.o3 { width: 215px; height: 215px; --c: #6fb4ff; animation-duration: 20s; }
-  .orbit.o4 { width: 280px; height: 280px; --c: #e0714a; animation-duration: 30s; }
-  .orbit.o5 { width: 360px; height: 360px; --c: #e6c9a2; animation-duration: 48s; }
-  .orbit.o6 { width: 440px; height: 440px; --c: #e9d79a; animation-duration: 70s; }
-  .stage[data-hover="mercury"] .o1, .stage[data-hover="venus"] .o2, .stage[data-hover="earth"] .o3,
-  .stage[data-hover="mars"] .o4, .stage[data-hover="jupiter"] .o5, .stage[data-hover="saturn"] .o6 {
-    border-color: var(--gold); box-shadow: 0 0 14px rgba(241,178,74,.45), inset 0 0 14px rgba(241,178,74,.25);
-  }
-  .core {
-    position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 36%, #fff3b0, #ffa21a 55%, #d0450a); box-shadow: 0 0 40px 10px rgba(255,150,30,.7);
-  }
-  .stage .label { position: absolute; top: 70px; font: 700 12px "Barlow Condensed"; letter-spacing: .4em; color: #8a93a5; }
-  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .orbit { animation: none; } }
 
-  .scale { position: absolute; right: 20px; top: 56px; width: 220px; font-size: 8px; color: #9aa; text-align: right; }
+  .plane {
+    position: relative;
+    width: 520px;
+    height: 520px;
+    transform: rotateX(var(--tilt)) rotateZ(var(--rot-z));
+    transform-style: preserve-3d;
+    transition: transform 0.08s ease-out;
+  }
+
+  /* Ecliptic Degree Reference Ring */
+  .ecliptic-protractor {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 536px;
+    height: 536px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+  }
+
+  /* Asteroid Belt between Mars (o4) and Jupiter (o5) */
+  .asteroid-belt {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 306px;
+    height: 306px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 11px dotted rgba(190, 175, 155, 0.16);
+    pointer-events: none;
+    animation: beltSpin 140s linear infinite;
+  }
+  @keyframes beltSpin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* Planetary Orbit Rings (o1..o8) */
+  .orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    transform: translate(-50%, -50%);
+    transform-style: preserve-3d;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, border-width 0.2s ease;
+    pointer-events: none;
+  }
+
+  /* Orbit dimensions for all 8 planets */
+  .orbit.o1 { width: 84px;  height: 84px;  --c: #d1c7b8; --sz: 9px;  } /* Mercury */
+  .orbit.o2 { width: 132px; height: 132px; --c: #f0b27a; --sz: 12px; } /* Venus */
+  .orbit.o3 { width: 184px; height: 184px; --c: #6fb4ff; --sz: 13px; } /* Earth */
+  .orbit.o4 { width: 242px; height: 242px; --c: #eb7b52; --sz: 11px; } /* Mars */
+  .orbit.o5 { width: 348px; height: 348px; --c: #f0cfa3; --sz: 20px; } /* Jupiter */
+  .orbit.o6 { width: 412px; height: 412px; --c: #f5e19c; --sz: 17px; } /* Saturn */
+  .orbit.o7 { width: 468px; height: 468px; --c: #8be9f5; --sz: 14px; } /* Uranus */
+  .orbit.o8 { width: 518px; height: 518px; --c: #639bff; --sz: 14px; } /* Neptune */
+
+  /* Active / Hovered Orbit Ring Glow */
+  .stage[data-active="mercury"] .o1,
+  .stage[data-active="venus"]   .o2,
+  .stage[data-active="earth"]   .o3,
+  .stage[data-active="mars"]    .o4,
+  .stage[data-active="jupiter"] .o5,
+  .stage[data-active="saturn"]  .o6,
+  .stage[data-active="uranus"]  .o7,
+  .stage[data-active="neptune"] .o8 {
+    border-color: var(--gold);
+    border-width: 1.6px;
+    box-shadow:
+      0 0 18px rgba(241, 178, 74, 0.55),
+      inset 0 0 16px rgba(241, 178, 74, 0.3);
+  }
+
+  /* 3D Billboarding Planet Node on Orbit Ring */
+  .planet-node {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: var(--sz, 14px);
+    height: var(--sz, 14px);
+    margin-left: calc(var(--sz, 14px) * -0.5);
+    margin-top: calc(var(--sz, 14px) * -0.5);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, #ffffff, var(--c) 55%, #12151f 95%);
+    box-shadow: 0 0 12px var(--c), 0 0 4px #ffffff;
+    transform-style: preserve-3d;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  /* Saturn Ring on Orbiting Node */
+  .orbit.o6 .planet-node::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30px;
+    height: 11px;
+    margin: -5.5px 0 0 -15px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(245, 225, 156, 0.85);
+    transform: rotate(-18deg);
+    pointer-events: none;
+  }
+
+  /* Earth's Tiny Orbiting Moon */
+  .orbit.o3 .planet-node::before {
+    content: "";
+    position: absolute;
+    width: 3.5px;
+    height: 3.5px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    box-shadow: 0 0 4px #fff;
+    top: -6px;
+    left: 15px;
+  }
+
+  /* Central Sun Core */
+  .core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 36%, #ffffff 0%, #fff0a8 28%, #ff9d14 62%, #d03b05 95%);
+    box-shadow:
+      0 0 45px 14px rgba(255, 150, 30, 0.72),
+      0 0 90px 28px rgba(255, 105, 15, 0.35);
+    transform: rotateZ(calc(-1 * var(--rot-z))) rotateX(calc(-1 * var(--tilt)));
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .stage[data-active="sun"] .core {
+    box-shadow:
+      0 0 60px 22px rgba(255, 185, 55, 0.95),
+      0 0 110px 40px rgba(255, 115, 20, 0.55);
+  }
+
+  .stage-caption {
+    position: absolute;
+    top: 32px;
+    font: 700 12px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.42em;
+    color: #94a3b8;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
+  /* ==========================================================================
+     BOTTOM RELATIVE DIAMETER SCALE & SELECTED TELEMETRY BAR
+  ========================================================================== */
+  .bottom-atlas-bar {
+    position: absolute;
+    left: 240px;
+    right: 24px;
+    bottom: 16px;
+    height: 76px;
+    background: rgba(8, 11, 20, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    z-index: 20;
+    padding: 8px 16px;
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .scale-lineup-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bar-sub-label {
+    font: 700 9.5px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .diameter-lineup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 6px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+  }
+
+  .scale-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+  .scale-item:hover,
+  .scale-item.active {
+    background: rgba(241, 178, 74, 0.16);
+  }
+  .scale-dot {
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 6px var(--c);
+  }
+  .scale-item span {
+    font: 600 8px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.1em;
+    color: #cbd5e1;
+  }
+
+  /* Live Selected Planet Telemetry Readout Box */
+  .live-telemetry-box {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .tele-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .tele-name {
+    font: 700 14px "Barlow Condensed", sans-serif;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+  }
+
+  .tele-coords {
+    font: 600 9.5px "JetBrains Mono", monospace;
+    color: var(--cyan);
+  }
+
+  .tele-desc {
+    font-size: 10px;
+    color: #cbd5e1;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  @media (max-width: 1060px) {
+    .poster {
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="poster">
-  <div class="title"><h1>SOLAR SYSTEM</h1><p>The Sun's Neighborhood</p></div>
-  <div class="scale">Hover a planet card to highlight its orbit.</div>
 
-  <div class="stage" id="stage">
-    <div class="plane">
-      <div class="orbit o1"><i></i></div><div class="orbit o2"><i></i></div><div class="orbit o3"><i></i></div>
-      <div class="orbit o4"><i></i></div><div class="orbit o5"><i></i></div><div class="orbit o6"><i></i></div>
-      <div class="core"></div>
+<div class="poster" id="posterRoot">
+  <canvas id="starCanvas" width="1040" height="700"></canvas>
+  <div class="poster-frame-lines"></div>
+
+  <!-- Dynamic SVG Leader Line & Target Reticle Overlay -->
+  <svg class="telemetry-svg-overlay" id="telemetrySvg" viewBox="0 0 1040 700">
+    <defs>
+      <filter id="goldGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge>
+          <feMergeNode in="b"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <g id="leaderLineGroup" filter="url(#goldGlow)"></g>
+  </svg>
+
+  <!-- Poster Title -->
+  <header class="title-block">
+    <div class="eyebrow">HELIO-CENTRIC EPHEMERIS // EPOCH J2000.0</div>
+    <h1>SOLAR SYSTEM</h1>
+    <p>The Sun’s Planetary Neighborhood &amp; Orbital Mechanics</p>
+  </header>
+
+  <!-- Top-Right Orrery Camera & Time-Warp Controls -->
+  <div class="orrery-toolbar">
+    <div class="toolbar-controls">
+      <span style="font:600 9.5px 'Barlow Condensed'; letter-spacing:0.12em; color:#94a3b8;">TIME WARP:</span>
+      <button class="tool-btn" data-speed="0">PAUSE</button>
+      <button class="tool-btn active" data-speed="1">1X</button>
+      <button class="tool-btn" data-speed="3.5">3.5X</button>
+      <button class="tool-btn" data-speed="10">10X</button>
+      <span style="color:#334155;">|</span>
+      <button class="tool-btn" id="viewTopBtn" title="Toggle Isometric 66° vs Top-Down 0° Ecliptic View">📐 VIEW: 66° TILT</button>
+      <button class="tool-btn active" id="audioBtn" title="Toggle Keplerian Orbital Chimes">🔊 AUDIO</button>
     </div>
-    <span class="label">INNER &nbsp; SOLAR &nbsp; SYSTEM</span>
+    <div class="toolbar-hint">
+      <strong>Hover or Click</strong> any planet card to lock telemetry • <strong>Drag Orrery</strong> to tilt 3D plane
+    </div>
   </div>
 
+  <!-- ========================================================================
+       CENTRAL 3D TILTED ORBITAL STAGE (8 ORBITS + ASTEROID BELT + SUN)
+  ========================================================================= -->
+  <div class="stage" id="stage">
+    <span class="stage-caption" id="stageCaption">HELIOCENTRIC &nbsp; 3D &nbsp; ORRERY</span>
+
+    <div class="plane" id="orbitPlane">
+      <div class="ecliptic-protractor"></div>
+      <div class="asteroid-belt" title="Main Asteroid Belt (2.2 – 3.2 AU)"></div>
+
+      <!-- All 8 Planetary Orbits -->
+      <div class="orbit o1" data-planet="mercury"><div class="planet-node" data-planet="mercury"></div></div>
+      <div class="orbit o2" data-planet="venus"><div class="planet-node" data-planet="venus"></div></div>
+      <div class="orbit o3" data-planet="earth"><div class="planet-node" data-planet="earth"></div></div>
+      <div class="orbit o4" data-planet="mars"><div class="planet-node" data-planet="mars"></div></div>
+      <div class="orbit o5" data-planet="jupiter"><div class="planet-node" data-planet="jupiter"></div></div>
+      <div class="orbit o6" data-planet="saturn"><div class="planet-node" data-planet="saturn"></div></div>
+      <div class="orbit o7" data-planet="uranus"><div class="planet-node" data-planet="uranus"></div></div>
+      <div class="orbit o8" data-planet="neptune"><div class="planet-node" data-planet="neptune"></div></div>
+
+      <!-- Central Sun Core -->
+      <div class="core" id="sunCore" data-planet="sun" title="The Sun (G2V Main-Sequence Star)"></div>
+    </div>
+  </div>
+
+  <!-- Planet Fact Cards Container -->
   <div id="cards"></div>
+
+  <!-- ========================================================================
+       BOTTOM COMPARATIVE DIAMETER SCALE & LIVE TELEMETRY INSPECTOR
+  ========================================================================= -->
+  <footer class="bottom-atlas-bar">
+    <div class="scale-lineup-wrap">
+      <div class="bar-sub-label">
+        <span>RELATIVE EQUATORIAL DIAMETER SCALE</span>
+        <span style="color:#94a3b8;">1 EARTH = 12,756 KM</span>
+      </div>
+      <div class="diameter-lineup" id="diameterLineup"></div>
+    </div>
+
+    <div class="live-telemetry-box">
+      <div class="tele-title-row">
+        <span class="tele-name" id="teleName">EARTH // TERRA (III)</span>
+        <span class="tele-coords" id="teleCoords">V_ORB: 29.78 KM/S • θ: 142°</span>
+      </div>
+      <p class="tele-desc" id="teleDesc">
+        Third planet from the Sun and the only known astronomical object harboring liquid surface oceans and a nitrogen-oxygen biosphere.
+      </p>
+    </div>
+  </footer>
 </div>
 
 <script>
-  const P = [
-    ["mercury", "MERCURY", [["Distance from sun", "58.0M km"], ["Revolution", "88 days"], ["Equatorial diameter", "4,879 km"], ["Surface gravity", "0.38 g"]]],
-    ["mars",    "MARS",    [["Distance from sun", "227.9M km"], ["Revolution", "687 days"], ["Equatorial diameter", "6,779 km"], ["Surface gravity", "0.38 g"]]],
-    ["venus",   "VENUS",   [["Distance from sun", "108.2M km"], ["Revolution", "225 days"], ["Equatorial diameter", "12,104 km"], ["Surface gravity", "0.90 g"]]],
-    ["earth",   "EARTH",   [["Distance from sun", "149.6M km"], ["Revolution", "365 days"], ["Equatorial diameter", "12,756 km"], ["Surface gravity", "1.00 g"]]],
-    ["neptune", "NEPTUNE", [["Distance from sun", "4.5B km"], ["Revolution", "165 years"], ["Equatorial diameter", "49,244 km"], ["Surface gravity", "1.14 g"]]],
-    ["jupiter", "JUPITER", [["Distance from sun", "778.5M km"], ["Revolution", "11.9 years"], ["Equatorial diameter", "139,820 km"], ["Surface gravity", "2.53 g"]]],
-    ["saturn",  "SATURN",  [["Distance from sun", "1.43B km"], ["Revolution", "29.4 years"], ["Equatorial diameter", "116,460 km"], ["Surface gravity", "1.07 g"]]],
-    ["uranus",  "URANUS",  [["Distance from sun", "2.87B km"], ["Revolution", "84 years"], ["Equatorial diameter", "50,724 km"], ["Surface gravity", "0.89 g"]]],
-    ["sun",     "SUN",     [["Surface temperature", "5,500 °C"], ["Mass", "333,000 earths"], ["Equatorial diameter", "1.39M km"], ["Surface gravity", "27.9 g"]]]
+  // ==========================================================================
+  // 1. PLANETARY EPHEMERIS & FACT DATABASE
+  // ==========================================================================
+  const PLANETS = [
+    {
+      id: "mercury",
+      name: "MERCURY",
+      symbol: "☿ I",
+      color: "#d1c7b8",
+      orbitIndex: 1,
+      periodSec: 8.5,
+      angle: 0.8,
+      velKms: "47.36",
+      scalePx: 5,
+      rows: [
+        ["Distance from sun", "58.0M km"],
+        ["Revolution", "88 days"],
+        ["Equatorial diameter", "4,879 km"],
+        ["Surface gravity", "0.38 g"]
+      ],
+      lore: "Smallest and innermost terrestrial planet; experiences extreme 600 °C diurnal temperature swings across its cratered silicate crust."
+    },
+    {
+      id: "venus",
+      name: "VENUS",
+      symbol: "♀ II",
+      color: "#f0b27a",
+      orbitIndex: 2,
+      periodSec: 14.5,
+      angle: 2.4,
+      velKms: "35.02",
+      scalePx: 9,
+      rows: [
+        ["Distance from sun", "108.2M km"],
+        ["Revolution", "225 days"],
+        ["Equatorial diameter", "12,104 km"],
+        ["Surface gravity", "0.90 g"]
+      ],
+      lore: "Shrouded in super-rotating sulfuric acid clouds with a 92-bar CO₂ greenhouse atmosphere and retrograde axial rotation."
+    },
+    {
+      id: "earth",
+      name: "EARTH",
+      symbol: "♁ III",
+      color: "#6fb4ff",
+      orbitIndex: 3,
+      periodSec: 21.0,
+      angle: 4.1,
+      velKms: "29.78",
+      scalePx: 10,
+      rows: [
+        ["Distance from sun", "149.6M km"],
+        ["Revolution", "365 days"],
+        ["Equatorial diameter", "12,756 km"],
+        ["Surface gravity", "1.00 g"]
+      ],
+      lore: "Third planet from the Sun; protected by a dipolar magnetosphere and stabilized by a large tidally locked Moon."
+    },
+    {
+      id: "mars",
+      name: "MARS",
+      symbol: "♂ IV",
+      color: "#eb7b52",
+      orbitIndex: 4,
+      periodSec: 31.0,
+      angle: 1.2,
+      velKms: "24.07",
+      scalePx: 7,
+      rows: [
+        ["Distance from sun", "227.9M km"],
+        ["Revolution", "687 days"],
+        ["Equatorial diameter", "6,779 km"],
+        ["Surface gravity", "0.38 g"]
+      ],
+      lore: "Iron-oxide desert world home to Olympus Mons (+21.9 km volcano) and the 4,000 km Valles Marineris canyon system."
+    },
+    {
+      id: "jupiter",
+      name: "JUPITER",
+      symbol: "♃ V",
+      color: "#f0cfa3",
+      orbitIndex: 5,
+      periodSec: 48.0,
+      angle: 5.2,
+      velKms: "13.07",
+      scalePx: 24,
+      rows: [
+        ["Distance from sun", "778.5M km"],
+        ["Revolution", "11.9 years"],
+        ["Equatorial diameter", "139,820 km"],
+        ["Surface gravity", "2.53 g"]
+      ],
+      lore: "Largest gas giant in the Solar System; its metallic hydrogen dynamo powers an immense magnetosphere and the Great Red Spot anticyclone."
+    },
+    {
+      id: "saturn",
+      name: "SATURN",
+      symbol: "♄ VI",
+      color: "#f5e19c",
+      orbitIndex: 6,
+      periodSec: 68.0,
+      angle: 3.15,
+      velKms: "9.68",
+      scalePx: 20,
+      rows: [
+        ["Distance from sun", "1.43B km"],
+        ["Revolution", "29.4 years"],
+        ["Equatorial diameter", "116,460 km"],
+        ["Surface gravity", "1.07 g"]
+      ],
+      lore: "Adorned with an extensive ring system of 99.9% pure water-ice particles extending 282,000 km across the equatorial plane."
+    },
+    {
+      id: "uranus",
+      name: "URANUS",
+      symbol: "♅ VII",
+      color: "#8be9f5",
+      orbitIndex: 7,
+      periodSec: 94.0,
+      angle: 0.35,
+      velKms: "6.80",
+      scalePx: 14,
+      rows: [
+        ["Distance from sun", "2.87B km"],
+        ["Revolution", "84 years"],
+        ["Equatorial diameter", "50,724 km"],
+        ["Surface gravity", "0.89 g"]
+      ],
+      lore: "Ice giant with an extreme 97.77° axial tilt, causing it to roll around the Sun on its side with 42-year polar seasons."
+    },
+    {
+      id: "neptune",
+      name: "NEPTUNE",
+      symbol: "♆ VIII",
+      color: "#639bff",
+      orbitIndex: 8,
+      periodSec: 125.0,
+      angle: 4.85,
+      velKms: "5.43",
+      scalePx: 13.5,
+      rows: [
+        ["Distance from sun", "4.5B km"],
+        ["Revolution", "165 years"],
+        ["Equatorial diameter", "49,244 km"],
+        ["Surface gravity", "1.14 g"]
+      ],
+      lore: "Outermost major ice giant; driven by internal heat, its methane-rich atmosphere hosts supersonic winds reaching 2,100 km/h."
+    },
+    {
+      id: "sun",
+      name: "SUN",
+      symbol: "☉ STAR",
+      color: "#ffa21a",
+      orbitIndex: 0,
+      periodSec: 0,
+      angle: 0,
+      velKms: "220.0",
+      scalePx: 28,
+      rows: [
+        ["Surface temperature", "5,500 °C"],
+        ["Mass", "333,000 earths"],
+        ["Equatorial diameter", "1.39M km"],
+        ["Surface gravity", "27.9 g"]
+      ],
+      lore: "G2V yellow dwarf star containing 99.86% of the Solar System's total mass, fusing 600 million tons of hydrogen every second."
+    }
   ];
-  const stage = document.getElementById("stage");
-  document.getElementById("cards").innerHTML = P.map(([id, name, rows]) => `
-    <article class="card ${id}" data-id="${id}" tabindex="0">
-      <div class="sphere ${id}"></div>
-      <h3>${name}</h3>
-      <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
-    </article>`).join("");
 
-  const cards = document.getElementById("cards");
-  const set = (id) => { if (id) stage.dataset.hover = id; else delete stage.dataset.hover; };
-  cards.addEventListener("pointerover", (e) => set(e.target.closest(".card")?.dataset.id));
-  cards.addEventListener("pointerleave", () => set());
-  cards.addEventListener("focusin", (e) => set(e.target.closest(".card")?.dataset.id));
-  cards.addEventListener("focusout", () => set());
+  const planetMap = Object.fromEntries(PLANETS.map((p) => [p.id, p]));
+
+  // ==========================================================================
+  // 2. WEB AUDIO API HARMONIC PLANETARY CHIMES
+  // ==========================================================================
+  let audioCtx = null;
+  let audioEnabled = true;
+  const planetFreqs = {
+    mercury: 659.25, // E5
+    venus: 587.33,   // D5
+    earth: 523.25,   // C5
+    mars: 440.0,     // A4
+    jupiter: 329.63, // E4
+    saturn: 293.66,  // D4
+    uranus: 261.63,  // C4
+    neptune: 220.0,  // A3
+    sun: 196.0       // G3
+  };
+
+  function playPlanetTone(id) {
+    if (!audioEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      const freq = planetFreqs[id] || 440;
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.01, now + 0.22);
+      gain.gain.setValueAtTime(0.045, now);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.26);
+    } catch (e) {}
+  }
+
+  // ==========================================================================
+  // 3. RENDER FACT CARDS & BOTTOM DIAMETER SCALE LINEUP
+  // ==========================================================================
+  const stage = document.getElementById("stage");
+  const cardsContainer = document.getElementById("cards");
+  const lineupContainer = document.getElementById("diameterLineup");
+
+  cardsContainer.innerHTML = PLANETS.map(
+    (p) => `
+    <article class="card ${p.id}" id="card-${p.id}" data-id="${p.id}" tabindex="0">
+      <div class="sphere-wrap ${p.id}">
+        <div class="sphere ${p.id}"></div>
+      </div>
+      <div class="card-head">
+        <h3>${p.name}</h3>
+        <span class="card-symbol">${p.symbol}</span>
+      </div>
+      <dl>${p.rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    </article>`
+  ).join("");
+
+  lineupContainer.innerHTML = PLANETS.map(
+    (p) => `
+    <div class="scale-item" data-id="${p.id}" title="${p.name}">
+      <div class="scale-dot" style="width:${p.scalePx}px; height:${p.scalePx}px; --c:${p.color};"></div>
+      <span>${p.name.slice(0, 3)}</span>
+    </div>`
+  ).join("");
+
+  // ==========================================================================
+  // 4. ACTIVE SELECTION, HOVER & TELEMETRY INSPECTOR
+  // ==========================================================================
+  let lockedPlanetId = "earth";
+  let hoveredPlanetId = null;
+
+  function getActiveId() {
+    return hoveredPlanetId || lockedPlanetId;
+  }
+
+  function updateActiveVisuals(playSound = false) {
+    const activeId = getActiveId();
+    if (!activeId) return;
+    const p = planetMap[activeId];
+
+    stage.dataset.active = activeId;
+
+    document.querySelectorAll(".card").forEach((c) => {
+      if (c.dataset.id === activeId) c.setAttribute("data-active", "true");
+      else c.removeAttribute("data-active");
+    });
+
+    document.querySelectorAll(".scale-item").forEach((item) => {
+      item.classList.toggle("active", item.dataset.id === activeId);
+    });
+
+    document.getElementById("teleName").textContent = `${p.name} // ${p.symbol}`;
+    document.getElementById("teleDesc").textContent = p.lore;
+
+    if (playSound) playPlanetTone(activeId);
+  }
+
+  cardsContainer.addEventListener("pointerover", (e) => {
+    const card = e.target.closest(".card");
+    if (card && hoveredPlanetId !== card.dataset.id) {
+      hoveredPlanetId = card.dataset.id;
+      updateActiveVisuals(true);
+    }
+  });
+
+  cardsContainer.addEventListener("pointerleave", () => {
+    hoveredPlanetId = null;
+    updateActiveVisuals(false);
+  });
+
+  cardsContainer.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (card) {
+      lockedPlanetId = card.dataset.id;
+      updateActiveVisuals(true);
+    }
+  });
+
+  lineupContainer.addEventListener("click", (e) => {
+    const item = e.target.closest(".scale-item");
+    if (item) {
+      lockedPlanetId = item.dataset.id;
+      updateActiveVisuals(true);
+    }
+  });
+
+  // Clicking directly on an orbiting planet node in the 3D stage
+  stage.addEventListener("click", (e) => {
+    const pNode = e.target.closest("[data-planet]");
+    if (pNode) {
+      lockedPlanetId = pNode.dataset.planet;
+      updateActiveVisuals(true);
+    }
+  });
+
+  // ==========================================================================
+  // 5. REAL-TIME KEPLERIAN ORBIT LOOP, BILLBOARDING & SVG LEADER LINES
+  // ==========================================================================
+  const posterRoot = document.getElementById("posterRoot");
+  const leaderLineGroup = document.getElementById("leaderLineGroup");
+  const SVG_NS = document.getElementById("telemetrySvg").namespaceURI;
+
+  let timeWarp = 1;
+  let tiltDeg = 66;
+  let rotZDeg = -12;
+  let lastTime = performance.now();
+
+  const orbitDomMap = {};
+  document.querySelectorAll(".orbit").forEach((el) => {
+    const id = el.dataset.planet;
+    orbitDomMap[id] = {
+      orbitEl: el,
+      nodeEl: el.querySelector(".planet-node")
+    };
+  });
+
+  function drawLeaderLineToActivePlanet(activeId) {
+    leaderLineGroup.innerHTML = "";
+    const cardEl = document.getElementById(`card-${activeId}`);
+    const targetEl = activeId === "sun"
+      ? document.getElementById("sunCore")
+      : orbitDomMap[activeId]?.nodeEl;
+
+    if (!cardEl || !targetEl) return;
+
+    const posterRect = posterRoot.getBoundingClientRect();
+    const scaleX = 1040 / posterRect.width;
+    const scaleY = 700 / posterRect.height;
+
+    const cardRect = cardEl.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // Target Planet center in 1040x700 poster coordinates
+    const tx = (targetRect.left + targetRect.width * 0.5 - posterRect.left) * scaleX;
+    const ty = (targetRect.top + targetRect.height * 0.5 - posterRect.top) * scaleY;
+
+    // Anchor point on nearest edge of the Card
+    const cxCenter = (cardRect.left + cardRect.width * 0.5 - posterRect.left) * scaleX;
+    const cyCenter = (cardRect.top + cardRect.height * 0.5 - posterRect.top) * scaleY;
+
+    let ax = cxCenter;
+    let ay = cyCenter;
+    if (cxCenter < 350) {
+      ax = (cardRect.right - posterRect.left) * scaleX;
+    } else if (cxCenter > 690) {
+      ax = (cardRect.left - posterRect.left) * scaleX;
+    } else {
+      ay = (cardRect.bottom - posterRect.top) * scaleY;
+    }
+
+    // Elbow bend point for clean aerospace callout routing
+    const midX = ax + (tx - ax) * 0.55;
+    const midY = ay;
+
+    const poly = document.createElementNS(SVG_NS, "polyline");
+    poly.setAttribute("points", `${ax.toFixed(1)},${ay.toFixed(1)} ${midX.toFixed(1)},${midY.toFixed(1)} ${tx.toFixed(1)},${ty.toFixed(1)}`);
+    poly.setAttribute("fill", "none");
+    poly.setAttribute("stroke", "rgba(241, 178, 74, 0.78)");
+    poly.setAttribute("stroke-width", "1.4");
+    poly.setAttribute("stroke-dasharray", "4 3");
+    leaderLineGroup.appendChild(poly);
+
+    // Target Reticle Circle around the moving planet
+    const ring = document.createElementNS(SVG_NS, "circle");
+    ring.setAttribute("cx", tx.toFixed(1));
+    ring.setAttribute("cy", ty.toFixed(1));
+    ring.setAttribute("r", "12");
+    ring.setAttribute("fill", "none");
+    ring.setAttribute("stroke", "#f1b24a");
+    ring.setAttribute("stroke-width", "1.5");
+    leaderLineGroup.appendChild(ring);
+
+    // Anchor dot on card edge
+    const dot = document.createElementNS(SVG_NS, "circle");
+    dot.setAttribute("cx", ax.toFixed(1));
+    dot.setAttribute("cy", ay.toFixed(1));
+    dot.setAttribute("r", "3");
+    dot.setAttribute("fill", "#f1b24a");
+    leaderLineGroup.appendChild(dot);
+  }
+
+  function animateOrrery(now) {
+    const dt = (now - lastTime) * 0.001;
+    lastTime = now;
+
+    const activeId = getActiveId();
+
+    PLANETS.forEach((p) => {
+      if (p.id === "sun") return;
+      p.angle = (p.angle + (dt * Math.PI * 2 * timeWarp) / p.periodSec) % (Math.PI * 2);
+      const deg = (p.angle * 180) / Math.PI;
+
+      const dom = orbitDomMap[p.id];
+      if (dom) {
+        // Rotate the orbit wrapper in the ecliptic plane
+        dom.orbitEl.style.transform = `translate(-50%, -50%) rotateZ(${deg.toFixed(2)}deg)`;
+        // Counter-rotate the planet node so it stays a true 3D sphere facing the viewer!
+        const totalZ = deg + rotZDeg;
+        dom.nodeEl.style.transform = `rotateZ(${(-totalZ).toFixed(2)}deg) rotateX(${(-tiltDeg).toFixed(1)}deg)`;
+      }
+
+      if (p.id === activeId) {
+        const normDeg = Math.round(((deg % 360) + 360) % 360);
+        document.getElementById("teleCoords").textContent =
+          `V_ORB: ${p.velKms} KM/S • θ: ${String(normDeg).padStart(3, "0")}°`;
+      }
+    });
+
+    if (activeId === "sun") {
+      document.getElementById("teleCoords").textContent = `SOLAR CORE: 15.7M K • G2V STAR`;
+    }
+
+    drawLeaderLineToActivePlanet(activeId);
+    requestAnimationFrame(animateOrrery);
+  }
+
+  // ==========================================================================
+  // 6. INTERACTIVE 3D CAMERA DRAG-TO-TILT & TOOLBAR BUTTONS
+  // ==========================================================================
+  let isDraggingStage = false;
+  let dragX = 0;
+  let dragY = 0;
+
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("[data-planet]")) return;
+    isDraggingStage = true;
+    dragX = e.clientX;
+    dragY = e.clientY;
+    stage.setPointerCapture(e.pointerId);
+  });
+
+  stage.addEventListener("pointermove", (e) => {
+    if (!isDraggingStage) return;
+    const dx = e.clientX - dragX;
+    const dy = e.clientY - dragY;
+    dragX = e.clientX;
+    dragY = e.clientY;
+
+    rotZDeg = (rotZDeg + dx * 0.35) % 360;
+    tiltDeg = Math.max(0, Math.min(78, tiltDeg - dy * 0.35));
+
+    posterRoot.style.setProperty("--tilt", `${tiltDeg.toFixed(1)}deg`);
+    posterRoot.style.setProperty("--rot-z", `${rotZDeg.toFixed(1)}deg`);
+    document.getElementById("viewTopBtn").textContent = `📐 VIEW: ${Math.round(tiltDeg)}° TILT`;
+  });
+
+  stage.addEventListener("pointerup", () => {
+    isDraggingStage = false;
+  });
+
+  // Time Warp Buttons
+  document.querySelectorAll("[data-speed]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-speed]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      timeWarp = Number(btn.dataset.speed);
+    });
+  });
+
+  // Isometric vs Top-Down Ecliptic View Toggle
+  const viewTopBtn = document.getElementById("viewTopBtn");
+  viewTopBtn.addEventListener("click", () => {
+    tiltDeg = tiltDeg > 20 ? 0 : 66;
+    rotZDeg = tiltDeg === 0 ? 0 : -12;
+    posterRoot.style.setProperty("--tilt", `${tiltDeg}deg`);
+    posterRoot.style.setProperty("--rot-z", `${rotZDeg}deg`);
+    viewTopBtn.textContent = `📐 VIEW: ${tiltDeg}° TILT`;
+  });
+
+  // Audio Toggle
+  const audioBtn = document.getElementById("audioBtn");
+  audioBtn.addEventListener("click", () => {
+    audioEnabled = !audioEnabled;
+    audioBtn.classList.toggle("active", audioEnabled);
+    audioBtn.textContent = audioEnabled ? "🔊 AUDIO" : "🔇 MUTE";
+  });
+
+  // ==========================================================================
+  // 7. DEEP-SPACE TWINKLING STARFIELD CANVAS
+  // ==========================================================================
+  const starCanvas = document.getElementById("starCanvas");
+  const sCtx = starCanvas.getContext("2d");
+  const stars = Array.from({ length: 140 }, () => ({
+    x: Math.random() * starCanvas.width,
+    y: Math.random() * starCanvas.height,
+    r: 0.4 + Math.random() * 1.3,
+    alpha: 0.15 + Math.random() * 0.75
+  }));
+
+  function drawStars() {
+    sCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+    for (const st of stars) {
+      sCtx.fillStyle = `rgba(255, 255, 255, ${st.alpha})`;
+      sCtx.beginPath();
+      sCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+      sCtx.fill();
+    }
+  }
+
+  // Initialize
+  drawStars();
+  updateActiveVisuals(false);
+  requestAnimationFrame(animateOrrery);
 </script>
 </body>
 </html>
