@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nocturne Streetlamp - Twilight Reader & Gaslamp Console</title>
+<title>Nocturne Gaslamp — Realistic Volumetric Night Reader</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap](https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -21,27 +21,27 @@
     "streetlamp",
     "gaslamp",
     "nocturne",
-    "midnight",
-    "indigo",
-    "purple-mist",
-    "reader",
-    "rain",
+    "volumetric-light",
     "realism",
+    "rain",
+    "reader",
+    "cobblestone",
+    "victorian",
     "ambient"
   ],
-  "description": "Atmospheric nighttime reader illuminated by a vintage three-headed cast iron gas streetlamp, featuring volumetric light cones, a rotary gas dimmer, and ambient street rain.",
+  "description": "Photorealistic Victorian three-mantle cast-iron gas streetlamp and literary night reader featuring co-registered SVG volumetric light cones, interactive per-lantern ignition, raindrop-lit particle physics, wet cobblestone specular reflections, and procedural rain/gas audio synthesis.",
   "techniques": [
-    "vector vintage gaslamp silhouette with warm sodium lantern glow",
-    "conical volumetric light beam projected onto wet cobblestone ground",
-    "interactive rotary gas dimmer dial adjusting ambient light levels",
-    "rain droplet refraction in deep indigo-violet twilight mist",
-    "distraction-free literary night reading interface"
+    "Co-registered SVG coordinate space aligning 3 volumetric light cones directly to each lantern's glass housing",
+    "Detailed Victorian cast-iron post with wrought-iron scrollwork, beveled glass panes, and flickering incandescent gas mantles",
+    "HTML5 Canvas rain & moth particle physics that dynamically illuminate when passing inside the lamp's light cones",
+    "Physically reactive book page illumination driven by CSS custom properties (--gas-pressure) and lateral rim-lighting",
+    "Web Audio API procedural rain-on-cobblestone pink noise, distant bell resonance, and gas mantle hiss"
   ],
-  "recipe": "The nocturnal scene features an antique wrought-iron streetlamp silhouette created with SVG paths. The lamp's lanterns emit radial and conical gradients representing volumetric light beaming down onto wet cobblestones, with an interactive dimmer knob that adjusts the reading ambient light.",
+  "recipe": "By housing both the wrought-iron streetlamp geometry and the blurred volumetric light beams inside a single 280x440 SVG viewBox, the light cones originate at the exact coordinates of the three gas mantles (x=58, 140, 222). Adjusting the brass gas valve scales beam opacity, mantle bloom, wet cobblestone puddles, and the warm directional falloff across the adjacent reading page.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 740
   }
 }
 </script>
@@ -50,418 +50,1284 @@
   * { box-sizing: border-box; }
 
   :root {
-    --indigo-night: #090b16;
-    --violet-mist: #231238;
-    --lamp-amber: #ffbe59;
-    --lamp-core: #fff5d1;
-    --lamp-beam: rgba(255, 195, 95, 0.22);
-    --cobble-wet: #12141f;
-    --text-lit: #fff7eb;
-    --text-faded: #9ca3af;
+    --gas-pressure: 0.88;
+    --rain-intensity: 0.65;
+    --lamp-hue: 38;
+    --lamp-amber: #ffbe55;
+    --lamp-core: #fff8df;
+    --lamp-deep: #e07b18;
+    --night-sky-top: #05070e;
+    --night-sky-mid: #0d1222;
+    --night-sky-bot: #080a12;
+  }
+
+  /* Spectrum Variants: Classic Gas Mantle, Sodium Vapor, Moonlight Mercury */
+  body[data-spectrum="sodium"] {
+    --lamp-amber: #ff9b26;
+    --lamp-core: #ffe6b3;
+    --lamp-deep: #cc4e00;
+  }
+
+  body[data-spectrum="mercury"] {
+    --lamp-amber: #7dd3fc;
+    --lamp-core: #f0f9ff;
+    --lamp-deep: #0284c7;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
     background:
-      /* Volumetric streetlamp glow */
-      radial-gradient(circle at 25% 35%, var(--lamp-beam) 0%, rgba(255, 170, 50, 0.08) 35%, transparent 60%),
-      /* Violet twilight sky */
-      radial-gradient(circle at 75% 20%, rgba(138, 75, 175, 0.2) 0%, transparent 50%),
-      linear-gradient(180deg, #090a14 0%, #16152b 50%, #0c0d18 100%);
-    color: var(--text-lit);
+      radial-gradient(
+        circle at 28% 36%,
+        rgba(255, 185, 75, calc(0.22 * var(--gas-pressure))) 0%,
+        rgba(224, 123, 24, calc(0.08 * var(--gas-pressure))) 38%,
+        transparent 68%
+      ),
+      radial-gradient(circle at 78% 18%, rgba(88, 62, 138, 0.16) 0%, transparent 52%),
+      linear-gradient(180deg, var(--night-sky-top) 0%, var(--night-sky-mid) 54%, var(--night-sky-bot) 100%);
+    color: #f5efe6;
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 20px 18px 28px;
     overflow-x: hidden;
     position: relative;
-    transition: background 0.3s ease;
+    transition: background 0.25s ease;
   }
 
-  /* Rain Streak Filter */
-  .nocturne-rain {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(105deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 42px);
-    opacity: 0.7;
-    animation: rainMist 1.1s linear infinite;
-  }
-
-  @keyframes rainMist {
-    0% { transform: translateY(-40px); }
-    100% { transform: translateY(40px); }
-  }
-
-  /* Main Stage Container */
+  /* Main Enclosure Container */
   .lamp-station {
     width: 100%;
-    max-width: 960px;
-    background: rgba(13, 16, 28, 0.82);
-    border: 1px solid rgba(255, 200, 110, 0.25);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 24px 28px;
+    max-width: 1040px;
+    background: rgba(10, 13, 23, 0.84);
+    border: 1px solid rgba(255, 200, 120, calc(0.14 + 0.18 * var(--gas-pressure)));
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-radius: 20px;
+    padding: 22px 26px;
     box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.9),
-      0 0 35px rgba(255, 190, 89, 0.1),
-      inset 0 1px 1px rgba(255, 230, 180, 0.25);
+      0 32px 80px rgba(0, 0, 0, 0.95),
+      0 0 calc(45px * var(--gas-pressure)) rgba(255, 180, 75, calc(0.12 * var(--gas-pressure))),
+      inset 0 1px 1px rgba(255, 235, 195, 0.18);
     position: relative;
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
   }
 
-  /* Top Bar */
+  /* ==========================================
+     TOP HEADER & BRASS GAS REGULATOR BAR
+  ========================================== */
   .station-head {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 200, 110, 0.15);
+    gap: 14px;
+    border-bottom: 1px solid rgba(255, 200, 120, 0.14);
     padding-bottom: 14px;
-    margin-bottom: 20px;
   }
 
   .nocturne-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
-  .lamp-pip-icon {
-    width: 38px;
-    height: 38px;
+  .brass-medallion {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 30%, #ffd988 0%, #aa6c1b 100%);
+    background:
+      radial-gradient(circle at 35% 30%, #fff3c4 0%, #f5b041 45%, #784212 90%, #3b1e06 100%);
+    border: 1.5px solid rgba(255, 228, 168, 0.6);
     display: grid;
     place-items: center;
-    font-size: 18px;
-    box-shadow: 0 0 16px rgba(255, 190, 89, 0.45);
+    box-shadow:
+      0 0 calc(20px * var(--gas-pressure)) rgba(255, 190, 85, calc(0.65 * var(--gas-pressure))),
+      inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    position: relative;
+  }
+
+  .brass-medallion svg {
+    width: 22px;
+    height: 22px;
+    color: #1f1105;
   }
 
   .nocturne-titles h1 {
     margin: 0;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 23px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: #fff6e5;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #fff8eb;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
   }
 
   .nocturne-titles p {
     margin: 2px 0 0;
     font-size: 11.5px;
-    color: var(--text-faded);
+    color: #94a3b8;
+    letter-spacing: 0.03em;
   }
 
-  /* Dimmer Knob & Control */
+  /* Brass Valve & Spectrum Controls */
+  .header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .spectrum-pills {
+    display: flex;
+    background: rgba(5, 7, 14, 0.65);
+    border: 1px solid rgba(255, 200, 120, 0.18);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .spec-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .spec-btn.active {
+    background: rgba(255, 190, 85, 0.2);
+    color: #fff7e6;
+    box-shadow: inset 0 0 0 1px rgba(255, 190, 85, 0.5);
+  }
+
   .gas-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 200, 110, 0.2);
-    padding: 6px 16px;
-    border-radius: 20px;
+    gap: 10px;
+    background: linear-gradient(180deg, rgba(24, 20, 16, 0.85) 0%, rgba(12, 10, 9, 0.9) 100%);
+    border: 1px solid rgba(212, 163, 89, 0.38);
+    padding: 7px 15px;
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255, 230, 170, 0.15);
   }
 
   .dimmer-label {
     font-size: 11px;
     color: var(--lamp-amber);
     font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .dimmer-slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 90px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
+    width: 105px;
+    height: 5px;
+    background: linear-gradient(90deg, #1e2330 0%, var(--lamp-amber) 100%);
+    border-radius: 3px;
     outline: none;
     cursor: pointer;
   }
 
   .dimmer-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: var(--lamp-amber);
-    box-shadow: 0 0 8px var(--lamp-amber);
-    cursor: pointer;
+    background: radial-gradient(circle at 35% 35%, #fff5d6, #d48c29 70%, #5c3709 100%);
+    border: 1.5px solid #fff3c4;
+    box-shadow: 0 0 10px var(--lamp-amber);
+    cursor: grab;
   }
 
-  /* Two Column Layout */
+  .pressure-readout {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: #fff6e0;
+    min-width: 38px;
+    text-align: right;
+  }
+
+  /* ==========================================
+     MAIN TWO-COLUMN SCENE & READER LAYOUT
+  ========================================== */
   .nocturne-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1.35fr;
-    gap: 26px;
+    grid-template-columns: 1.12fr 1.38fr;
+    gap: 24px;
+    align-items: stretch;
   }
 
-  /* Left: Gas Streetlamp Silhouette & Conical Beam */
+  @media (max-width: 880px) {
+    .nocturne-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ==========================================
+     LEFT STAGE: REALISTIC VICTORIAN STREETLAMP
+  ========================================== */
   .lamp-visual-stage {
-    background: radial-gradient(circle at 50% 30%, rgba(255, 190, 89, 0.15) 0%, rgba(10, 12, 22, 0.8) 75%);
-    border: 1px solid rgba(255, 200, 110, 0.12);
-    border-radius: 12px;
-    height: 380px;
+    background:
+      radial-gradient(
+        circle at 50% 21%,
+        rgba(255, 200, 105, calc(0.26 * var(--gas-pressure))) 0%,
+        rgba(255, 160, 55, calc(0.08 * var(--gas-pressure))) 42%,
+        rgba(8, 11, 20, 0.95) 82%
+      ),
+      linear-gradient(180deg, #060913 0%, #0e1324 68%, #090b12 100%);
+    border: 1px solid rgba(255, 205, 125, 0.18);
+    border-radius: 14px;
+    height: 455px;
     position: relative;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
+    box-shadow:
+      inset 0 0 50px rgba(0, 0, 0, 0.85),
+      0 12px 30px rgba(0, 0, 0, 0.6);
+    user-select: none;
   }
 
-  /* Conical Volumetric Light Ray */
-  .volumetric-cone {
+  /* Interactive Canvas for Raindrops & Light-Reactive Moths */
+  #weatherCanvas {
     position: absolute;
-    top: 50px;
-    width: 220px;
-    height: 280px;
-    background: linear-gradient(180deg, rgba(255, 215, 120, 0.35) 0%, rgba(255, 190, 89, 0.15) 50%, rgba(255, 190, 89, 0.02) 100%);
-    clip-path: polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%);
+    inset: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    filter: blur(10px);
+    z-index: 4;
+  }
+
+  /* Distant Victorian Iron Railing & Foggy Townhouse Silhouette */
+  .distant-skyline-svg {
+    position: absolute;
+    bottom: 54px;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Unified Streetlamp + Co-Registered Volumetric Cones SVG */
+  .streetlamp-scene-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: block;
+  }
+
+  /* Interactive Clickable Lantern Heads */
+  .lantern-head-group {
+    cursor: pointer;
     transition: opacity 0.2s ease;
   }
 
-  /* Streetlamp SVG Silhouette */
-  .streetlamp-svg {
-    position: relative;
-    z-index: 2;
-    height: 340px;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  .lantern-head-group:hover .lantern-glass-pane {
+    stroke: #ffffff;
+    stroke-width: 1.2px;
   }
 
-  /* Lantern Core Glows */
-  .lamp-glow-core {
-    fill: var(--lamp-amber);
-    filter: drop-shadow(0 0 8px var(--lamp-amber)) drop-shadow(0 0 16px var(--lamp-amber));
-    transition: all 0.2s ease;
+  /* Realistic Gas Mantle Flicker */
+  @keyframes mantleFlicker {
+    0%, 100% { transform: scale(1); opacity: 0.96; }
+    25% { transform: scale(1.03, 0.97); opacity: 1; }
+    50% { transform: scale(0.98, 1.04); opacity: 0.92; }
+    75% { transform: scale(1.02, 1.01); opacity: 0.99; }
   }
 
-  /* Wet Cobblestones Floor Reflection */
-  .cobblestone-reflection {
+  .gas-mantle-flame {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: mantleFlicker 2.6s infinite ease-in-out;
+  }
+
+  /* Stage Hint Pill */
+  .stage-overlay-hint {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(255, 190, 89, 0.35) 0%, transparent 70%),
-      linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.6) 100%);
-    border-top: 1px solid rgba(255, 200, 110, 0.2);
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 6;
+    pointer-events: none;
   }
 
-  /* Right: Literary Night Reading Slate */
+  .hint-badge {
+    background: rgba(7, 10, 18, 0.72);
+    border: 1px solid rgba(255, 205, 125, 0.22);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    color: #cbd5e1;
+    letter-spacing: 0.03em;
+  }
+
+  .hint-badge strong {
+    color: var(--lamp-amber);
+  }
+
+  /* ==========================================
+     RIGHT STAGE: ILLUMINATED BOOK READER SLATE
+  ========================================== */
   .reader-slate {
-    background: rgba(18, 22, 38, 0.7);
-    border: 1px solid rgba(255, 200, 110, 0.15);
-    border-radius: 12px;
-    padding: 22px 26px;
+    /* Book page receives directional warm light from the left streetlamp! */
+    background:
+      radial-gradient(
+        circle at 0% 32%,
+        rgba(255, 195, 95, calc(0.22 * var(--gas-pressure))) 0%,
+        rgba(255, 170, 65, calc(0.07 * var(--gas-pressure))) 45%,
+        transparent 78%
+      ),
+      linear-gradient(165deg, rgba(22, 25, 40, 0.88) 0%, rgba(12, 15, 25, 0.94) 100%);
+    border: 1px solid rgba(255, 200, 115, calc(0.12 + 0.22 * var(--gas-pressure)));
+    border-left: 2.5px solid rgba(255, 195, 95, calc(0.25 + 0.55 * var(--gas-pressure)));
+    border-radius: 14px;
+    padding: 24px 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 18px 0 38px rgba(255, 185, 75, calc(0.08 * var(--gas-pressure))),
+      0 14px 35px rgba(0, 0, 0, 0.55);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .passage-head {
-    border-bottom: 1px solid rgba(255, 200, 110, 0.12);
-    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 205, 125, 0.14);
+    padding-bottom: 12px;
     margin-bottom: 14px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
+    gap: 8px;
   }
 
   .passage-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 19px;
-    font-weight: 600;
-    color: #fff5e0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff6e4;
     margin: 0;
+    letter-spacing: 0.01em;
   }
 
   .author-tag {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--lamp-amber);
     font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+  }
+
+  /* Text readability scales realistically with gaslamp brightness */
+  .literary-content-wrap {
+    position: relative;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+    opacity: calc(0.28 + 0.72 * var(--gas-pressure));
   }
 
   .literary-body {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #f1e9dc;
-    margin: 0;
+    font-size: 18.5px;
+    line-height: 1.62;
+    color: #f6efe2;
+    margin: 0 0 12px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   }
 
   .quote-verse {
-    border-left: 2px solid var(--lamp-amber);
-    padding-left: 14px;
-    margin: 12px 0;
+    border-left: 2.5px solid var(--lamp-amber);
+    background: linear-gradient(90deg, rgba(255, 190, 89, calc(0.11 * var(--gas-pressure))) 0%, transparent 100%);
+    padding: 10px 16px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.52;
     font-style: italic;
-    color: #ffd899;
+    color: #ffe2a8;
   }
 
-  /* Audio Ambient Rain Pill Bar */
-  .audio-footer-strip {
+  /* Chapter Selector Tabs */
+  .chapter-nav-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 200, 110, 0.12);
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-top: 16px;
-    font-size: 12px;
-  }
-
-  .ambient-sound-status {
-    display: flex;
-    align-items: center;
     gap: 8px;
-    color: #e2e8f0;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 205, 125, 0.14);
   }
 
-  .toggle-audio-btn {
-    background: rgba(255, 190, 89, 0.15);
-    border: 1px solid var(--lamp-amber);
-    color: #ffffff;
-    padding: 5px 12px;
-    border-radius: 4px;
+  .chapter-tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .chap-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 205, 125, 0.18);
+    color: #cbd5e1;
+    font-family: inherit;
     font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
+  .chap-btn:hover {
+    border-color: var(--lamp-amber);
+    color: #ffffff;
+  }
+
+  .chap-btn.active {
+    background: rgba(255, 190, 85, 0.18);
+    border-color: var(--lamp-amber);
+    color: #fff6e0;
+  }
+
+  /* Bottom Ambient Weather & Audio Bar */
+  .audio-footer-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: rgba(5, 7, 14, 0.65);
+    border: 1px solid rgba(255, 200, 110, 0.16);
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-top: 14px;
+    font-size: 11.5px;
+  }
+
+  .ambient-controls-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .mini-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #94a3b8;
+    font-size: 11px;
+  }
+
+  .mini-slider-wrap input[type="range"] {
+    accent-color: var(--lamp-amber);
+    width: 72px;
+    cursor: pointer;
+  }
+
+  .toggle-audio-btn {
+    background: rgba(255, 190, 89, 0.14);
+    border: 1px solid var(--lamp-amber);
+    color: #fff7e6;
+    font-family: inherit;
+    font-weight: 600;
+    padding: 6px 13px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .toggle-audio-btn:hover {
     background: var(--lamp-amber);
-    color: #0d101c;
+    color: #0b0e17;
+  }
+
+  .toggle-audio-btn.playing {
+    background: var(--lamp-amber);
+    color: #0b0e17;
+    box-shadow: 0 0 14px rgba(255, 190, 89, 0.45);
   }
 </style>
 </head>
-<body>
-
-<div class="nocturne-rain"></div>
+<body data-spectrum="gas">
 
 <div class="lamp-station">
-  <!-- Top Bar -->
-  <div class="station-head">
+
+  <!-- ==========================================
+       TOP HEADER: BRAND + SPECTRUM + GAS VALVE
+  =========================================== -->
+  <header class="station-head">
     <div class="nocturne-brand">
-      <div class="lamp-pip-icon">🏮</div>
+      <div class="brass-medallion" title="Victorian Wrought-Iron Gas Candelabrum">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 4h6l2 5-5 11-5-11 2-5z"/>
+          <path d="M12 2v2M12 20v2M8 22h8"/>
+        </svg>
+      </div>
       <div class="nocturne-titles">
         <h1>Nocturne Gaslamp Night Reader</h1>
-        <p>Late Night Literary Solitude • Sodium Vapor Ambience</p>
+        <p>Co-Registered Volumetric Optics • Victorian Three-Mantle Candelabrum</p>
       </div>
     </div>
 
-    <!-- Gas Dimmer Knob -->
-    <div class="gas-controls">
-      <span class="dimmer-label">Gas Valve</span>
-      <input type="range" min="20" max="100" value="85" class="dimmer-slider" id="gasDimmer">
-      <span id="gasVal" style="font-size: 11px; color: #fff; min-width: 32px;">85%</span>
+    <div class="header-controls">
+      <!-- Burner Spectrum Selector -->
+      <div class="spectrum-pills" role="group" aria-label="Lamp Spectrum">
+        <button class="spec-btn active" data-spec="gas">Gas Mantle (2400K)</button>
+        <button class="spec-btn" data-spec="sodium">Sodium Vapor (1900K)</button>
+        <button class="spec-btn" data-spec="mercury">Moonlight Arc (4800K)</button>
+      </div>
+
+      <!-- Brass Gas Pressure Valve -->
+      <div class="gas-controls">
+        <span class="dimmer-label">Gas Valve</span>
+        <input type="range" min="0" max="115" value="88" class="dimmer-slider" id="gasDimmer">
+        <span class="pressure-readout" id="gasVal">88%</span>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Main Grid -->
+  <!-- ==========================================
+       MAIN GRID: REALISTIC STREETLAMP & READER
+  =========================================== -->
   <div class="nocturne-grid">
-    <!-- Left: Streetlamp & Light Cone -->
+
+    <!-- LEFT VISUAL STAGE: UNIFIED SVG VOLUMETRIC LAMP + RAIN CANVAS -->
     <div class="lamp-visual-stage" id="lampStage">
-      <div class="volumetric-cone" id="lightCone"></div>
 
-      <!-- Antique Cast Iron Streetlamp Vector -->
-      <svg class="streetlamp-svg" viewBox="0 0 160 320">
-        <!-- Post Base & Column -->
-        <polygon points="65,315 95,315 90,285 70,285" fill="#131620" stroke="#363d4f" stroke-width="1.5"/>
-        <rect x="76" y="90" width="8" height="195" fill="#191c28" stroke="#363d4f" stroke-width="1.5"/>
-        <circle cx="80" cy="180" r="7" fill="#1f2331" stroke="#485169" stroke-width="1"/>
-        <circle cx="80" cy="100" r="8" fill="#1f2331" stroke="#485169" stroke-width="1"/>
+      <div class="stage-overlay-hint">
+        <span class="hint-badge">💡 Click any <strong>Lantern Head</strong> to toggle burner</span>
+        <span class="hint-badge" id="activeBurnersBadge">3 / 3 Burners Lit</span>
+      </div>
 
-        <!-- Three-Headed Lamp Arms -->
-        <!-- Center Head -->
-        <rect x="74" y="60" width="12" height="30" fill="#1b1e2a" stroke="#485169" stroke-width="1"/>
-        <polygon points="68,60 92,60 88,40 72,40" fill="#131620" stroke="#485169" stroke-width="1.5"/>
-        <!-- Center Lantern Glass Glow -->
-        <polygon points="71,60 89,60 86,42 74,42" class="lamp-glow-core" id="glowCenter"/>
-        <polygon points="66,40 94,40 80,24" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
-        <circle cx="80" cy="22" r="2.5" fill="#cfa85b"/>
-
-        <!-- Left Head Arm -->
-        <path d="M76,95 Q 50,90 40,75 L 40,65" fill="none" stroke="#363d4f" stroke-width="2.5"/>
-        <polygon points="32,65 48,65 45,48 35,48" class="lamp-glow-core" id="glowLeft"/>
-        <polygon points="30,48 50,48 40,36" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
-
-        <!-- Right Head Arm -->
-        <path d="M84,95 Q 110,90 120,75 L 120,65" fill="none" stroke="#363d4f" stroke-width="2.5"/>
-        <polygon points="112,65 128,65 125,48 115,48" class="lamp-glow-core" id="glowRight"/>
-        <polygon points="110,48 130,48 120,36" fill="#1f2331" stroke="#485169" stroke-width="1.5"/>
+      <!-- Distant Foggy Townhouse & Iron Fence Silhouette -->
+      <svg class="distant-skyline-svg" viewBox="0 0 400 150" preserveAspectRatio="none">
+        <path d="M0,150 L0,55 L28,55 L28,38 L52,20 L76,38 L76,62 L115,62 L115,45 L165,45 L165,68 L235,68 L235,40 L265,22 L295,40 L295,60 L345,60 L345,48 L400,48 L400,150 Z" fill="#070a14"/>
+        <!-- Distant warm window lights -->
+        <rect x="42" y="48" width="8" height="14" fill="rgba(255, 190, 95, 0.22)"/>
+        <rect x="56" y="48" width="8" height="14" fill="rgba(255, 190, 95, 0.15)"/>
+        <rect x="260" y="52" width="9" height="15" fill="rgba(255, 190, 95, 0.18)"/>
       </svg>
 
-      <div class="cobblestone-reflection"></div>
+      <!-- ==================================================================
+           SINGLE CO-REGISTERED SVG SCENE (280 x 440):
+           Light cones originate at the EXACT coordinates of the 3 lanterns:
+           - Left Lantern Mantle:   (58, 92)
+           - Center Lantern Mantle: (140, 68)
+           - Right Lantern Mantle:  (222, 92)
+      =================================================================== -->
+      <svg class="streetlamp-scene-svg" id="streetlampSvg" viewBox="0 0 280 440" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <!-- Soft Volumetric Gaussian Blur for Light Cones -->
+          <filter id="coneVolumetricBlur" x="-30%" y="-10%" width="160%" height="130%">
+            <feGaussianBlur stdDeviation="11"/>
+          </filter>
+
+          <!-- Intense Core Bloom for Gas Mantles -->
+          <filter id="mantleBloom" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b1"/>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b2"/>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="24" result="b3"/>
+            <feMerge>
+              <feMergeNode in="b3"/>
+              <feMergeNode in="b2"/>
+              <feMergeNode in="b1"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+
+          <!-- Volumetric Cone Linear Gradient (Top Lantern -> Wet Ground) -->
+          <linearGradient id="volumetricBeamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="var(--lamp-core)" stop-opacity="0.62"/>
+            <stop offset="16%" stop-color="var(--lamp-amber)" stop-opacity="0.34"/>
+            <stop offset="58%" stop-color="var(--lamp-amber)" stop-opacity="0.11"/>
+            <stop offset="92%" stop-color="var(--lamp-deep)" stop-opacity="0.03"/>
+            <stop offset="100%" stop-color="var(--lamp-deep)" stop-opacity="0"/>
+          </linearGradient>
+
+          <!-- Atmospheric Halo around Each Lantern Head -->
+          <radialGradient id="lanternHaloGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--lamp-core)" stop-opacity="0.55"/>
+            <stop offset="35%" stop-color="var(--lamp-amber)" stop-opacity="0.24"/>
+            <stop offset="70%" stop-color="var(--lamp-deep)" stop-opacity="0.06"/>
+            <stop offset="100%" stop-color="var(--lamp-deep)" stop-opacity="0"/>
+          </radialGradient>
+
+          <!-- Cast Iron Post 3D Cylindrical Shading -->
+          <linearGradient id="castIronPostGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#3a4356"/>
+            <stop offset="28%" stop-color="#1d222e"/>
+            <stop offset="70%" stop-color="#0d1017"/>
+            <stop offset="100%" stop-color="#282f3d"/>
+          </linearGradient>
+
+          <!-- Copper / Brass Dome Roof Gradient -->
+          <linearGradient id="copperRoofGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#5e4934"/>
+            <stop offset="35%" stop-color="#2b2420"/>
+            <stop offset="75%" stop-color="#141210"/>
+            <stop offset="100%" stop-color="#6b5132"/>
+          </linearGradient>
+
+          <!-- Wet Cobblestone Puddle Reflection Gradient -->
+          <radialGradient id="puddleGlowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="var(--lamp-core)" stop-opacity="0.5"/>
+            <stop offset="40%" stop-color="var(--lamp-amber)" stop-opacity="0.25"/>
+            <stop offset="80%" stop-color="var(--lamp-deep)" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="var(--lamp-deep)" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- ==============================================================
+             LAYER 1: WET COBBLESTONE STREET & PUDDLE REFLECTIONS
+        =============================================================== -->
+        <g id="cobblestoneGround">
+          <!-- Dark Wet Stone Ground Plane -->
+          <rect x="0" y="382" width="280" height="58" fill="#060810"/>
+          <line x1="0" y1="382" x2="280" y2="382" stroke="rgba(255, 210, 130, 0.22)" stroke-width="1"/>
+
+          <!-- 3 Co-Registered Puddle Specular Reflections directly under each cone -->
+          <ellipse id="puddleLeft" cx="48" cy="406" rx="68" ry="14" fill="url(#puddleGlowGrad)"/>
+          <ellipse id="puddleCenter" cx="140" cy="404" rx="95" ry="18" fill="url(#puddleGlowGrad)"/>
+          <ellipse id="puddleRight" cx="232" cy="406" rx="68" ry="14" fill="url(#puddleGlowGrad)"/>
+
+          <!-- Cobblestone Joint Perspective Grid Lines -->
+          <g stroke="rgba(255, 215, 145, 0.14)" stroke-width="0.9" fill="none">
+            <line x1="0" y1="392" x2="280" y2="392"/>
+            <line x1="0" y1="404" x2="280" y2="404"/>
+            <line x1="0" y1="418" x2="280" y2="418"/>
+            <line x1="0" y1="434" x2="280" y2="434"/>
+            <!-- Stone mortar staggered joints -->
+            <path d="M35,382 L20,440 M85,382 L75,440 M140,382 L140,440 M195,382 L205,440 M245,382 L260,440"/>
+          </g>
+        </g>
+
+        <!-- ==============================================================
+             LAYER 2: CO-REGISTERED VOLUMETRIC LIGHT CONES & HALOS
+             Each cone starts at the exact bottom of its lantern glass!
+        =============================================================== -->
+        <g id="volumetricConesLayer">
+          <!-- Left Lantern Volumetric Cone: Apex at (58, 92) -->
+          <g id="beamGroupLeft">
+            <circle cx="58" cy="84" r="56" fill="url(#lanternHaloGrad)"/>
+            <polygon
+              points="50,92 66,92 135,412 -32,412"
+              fill="url(#volumetricBeamGrad)"
+              filter="url(#coneVolumetricBlur)"
+            />
+          </g>
+
+          <!-- Center Lantern Volumetric Cone: Apex at (140, 68) -->
+          <g id="beamGroupCenter">
+            <circle cx="140" cy="58" r="72" fill="url(#lanternHaloGrad)"/>
+            <polygon
+              points="130,68 150,68 238,415 42,415"
+              fill="url(#volumetricBeamGrad)"
+              filter="url(#coneVolumetricBlur)"
+            />
+          </g>
+
+          <!-- Right Lantern Volumetric Cone: Apex at (222, 92) -->
+          <g id="beamGroupRight">
+            <circle cx="222" cy="84" r="56" fill="url(#lanternHaloGrad)"/>
+            <polygon
+              points="214,92 230,92 312,412 145,412"
+              fill="url(#volumetricBeamGrad)"
+              filter="url(#coneVolumetricBlur)"
+            />
+          </g>
+        </g>
+
+        <!-- ==============================================================
+             LAYER 3: ORNATE VICTORIAN CAST-IRON POST & SCROLLWORK ARMS
+        =============================================================== -->
+        <g id="castIronStructure">
+          <!-- Stepped Octagonal Plinth Base at Street Level -->
+          <polygon points="114,402 166,402 162,392 118,392" fill="url(#castIronPostGrad)" stroke="#475267" stroke-width="1"/>
+          <polygon points="120,392 160,392 154,344 126,344" fill="url(#castIronPostGrad)" stroke="#475267" stroke-width="1"/>
+          <!-- Molded Fluted Base Collar -->
+          <rect x="123" y="338" width="34" height="6" rx="3" fill="url(#castIronPostGrad)" stroke="#556178" stroke-width="1"/>
+          <polygon points="127,338 153,338 147,296 133,296" fill="url(#castIronPostGrad)" stroke="#475267" stroke-width="1"/>
+          <rect x="130" y="291" width="20" height="5" rx="2.5" fill="url(#castIronPostGrad)" stroke="#556178" stroke-width="1"/>
+
+          <!-- Main Tapered Fluted Column -->
+          <polygon points="134,291 146,291 144,126 136,126" fill="url(#castIronPostGrad)" stroke="#434e63" stroke-width="1"/>
+          <!-- Vertical Rim-Light Highlight along Left & Right of Column -->
+          <line x1="135.5" y1="290" x2="137" y2="128" stroke="rgba(255, 210, 130, 0.35)" stroke-width="1"/>
+          <line x1="144.5" y1="290" x2="143" y2="128" stroke="rgba(255, 210, 130, 0.25)" stroke-width="0.8"/>
+
+          <!-- Decorative Torus Knots & Crossbar Ladder Rest (Traditional Lamplighter Bar) -->
+          <rect x="131" y="218" width="18" height="6" rx="3" fill="url(#castIronPostGrad)" stroke="#5a6780" stroke-width="1"/>
+          <!-- Horizontal Lamplighter Ladder Rest Bar -->
+          <line x1="112" y1="162" x2="168" y2="162" stroke="#2d3546" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="112" cy="162" r="3" fill="#d49b4b"/>
+          <circle cx="168" cy="162" r="3" fill="#d49b4b"/>
+          <rect x="130" y="158" width="20" height="8" rx="3" fill="url(#castIronPostGrad)" stroke="#62708a" stroke-width="1"/>
+
+          <!-- Upper Corinthian Capital Hub -->
+          <polygon points="128,126 152,126 146,114 134,114" fill="url(#castIronPostGrad)" stroke="#5a6780" stroke-width="1"/>
+          <rect x="136" y="72" width="8" height="42" fill="url(#castIronPostGrad)" stroke="#4c586e" stroke-width="1"/>
+
+          <!-- WROUGHT-IRON S-SCROLL BRACKETS (LEFT & RIGHT ARMS) -->
+          <!-- Left Main Support Arm -->
+          <path d="M 136,136 C 102,136 58,124 58,96" fill="none" stroke="#262d3d" stroke-width="4.2" stroke-linecap="round"/>
+          <path d="M 136,136 C 102,136 58,124 58,96" fill="none" stroke="rgba(255, 210, 135, 0.35)" stroke-width="1.2"/>
+          <!-- Left Decorative Scroll Volutes -->
+          <path d="M 136,150 C 108,150 82,138 76,115 C 73,104 84,100 88,108 C 91,114 83,120 78,116" fill="none" stroke="#364054" stroke-width="2"/>
+          <path d="M 106,132 C 96,120 96,104 108,102 C 115,101 116,110 110,112" fill="none" stroke="#364054" stroke-width="1.8"/>
+
+          <!-- Right Main Support Arm -->
+          <path d="M 144,136 C 178,136 222,124 222,96" fill="none" stroke="#262d3d" stroke-width="4.2" stroke-linecap="round"/>
+          <path d="M 144,136 C 178,136 222,124 222,96" fill="none" stroke="rgba(255, 210, 135, 0.35)" stroke-width="1.2"/>
+          <!-- Right Decorative Scroll Volutes -->
+          <path d="M 144,150 C 172,150 198,138 204,115 C 207,104 196,100 192,108 C 189,114 197,120 202,116" fill="none" stroke="#364054" stroke-width="2"/>
+          <path d="M 174,132 C 184,120 184,104 172,102 C 165,101 164,110 170,112" fill="none" stroke="#364054" stroke-width="1.8"/>
+        </g>
+
+        <!-- ==============================================================
+             LAYER 4: THREE HEXAGONAL VICTORIAN GAS LANTERN HEADS
+        =============================================================== -->
+
+        <!-- 1. LEFT LANTERN HEAD (Centered at X=58, Glass Y=64..92) -->
+        <g class="lantern-head-group" id="lanternLeft" data-head="left">
+          <!-- Bottom Brass Cup & Finial Drop -->
+          <polygon points="49,92 67,92 62,98 54,98" fill="url(#copperRoofGrad)" stroke="#685338" stroke-width="1"/>
+          <circle cx="58" cy="102" r="2.2" fill="#d49b4b"/>
+          <!-- Warm Back-Glass Amber Fill -->
+          <polygon id="glassFillLeft" points="42,64 74,64 68,92 48,92" fill="rgba(255, 195, 90, 0.28)"/>
+          <!-- Glowing Incandescent Gas Mantle Inside -->
+          <g id="mantleLeft" filter="url(#mantleBloom)">
+            <ellipse cx="58" cy="80" rx="7" ry="9" fill="var(--lamp-amber)" opacity="0.85"/>
+            <path class="gas-mantle-flame" d="M 54,84 C 54,73 62,73 62,84 Z" fill="var(--lamp-core)"/>
+          </g>
+          <!-- Beveled Hexagonal Glass Panes & Iron Ribs -->
+          <polygon class="lantern-glass-pane" points="42,64 74,64 68,92 48,92" fill="none" stroke="#5b667d" stroke-width="1.4"/>
+          <line x1="51" y1="64" x2="53" y2="92" stroke="#373f50" stroke-width="1.3"/>
+          <line x1="65" y1="64" x2="63" y2="92" stroke="#373f50" stroke-width="1.3"/>
+          <!-- Glass Specular Highlight Streak -->
+          <line x1="45" y1="66" x2="50" y2="90" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- Tiered Copper Hood, Vent Louvers & Brass Finial Spike -->
+          <rect x="39" y="61" width="38" height="3.5" rx="1.5" fill="url(#copperRoofGrad)" stroke="#7a6040" stroke-width="0.9"/>
+          <polygon points="41,61 75,61 66,49 50,49" fill="url(#copperRoofGrad)" stroke="#685338" stroke-width="1"/>
+          <rect x="51" y="45" width="14" height="4" rx="1.5" fill="#231f1c" stroke="#7a6040" stroke-width="0.9"/>
+          <polygon points="55,45 61,45 58,34" fill="#d49b4b"/>
+          <circle cx="58" cy="40" r="2.2" fill="#f5c678"/>
+        </g>
+
+        <!-- 2. CENTER EMPEROR LANTERN HEAD (Centered at X=140, Glass Y=36..68) -->
+        <g class="lantern-head-group" id="lanternCenter" data-head="center">
+          <!-- Bottom Brass Cup -->
+          <polygon points="129,68 151,68 145,75 135,75" fill="url(#copperRoofGrad)" stroke="#7a6040" stroke-width="1"/>
+          <!-- Warm Back-Glass Amber Fill -->
+          <polygon id="glassFillCenter" points="120,36 160,36 152,68 128,68" fill="rgba(255, 195, 90, 0.32)"/>
+          <!-- Dual Glowing Gas Mantles Inside Center Emperor Lantern -->
+          <g id="mantleCenter" filter="url(#mantleBloom)">
+            <ellipse cx="140" cy="54" rx="10" ry="12" fill="var(--lamp-amber)" opacity="0.9"/>
+            <path class="gas-mantle-flame" d="M 134,59 C 134,46 146,46 146,59 Z" fill="var(--lamp-core)"/>
+          </g>
+          <!-- Beveled Hexagonal Glass Panes & Ribs -->
+          <polygon class="lantern-glass-pane" points="120,36 160,36 152,68 128,68" fill="none" stroke="#68748e" stroke-width="1.5"/>
+          <line x1="131" y1="36" x2="134" y2="68" stroke="#373f50" stroke-width="1.4"/>
+          <line x1="149" y1="36" x2="146" y2="68" stroke="#373f50" stroke-width="1.4"/>
+          <!-- Glass Specular Highlight Streak -->
+          <line x1="124" y1="39" x2="130" y2="65" stroke="rgba(255, 255, 255, 0.5)" stroke-width="1.4" stroke-linecap="round"/>
+          <!-- Tiered Copper Dome Roof & Finial -->
+          <rect x="116" y="32.5" width="48" height="4" rx="1.8" fill="url(#copperRoofGrad)" stroke="#856947" stroke-width="1"/>
+          <polygon points="119,32.5 161,32.5 150,19 130,19" fill="url(#copperRoofGrad)" stroke="#7a6040" stroke-width="1"/>
+          <rect x="131" y="14.5" width="18" height="4.5" rx="2" fill="#231f1c" stroke="#856947" stroke-width="1"/>
+          <polygon points="136.5,14.5 143.5,14.5 140,3" fill="#e5b15c"/>
+          <circle cx="140" cy="9.5" r="2.6" fill="#ffe09e"/>
+        </g>
+
+        <!-- 3. RIGHT LANTERN HEAD (Centered at X=222, Glass Y=64..92) -->
+        <g class="lantern-head-group" id="lanternRight" data-head="right">
+          <!-- Bottom Brass Cup & Finial Drop -->
+          <polygon points="213,92 231,92 226,98 218,98" fill="url(#copperRoofGrad)" stroke="#685338" stroke-width="1"/>
+          <circle cx="222" cy="102" r="2.2" fill="#d49b4b"/>
+          <!-- Warm Back-Glass Amber Fill -->
+          <polygon id="glassFillRight" points="206,64 238,64 232,92 212,92" fill="rgba(255, 195, 90, 0.28)"/>
+          <!-- Glowing Incandescent Gas Mantle Inside -->
+          <g id="mantleRight" filter="url(#mantleBloom)">
+            <ellipse cx="222" cy="80" rx="7" ry="9" fill="var(--lamp-amber)" opacity="0.85"/>
+            <path class="gas-mantle-flame" d="M 218,84 C 218,73 226,73 226,84 Z" fill="var(--lamp-core)"/>
+          </g>
+          <!-- Beveled Hexagonal Glass Panes & Ribs -->
+          <polygon class="lantern-glass-pane" points="206,64 238,64 232,92 212,92" fill="none" stroke="#5b667d" stroke-width="1.4"/>
+          <line x1="215" y1="64" x2="217" y2="92" stroke="#373f50" stroke-width="1.3"/>
+          <line x1="229" y1="64" x2="227" y2="92" stroke="#373f50" stroke-width="1.3"/>
+          <!-- Glass Specular Highlight Streak -->
+          <line x1="209" y1="66" x2="214" y2="90" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- Tiered Copper Hood & Brass Finial Spike -->
+          <rect x="203" y="61" width="38" height="3.5" rx="1.5" fill="url(#copperRoofGrad)" stroke="#7a6040" stroke-width="0.9"/>
+          <polygon points="205,61 239,61 230,49 214,49" fill="url(#copperRoofGrad)" stroke="#685338" stroke-width="1"/>
+          <rect x="215" y="45" width="14" height="4" rx="1.5" fill="#231f1c" stroke="#7a6040" stroke-width="0.9"/>
+          <polygon points="219,45 225,45 222,34" fill="#d49b4b"/>
+          <circle cx="222" cy="40" r="2.2" fill="#f5c678"/>
+        </g>
+
+      </svg>
+
+      <!-- Interactive Rain, Puddle Ripples & Moth Particle Canvas -->
+      <canvas id="weatherCanvas" width="460" height="455"></canvas>
+
     </div>
 
-    <!-- Right: Literary Reader Slate -->
+    <!-- ==========================================
+         RIGHT STAGE: LITERARY NIGHT READER SLATE
+    =========================================== -->
     <div class="reader-slate">
       <div>
         <div class="passage-head">
-          <h2 class="passage-title">Evening Promenade in Fog</h2>
-          <span class="author-tag">Rainer Maria Rilke • Book of Hours</span>
+          <h2 class="passage-title" id="passageTitle">Evening Promenade in Fog</h2>
+          <span class="author-tag" id="passageAuthor">Rainer Maria Rilke • Book of Hours</span>
         </div>
 
-        <p class="literary-body">
-          The evening is folding into violet shadows around the dripping iron eaves. Streetlamps flicker into warm sodium brilliance along the wet cobblestone boulevard, scattering golden amber flares into the mist.
-        </p>
+        <div class="literary-content-wrap" id="literaryWrap">
+          <p class="literary-body" id="para1">
+            The evening is folding into violet shadows around the dripping iron eaves. Three gas mantles hiss softly inside their beveled glass cages, pouring cones of warm amber brilliance down onto the wet cobblestone boulevard.
+          </p>
 
-        <div class="quote-verse">
-          "Quiet friend of many distances, feel how your breath<br>
-          enlarges all of space. Let this darkness be a bell tower<br>
-          and you the bell."
+          <div class="quote-verse" id="quoteVerse">
+            “Quiet friend of many distances, feel how your breath<br>
+            enlarges all of space. Let this darkness be a bell tower<br>
+            and you the bell.”
+          </div>
+
+          <p class="literary-body" id="para2">
+            Underneath the shelter of the candelabrum, each falling raindrop catches the golden beam for a fleeting millisecond before vanishing into the dark puddles. In this amber halo, the hours slow to a tranquil stillness.
+          </p>
         </div>
 
-        <p class="literary-body">
-          Underneath the shelter of the gaslamp, the city recedes into a soft distant murmur of carriage wheels and rain on black asphalt. Reading in this amber halo, the hours slow to a tranquil stillness.
-        </p>
+        <!-- Literary Passage Switcher -->
+        <div class="chapter-nav-row">
+          <div class="chapter-tabs">
+            <button class="chap-btn active" data-chap="0">I. Rilke — Bell Tower</button>
+            <button class="chap-btn" data-chap="1">II. Baudelaire — Crépuscule</button>
+            <button class="chap-btn" data-chap="2">III. Poe — Midnight Rain</button>
+          </div>
+          <span style="font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace;" id="luxMeterText">320 LUX</span>
+        </div>
       </div>
 
+      <!-- Ambient Weather & Procedural Audio Controls -->
       <div class="audio-footer-strip">
-        <div class="ambient-sound-status">
-          <span>🌧️ 96 kbps Wet Cobblestones & Distant Bells</span>
+        <div class="ambient-controls-left">
+          <label class="mini-slider-wrap">
+            <span>🌧️ Rain Density</span>
+            <input type="range" min="0" max="100" value="65" id="rainSlider">
+          </label>
+          <label class="mini-slider-wrap">
+            <span>🦋 Night Moths</span>
+            <input type="checkbox" id="mothsToggle" checked style="accent-color: var(--lamp-amber); cursor:pointer;">
+          </label>
         </div>
-        <button class="toggle-audio-btn" id="ambientToggle">Toggle Rain Audio</button>
+
+        <button class="toggle-audio-btn" id="ambientToggle">
+          <span>🔈</span> <span id="audioBtnText">Enable Rain &amp; Gas Audio</span>
+        </button>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
+  // ==========================================================================
+  // 1. LITERARY PASSAGES DATA
+  // ==========================================================================
+  const passages = [
+    {
+      title: "Evening Promenade in Fog",
+      author: "Rainer Maria Rilke • Book of Hours",
+      p1: "The evening is folding into violet shadows around the dripping iron eaves. Three gas mantles hiss softly inside their beveled glass cages, pouring cones of warm amber brilliance down onto the wet cobblestone boulevard.",
+      quote: "“Quiet friend of many distances, feel how your breath<br>enlarges all of space. Let this darkness be a bell tower<br>and you the bell.”",
+      p2: "Underneath the shelter of the candelabrum, each falling raindrop catches the golden beam for a fleeting millisecond before vanishing into the dark puddles. In this amber halo, the hours slow to a tranquil stillness."
+    },
+    {
+      title: "Le Crépuscule du Soir",
+      author: "Charles Baudelaire • Tableaux Parisiens",
+      p1: "Here is exquisite evening, the friend of those whose minds Have known the heavy burden of the daylight's work; Beneath the crimson gas-jets shivering in the wind, The misty boulevard awakens like a sanctuary.",
+      quote: "“O night, O refreshing dark! You signal the inner feast,<br>Deliverance from anguish; in the solitude of the streetlamp,<br>the page glows like a hearth.”",
+      p2: "Across the glistening granite stones, long amber reflections stretch and ripple with the passing drizzle, turning the pavement into a dark Venetian canal of liquid gold."
+    },
+    {
+      title: "Nocturne by the Gaslight",
+      author: "Edgar Allan Poe • Marginalia",
+      p1: "There are moments when the midnight rain against the iron lantern frame produces a rhythm more conducive to deep thought than the silence of any library.",
+      quote: "“Those who dream by night in the dusty recesses of their minds<br>wake in the day to find that it was vanity: but the dreamer<br>beneath the gaslamp sees eternity.”",
+      p2: "Turn the brass valve gently; watch the incandescent mantle swell from a faint ember into a steady cone of light that pushes back the indigo fog."
+    }
+  ];
+
+  // ==========================================================================
+  // 2. GAS PRESSURE VALVE & PER-LANTERN IGNITION LOGIC
+  // ==========================================================================
   const gasDimmer = document.getElementById('gasDimmer');
   const gasVal = document.getElementById('gasVal');
-  const lightCone = document.getElementById('lightCone');
-  const glowCores = document.querySelectorAll('.lamp-glow-core');
-  const ambientToggle = document.getElementById('ambientToggle');
+  const luxMeterText = document.getElementById('luxMeterText');
+  const activeBurnersBadge = document.getElementById('activeBurnersBadge');
 
-  gasDimmer.addEventListener('input', () => {
-    const val = gasDimmer.value;
-    gasVal.textContent = `${val}%`;
+  const burners = {
+    left:   { lit: true, beam: document.getElementById('beamGroupLeft'),   mantle: document.getElementById('mantleLeft'),   glass: document.getElementById('glassFillLeft'),   puddle: document.getElementById('puddleLeft') },
+    center: { lit: true, beam: document.getElementById('beamGroupCenter'), mantle: document.getElementById('mantleCenter'), glass: document.getElementById('glassFillCenter'), puddle: document.getElementById('puddleCenter') },
+    right:  { lit: true, beam: document.getElementById('beamGroupRight'),  mantle: document.getElementById('mantleRight'),  glass: document.getElementById('glassFillRight'),  puddle: document.getElementById('puddleRight') }
+  };
 
-    const opacity = val / 100;
-    lightCone.style.opacity = opacity;
+  function updateLightingOptics() {
+    const rawVal = Number(gasDimmer.value);
+    gasVal.textContent = `${rawVal}%`;
 
-    glowCores.forEach(core => {
-      core.style.filter = `drop-shadow(0 0 ${8 * opacity}px #ffbe59) drop-shadow(0 0 ${16 * opacity}px #ffbe59) brightness(${0.4 + 0.8 * opacity})`;
+    const activeCount = Object.values(burners).filter(b => b.lit).length;
+    activeBurnersBadge.textContent = `${activeCount} / 3 Burners Lit`;
+
+    // Effective illumination combines valve pressure & how many lantern heads are lit
+    const burnerFactor = activeCount / 3;
+    const pressure = (rawVal / 100) * burnerFactor;
+
+    document.documentElement.style.setProperty('--gas-pressure', pressure.toFixed(3));
+    luxMeterText.textContent = `${Math.round(pressure * 380)} LUX`;
+
+    const singleOpacity = rawVal / 100;
+    Object.values(burners).forEach(b => {
+      const op = b.lit ? singleOpacity : 0;
+      b.beam.style.opacity = op;
+      b.mantle.style.opacity = op;
+      b.puddle.style.opacity = op;
+      b.glass.style.opacity = b.lit ? Math.max(0.08, singleOpacity * 0.9) : 0.05;
     });
 
-    document.body.style.setProperty('--lamp-beam', `rgba(255, 195, 95, ${0.25 * opacity})`);
+    updateAudioLevels(pressure);
+  }
+
+  gasDimmer.addEventListener('input', updateLightingOptics);
+
+  // Click any of the 3 Lantern Heads to toggle individual burner
+  document.querySelectorAll('.lantern-head-group').forEach(group => {
+    group.addEventListener('click', () => {
+      const key = group.dataset.head;
+      burners[key].lit = !burners[key].lit;
+      playValveClickSound(burners[key].lit);
+      updateLightingOptics();
+    });
   });
 
-  let audioPlaying = true;
-  ambientToggle.addEventListener('click', () => {
-    audioPlaying = !audioPlaying;
-    ambientToggle.textContent = audioPlaying ? 'Pause Audio' : 'Resume Audio';
-    ambientToggle.style.background = audioPlaying ? 'rgba(255, 190, 89, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+  // Spectrum Switcher
+  document.querySelectorAll('.spec-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.dataset.spectrum = btn.dataset.spec;
+    });
   });
+
+  // Chapter Switcher
+  document.querySelectorAll('.chap-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chap-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const p = passages[Number(btn.dataset.chap)];
+      document.getElementById('passageTitle').textContent = p.title;
+      document.getElementById('passageAuthor').textContent = p.author;
+      document.getElementById('para1').textContent = p.p1;
+      document.getElementById('quoteVerse').innerHTML = p.quote;
+      document.getElementById('para2').textContent = p.p2;
+    });
+  });
+
+  // ==========================================================================
+  // 3. REALISTIC RAIN, PUDDLE RIPPLES & LIGHT-REACTIVE MOTHS (HTML5 CANVAS)
+  // ==========================================================================
+  const canvas = document.getElementById('weatherCanvas');
+  const ctx = canvas.getContext('2d');
+  const rainSlider = document.getElementById('rainSlider');
+  const mothsToggle = document.getElementById('mothsToggle');
+
+  let rainDensity = 0.65;
+  rainSlider.addEventListener('input', (e) => {
+    rainDensity = Number(e.target.value) / 100;
+    updateAudioLevels((Number(gasDimmer.value) / 100));
+  });
+
+  // Create Raindrops
+  const MAX_DROPS = 110;
+  const raindrops = Array.from({ length: MAX_DROPS }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    len: 12 + Math.random() * 14,
+    speed: 6.5 + Math.random() * 4.5,
+    wind: -0.9
+  }));
+
+  // Puddle Ripples on Cobblestones
+  const ripples = [];
+
+  // Night Moths fluttering around the warm gas mantles
+  const moths = [
+    { angle: 0.4, radiusX: 34, radiusY: 16, speed: 0.045, centerX: 0.5, centerY: 0.16, wingPhase: 0 },
+    { angle: 2.1, radiusX: 26, radiusY: 12, speed: -0.052, centerX: 0.21, centerY: 0.21, wingPhase: 1.5 },
+    { angle: 4.2, radiusX: 28, radiusY: 14, speed: 0.048, centerX: 0.79, centerY: 0.21, wingPhase: 3.1 }
+  ];
+
+  // Check if a canvas point (px, py) falls inside any lit volumetric light cone
+  function getPointLightIntensity(px, py) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const nx = (px / w) * 280; // map to 280x440 SVG coordinates
+    const ny = (py / h) * 440;
+    const valve = Number(gasDimmer.value) / 100;
+    if (valve <= 0.02) return 0;
+
+    let maxLight = 0;
+    const coneDefs = [
+      { key: 'left',   ax: 58,  ay: 92,  spread: 0.28 },
+      { key: 'center', ax: 140, ay: 68,  spread: 0.31 },
+      { key: 'right',  ax: 222, ay: 92,  spread: 0.28 }
+    ];
+
+    for (const c of coneDefs) {
+      if (!burners[c.key].lit) continue;
+      if (ny < c.ay) continue;
+      const dy = ny - c.ay;
+      const halfWidth = 10 + dy * c.spread;
+      const dx = Math.abs(nx - c.ax);
+      if (dx < halfWidth) {
+        const edgeFalloff = 1 - (dx / halfWidth);
+        const distFalloff = Math.max(0, 1 - (dy / 340));
+        maxLight = Math.max(maxLight, edgeFalloff * distFalloff * valve);
+      }
+    }
+    return maxLight;
+  }
+
+  function renderWeatherLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const activeDropCount = Math.floor(MAX_DROPS * rainDensity);
+    const groundY = canvas.height * 0.88;
+
+    // 1. Draw Raindrops (Bright golden streaks inside light cones, faint slate outside!)
+    ctx.lineCap = 'round';
+    for (let i = 0; i < activeDropCount; i++) {
+      const d = raindrops[i];
+      const lightVal = getPointLightIntensity(d.x, d.y);
+
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x + d.wind * 2, d.y + d.len);
+
+      if (lightVal > 0.08) {
+        ctx.strokeStyle = `rgba(255, 225, 155, ${0.12 + lightVal * 0.65})`;
+        ctx.lineWidth = 1.35;
+      } else {
+        ctx.strokeStyle = 'rgba(180, 200, 230, 0.09)';
+        ctx.lineWidth = 0.9;
+      }
+      ctx.stroke();
+
+      d.x += d.wind;
+      d.y += d.speed;
+
+      // Spawn puddle ripple when hitting wet cobblestones
+      if (d.y > groundY) {
+        if (Math.random() < 0.28) {
+          ripples.push({
+            x: d.x,
+            y: groundY + Math.random() * (canvas.height - groundY - 6),
+            r: 1,
+            maxR: 10 + Math.random() * 14,
+            light: getPointLightIntensity(d.x, groundY)
+          });
+        }
+        d.y = -15;
+        d.x = Math.random() * (canvas.width + 40);
+      }
+    }
+
+    // 2. Draw Expanding Puddle Ripples on Wet Cobblestones
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const rp = ripples[i];
+      const alpha = (1 - rp.r / rp.maxR) * (0.15 + rp.light * 0.55);
+      ctx.beginPath();
+      ctx.ellipse(rp.x, rp.y, rp.r, rp.r * 0.28, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = rp.light > 0.05
+        ? `rgba(255, 210, 125, ${alpha})`
+        : `rgba(180, 200, 230, ${alpha * 0.5})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      rp.r += 0.45;
+      if (rp.r >= rp.maxR) ripples.splice(i, 1);
+    }
+
+    // 3. Draw Fluttering Night Moths near Lit Lanterns
+    const valve = Number(gasDimmer.value) / 100;
+    if (mothsToggle.checked && valve > 0.15) {
+      const keys = ['center', 'left', 'right'];
+      moths.forEach((m, idx) => {
+        if (!burners[keys[idx]].lit) return;
+        m.angle += m.speed;
+        m.wingPhase += 0.45;
+
+        const mx = m.centerX * canvas.width + Math.cos(m.angle) * m.radiusX;
+        const my = m.centerY * canvas.height + Math.sin(m.angle * 2) * m.radiusY;
+        const wingSpan = Math.sin(m.wingPhase) * 3.5;
+
+        ctx.save();
+        ctx.translate(mx, my);
+        ctx.fillStyle = `rgba(255, 235, 180, ${0.45 + 0.45 * valve})`;
+        ctx.shadowColor = '#ffbe55';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-4, -wingSpan);
+        ctx.lineTo(-2, wingSpan);
+        ctx.lineTo(4, -wingSpan);
+        ctx.lineTo(2, wingSpan);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    requestAnimationFrame(renderWeatherLoop);
+  }
+
+  // ==========================================================================
+  // 4. PROCEDURAL WEB AUDIO SYNTHESIZER (RAIN + GAS MANTLE HISS)
+  // ==========================================================================
+  let audioCtx = null;
+  let rainGainNode = null;
+  let gasGainNode = null;
+  let audioPlaying = false;
+  const ambientToggle = document.getElementById('ambientToggle');
+  const audioBtnText = document.getElementById('audioBtnText');
+
+  function initNocturneAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Generate 3-second looping pink/brown noise buffer for soft rain & gas hiss
+    const bufferSize = audioCtx.sampleRate * 3;
+    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+      b6 = white * 0.115926;
+    }
+
+    // 1. Rain on Wet Cobblestones Filter Chain
+    const rainSource = audioCtx.createBufferSource();
+    rainSource.buffer = noiseBuffer;
+    rainSource.loop = true;
+
+    const rainFilter = audioCtx.createBiquadFilter();
+    rainFilter.type = 'bandpass';
+    rainFilter.frequency.value = 950;
+    rainFilter.Q.value = 0.7;
+
+    rainGainNode = audioCtx.createGain();
+    rainGainNode.gain.value = 0.0001;
+
+    rainSource.connect(rainFilter);
+    rainFilter.connect(rainGainNode);
+    rainGainNode.connect(audioCtx.destination);
+    rainSource.start();
+
+    // 2. Subtle Gas Mantle Burner Hiss Filter Chain
+    const gasSource = audioCtx.createBufferSource();
+    gasSource.buffer = noiseBuffer;
+    gasSource.loop = true;
+
+    const gasFilter = audioCtx.createBiquadFilter();
+    gasFilter.type = 'highpass';
+    gasFilter.frequency.value = 3200;
+
+    gasGainNode = audioCtx.createGain();
+    gasGainNode.gain.value = 0.0001;
+
+    gasSource.connect(gasFilter);
+    gasFilter.connect(gasGainNode);
+    gasGainNode.connect(audioCtx.destination);
+    gasSource.start();
+  }
+
+  function updateAudioLevels(pressure) {
+    if (!audioCtx || !audioPlaying) return;
+    const now = audioCtx.currentTime;
+    rainGainNode.gain.setTargetAtTime(0.02 + rainDensity * 0.14, now, 0.1);
+    gasGainNode.gain.setTargetAtTime(pressure * 0.035, now, 0.1);
+  }
+
+  function playValveClickSound(lit) {
+    try {
+      if (!audioCtx) initNocturneAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(lit ? 520 : 280, now);
+      osc.frequency.exponentialRampToValueAtTime(lit ? 880 : 140, now + 0.06);
+      g.gain.setValueAtTime(0.06, now);
+      g.gain.linearRampToValueAtTime(0.0001, now + 0.065);
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.07);
+    } catch (e) {}
+  }
+
+  ambientToggle.addEventListener('click', () => {
+    initNocturneAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    audioPlaying = !audioPlaying;
+    ambientToggle.classList.toggle('playing', audioPlaying);
+    audioBtnText.textContent = audioPlaying ? 'Pause Rain & Gas Audio' : 'Enable Rain & Gas Audio';
+
+    if (audioPlaying) {
+      updateLightingOptics();
+    } else {
+      const now = audioCtx.currentTime;
+      rainGainNode.gain.setTargetAtTime(0.0001, now, 0.08);
+      gasGainNode.gain.setTargetAtTime(0.0001, now, 0.08);
+    }
+  });
+
+  // Initialize Scene
+  updateLightingOptics();
+  renderWeatherLoop();
 </script>
 </body>
 </html>

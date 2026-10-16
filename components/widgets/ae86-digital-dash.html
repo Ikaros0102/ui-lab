@@ -3,402 +3,1542 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AE86 Retro Digital Dash Cluster</title>
+<title>AE86 Toyota Electronic Display Meter — Parabolic Curve Edition</title>
 
-<!-- Digital Font DSEG7 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<!-- Digital 7-Segment Font DSEG7 & Geometric JDM Fonts -->
+<link rel="stylesheet" href="[https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css](https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css)">
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap](https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
   "title": "AE86 Retro Digital Dash Cluster",
   "category": "widgets",
   "themes": ["retro", "dark"],
-  "tags": ["ae86", "digital-cluster", "jdm", "initial-d", "tachometer", "speedometer", "dseg7", "backlight-switch", "retro"],
-  "description": "Authentic Japanese 1980s digital instrument cluster featuring rising segmented tachometer curve, digital speedometer, chime warning, and switchable amber/green/cyan/white backlighting.",
-  "techniques": ["DSEG7 7-segment digital font", "dynamic CSS backlight theme variables", "segmented linear-gradient tachometer bar", "chime warning light", "stepped throttle simulator"],
-  "recipe": "The iconic 1980s JDM digital cluster simulates an arched segmented tachometer using stepped flex bars and ghost 7-segment numbers. The entire cluster backlight color palette is controlled by a set of root CSS variables (--dash-glow, --dash-lit, --dash-ghost), allowing instant switching between authentic Amber (Toyota), Neo-Green, Synth-Cyan, and Ice-White.",
-  "preview": { "mode": "page", "width": 960, "height": 620 }
+  "tags": [
+    "ae86",
+    "digital-cluster",
+    "jdm",
+    "initial-d",
+    "tachometer",
+    "speedometer",
+    "dseg7",
+    "vfd",
+    "parabola",
+    "4age",
+    "retro"
+  ],
+  "description": "Authentic 1980s Toyota AE86 Digital Meter replica built around a unified mathematical power-parabola tachometer curve: 56 high-visibility VFD bar segments, 65 normal-aligned comb ticks, bold 0-8 numerals, and unbroken perspective grid rays anchored mathematically to the curve.",
+  "techniques": [
+    "Unified power-parabola equation y(u) = Y_flat + dY * (1 - u/8)^2.55 driving segments, ticks, numerals, and grid rays",
+    "Native svgElement.namespaceURI inheritance immune to markdown link-mangling",
+    "Dual-track tachometer spine: upper 65-tick fine scale + lower 56-brick VFD bargraph with peak-hold indicator",
+    "Daylight White Silkscreen (Photo 1) vs. Nighttime Red-Orange Stencil (Photo 2) + Amber & Synth Cyan themes",
+    "Web Audio API 4A-GE 16V twin-cam synthesizer + 105 km/h JDM Kin-Kon speed chime"
+  ],
+  "recipe": "The entire central tachometer and perspective grid are procedurally generated from a single parametric curve P(u) for u in [0, 8]. At each integer u = 0..8, the exact tangent and normal vectors are computed so the major numerals, comb ticks, VFD bricks, and architectural rays lock together with zero visual discontinuity.",
+  "preview": { "mode": "page", "width": 1080, "height": 760 }
 }
 </script>
 
 <style>
   * { box-sizing: border-box; }
 
-  /* Backlight Color Variables (Default: AE86 JDM Amber) */
+  /* ==========================================================================
+     CLUSTER COLOR THEMES (NIGHT RED/GREEN, DAYLIGHT WHITE, AMBER, CYAN)
+  ========================================================================== */
   :root {
-    --dash-lit: #ff9800;
-    --dash-glow: rgba(255, 152, 0, 0.7);
-    --dash-ghost: rgba(255, 152, 0, 0.08);
+    /* Default: Nighttime Red-Orange Stencil + VFD Green & Yellow-Amber (Photo 2) */
+    --grid-line: #ff3b14;
+    --grid-glow: rgba(255, 59, 20, 0.75);
+    --label-color: #ff4d24;
+    --label-glow: rgba(255, 77, 36, 0.7);
+    --num-color: #ff552e;
+
+    --vfd-primary: #3dff9e;
+    --vfd-glow: rgba(61, 255, 158, 0.75);
+    --vfd-ghost: rgba(61, 255, 158, 0.06);
+
+    --tacho-track-bg: rgba(255, 70, 30, 0.06);
+    --tacho-track-border: rgba(255, 80, 40, 0.38);
+    --tacho-seg-off: rgba(255, 130, 80, 0.22);
+    --tacho-seg-lit: #ffd426;
+    --tacho-seg-mid: #ff9e1b;
+    --tacho-seg-red: #ff2a1a;
+    --tacho-seg-glow: rgba(255, 208, 38, 0.9);
+
+    --fine-tick-color: #ff6a3d;
+    --fine-tick-warn: #ffb72b;
+    --fine-tick-red: #ff2a1a;
+
+    --odo-digit-color: #ff471a;
+    --odo-tenth-bg: #e04a24;
+    --odo-tenth-fg: #120300;
   }
 
-  body[data-color="green"] {
-    --dash-lit: #22c55e;
-    --dash-glow: rgba(34, 197, 94, 0.7);
-    --dash-ghost: rgba(34, 197, 94, 0.08);
+  /* Photo 1: Daylight White Silkscreen + Metallic Grey Unlit Tacho Bricks */
+  body[data-color="day-white"] {
+    --grid-line: #d8e0ea;
+    --grid-glow: rgba(255, 255, 255, 0.08);
+    --label-color: #e2e8f0;
+    --label-glow: transparent;
+    --num-color: #ffffff;
+
+    --vfd-primary: #4be38a;
+    --vfd-glow: rgba(75, 227, 138, 0.45);
+    --vfd-ghost: rgba(75, 227, 138, 0.05);
+
+    --tacho-track-bg: rgba(255, 255, 255, 0.04);
+    --tacho-track-border: rgba(216, 224, 234, 0.45);
+    --tacho-seg-off: rgba(190, 200, 214, 0.42);
+    --tacho-seg-lit: #ffae2b;
+    --tacho-seg-mid: #ff7b1a;
+    --tacho-seg-red: #ff3326;
+    --tacho-seg-glow: rgba(255, 174, 43, 0.75);
+
+    --fine-tick-color: #e2e8f0;
+    --fine-tick-warn: #f59e0b;
+    --fine-tick-red: #ef4444;
+
+    --odo-digit-color: #f1f5f9;
+    --odo-tenth-bg: #e2e8f0;
+    --odo-tenth-fg: #0b0e14;
   }
 
+  /* Kouki Full Amber JDM Theme */
+  body[data-color="amber"] {
+    --grid-line: #ff9419;
+    --grid-glow: rgba(255, 148, 25, 0.55);
+    --label-color: #ffa32b;
+    --label-glow: rgba(255, 163, 43, 0.5);
+    --num-color: #ffb84d;
+
+    --vfd-primary: #ff9800;
+    --vfd-glow: rgba(255, 152, 0, 0.8);
+    --vfd-ghost: rgba(255, 152, 0, 0.06);
+
+    --tacho-track-bg: rgba(255, 152, 0, 0.05);
+    --tacho-track-border: rgba(255, 152, 0, 0.4);
+    --tacho-seg-off: rgba(255, 160, 40, 0.24);
+    --tacho-seg-lit: #ffbe2e;
+    --tacho-seg-mid: #ff9800;
+    --tacho-seg-red: #ff2e1f;
+    --tacho-seg-glow: rgba(255, 180, 30, 0.9);
+
+    --fine-tick-color: #ffa726;
+    --fine-tick-warn: #ffd54f;
+    --fine-tick-red: #ff3b2f;
+
+    --odo-digit-color: #ffa32b;
+    --odo-tenth-bg: #ffa32b;
+    --odo-tenth-fg: #140900;
+  }
+
+  /* 80s Synth Ice-Cyan VFD Theme */
   body[data-color="cyan"] {
-    --dash-lit: #06b6d4;
-    --dash-glow: rgba(6, 182, 212, 0.7);
-    --dash-ghost: rgba(6, 182, 212, 0.08);
-  }
+    --grid-line: #22d3ee;
+    --grid-glow: rgba(34, 211, 238, 0.5);
+    --label-color: #67e8f9;
+    --label-glow: rgba(103, 232, 249, 0.45);
+    --num-color: #cffafe;
 
-  body[data-color="white"] {
-    --dash-lit: #f8fafc;
-    --dash-glow: rgba(248, 250, 252, 0.7);
-    --dash-ghost: rgba(248, 250, 252, 0.08);
+    --vfd-primary: #00f5d4;
+    --vfd-glow: rgba(0, 245, 212, 0.8);
+    --vfd-ghost: rgba(0, 245, 212, 0.06);
+
+    --tacho-track-bg: rgba(34, 211, 238, 0.05);
+    --tacho-track-border: rgba(34, 211, 238, 0.4);
+    --tacho-seg-off: rgba(56, 189, 248, 0.24);
+    --tacho-seg-lit: #00f5d4;
+    --tacho-seg-mid: #38bdf8;
+    --tacho-seg-red: #ff2e55;
+    --tacho-seg-glow: rgba(0, 245, 212, 0.9);
+
+    --fine-tick-color: #67e8f9;
+    --fine-tick-warn: #fde047;
+    --fine-tick-red: #ff2e55;
+
+    --odo-digit-color: #67e8f9;
+    --odo-tenth-bg: #38bdf8;
+    --odo-tenth-fg: #04131a;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
-    background: #050608;
-    color: var(--dash-lit);
-    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    background:
+      radial-gradient(circle at 50% 22%, #171b24 0%, #090b10 58%, #030406 100%);
+    color: #e2e8f0;
+    font-family: 'Chakra Petch', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-    transition: color 0.3s ease;
+    padding: 18px 16px 28px;
+    overflow-x: hidden;
+    user-select: none;
   }
 
-  /* Instrument Binnacle Housing */
+  .cockpit-stage {
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ==========================================================================
+     OUTER DASHBOARD HOOD BINNACLE
+  ========================================================================== */
   .cluster-binnacle {
     width: 100%;
-    max-width: 880px;
-    background: linear-gradient(180deg, #1c1f26 0%, #101217 60%, #090a0d 100%);
-    border: 3px solid #2d333f;
-    border-radius: 20px;
-    padding: 24px 30px;
-    box-shadow: 
-      0 35px 80px rgba(0, 0, 0, 0.95),
-      inset 0 2px 2px rgba(255, 255, 255, 0.12),
-      0 0 0 1px #040507;
-    position: relative;
-  }
-
-  /* Black Acrylic Display Glass */
-  .cluster-screen {
-    background: #020305;
-    border: 2px solid #1c212b;
-    border-radius: 12px;
-    padding: 24px;
+    background:
+      radial-gradient(ellipse 85% 45% at 50% 0%, rgba(255, 70, 20, 0.09), transparent 65%),
+      linear-gradient(180deg, #1d2027 0%, #0f1116 48%, #07080b 100%);
+    border: 4px solid #262b34;
+    border-radius: 26px 26px 18px 18px;
+    padding: 18px 22px 14px;
+    box-shadow:
+      0 35px 85px rgba(0, 0, 0, 0.96),
+      inset 0 2px 3px rgba(255, 255, 255, 0.12),
+      inset 0 -8px 20px rgba(0, 0, 0, 0.9),
+      0 0 0 2px #040507;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.95);
   }
 
-  /* Subtle horizontal scanline overlay */
+  .hood-glare {
+    position: absolute;
+    top: 2px;
+    left: 26%;
+    width: 48%;
+    height: 14px;
+    background: linear-gradient(90deg, transparent, rgba(255, 160, 40, 0.24), rgba(50, 255, 180, 0.16), rgba(255, 50, 20, 0.24), transparent);
+    filter: blur(8px);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  body[data-color="day-white"] .hood-glare {
+    opacity: 0.12;
+  }
+
+  /* Smoked Acrylic Faceplate */
+  .cluster-screen {
+    background:
+      radial-gradient(circle at 50% 45%, #0c0e13 0%, #050608 72%, #020304 100%);
+    border: 2.5px solid #1a1e26;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 55px rgba(0, 0, 0, 0.98),
+      inset 0 3px 12px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Subtle VFD Phosphor Scanlines */
   .cluster-screen::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px 2px, transparent 2px 4px);
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.24) 0px 1.5px, transparent 1.5px 3.5px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px 1px, transparent 1px 3px);
     pointer-events: none;
-    z-index: 2;
+    z-index: 12;
   }
 
-  /* Top Tachometer Section */
-  .tacho-section {
+  .instrument-face {
     position: relative;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
+    aspect-ratio: 1000 / 445;
+    min-height: 375px;
   }
 
-  .tacho-header {
+  /* ==========================================================================
+     UNIFIED MATHEMATICAL SVG LAYER (PARABOLIC TACHO + UNBROKEN RAYS)
+  ========================================================================== */
+  .cluster-architecture-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .arch-line {
+    stroke: var(--grid-line);
+    stroke-width: 2.1;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+    fill: none;
+    filter: drop-shadow(0 0 4px var(--grid-glow));
+    transition: stroke 0.3s ease, filter 0.3s ease;
+  }
+
+  .arch-line-ray {
+    stroke: var(--grid-line);
+    stroke-width: 1.7;
+    stroke-linecap: butt;
+    fill: none;
+    filter: drop-shadow(0 0 3.5px var(--grid-glow));
+    transition: stroke 0.3s ease, filter 0.3s ease;
+  }
+
+  .tacho-spine-rail {
+    stroke: var(--tacho-track-border);
+    stroke-width: 1.4;
+    fill: var(--tacho-track-bg);
+    transition: stroke 0.3s ease, fill 0.3s ease;
+  }
+
+  .arch-text {
+    fill: var(--label-color);
+    font-family: 'Orbitron', 'Chakra Petch', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    filter: drop-shadow(0 0 5px var(--label-glow));
+    transition: fill 0.3s ease, filter 0.3s ease;
+  }
+
+  /* Bold 0..8 Tachometer Numerals */
+  .tacho-num-svg {
+    fill: var(--num-color);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    filter: drop-shadow(0 0 6px var(--label-glow));
+    transition: fill 0.3s ease;
+  }
+
+  /* Upper Fine Comb Scale Ticks (65 ticks along curve) */
+  .tacho-fine-tick {
+    stroke: var(--fine-tick-color);
+    stroke-width: 2.2;
+    stroke-linecap: butt;
+    filter: drop-shadow(0 0 3px var(--label-glow));
+    transition: stroke 0.3s ease;
+  }
+  .tacho-fine-tick.major-tick {
+    stroke-width: 3.2;
+  }
+  .tacho-fine-tick.warnzone {
+    stroke: var(--fine-tick-warn);
+  }
+  .tacho-fine-tick.redzone {
+    stroke: var(--fine-tick-red);
+  }
+
+  /* Main 56 VFD Tachometer Segments (Bricks along the parabola) */
+  .tacho-seg-poly {
+    fill: var(--tacho-seg-off);
+    stroke: rgba(0, 0, 0, 0.55);
+    stroke-width: 0.8;
+    transition: fill 0.04s ease, filter 0.04s ease;
+  }
+
+  .tacho-seg-poly.lit {
+    fill: var(--tacho-seg-lit);
+    filter: drop-shadow(0 0 8px var(--tacho-seg-glow));
+  }
+
+  .tacho-seg-poly.midrange.lit {
+    fill: var(--tacho-seg-mid);
+    filter: drop-shadow(0 0 8px var(--tacho-seg-glow));
+  }
+
+  .tacho-seg-poly.redline.lit {
+    fill: var(--tacho-seg-red);
+    filter: drop-shadow(0 0 11px #ff2a1a);
+  }
+
+  /* Peak-Hold Floating VFD Segment */
+  .tacho-seg-poly.peak-hold {
+    fill: #ffffff;
+    filter: drop-shadow(0 0 10px #ffffff);
+  }
+
+  /* ==========================================================================
+     TOP WARNING TELLTALE LAMPS (DOOR, TURN SIGNALS)
+  ========================================================================== */
+  .tell-tale-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  .door-ajar-lamp {
+    position: absolute;
+    left: 17.8%;
+    top: 7.2%;
     display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: #64748b;
-    margin-bottom: 12px;
-  }
-
-  /* Segmented Rev Curve Bar */
-  .tacho-bar {
-    display: flex;
-    gap: 4px;
-    align-items: flex-end;
-    height: 48px;
-    padding-bottom: 4px;
-  }
-
-  .rev-segment {
-    flex: 1;
-    background: var(--dash-ghost);
-    border-radius: 2px;
-    transition: background 0.1s, box-shadow 0.1s;
-  }
-  .rev-segment.lit {
-    background: var(--dash-lit);
-    box-shadow: 0 0 8px var(--dash-glow);
-  }
-  .rev-segment.redline.lit {
-    background: #ef4444;
-    box-shadow: 0 0 10px #ef4444;
-  }
-
-  .tacho-numbers {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 6px;
-    color: #64748b;
-  }
-
-  /* Bottom Dual Gauge Cluster (Speedometer & Multi-Info) */
-  .cluster-bottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 24px;
+    flex-direction: column;
     align-items: center;
+    gap: 2px;
+    color: #ff2e2e;
+    opacity: 0.18;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .door-ajar-lamp.active {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #ff2e2e);
+  }
+  .door-ajar-lamp span {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
   }
 
-  /* Speedometer Box */
-  .speedo-box {
+  .turn-lamp {
+    position: absolute;
+    top: 9.2%;
+    width: 24px;
+    height: 17px;
+    color: #22c55e;
+    opacity: 0.15;
+    transition: opacity 0.1s ease, filter 0.1s ease;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .turn-lamp.left { left: 25.4%; }
+  .turn-lamp.right { right: 16.8%; }
+  .turn-lamp.blinking {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px #22c55e);
+  }
+
+  /* ==========================================================================
+     LEFT VERTICAL FUEL BARGRAPH WINDOW
+  ========================================================================== */
+  .fuel-well-box {
+    position: absolute;
+    left: 2.6%;
+    top: 30.5%;
+    width: 8.8%;
+    height: 44.5%;
+    background: #030506;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.95);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+
+  .vertical-vfd-ladder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .vfd-scale-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--vfd-primary);
+    text-shadow: 0 0 6px var(--vfd-glow);
+    padding: 1px 0;
+  }
+
+  .vfd-tube-frame {
+    width: 30px;
+    height: 100%;
+    border: 2px solid var(--vfd-primary);
+    box-shadow: 0 0 7px var(--vfd-glow), inset 0 0 5px rgba(0,0,0,0.9);
+    padding: 2px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+  }
+
+  .vfd-bar-seg {
+    flex: 1;
+    background: var(--vfd-ghost);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .vfd-bar-seg.lit {
+    background: var(--vfd-primary);
+    box-shadow: 0 0 8px var(--vfd-glow);
+  }
+  .vfd-bar-seg.warn-low.lit {
+    background: #ff3b2f;
+    box-shadow: 0 0 10px #ff3b2f;
+  }
+
+  /* ==========================================================================
+     RECESSED DIGITAL SPEEDOMETER WINDOW ("ELECTRONIC DISPLAY")
+  ========================================================================== */
+  .speed-well-frame {
+    position: absolute;
+    left: 48.5%;
+    top: 47.8%;
+    width: 28.2%;
+    height: 24.8%;
+    background: #020404;
+    border: 2px solid #12181f;
+    box-shadow:
+      inset 0 6px 18px rgba(0, 0, 0, 1),
+      inset 0 0 30px rgba(0, 0, 0, 0.95);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 22px;
+  }
+
+  .speed-vfd-group {
     display: flex;
     align-items: baseline;
-    gap: 16px;
+    gap: 10px;
   }
 
-  .speed-digits-wrap {
+  .speed-digits-stack {
     display: grid;
+    place-items: end;
     font-family: 'DSEG7-Classic', monospace;
-    font-size: 82px;
+    font-size: clamp(38px, 5.4vw, 58px);
     line-height: 1;
+    font-style: italic;
   }
-  .speed-digits-wrap > * { grid-area: 1 / 1; }
+  .speed-digits-stack > * { grid-area: 1 / 1; }
 
-  .speed-ghost { color: var(--dash-ghost); user-select: none; }
+  .speed-ghost {
+    color: var(--vfd-ghost);
+    user-select: none;
+  }
+
   .speed-lit {
-    color: var(--dash-lit);
-    text-shadow: 0 0 14px var(--dash-glow), 0 0 28px var(--dash-glow);
+    color: var(--vfd-primary);
+    text-shadow:
+      0 0 12px var(--vfd-glow),
+      0 0 26px var(--vfd-glow);
+    transition: color 0.25s ease, text-shadow 0.25s ease;
   }
 
-  .speed-unit-col {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+  .speed-unit-vfd {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 1.5vw, 16px);
+    font-weight: 800;
+    color: var(--vfd-primary);
+    text-shadow: 0 0 8px var(--vfd-glow);
+    letter-spacing: 0.04em;
   }
 
-  /* Chime warning lamp (AE86 > 105 km/h speed bell) */
-  .speed-chime-lamp {
-    font-size: 10px;
-    background: #1e1b18;
-    color: #52473b;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #33291f;
-    letter-spacing: 0.15em;
+  /* Red Warning Bar above "SPEED" label */
+  .speed-over-indicator {
+    position: absolute;
+    left: 40.5%;
+    top: 50.2%;
+    width: 3.8%;
+    height: 2.8%;
+    background: #331010;
+    border: 1px solid #591c1c;
+    border-radius: 2px;
+    z-index: 6;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
   }
-  .speed-chime-lamp.active {
-    background: #ef4444;
-    color: #ffffff;
-    box-shadow: 0 0 14px #ef4444;
-    animation: flash 0.5s infinite alternate;
+  .speed-over-indicator.chime-active {
+    background: #ff2a1a;
+    border-color: #ff8075;
+    box-shadow: 0 0 12px #ff2a1a, 0 0 22px #ff2a1a;
+    animation: chimePulse 0.42s infinite alternate;
   }
-
-  @keyframes flash { from { opacity: 0.6; } to { opacity: 1; } }
-
-  /* Right Gauge: Water Temp & Fuel */
-  .aux-gauges {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    padding-left: 24px;
+  @keyframes chimePulse {
+    from { opacity: 0.55; }
+    to { opacity: 1; }
   }
 
-  .gauge-row {
+  /* ==========================================================================
+     RIGHT VERTICAL COOLANT TEMP BARGRAPH WINDOW
+  ========================================================================== */
+  .temp-well-box {
+    position: absolute;
+    right: 2.6%;
+    top: 30.5%;
+    width: 8.8%;
+    height: 44.5%;
+    background: #030506;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.95);
+    z-index: 5;
     display: flex;
     align-items: center;
-    gap: 14px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .gauge-label { width: 50px; color: #64748b; }
-  .gauge-bar {
-    flex: 1;
-    display: flex;
-    gap: 3px;
-    height: 14px;
-  }
-  .gauge-bar span {
-    flex: 1;
-    background: var(--dash-ghost);
-    border-radius: 1px;
-  }
-  .gauge-bar span.lit {
-    background: var(--dash-lit);
-    box-shadow: 0 0 6px var(--dash-glow);
+    justify-content: center;
+    padding: 10px 12px;
   }
 
-  /* Switcher Toolbar */
-  .dash-controls {
+  .temp-tube-frame {
+    width: 30px;
+    height: 100%;
+    border: 2px solid var(--vfd-primary);
+    box-shadow: 0 0 7px var(--vfd-glow), inset 0 0 5px rgba(0,0,0,0.9);
+    padding: 3px;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 24px;
+  }
+
+  .temp-indicator-bar {
     width: 100%;
-    max-width: 880px;
+    height: 14%;
+    background: var(--vfd-primary);
+    box-shadow: 0 0 8px var(--vfd-glow);
   }
 
-  .color-selector {
+  /* ==========================================================================
+     LOWER MECHANICAL CONTROL STRIP (ODOMETERS, KNOBS, BRAKE)
+  ========================================================================== */
+  .lower-mechanical-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 18.5%;
+    z-index: 8;
     display: flex;
-    gap: 8px;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 9% 0 15.5%;
   }
-  .color-selector span { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; }
 
-  .btn-color {
+  .stem-control-group {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .physical-stem-knob {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    background: radial-gradient(circle at 38% 35%, #525866 0%, #232730 55%, #0c0e12 100%);
+    border: 2px solid #383e4c;
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.9),
+      inset 0 1px 1px rgba(255, 255, 255, 0.28);
     cursor: pointer;
-    transition: transform 0.15s, border-color 0.15s;
+    position: relative;
+    transition: transform 0.1s ease;
   }
-  .btn-color.active {
-    border-color: #ffffff;
-    transform: scale(1.15);
+  .physical-stem-knob::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 60% 60%, #1c2028, #090b0e);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .physical-stem-knob:active,
+  .physical-stem-knob.pressed {
+    transform: scale(0.9) translateY(2px);
   }
 
-  .btn-throttle {
-    background: #1e2430;
-    border: 1px solid #333d52;
-    color: #e2e8f0;
-    padding: 8px 20px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
+  .scale-change-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--label-color);
+    filter: drop-shadow(0 0 4px var(--label-glow));
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.1;
     cursor: pointer;
-    letter-spacing: 0.1em;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
   }
-  .btn-throttle:active { transform: translateY(2px); }
+
+  .mechanical-odo-window {
+    background: #040507;
+    border: 2px solid #1c2029;
+    border-radius: 3px;
+    padding: 2px 7px;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.98);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--odo-digit-color);
+    text-shadow: 0 0 5px var(--label-glow);
+  }
+
+  .trip-tenth-wheel {
+    background: var(--odo-tenth-bg);
+    color: var(--odo-tenth-fg);
+    padding: 0 3px;
+    border-radius: 2px;
+    letter-spacing: 0;
+    font-weight: 900;
+    text-shadow: none;
+  }
+
+  .brake-warning-lamp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    color: #ff2a1a;
+    opacity: 0.22;
+    cursor: pointer;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+  }
+  .brake-warning-lamp.active {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #ff2a1a) drop-shadow(0 0 16px #ff2a1a);
+  }
+  .brake-icon-ring {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .brake-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+  }
+
+  /* ==========================================================================
+     INTERACTIVE CONTROL DECK
+  ========================================================================== */
+  .control-deck {
+    background: linear-gradient(180deg, #161921 0%, #0e1016 100%);
+    border: 2px solid #262c3a;
+    border-radius: 14px;
+    padding: 12px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.8);
+  }
+
+  .deck-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .deck-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .preset-pill {
+    background: #141821;
+    border: 1.5px solid #2e3646;
+    color: #cbd5e1;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .preset-pill:hover {
+    border-color: #64748b;
+    color: #ffffff;
+  }
+  .preset-pill.active {
+    border-color: #ff5722;
+    background: rgba(255, 87, 34, 0.15);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 87, 34, 0.3);
+  }
+
+  .swatch-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+
+  .gear-badge {
+    background: #080a0e;
+    border: 1.5px solid #333c4d;
+    border-radius: 7px;
+    padding: 5px 11px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: #3dff9e;
+  }
+
+  .pedal-btn {
+    background: linear-gradient(180deg, #ff4d1a 0%, #b82800 100%);
+    border: 1.5px solid #ff8566;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 9px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 65, 20, 0.4);
+    transition: transform 0.08s ease, box-shadow 0.12s ease;
+  }
+  .pedal-btn:active,
+  .pedal-btn.pressed {
+    transform: translateY(2px);
+    box-shadow: 0 0 20px rgba(255, 77, 26, 0.85);
+  }
+
+  .aux-btn {
+    background: #1b202c;
+    border: 1.5px solid #343d52;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .aux-btn:hover {
+    border-color: #3dff9e;
+    color: #3dff9e;
+  }
+  .aux-btn.toggled {
+    border-color: #ff9800;
+    color: #ff9800;
+    background: rgba(255, 152, 0, 0.12);
+  }
 </style>
 </head>
-<body data-color="amber">
+<body data-color="night-red">
 
-<div class="cluster-binnacle">
-  <div class="cluster-screen">
-    <!-- Tachometer -->
-    <div class="tacho-section">
-      <div class="tacho-header">
-        <span>TACHOMETER x1000 r/min</span>
-        <span>TWIN CAM 16V</span>
-      </div>
+<div class="cockpit-stage">
 
-      <div class="tacho-bar" id="tachoBar"></div>
+  <!-- ==========================================================================
+       TOYOTA AE86 DIGITAL INSTRUMENT BINNACLE
+  ========================================================================== -->
+  <div class="cluster-binnacle">
+    <div class="hood-glare"></div>
 
-      <div class="tacho-numbers">
-        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span style="color:#ef4444;">8</span>
-      </div>
-    </div>
+    <div class="cluster-screen">
+      <div class="instrument-face">
 
-    <!-- Bottom Speedometer & Aux -->
-    <div class="cluster-bottom">
-      <div class="speedo-box">
-        <div class="speed-digits-wrap">
-          <span class="speed-ghost">888</span>
-          <span class="speed-lit" id="speedReadout">084</span>
-        </div>
-        <div class="speed-unit-col">
-          <span>km/h</span>
-          <span class="speed-chime-lamp" id="chimeLamp">SPEED 105+</span>
-        </div>
-      </div>
+        <!-- ====================================================================
+             MATHEMATICALLY UNIFIED SVG ARCHITECTURE:
+             Every Tacho Brick, Tick, Number (0..8), and Perspective Grid Line
+             is computed from the same parabolic curve equation so NOTHING breaks!
+        ===================================================================== -->
+        <svg id="clusterSvg" class="cluster-architecture-svg" viewBox="0 0 1000 445" preserveAspectRatio="none">
 
-      <div class="aux-gauges">
-        <div class="gauge-row">
-          <span class="gauge-label">WATER</span>
-          <div class="gauge-bar" id="waterBar">
-            <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span><span></span>
+          <!-- 1. Outer Horizon Baseline across Entire Cluster -->
+          <line x1="8" y1="342" x2="992" y2="342" class="arch-line"/>
+
+          <!-- 2. Left FUEL Frame -->
+          <polyline points="26,118 8,118 8,342" class="arch-line"/>
+          <polyline points="116,118 132,118 122,320 20,320 26,118" class="arch-line-ray"/>
+          <g transform="translate(30, 102)">
+            <rect x="0" y="2" width="11" height="14" rx="1.5" fill="none" stroke="var(--label-color)" stroke-width="1.8"/>
+            <rect x="2" y="4" width="7" height="5" fill="var(--label-color)"/>
+            <path d="M 11 5 L 15 8 L 15 15" fill="none" stroke="var(--label-color)" stroke-width="1.6"/>
+            <text x="21" y="14" class="arch-text" font-size="15">FUEL</text>
+          </g>
+
+          <!-- 3. Right TEMP Frame -->
+          <polyline points="880,118 864,118 872,320 978,320 972,118 958,118" class="arch-line-ray"/>
+          <polyline points="972,118 992,118 992,342" class="arch-line"/>
+          <g transform="translate(882, 101)">
+            <path d="M 6 2 L 6 13 M 3 5 L 9 5 M 3 8 L 9 8" stroke="var(--label-color)" stroke-width="1.8" fill="none"/>
+            <circle cx="6" cy="14" r="3" fill="var(--label-color)"/>
+            <path d="M 0 17 Q 3 15 6 17 T 12 17" stroke="var(--label-color)" stroke-width="1.4" fill="none"/>
+            <text x="18" y="15" class="arch-text" font-size="15">TEMP</text>
+          </g>
+
+          <!-- 4. Right Boundary Spine between Tacho/Speed & Temp -->
+          <polyline points="818,70 830,198 830,342" class="arch-line-ray"/>
+
+          <!-- 5. Recessed SPEEDOMETER ("ELECTRONIC DISPLAY") Cutout Box -->
+          <polyline points="424,228 424,198 796,198 798,310 518,310 518,288" class="arch-line"/>
+
+          <!-- 6. Typography Labels inside Faceplate -->
+          <text x="234" y="294" class="arch-text" font-size="14.5">TACH</text>
+          <text x="234" y="312" class="arch-text" font-size="14">x1000r/min</text>
+          <text x="388" y="258" class="arch-text" font-size="14.5">SPEED</text>
+          <text x="518" y="330" class="arch-text" font-size="13" letter-spacing="0.12em">ELECTRONIC DISPLAY</text>
+
+          <!-- 7. PROCEDURALLY GENERATED PERSPECTIVE RAYS (ANCHORED TO PARABOLA) -->
+          <g id="parabolicRaysGroup"></g>
+
+          <!-- 8. PARABOLIC TACHO TRACK RAIL, 56 VFD BRICKS, 65 TICKS & 0..8 NUMBERS -->
+          <g id="parabolicTachoGroup"></g>
+
+        </svg>
+
+        <!-- ====================================================================
+             WARNING TELLTALE LAMPS (DOOR AJAR & TURN ARROWS)
+        ===================================================================== -->
+        <div class="tell-tale-layer">
+          <div class="door-ajar-lamp active" id="doorLamp" title="Click to toggle DOOR warning lamp">
+            <svg width="22" height="18" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 3h12l2 6v8H4V9l2-6z"/>
+              <path d="M4 10l-4 3M20 10l4 3"/>
+            </svg>
+            <span>DOOR</span>
+          </div>
+
+          <div class="turn-lamp left" id="turnLeft" title="Click for Turn / Hazard">
+            <svg viewBox="0 0 24 18" fill="currentColor">
+              <polygon points="10,1 0,9 10,17 10,12 22,12 22,6 10,6"/>
+            </svg>
+          </div>
+
+          <div class="turn-lamp right" id="turnRight" title="Click for Turn / Hazard">
+            <svg viewBox="0 0 24 18" fill="currentColor">
+              <polygon points="14,1 24,9 14,17 14,12 2,12 2,6 14,6"/>
+            </svg>
           </div>
         </div>
 
-        <div class="gauge-row">
-          <span class="gauge-label">FUEL</span>
-          <div class="gauge-bar" id="fuelBar">
-            <span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span>
+        <!-- ====================================================================
+             LEFT WINDOW: VERTICAL FUEL BARGRAPH
+        ===================================================================== -->
+        <div class="fuel-well-box">
+          <div class="vertical-vfd-ladder">
+            <div class="vfd-scale-labels">
+              <span id="fuelTopLabel">F</span>
+              <span>▸</span>
+              <span>E</span>
+            </div>
+            <div class="vfd-tube-frame" id="fuelTube"></div>
           </div>
         </div>
+
+        <!-- ====================================================================
+             CENTER-RIGHT RECESSED WINDOW: DIGITAL SPEEDOMETER
+        ===================================================================== -->
+        <div class="speed-over-indicator" id="speedOverBar" title="105+ km/h Speed Chime Indicator"></div>
+
+        <div class="speed-well-frame">
+          <div class="speed-vfd-group">
+            <div class="speed-digits-stack">
+              <span class="speed-ghost">888</span>
+              <span class="speed-lit" id="speedReadout">  0</span>
+            </div>
+            <span class="speed-unit-vfd">km/h</span>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             RIGHT WINDOW: VERTICAL COOLANT TEMP GAUGE
+        ===================================================================== -->
+        <div class="temp-well-box">
+          <div class="vertical-vfd-ladder">
+            <div class="vfd-scale-labels">
+              <span>H</span>
+              <span>▸</span>
+              <span>C</span>
+            </div>
+            <div class="temp-tube-frame">
+              <div style="height:2px; background:var(--vfd-primary);"></div>
+              <div class="temp-indicator-bar"></div>
+              <div style="height:2px; background:var(--vfd-primary);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             LOWER MECHANICAL ODOMETER, TRIP METER, SCALE CHANGE & BRAKE LAMP
+        ===================================================================== -->
+        <div class="lower-mechanical-strip">
+
+          <div class="stem-control-group" id="scaleChangeBtn" title="Press to magnify Fuel Gauge scale (1/4 Tank Zoom)">
+            <button class="physical-stem-knob" id="scaleKnob" aria-label="Scale Change"></button>
+            <div class="scale-change-label">
+              <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor">
+                <rect x="1" y="2" width="9" height="13" rx="1"/>
+                <path d="M10 5l3 2v6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>
+              <span>SCALE<br>CHANGE</span>
+            </div>
+          </div>
+
+          <div class="mechanical-odo-window" id="odoDisplay" title="Total Odometer (km)">
+            000146
+          </div>
+
+          <div class="mechanical-odo-window" id="tripDisplay" title="Trip Meter (1/10 km)">
+            <span>146</span><span class="trip-tenth-wheel" id="tripTenth">9</span>
+          </div>
+
+          <div class="stem-control-group">
+            <button class="physical-stem-knob" id="tripResetKnob" title="Press stem to reset Trip Meter to 000.0"></button>
+          </div>
+
+          <div class="brake-warning-lamp active" id="brakeLamp" title="Click to toggle Handbrake Warning Lamp">
+            <span class="brake-icon-ring">((!))</span>
+            <span class="brake-text">BRAKE</span>
+          </div>
+
+        </div>
+
       </div>
     </div>
   </div>
-</div>
 
-<!-- Controls Bar -->
-<div class="dash-controls">
-  <div class="color-selector">
-    <span>Backlight:</span>
-    <button class="btn-color active" data-theme="amber" style="background:#ff9800;" title="Toyota Amber"></button>
-    <button class="btn-color" data-theme="green" style="background:#22c55e;" title="Neo Green"></button>
-    <button class="btn-color" data-theme="cyan" style="background:#06b6d4;" title="Synth Cyan"></button>
-    <button class="btn-color" data-theme="white" style="background:#f8fafc;" title="Ice White"></button>
+  <!-- ==========================================================================
+       INTERACTIVE 4A-GE DRIVING & ILLUMINATION CONTROL DECK
+  ========================================================================== -->
+  <div class="control-deck">
+
+    <div class="deck-group">
+      <span class="deck-label">Cluster Theme:</span>
+      <button class="preset-pill active" data-theme="night-red">
+        <span class="swatch-dot" style="background: linear-gradient(135deg, #ff3b14, #3dff9e);"></span>
+        Night Red/Green (Photo 2)
+      </button>
+      <button class="preset-pill" data-theme="day-white">
+        <span class="swatch-dot" style="background: linear-gradient(135deg, #ffffff, #4be38a);"></span>
+        Daylight White (Photo 1)
+      </button>
+      <button class="preset-pill" data-theme="amber">
+        <span class="swatch-dot" style="background: #ff9800;"></span>
+        Toyota Amber
+      </button>
+      <button class="preset-pill" data-theme="cyan">
+        <span class="swatch-dot" style="background: #00f5d4;"></span>
+        Synth Cyan
+      </button>
+    </div>
+
+    <div class="deck-group">
+      <div class="gear-badge" id="gearReadout">GEAR: 1st (2800 RPM)</div>
+      <button class="pedal-btn" id="revBtn">HOLD THROTTLE [SPACE / W]</button>
+      <button class="aux-btn" id="tougeDemoBtn">🏔 TOUGE RUN DEMO</button>
+      <button class="aux-btn toggled" id="audioToggleBtn">🔊 4A-GE + CHIME</button>
+    </div>
+
   </div>
 
-  <button class="btn-throttle" id="revBtn">PRESS ACCELERATOR (REV)</button>
 </div>
 
 <script>
-  // Render Tachometer Segments (36 segments)
-  const tachoBar = document.getElementById("tachoBar");
-  const TOTAL_SEGMENTS = 36;
-  const REDLINE_START = 29;
+  // ==========================================================================
+  // 1. UNIFIED PARABOLIC TACHOMETER CURVE & PERSPECTIVE RAYS GENERATOR
+  //    Reads native SVG namespaceURI directly from #clusterSvg (zero URL strings!)
+  // ==========================================================================
+  const SVG_NS = document.getElementById("clusterSvg").namespaceURI;
+  const raysGroup = document.getElementById("parabolicRaysGroup");
+  const tachoGroup = document.getElementById("parabolicTachoGroup");
 
-  for (let i = 0; i < TOTAL_SEGMENTS; i++) {
+  const X_START = 190;
+  const X_SPAN  = 588; // Ends at x = 778
+  const Y_SHELF = 132; // Flat top shelf height (around 5..8 RPM)
+  const Y_DROP  = 186; // Vertical drop down to 0 RPM (y = 318)
+  const EXP_POW = 2.55;
+
+  // Exact point on the bottom spine of the tachometer bar for u in [0..8]
+  function getCurvePoint(u) {
+    const t = Math.max(0, Math.min(1, u / 8));
+    const tx = Math.pow(t, 0.92);
+    const x = X_START + X_SPAN * tx;
+    const y = Y_SHELF + Y_DROP * Math.pow(1 - t, EXP_POW);
+    return { x, y };
+  }
+
+  // Exact unit normal vector pointing UP-LEFT (perpendicular to curve)
+  function getCurveNormal(u) {
+    const du = 0.02;
+    const p1 = getCurvePoint(Math.max(0, u - du));
+    const p2 = getCurvePoint(Math.min(8, u + du));
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.hypot(dx, dy) || 1;
+    return { nx: dy / len, ny: -dx / len, tx: dx / len, ty: dy / len };
+  }
+
+  const BAR_THICKNESS = 14; // Bold, unmistakable VFD brick height
+
+  // --------------------------------------------------------------------------
+  // A. Build Continuous Outer Housing Track around the 56 VFD Bricks
+  // --------------------------------------------------------------------------
+  const trackBottomPts = [];
+  const trackTopPts = [];
+  for (let s = 0; s <= 80; s++) {
+    const u = (s / 80) * 8;
+    const p = getCurvePoint(u);
+    const n = getCurveNormal(u);
+    trackBottomPts.push(`${(p.x - n.nx * 2).toFixed(1)},${(p.y - n.ny * 2).toFixed(1)}`);
+    trackTopPts.unshift(`${(p.x + n.nx * (BAR_THICKNESS + 2)).toFixed(1)},${(p.y + n.ny * (BAR_THICKNESS + 2)).toFixed(1)}`);
+  }
+  const trackPoly = document.createElementNS(SVG_NS, "polygon");
+  trackPoly.setAttribute("points", trackBottomPts.concat(trackTopPts).join(" "));
+  trackPoly.setAttribute("class", "tacho-spine-rail");
+  tachoGroup.appendChild(trackPoly);
+
+  // --------------------------------------------------------------------------
+  // B. Build Perspective Grid Lines Anchored Directly to Curve Points u = 0..8
+  // --------------------------------------------------------------------------
+  function addSvgLine(x1, y1, x2, y2, cls = "arch-line-ray") {
+    const ln = document.createElementNS(SVG_NS, "line");
+    ln.setAttribute("x1", x1.toFixed(1));
+    ln.setAttribute("y1", y1.toFixed(1));
+    ln.setAttribute("x2", x2.toFixed(1));
+    ln.setAttribute("y2", y2.toFixed(1));
+    ln.setAttribute("class", cls);
+    raysGroup.appendChild(ln);
+  }
+
+  const p0 = getCurvePoint(0);
+  const p1 = getCurvePoint(1);
+  const p2 = getCurvePoint(2);
+  const n1 = getCurveNormal(1);
+  const n2 = getCurveNormal(2);
+
+  // Leader 2 (Top horizontal from Fuel frame right corner (132,118) into u=2 outer comb)
+  const p2Outer = { x: p2.x + n2.nx * 26, y: p2.y + n2.ny * 26 };
+  addSvgLine(132, 118, p2Outer.x - 36, 118);
+  addSvgLine(p2Outer.x - 36, 118, p2Outer.x, p2Outer.y);
+
+  // Leader 1 (Middle horizontal from Fuel frame into u=1 outer comb)
+  const p1Outer = { x: p1.x + n1.nx * 26, y: p1.y + n1.ny * 26 };
+  addSvgLine(128, 184, p1Outer.x - 28, 184);
+  addSvgLine(p1Outer.x - 28, 184, p1Outer.x, p1Outer.y);
+
+  // Leader 0 (Bottom diagonal from Fuel frame into u=0 start of tacho)
+  addSvgLine(124, 268, p0.x - 8, p0.y + 4);
+  addSvgLine(p0.x, p0.y, p0.x + 36, 342);
+
+  // Radial Perspective Lines for u = 1, 2, 3, 4, 5, 6, 7, 8
+  for (let u = 1; u <= 8; u++) {
+    const p = getCurvePoint(u);
+    const n = getCurveNormal(u);
+
+    // 1) Upper Perspective Ray (from above the numeral up to y = 70 ceiling)
+    if (u >= 3) {
+      const startUpX = p.x + n.nx * 54;
+      const startUpY = p.y + n.ny * 54;
+      const slopeX = (u - 8) * 3.2 - 6;
+      addSvgLine(startUpX, startUpY, startUpX + slopeX, 70);
+    }
+
+    // 2) Lower Perspective Ray (from bottom edge of tacho brick down to Speed box or Baseline y=342)
+    const botX = p.x - n.nx * 2;
+    const botY = p.y - n.ny * 2;
+
+    if (u === 1) {
+      addSvgLine(botX, botY, botX + 64, 342);
+    } else if (u === 2) {
+      addSvgLine(botX, botY, botX + 68, 342);
+    } else if (u === 3) {
+      addSvgLine(botX, botY, botX + 74, 342);
+    } else if (u >= 4 && u <= 8) {
+      const dxToSpeed = (9 - u) * 3.5;
+      const hitX = botX + dxToSpeed;
+      addSvgLine(botX, botY, hitX, 198);
+
+      if (u >= 5) {
+        const exitX = hitX + 16;
+        addSvgLine(exitX, 310, exitX + 6, 342);
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // C. Build 56 High-Contrast VFD Tachometer Bricks along the Parabola
+  // --------------------------------------------------------------------------
+  const TOTAL_BRICKS = 56;
+  const tachoBrickElements = [];
+
+  for (let i = 0; i < TOTAL_BRICKS; i++) {
+    const u0 = (i / TOTAL_BRICKS) * 8;
+    const u1 = ((i + 0.74) / TOTAL_BRICKS) * 8;
+
+    const pt0 = getCurvePoint(u0);
+    const nm0 = getCurveNormal(u0);
+    const pt1 = getCurvePoint(u1);
+    const nm1 = getCurveNormal(u1);
+
+    const x1 = pt0.x, y1 = pt0.y;
+    const x2 = pt1.x, y2 = pt1.y;
+    const x3 = pt1.x + nm1.nx * BAR_THICKNESS, y3 = pt1.y + nm1.ny * BAR_THICKNESS;
+    const x4 = pt0.x + nm0.nx * BAR_THICKNESS, y4 = pt0.y + nm0.ny * BAR_THICKNESS;
+
+    const brick = document.createElementNS(SVG_NS, "polygon");
+    brick.setAttribute("points", `${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${x3.toFixed(1)},${y3.toFixed(1)} ${x4.toFixed(1)},${y4.toFixed(1)}`);
+
+    const rpmVal = (u0 / 8) * 8000;
+    let cls = "tacho-seg-poly";
+    if (rpmVal >= 6600) cls += " redline";
+    else if (rpmVal >= 4500) cls += " midrange";
+
+    brick.setAttribute("class", cls);
+    tachoGroup.appendChild(brick);
+    tachoBrickElements.push(brick);
+  }
+
+  // --------------------------------------------------------------------------
+  // D. Build 65 Fine Comb Scale Ticks + Bold 0..8 Numerals Above the Bricks
+  // --------------------------------------------------------------------------
+  const TOTAL_FINE_TICKS = 64;
+  for (let k = 0; k <= TOTAL_FINE_TICKS; k++) {
+    const u = (k / TOTAL_FINE_TICKS) * 8;
+    const p = getCurvePoint(u);
+    const n = getCurveNormal(u);
+    const isMajor = k % 8 === 0;
+
+    const innerDist = BAR_THICKNESS + 5;
+    const outerDist = isMajor ? BAR_THICKNESS + 14 : BAR_THICKNESS + 10.5;
+
+    const x1 = p.x + n.nx * innerDist;
+    const y1 = p.y + n.ny * innerDist;
+    const x2 = p.x + n.nx * outerDist;
+    const y2 = p.y + n.ny * outerDist;
+
+    const tick = document.createElementNS(SVG_NS, "line");
+    tick.setAttribute("x1", x1.toFixed(1));
+    tick.setAttribute("y1", y1.toFixed(1));
+    tick.setAttribute("x2", x2.toFixed(1));
+    tick.setAttribute("y2", y2.toFixed(1));
+
+    let tickCls = "tacho-fine-tick";
+    if (isMajor) tickCls += " major-tick";
+    if (u >= 7.25) tickCls += " redzone";
+    else if (u >= 6.5) tickCls += " warnzone";
+    tick.setAttribute("class", tickCls);
+    tachoGroup.appendChild(tick);
+
+    // Render 0, 1, 2, 3, 4, 5, 6, 7, 8 Numerals
+    if (isMajor) {
+      const digit = k / 8;
+      const numDist = BAR_THICKNESS + 29;
+      const nx = p.x + n.nx * numDist;
+      const ny = p.y + n.ny * numDist;
+
+      const txt = document.createElementNS(SVG_NS, "text");
+      txt.setAttribute("x", nx.toFixed(1));
+      txt.setAttribute("y", ny.toFixed(1));
+      txt.setAttribute("class", "tacho-num-svg");
+      txt.textContent = digit;
+      tachoGroup.appendChild(txt);
+    }
+  }
+
+  // ==========================================================================
+  // 2. VERTICAL FUEL BARGRAPH (10 VFD SEGMENTS + SCALE CHANGE ZOOM)
+  // ==========================================================================
+  const fuelTube = document.getElementById("fuelTube");
+  const fuelSegments = [];
+  for (let i = 0; i < 10; i++) {
     const seg = document.createElement("div");
-    seg.className = "rev-segment";
-    if (i >= REDLINE_START) seg.classList.add("redline");
-    // Stepped heights (rising curve)
-    const heightPct = 30 + Math.pow(i / TOTAL_SEGMENTS, 1.4) * 70;
-    seg.style.height = heightPct + "%";
-    tachoBar.appendChild(seg);
+    seg.className = "vfd-bar-seg" + (i === 0 ? " warn-low" : "");
+    if (i < 3) seg.classList.add("lit");
+    fuelTube.appendChild(seg);
+    fuelSegments.push(seg);
   }
 
+  let isFuelScaleZoomed = false;
+  const scaleChangeBtn = document.getElementById("scaleChangeBtn");
+  const scaleKnob = document.getElementById("scaleKnob");
+  const fuelTopLabel = document.getElementById("fuelTopLabel");
+
+  scaleChangeBtn.addEventListener("click", () => {
+    isFuelScaleZoomed = !isFuelScaleZoomed;
+    scaleKnob.classList.toggle("pressed", isFuelScaleZoomed);
+    fuelTopLabel.textContent = isFuelScaleZoomed ? "1/4" : "F";
+    const litCount = isFuelScaleZoomed ? 9 : 3;
+    fuelSegments.forEach((s, idx) => s.classList.toggle("lit", idx < litCount));
+  });
+
+  // ==========================================================================
+  // 3. WEB AUDIO API: 4A-GE 16V ENGINE SYNTH & 105 KM/H "KIN-KON" CHIME
+  // ==========================================================================
+  let audioCtx = null;
+  let engineOsc1 = null;
+  let engineOsc2 = null;
+  let engineGain = null;
+  let soundEnabled = true;
+  let lastChimeTime = 0;
+
+  function initEngineAudio() {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      engineOsc1 = audioCtx.createOscillator();
+      engineOsc2 = audioCtx.createOscillator();
+      const filter = audioCtx.createBiquadFilter();
+      engineGain = audioCtx.createGain();
+
+      engineOsc1.type = "sawtooth";
+      engineOsc2.type = "triangle";
+      filter.type = "lowpass";
+      filter.frequency.value = 460;
+      engineGain.gain.value = 0.0001;
+
+      engineOsc1.connect(filter);
+      engineOsc2.connect(filter);
+      filter.connect(engineGain);
+      engineGain.connect(audioCtx.destination);
+
+      engineOsc1.start();
+      engineOsc2.start();
+    } catch (e) {}
+  }
+
+  function updateEngineSound(rpm, active) {
+    if (!audioCtx || !soundEnabled) {
+      if (engineGain && audioCtx) engineGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.05);
+      return;
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const baseFreq = 30 + (rpm / 8000) * 205;
+    engineOsc1.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.03);
+    engineOsc2.frequency.setTargetAtTime(baseFreq * 1.5, audioCtx.currentTime, 0.03);
+    const targetVol = active ? 0.055 : 0.012;
+    engineGain.gain.setTargetAtTime(targetVol, audioCtx.currentTime, 0.05);
+  }
+
+  function playAe86Chime() {
+    if (!soundEnabled) return;
+    initEngineAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    if (now - lastChimeTime < 0.85) return;
+    lastChimeTime = now;
+
+    const playBell = (freq, startTime, duration) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, startTime);
+      gain.gain.setValueAtTime(0.08, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    };
+
+    playBell(830.6, now, 0.36);
+    playBell(659.2, now + 0.24, 0.48);
+  }
+
+  // ==========================================================================
+  // 4. DRIVING PHYSICS, PEAK-HOLD TACHO & CLUSTER RENDER LOOP
+  // ==========================================================================
   const speedReadout = document.getElementById("speedReadout");
-  const chimeLamp = document.getElementById("chimeLamp");
-  const segments = Array.from(tachoBar.children);
+  const speedOverBar = document.getElementById("speedOverBar");
+  const gearReadout = document.getElementById("gearReadout");
+  const odoDisplay = document.getElementById("odoDisplay");
+  const tripDisplay = document.getElementById("tripDisplay");
 
-  let currentRpmIdx = 16;
-  let currentSpeed = 84;
+  let currentSpeed = 0;
+  let currentRpm = 2850;
+  let peakBrickIdx = 19;
+  let odoKm = 146.9;
+  let tripKm = 146.9;
+  let isThrottling = false;
+  let isTougeDemo = false;
 
-  function updateCluster(rpmIdx, speed) {
-    segments.forEach((seg, idx) => {
-      seg.classList.toggle("lit", idx <= rpmIdx);
+  function renderClusterState(rpm, speed) {
+    const activeBricks = Math.max(3, Math.round((rpm / 8000) * TOTAL_BRICKS));
+    if (activeBricks - 1 >= peakBrickIdx) {
+      peakBrickIdx = activeBricks - 1;
+    } else {
+      peakBrickIdx = Math.max(activeBricks - 1, peakBrickIdx - 0.18);
+    }
+    const roundedPeak = Math.round(peakBrickIdx);
+
+    tachoBrickElements.forEach((brick, idx) => {
+      brick.classList.toggle("lit", idx < activeBricks);
+      brick.classList.toggle("peak-hold", idx === roundedPeak && roundedPeak > activeBricks);
     });
-    speedReadout.textContent = String(speed).padStart(3, "0");
-    chimeLamp.classList.toggle("active", speed >= 105);
+
+    const roundedSpeed = Math.round(speed);
+    speedReadout.textContent = String(roundedSpeed).padStart(3, " ");
+
+    const over105 = roundedSpeed >= 105;
+    speedOverBar.classList.toggle("chime-active", over105);
+    if (over105) playAe86Chime();
+
+    let gear = "N";
+    if (roundedSpeed > 0) {
+      if (roundedSpeed < 38) gear = "1st";
+      else if (roundedSpeed < 68) gear = "2nd";
+      else if (roundedSpeed < 104) gear = "3rd";
+      else if (roundedSpeed < 142) gear = "4th";
+      else gear = "5th";
+    }
+    gearReadout.textContent = `GEAR: ${gear} (${Math.round(rpm)} RPM)`;
+
+    odoDisplay.textContent = String(Math.floor(odoKm)).padStart(6, "0");
+    const tripWhole = String(Math.floor(tripKm) % 1000).padStart(3, " ");
+    const tripTenth = Math.floor((tripKm * 10) % 10);
+    tripDisplay.innerHTML = `<span>${tripWhole}</span><span class="trip-tenth-wheel">${tripTenth}</span>`;
   }
 
-  updateCluster(currentRpmIdx, currentSpeed);
+  // Startup Sweep Animation (0 -> 8000 RPM -> 2850 RPM warm idle)
+  let startupPhase = 0;
+  const startupTimer = setInterval(() => {
+    startupPhase += 0.08;
+    if (startupPhase <= 1) {
+      renderClusterState(startupPhase * 8000, Math.round(startupPhase * 180));
+    } else if (startupPhase <= 2) {
+      const back = 1 - (startupPhase - 1);
+      renderClusterState(2850 + back * 5150, 0);
+    } else {
+      clearInterval(startupTimer);
+    }
+  }, 30);
 
-  // Rev Throttle Button Action
+  // Main 40ms Physics Loop
+  setInterval(() => {
+    if (startupPhase <= 2) return;
+
+    if (isThrottling || isTougeDemo) {
+      document.getElementById("brakeLamp").classList.remove("active");
+      document.getElementById("doorLamp").classList.remove("active");
+
+      const maxSpeed = 172;
+      if (currentSpeed < maxSpeed) {
+        currentSpeed += isTougeDemo ? 1.4 : 2.1;
+      }
+
+      const shiftPoints = [0, 38, 68, 104, 142, 188];
+      let gIdx = 0;
+      for (let i = 0; i < shiftPoints.length - 1; i++) {
+        if (currentSpeed >= shiftPoints[i]) gIdx = i;
+      }
+      const gearMin = shiftPoints[gIdx];
+      const gearMax = shiftPoints[gIdx + 1];
+      const gearProgress = (currentSpeed - gearMin) / (gearMax - gearMin);
+      currentRpm = 3800 + gearProgress * 4100;
+
+      if (isTougeDemo && currentSpeed >= 154) {
+        currentSpeed = 74;
+      }
+    } else {
+      if (currentSpeed > 0) {
+        currentSpeed = Math.max(0, currentSpeed - 1.5);
+      }
+      const targetIdle = currentSpeed > 0 ? 2200 + currentSpeed * 28 : 2850;
+      currentRpm += (targetIdle - currentRpm) * 0.16;
+    }
+
+    if (currentSpeed > 0) {
+      const deltaKm = (currentSpeed / 3600) * 0.45;
+      odoKm += deltaKm;
+      tripKm += deltaKm;
+    }
+
+    updateEngineSound(currentRpm, isThrottling || isTougeDemo);
+    renderClusterState(currentRpm, currentSpeed);
+  }, 40);
+
+  // ==========================================================================
+  // 5. INTERACTIVE CONTROLS & KEYBOARD BINDINGS
+  // ==========================================================================
   const revBtn = document.getElementById("revBtn");
-  revBtn.addEventListener("pointerdown", () => {
-    updateCluster(33, 118);
-  });
-  window.addEventListener("pointerup", () => {
-    updateCluster(16, 84);
+  const tougeDemoBtn = document.getElementById("tougeDemoBtn");
+
+  function startThrottle() {
+    initEngineAudio();
+    isThrottling = true;
+    revBtn.classList.add("pressed");
+  }
+  function stopThrottle() {
+    isThrottling = false;
+    revBtn.classList.remove("pressed");
+  }
+
+  revBtn.addEventListener("pointerdown", startThrottle);
+  window.addEventListener("pointerup", stopThrottle);
+
+  tougeDemoBtn.addEventListener("click", () => {
+    initEngineAudio();
+    isTougeDemo = !isTougeDemo;
+    tougeDemoBtn.classList.toggle("toggled", isTougeDemo);
+    tougeDemoBtn.textContent = isTougeDemo ? "⏹ STOP TOUGE DEMO" : "🏔 TOUGE RUN DEMO";
   });
 
-  // Color Switcher
-  const colorBtns = document.querySelectorAll(".btn-color");
-  colorBtns.forEach(btn => {
+  // Trip Reset Knob
+  const tripResetKnob = document.getElementById("tripResetKnob");
+  tripResetKnob.addEventListener("click", () => {
+    tripResetKnob.classList.add("pressed");
+    tripKm = 0.0;
+    renderClusterState(currentRpm, currentSpeed);
+    setTimeout(() => tripResetKnob.classList.remove("pressed"), 200);
+  });
+
+  // Telltale Clicks
+  document.getElementById("doorLamp").addEventListener("click", (e) => e.currentTarget.classList.toggle("active"));
+  document.getElementById("brakeLamp").addEventListener("click", (e) => e.currentTarget.classList.toggle("active"));
+
+  let hazardInterval = null;
+  function toggleTurnHazard() {
+    const l = document.getElementById("turnLeft");
+    const r = document.getElementById("turnRight");
+    if (hazardInterval) {
+      clearInterval(hazardInterval);
+      hazardInterval = null;
+      l.classList.remove("blinking");
+      r.classList.remove("blinking");
+    } else {
+      hazardInterval = setInterval(() => {
+        l.classList.toggle("blinking");
+        r.classList.toggle("blinking");
+      }, 420);
+    }
+  }
+  document.getElementById("turnLeft").addEventListener("click", toggleTurnHazard);
+  document.getElementById("turnRight").addEventListener("click", toggleTurnHazard);
+
+  // Audio Toggle
+  const audioToggleBtn = document.getElementById("audioToggleBtn");
+  audioToggleBtn.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+    audioToggleBtn.classList.toggle("toggled", soundEnabled);
+    audioToggleBtn.textContent = soundEnabled ? "🔊 4A-GE + CHIME" : "🔇 AUDIO MUTED";
+  });
+
+  // Theme Presets
+  const presetBtns = document.querySelectorAll(".preset-pill");
+  presetBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-      colorBtns.forEach(b => b.classList.remove("active"));
+      presetBtns.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       document.body.dataset.color = btn.dataset.theme;
     });
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space" || e.key.toLowerCase() === "w") {
+      e.preventDefault();
+      startThrottle();
+    }
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space" || e.key.toLowerCase() === "w") {
+      stopThrottle();
+    }
   });
 </script>
 
