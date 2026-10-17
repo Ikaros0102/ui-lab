@@ -273,8 +273,15 @@
     svg { width: 16px; }
   }
 
+  /* ---- Scroll Hit-Testing Lock ---- */
+  body.is-scrolling .preview,
+  body.is-scrolling iframe {
+    pointer-events: none !important;
+  }
+
   /* ---- Card ---- */
   .card {
+    contain: layout style paint;
     container-type: inline-size;
     display: flex;
     flex-direction: column;
@@ -295,6 +302,8 @@
   }
 
   .preview {
+    contain: strict;
+    transform: translateZ(0); /* Создаем отдельный композитный слой */
     position: relative;
     aspect-ratio: 3 / 3;
     width: 100%;
@@ -308,13 +317,15 @@
     border-bottom: 1px solid var(--line-soft);
 
     iframe {
+      contain: strict;
       position: absolute;
+      z-index: 2;
       border: 0;
       background: transparent;
       transform-origin: center center;
       min-width: 100%;
       opacity: 0;
-      transition: opacity .35s ease;
+      transition: opacity 0.2s ease;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -324,13 +335,70 @@
     iframe.is-ready { opacity: 1; }
   }
 
+  .preview-poster {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .preview-poster.is-loaded {
+    opacity: 1;
+  }
+
+  .preview-poster.is-missing {
+    display: none;
+  }
+
+  /* When live interactive iframe is ready, fade out the static poster underneath */
+  .preview:has(iframe.is-ready) .preview-poster {
+    opacity: 0;
+  }
+
+  /* Fallback ambient backdrop if thumbnail file is missing */
+  .preview.has-poster-fallback {
+    background:
+      radial-gradient(circle at 50% 35%, oklch(0.68 0.14 250 / 0.14), transparent 70%),
+      radial-gradient(circle, oklch(1 0 0 / .05) 1px, transparent 1.5px) 0 0 / 16px 16px,
+      oklch(0.14 0.015 255);
+  }
+  .preview.has-poster-fallback::after {
+    content: attr(data-fallback-label);
+    position: relative;
+    z-index: 1;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: oklch(0.16 0.015 255 / 0.85);
+    color: var(--muted);
+    font: 500 11px var(--mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .preview.has-poster-fallback:has(iframe.is-ready)::after {
+    display: none;
+  }
+
   .preview-placeholder {
     position: absolute;
     inset: 0;
+    z-index: 0;
     background: linear-gradient(100deg, transparent 30%, oklch(1 0 0 / .035) 50%, transparent 70%) 0 0 / 250% 100%;
     animation: shimmer 1.6s linear infinite;
   }
-  .preview:has(iframe.is-ready) .preview-placeholder { display: none; }
+  .preview:has(.preview-poster.is-loaded) .preview-placeholder,
+  .preview.has-poster-fallback .preview-placeholder,
+  .preview:has(iframe.is-ready) .preview-placeholder {
+    display: none;
+  }
 
   @keyframes shimmer { to { background-position: -250% 0; } }
 

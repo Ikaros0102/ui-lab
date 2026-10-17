@@ -1,8 +1,11 @@
 // ui/grid.js
-// Renders the responsive component grid, manages card templates, and wires lazy observer.
+// Renders the responsive component grid with static WebP posters and "Hover-to-Play" live iframe controller.
 
 import { mountPreview, unmountPreview } from "./preview-pool.js";
 import { openCodeDialog } from "./code-dialog.js";
+
+const HOVER_MOUNT_DELAY_MS = 190; // 180–200ms debounce before mounting live iframe
+const HOVER_UNMOUNT_DELAY_MS = 600; // 500–800ms smooth grace period before unmounting on leave
 
 export class GridView {
   constructor(container, items, taxonomy) {
@@ -10,35 +13,72 @@ export class GridView {
     this.items = items;
     this.taxonomy = taxonomy;
     this.cardMap = new Map(); // id -> element
-    this.observer = null;
+    this.itemMap = new Map(); // id -> item metadata (O(1) lookup)
+    this.enterTimers = new Map(); // id -> timeoutId
+    this.leaveTimers = new Map(); // id -> timeoutId
+
+    items.forEach((item) => this.itemMap.set(item.id, item));
 
     this.themeColorMap = new Map();
-    taxonomy.themes.forEach(t => this.themeColorMap.set(t.id, t.color));
+    taxonomy.themes.forEach((t) => this.themeColorMap.set(t.id, t.color));
 
-    this.initObserver();
     this.renderInitial();
   }
 
-  initObserver() {
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const card = entry.target;
-        const id = card.dataset.id;
-        const item = this.items.find(i => i.id === id);
-        if (!item) return;
+  clearHoverTimers(id) {
+    const enterTimer = this.enterTimers.get(id);
+    if (enterTimer) {
+      clearTimeout(enterTimer);
+      this.enterTimers.delete(id);
+    }
+    const leaveTimer = this.leaveTimers.get(id);
+    if (leaveTimer) {
+      clearTimeout(leaveTimer);
+      this.leaveTimers.delete(id);
+    }
+  }
 
-        const previewContainer = card.querySelector("[data-preview]");
-        if (entry.isIntersecting) {
-          mountPreview(previewContainer, item);
-        } else {
-          // Unmount if scrolled far away
-          unmountPreview(id);
-        }
-      });
-    }, {
-      rootMargin: "300px 0px 300px 0px",
-      threshold: 0.01
-    });
+  wireHoverToPlay(card, previewContainer, item) {
+    const id = item.id;
+
+    const handleEnter = () => {
+      // Cancel any pending unmount if user briefly left and re-entered
+      const leaveTimer = this.leaveTimers.get(id);
+      if (leaveTimer) {
+        clearTimeout(leaveTimer);
+        this.leaveTimers.delete(id);
+      }
+
+      if (this.enterTimers.has(id)) return;
+
+      const timer = setTimeout(() => {
+        this.enterTimers.delete(id);
+        mountPreview(previewContainer, item);
+      }, HOVER_MOUNT_DELAY_MS);
+
+      this.enterTimers.set(id, timer);
+    };
+
+    const handleLeave = () => {
+      const enterTimer = this.enterTimers.get(id);
+      if (enterTimer) {
+        clearTimeout(enterTimer);
+        this.enterTimers.delete(id);
+      }
+
+      const existingLeave = this.leaveTimers.get(id);
+      if (existingLeave) clearTimeout(existingLeave);
+
+      const timer = setTimeout(() => {
+        this.leaveTimers.delete(id);
+        unmountPreview(id);
+      }, HOVER_UNMOUNT_DELAY_MS);
+
+      this.leaveTimers.set(id, timer);
+    };
+
+    card.addEventListener("pointerenter", handleEnter, { passive: true });
+    card.addEventListener("pointerleave", handleLeave, { passive: true });
   }
 
   renderInitial() {
@@ -50,10 +90,49 @@ export class GridView {
       const card = clone.querySelector(".card");
       card.dataset.id = item.id;
 
-      // Defer rendering beyond the first fold
+      // Defer offscreen cards beyond the initial viewport fold
       if (index >= 6) {
         card.classList.add("is-deferred");
       }
+
+      // Setup static WebP poster & graceful fallback
+      const previewContainer = card.querySelector("[data-preview]");
+      const poster = card.querySelector(".preview-poster");
+
+      if (poster) {
+        poster.alt = `${item.title} preview`;
+
+        // LCP & above-the-fold priority optimization
+        if (index === 0) {
+          poster.removeAttribute("loading");
+          poster.setAttribute("fetchpriority", "high");
+        } else if (index < 6) {
+          poster.removeAttribute("loading");
+        }
+
+        poster.addEventListener(
+          "load",
+          () => {
+            poster.classList.add("is-loaded");
+          },
+          { once: true }
+        );
+
+        poster.addEventListener(
+          "error",
+          () => {
+            poster.classList.add("is-missing");
+            previewContainer.classList.add("has-poster-fallback");
+            previewContainer.dataset.fallbackLabel = `${item.category} · Hover to play`;
+          },
+          { once: true }
+        );
+
+        poster.src = `assets/thumbnails/${item.id}.webp`;
+      }
+
+      // Wire Hover-to-Play interactive iframe mounting
+      this.wireHoverToPlay(card, previewContainer, item);
 
       // Title & desc
       card.querySelector(".card-title").textContent = item.title;
@@ -61,17 +140,20 @@ export class GridView {
 
       // Theme dots
       const themesEl = card.querySelector(".card-themes");
-      (item.themes || []).forEach(thId => {
+      (item.themes || []).forEach((thId) => {
         const dot = document.createElement("span");
         dot.className = "theme-dot";
-        dot.style.setProperty("--chip-color", this.themeColorMap.get(thId) || "var(--accent)");
+        dot.style.setProperty(
+          "--chip-color",
+          this.themeColorMap.get(thId) || "var(--accent)"
+        );
         dot.title = thId;
         themesEl.appendChild(dot);
       });
 
       // Tags
       const tagsEl = card.querySelector(".card-tags");
-      (item.tags || []).slice(0, 4).forEach(tag => {
+      (item.tags || []).slice(0, 4).forEach((tag) => {
         const li = document.createElement("li");
         li.textContent = tag;
         tagsEl.appendChild(li);
@@ -88,10 +170,9 @@ export class GridView {
 
     this.container.appendChild(fragment);
 
-    // Track card elements and observe
+    // Track card elements
     this.container.querySelectorAll(".card").forEach((card) => {
       this.cardMap.set(card.dataset.id, card);
-      this.observer.observe(card);
     });
   }
 
@@ -104,6 +185,7 @@ export class GridView {
         visibleCount++;
       } else {
         card.setAttribute("hidden", "");
+        this.clearHoverTimers(id);
         unmountPreview(id);
       }
     });

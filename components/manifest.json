@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-14T16:54:59.617Z",
- "count": 49,
+ "generated": "2026-10-17T09:55:59.957Z",
+ "count": 51,
  "items": [
   {
    "id": "mesh-hero",
@@ -211,7 +211,7 @@
   {
    "id": "glass-4-hazy-border",
    "path": "components/cards/glass-4-hazy-border.html",
-   "title": "Glass-4 · Hazy Segmented Border",
+   "title": "Glass-4 · Hazy Segmented Border (Interactive Pro)",
    "category": "cards",
    "themes": [
     "dark",
@@ -225,22 +225,28 @@
     "haze",
     "timer",
     "stats",
-    "theme switch"
+    "theme switch",
+    "3d xray",
+    "spotlight",
+    "interactive inspector"
    ],
-   "description": "Result panel: big timer, badge and three stat tiles, with a dark/light theme switch.",
+   "description": "Result panel: interactive speedrun timer with telemetry sparkline, specular cursor spotlight, 3D X-Ray layer anatomy mode, and real-time CSS Physics Workbench.",
    "techniques": [
+    "@property --border-angle",
     "conic-gradient border",
     "mask-composite: exclude",
     "color-mix()",
     "blurred haze ::after",
     "backdrop-filter",
-    "theme via CSS variables"
+    "SVG fractalNoise grain",
+    "3D Layer X-Ray Decomposition",
+    "Specular mouse tracking"
    ],
-   "recipe": "The non-uniform glowing border is achieved with a conic-gradient on a ::before pseudoelement with 1px padding, hollowed out via mask-composite: exclude (content-box XOR border-box). The atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and blur(25px). In light mode, border segment saturation is lowered rather than inverted, preserving genuine glass physics.",
+   "recipe": "The non-uniform glowing border uses a registered @property --border-angle driving a conic-gradient on ::before with 1px-2px padding, hollowed out via mask-composite: exclude. Atmospheric inner haze uses ::after with negative insets, 3 radial gradients, and dynamic blur. Enhanced with cursor-tracked specular lighting, micro-grain SVG noise, and an interactive 3D layer decomposition view.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 780
+    "width": 1040,
+    "height": 920
    },
    "hasJs": true
   },
@@ -933,22 +939,61 @@
     "tachometer",
     "speedometer",
     "dseg7",
-    "backlight-switch",
+    "vfd",
+    "parabola",
+    "4age",
     "retro"
    ],
-   "description": "Authentic Japanese 1980s digital instrument cluster featuring rising segmented tachometer curve, digital speedometer, chime warning, and switchable amber/green/cyan/white backlighting.",
+   "description": "Authentic 1980s Toyota AE86 Digital Meter replica built around a unified mathematical power-parabola tachometer curve: 56 high-visibility VFD bar segments, 65 normal-aligned comb ticks, bold 0-8 numerals, and unbroken perspective grid rays anchored mathematically to the curve.",
    "techniques": [
-    "DSEG7 7-segment digital font",
-    "dynamic CSS backlight theme variables",
-    "segmented linear-gradient tachometer bar",
-    "chime warning light",
-    "stepped throttle simulator"
+    "Unified power-parabola equation y(u) = Y_flat + dY * (1 - u/8)^2.55 driving segments, ticks, numerals, and grid rays",
+    "Native svgElement.namespaceURI inheritance immune to markdown link-mangling",
+    "Dual-track tachometer spine: upper 65-tick fine scale + lower 56-brick VFD bargraph with peak-hold indicator",
+    "Daylight White Silkscreen (Photo 1) vs. Nighttime Red-Orange Stencil (Photo 2) + Amber & Synth Cyan themes",
+    "Web Audio API 4A-GE 16V twin-cam synthesizer + 105 km/h JDM Kin-Kon speed chime"
    ],
-   "recipe": "The iconic 1980s JDM digital cluster simulates an arched segmented tachometer using stepped flex bars and ghost 7-segment numbers. The entire cluster backlight color palette is controlled by a set of root CSS variables (--dash-glow, --dash-lit, --dash-ghost), allowing instant switching between authentic Amber (Toyota), Neo-Green, Synth-Cyan, and Ice-White.",
+   "recipe": "The entire central tachometer and perspective grid are procedurally generated from a single parametric curve P(u) for u in [0, 8]. At each integer u = 0..8, the exact tangent and normal vectors are computed so the major numerals, comb ticks, VFD bricks, and architectural rays lock together with zero visual discontinuity.",
    "preview": {
     "mode": "page",
-    "width": 960,
-    "height": 620
+    "width": 1080,
+    "height": 760
+   },
+   "hasJs": true
+  },
+  {
+   "id": "alpine-dsp-receiver",
+   "path": "components/widgets/alpine-dsp-receiver.html",
+   "title": "Modern 1-DIN DSP Car Stereo Head Unit",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "car-radio",
+    "head-unit",
+    "alpine",
+    "jvc",
+    "dsp",
+    "dseg14",
+    "rotary-knob",
+    "equalizer",
+    "rgb-lighting",
+    "skeuomorphic"
+   ],
+   "description": "High-detail modern 1-DIN automotive CD/USB/Bluetooth DSP receiver combining Alpine's spun-aluminum rotary encoder and curved arc buttons, Aura Indigo's dual-line DSEG14 + 12-band spectrum analyzer VA-LCD, and JVC's lower prism RGB lightbar and illuminated USB shutter.",
+   "techniques": [
+    "Direct @font-face DSEG14-Classic & DSEG7-Classic italic matrix LCD typography",
+    "Conic-gradient spun-metal rotary encoder with 3 wrapping curved arc bezel buttons",
+    "Live 12-band segmented dot-matrix spectrum analyzer & illuminated badge strip ([EON], [BT], [LOUD], [SUB-W])",
+    "Tightly packed lower preset strip with under-bezel RGB lightguide wings and single DISP 5-zone color cycler",
+    "Recessed 3.5mm AUX jack and sliding vertical USB port cover with LED edge-lit slot"
+   ],
+   "recipe": "Synthesizes three iconic 1-DIN designs: the left cluster features a Jewel-lit SOURCE key and three curved arc buttons hugging a spun-aluminum volume encoder; the center piano-black acrylic lens houses a DSEG14 main readout, DSEG7 clock/date, and live spectrum bars; the lower edge packs slim sculpted preset keys above a multi-zone RGB lightbar.",
+   "preview": {
+    "mode": "page",
+    "width": 1040,
+    "height": 500
    },
    "hasJs": true
   },
@@ -1028,6 +1073,42 @@
    "hasJs": true
   },
   {
+   "id": "blaupunkt-retro-radio",
+   "path": "components/widgets/blaupunkt-retro-radio.html",
+   "title": "Blaupunkt Hamburg SQM 23 Head Unit",
+   "category": "widgets",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "car-radio",
+    "head-unit",
+    "blaupunkt",
+    "retro",
+    "dseg14",
+    "lcd",
+    "audio",
+    "vintage",
+    "automotive"
+   ],
+   "description": "Authentic recreation of the Blaupunkt Hamburg SQM 23 DAB retro head unit with 14-segment LCD display, multi-color illumination toggle, cassette slot, and tactile preset buttons.",
+   "techniques": [
+    "DSEG14 14-segment alphanumeric font display",
+    "multi-color illumination switcher (green, amber, red, white, blue)",
+    "tactile matte plastic chassis texture",
+    "working volume encoder and rotary controls",
+    "dynamic frequency tuner and cassette bay"
+   ],
+   "recipe": "Recreates the iconic 80s Blaupunkt car stereo styling with authentic matte black chassis texture and a DSEG14 digital readout. Custom CSS variables dynamically switch the backlit key and LCD illumination between emerald green, classic amber, red, and ice blue.",
+   "preview": {
+    "mode": "page",
+    "width": 1040,
+    "height": 520
+   },
+   "hasJs": true
+  },
+  {
    "id": "dynamic-island",
    "path": "components/widgets/dynamic-island.html",
    "title": "Dynamic Island HUD",
@@ -1102,11 +1183,12 @@
   {
    "id": "holo-glass-slate",
    "path": "components/widgets/holo-glass-slate.html",
-   "title": "Holo-Glass Edge-Lit Data Slate",
+   "title": "Holo-Glass Edge-Lit Data Slate (Interactive Pro)",
    "category": "widgets",
    "themes": [
     "glass",
-    "dark"
+    "dark",
+    "light"
    ],
    "tags": [
     "holo-glass",
@@ -1117,21 +1199,24 @@
     "color-picker",
     "terrain-relief",
     "tactical",
-    "sci-fi"
+    "sci-fi",
+    "3d-layers",
+    "web-audio"
    ],
-   "description": "Futuristic handheld terminal featuring an opaque tactical grip with edge-projector LEDs, a transparent holographic glass display, wireframe 3D terrain, blackout mode, and arbitrary RGB backlight customization.",
+   "description": "Futuristic handheld terminal featuring an opaque tactical grip with multi-diode edge-projector LEDs, a transparent holographic glass display with real background refraction, procedural 3D wireframe terrain, click-to-place target beacon, 3D exploded layer view, and Web Audio tactical telemetry.",
    "techniques": [
-    "edge-projected directional light beam across transparent glass",
-    "dynamic CSS variable lighting via native HTML color picker",
+    "edge-projected directional light cone across transparent glass",
+    "dynamic CSS custom property RGB lighting & lumens overdrive",
     "room blackout mode emphasizing luminescent holographic lines",
-    "SVG 3D wireframe topographic relief mesh",
-    "opaque tactile handle with physical switches and status LEDs"
+    "procedural animated SVG 3D wireframe topographic mesh",
+    "3D isometric layer explosion (preserve-3d)",
+    "synthesized Web Audio API sonar & tactile clicks"
    ],
-   "recipe": "The slate combines an opaque polymer left grip with an ultra-clear glass screen. The grip's inner seam projects a horizontal linear-gradient light cone powered by CSS custom properties (--glow-color). In blackout mode, the room darkens while the holographic wireframe, telemetry graphs, and edge-lighting intensify.",
+   "recipe": "The slate combines an opaque polymer left grip with an ultra-clear glass screen. The grip's inner seam houses a multi-diode laser strip projecting a horizontal linear + radial gradient light cone powered by CSS custom properties (--glow-r, --glow-g, --glow-b, --beam-intensity). A world tactical map sits behind the glass to prove genuine backdrop-filter refraction.",
    "preview": {
     "mode": "page",
-    "width": 1020,
-    "height": 660
+    "width": 1080,
+    "height": 880
    },
    "hasJs": true
   },
@@ -1191,21 +1276,22 @@
     "canvas",
     "sci-fi",
     "mint",
-    "loading"
+    "telemetry",
+    "orbital"
    ],
-   "description": "Mint-on-black planetary HUD: a textured Mars sphere wrapped in a rotating canvas-drawn node mesh, with side gauges, equalizer strip, mini map, hex badge counter and a loading bar.",
+   "description": "Tactical mint-on-obsidian Mars orbital reconnaissance HUD featuring a true dual-layer 3D Fibonacci geodesic mesh (occluded back-hemisphere + foreground hemisphere), orbiting Phobos & Deimos moons, clickable surface landing beacons, interactive drag-to-rotate globe physics, and procedural Web Audio telemetry.",
    "techniques": [
-    "canvas 3D point sphere with connecting lines",
-    "radial-gradient planet texture",
-    "clip-path chamfered panels",
-    "SVG circular gauges with stroke-dashoffset",
-    "requestAnimationFrame paused when off-screen"
+    "Dual-pass 2D Canvas 3D renderer splitting back-hemisphere (z < 0) behind the CSS planet and front-hemisphere (z >= 0) in front",
+    "Golden-angle Fibonacci sphere distribution with real-time mouse drag rotation and interactive GAIN / PHASE / ORBIT hardware knobs",
+    "3D surface landing beacons (Olympus Mons, Valles Marineris, Jezero Crater) with screen-space reticle projection",
+    "Multi-layered CSS radial-gradient Mars globe with polar ice cap, atmospheric limb scattering, and terminator shadow",
+    "SVG dual-ring telemetry gauges, Tharsis topographic radar map, and Web Audio API orbital sonar synthesis"
    ],
-   "recipe": "The mesh around the planet is drawn on a 2D canvas: points are distributed on a sphere with the golden-angle spiral, rotated each frame around the Y axis, projected with a simple perspective divide, and connected whenever two points are closer than a threshold. Line alpha depends on depth so the back of the sphere fades out. The planet itself is only radial-gradients, so the whole HUD stays small. The animation loop stops when the tab is hidden.",
+   "recipe": "Fixes the original syntax bugs and upgrades the single flat canvas into a true depth-sorted 3D planetary system. Back-facing geodesic edges render on #meshBack behind the shaded Mars sphere, while front-facing edges, orbital rings, and surface beacons render on #meshFront. Clicking any beacon or dragging the globe updates the regional spectrometer, equalizer, and topographic map.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 640
+    "width": 1060,
+    "height": 720
    },
    "hasJs": true
   },
@@ -1259,27 +1345,27 @@
     "streetlamp",
     "gaslamp",
     "nocturne",
-    "midnight",
-    "indigo",
-    "purple-mist",
-    "reader",
-    "rain",
+    "volumetric-light",
     "realism",
+    "rain",
+    "reader",
+    "cobblestone",
+    "victorian",
     "ambient"
    ],
-   "description": "Atmospheric nighttime reader illuminated by a vintage three-headed cast iron gas streetlamp, featuring volumetric light cones, a rotary gas dimmer, and ambient street rain.",
+   "description": "Photorealistic Victorian three-mantle cast-iron gas streetlamp and literary night reader featuring co-registered SVG volumetric light cones, interactive per-lantern ignition, raindrop-lit particle physics, wet cobblestone specular reflections, and procedural rain/gas audio synthesis.",
    "techniques": [
-    "vector vintage gaslamp silhouette with warm sodium lantern glow",
-    "conical volumetric light beam projected onto wet cobblestone ground",
-    "interactive rotary gas dimmer dial adjusting ambient light levels",
-    "rain droplet refraction in deep indigo-violet twilight mist",
-    "distraction-free literary night reading interface"
+    "Co-registered SVG coordinate space aligning 3 volumetric light cones directly to each lantern's glass housing",
+    "Detailed Victorian cast-iron post with wrought-iron scrollwork, beveled glass panes, and flickering incandescent gas mantles",
+    "HTML5 Canvas rain & moth particle physics that dynamically illuminate when passing inside the lamp's light cones",
+    "Physically reactive book page illumination driven by CSS custom properties (--gas-pressure) and lateral rim-lighting",
+    "Web Audio API procedural rain-on-cobblestone pink noise, distant bell resonance, and gas mantle hiss"
    ],
-   "recipe": "The nocturnal scene features an antique wrought-iron streetlamp silhouette created with SVG paths. The lamp's lanterns emit radial and conical gradients representing volumetric light beaming down onto wet cobblestones, with an interactive dimmer knob that adjusts the reading ambient light.",
+   "recipe": "By housing both the wrought-iron streetlamp geometry and the blurred volumetric light beams inside a single 280x440 SVG viewBox, the light cones originate at the exact coordinates of the three gas mantles (x=58, 140, 222). Adjusting the brass gas valve scales beam opacity, mantle bloom, wet cobblestone puddles, and the warm directional falloff across the adjacent reading page.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 740
    },
    "hasJs": true
   },
@@ -1302,21 +1388,22 @@
     "compass",
     "battery",
     "exclusion-zone",
-    "sci-fi"
+    "sci-fi",
+    "modular-pods"
    ],
-   "description": "Retro-futuristic survival wagon cockpit inspired by Pacific Drive, featuring analog amber/red dials, CRT diagnostic car monitor, liquid compass ball, and vertical battery meters.",
+   "description": "Modular survival station wagon cockpit inspired by Pacific Drive, split into independent bolt-on instrument windows with a 3D spherical liquid compass, interactive CRT chassis schematics, ignition/shifter controls, and anomaly storm simulation.",
    "techniques": [
-    "analog gauge needles with CSS transform rotation",
-    "phosphor green CRT monitor with scanlines and curvature",
-    "liquid compass sphere with 3D radial gradients",
-    "vertical segmented LED battery and fuel bars",
-    "interactive throttle acceleration and car diagnostic telemetry"
+    "multi-window modular hardware pods with exposed ribbon cables and hex bolts",
+    "volumetric 3D spherical liquid compass with scrolling azimuth tape, meniscus bubble, and glass dome refraction",
+    "analog gauge needles with fixed calc() origin, illuminated ticks, and mechanical rolling odometer",
+    "curved phosphor CRT terminal with clickable car body parts and live repair tool workflow",
+    "procedural Web Audio engine rumble, Geiger clicks, and mechanical relay synthesis"
    ],
-   "recipe": "The jury-rigged exclusion zone cockpit is built with rugged textured polymer bezels, duct tape accents, and illuminated analog dials. The CRT diagnostic monitor displays a wireframe station wagon schematic with scanlines, while an interactive throttle pedal rotates the speedometer needle and drains fuel/battery.",
+   "recipe": "Instead of a single flat box, the dashboard is decomposed into 5 distinct hardware enclosures mounted onto a structural steel rack over the misty Olympic Exclusion Zone windshield. The 3D liquid compass uses layered radial shading, a cylindrical scrolling degree strip inside a spherical clip mask, and a floating buoyancy bubble that reacts to steering and acceleration.",
    "preview": {
     "mode": "page",
-    "width": 1020,
-    "height": 660
+    "width": 1120,
+    "height": 760
    },
    "hasJs": true
   },
@@ -1367,21 +1454,23 @@
     "military",
     "dseg7",
     "lcd",
-    "telemetry"
+    "telemetry",
+    "lidar",
+    "interceptor"
    ],
-   "description": "Handheld police Doppler speed radar interface: sweep scope, speed lock, digital 7-segment readout, and audio-visual violation alert.",
+   "description": "Multi-window highway interceptor Doppler radar & LIDAR speed enforcement console featuring a 3-window DSEG7 digital cluster (Target, Locked Peak, Patrol Speed), interactive polar target scope with velocity vectors, live Doppler audio/waveform synthesizer, and automated ALPR citation log.",
    "techniques": [
-    "DSEG7 7-segment font",
-    "conic-gradient radar sweep",
-    "polar coordinate targets",
-    "over-speed warning strobe",
-    "LCD ghost segment display"
+    "Triple DSEG7 7-segment displays with ghost segments (888) and color-coded LED states",
+    "Interactive polar radar scope with clickable moving vehicles, range rings, and LIDAR optical reticle",
+    "Police red/blue pursuit strobe lightbar reflections on ruggedized aluminum bezels",
+    "Real-time HTML5 Canvas Doppler frequency shift waveform and signal strength bargraph",
+    "Web Audio API pitch-proportional Doppler audio tone and violation lock buzzer"
    ],
-   "recipe": "The police Doppler radar combines an active 360-degree sweep scope (conic-gradient beam with target blips) and a dual-layer DSEG7 digital speed readout. Exceeding the speed limit triggers an attention-grabbing strobing VIOLATION / LOCKED status alert.",
+   "recipe": "Inspired by Stalker Dual SL police cruisers, the console separates the polar Doppler/LIDAR scope, the triple 7-segment display head, and the ALPR violation logger into rugged dash-mounted pods. Fixing the original JS template literal bug, the unit calculates real closing speeds in Stationary or Moving patrol modes and lets operators click blips or fire instant-on RF triggers.",
    "preview": {
     "mode": "page",
-    "width": 860,
-    "height": 720
+    "width": 1080,
+    "height": 780
    },
    "hasJs": true
   },
@@ -1476,21 +1565,22 @@
     "dashboard",
     "glass",
     "telemetry",
-    "alert"
+    "alert",
+    "constellation"
    ],
-   "description": "Glossy mission control dashboard: satellite list with live stats, a dotted globe with orbiting rings and markers, signal bars, payload diagnostics and an anomaly alert card.",
+   "description": "Glossy orbital constellation mission control dashboard: real-time 3D/2D/Ground globe projection with moving satellites, optical inter-satellite laser crosslinks, ground station footprints, live RF spectrum analyzer, and interactive thruster burn anomaly resolution.",
    "techniques": [
-    "dotted sphere from radial-gradient dot pattern",
-    "tilted orbit rings with rotateX",
-    "backdrop-filter glass panels",
-    "canvas-free signal bar chart",
-    "selection state shared across list, markers and diagnostics"
+    "Multi-mode central viewport switching between 3D Tilted Globe, 2D Mercator Sine Ground-Track, and Polar Ground-Station Footprint",
+    "Real-time parametric orbital motion with dynamic SVG inter-satellite laser relay links and ground downlink cones",
+    "Backdrop-filter frosted glass cards with live telemetry sparklines and SVG spacecraft thumbnails",
+    "Interactive Anomaly Resolution sequence that fires RCS thrusters to normalize orbital deviation and thermal load",
+    "Synchronized selection state across fleet manifest, orbital markers, RF spectrum bars, and payload diagnostics"
    ],
-   "recipe": "The globe is a circle filled with a tiny repeating radial-gradient dot pattern, masked by a radial gradient so the dots fade toward the edge like a lit sphere. Orbit rings are ellipses made with rotateX on bordered circles, and satellites ride a wrapper that rotates around the globe centre. Clicking a satellite anywhere updates one selected id; the list, the marker highlight and the diagnostics all read from it, so the three views never drift apart.",
+   "recipe": "The central stage combines a CSS radial-dot sphere, drifting continent masks, and an SVG telemetry overlay that draws live laser crosslinks between moving satellites. Switching between 3D, 2D, and Ground views morphs the globe container and recalculates marker projections in real time, while clicking Respond executes an automated orbital correction maneuver.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 620
+    "width": 1060,
+    "height": 680
    },
    "hasJs": true
   },
@@ -1510,21 +1600,23 @@
     "planets",
     "poster",
     "3d-transform",
-    "data-cards"
+    "data-cards",
+    "orrery",
+    "telemetry"
    ],
-   "description": "Editorial solar system infographic: a tilted orbital plane with animated planets, surrounded by planet fact cards that highlight their orbit on hover.",
+   "description": "Interactive editorial Solar System 3D Orrery & Infographic Poster featuring all 8 planetary orbits, an asteroid belt, billboarding 3D planet spheres, live SVG target-tracking leader lines from fact cards to moving planets, Saturn/Uranus ring systems, and a comparative diameter scale bar.",
    "techniques": [
-    "transform: rotateX() tilted orbit plane",
-    "nested rotating wrappers for orbits",
-    "radial-gradient planet spheres",
-    "hover-linked orbit highlighting via :has()",
-    "key-value fact tables"
+    "3D CSS preserve-3d orbital plane with billboarding counter-rotation so planets stay spherical at any camera tilt",
+    "Real-time requestAnimationFrame Keplerian orbit solver with dynamic SVG telemetry leader lines tracking moving planets",
+    "Rich CSS radial-gradient planetary atmospheres, terminator shadows, and 3D tilted Saturn & Uranus rings",
+    "Interactive camera pitch/yaw drag control, Time-Warp speed multiplier, and synchronized relative diameter scale strip",
+    "Procedural Web Audio API deep-space harmonic resonance per planet orbital frequency"
    ],
-   "recipe": "The orbit map is a flat container tilted with rotateX(68deg) so concentric circles read as ellipses. Each planet sits at the edge of a wrapper that spins around the centre, which gives an orbit without any JavaScript. Planet bodies are radial-gradients with an inset shadow for the terminator. Hovering a fact card toggles a data attribute on the stage, and :has() / attribute selectors brighten the matching orbit ring.",
+   "recipe": "Upgrades the static 6-ring CSS animation into a complete 8-planet + Asteroid Belt interactive 3D orrery. A JavaScript ephemeris loop drives orbital angles while counter-rotating each planet billboard against the plane's rotateX(--tilt) angle. Hovering or locking any card or orbit draws a live SVG callout line directly from the card to the moving planet's screen-space coordinates.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 700
+    "width": 1080,
+    "height": 760
    },
    "hasJs": true
   },
@@ -1545,21 +1637,23 @@
     "telemetry",
     "galaxy",
     "navigation",
-    "tactical"
+    "tactical",
+    "cockpit",
+    "warp"
    ],
-   "description": "Futuristic orbital spacecraft cockpit HUD with gyro pitch ladder, planet target lock reticle, thrust throttle, and warp trajectory vector.",
+   "description": "High-density spacecraft helmet-mounted tactical HUD featuring a 3D warp starfield canvas, planetary target renderer, aviation velocity/altitude scrolling tapes, articulated SVG gyro pitch ladder, 3D gravidar scanner, and interactive reactor power distributor.",
    "techniques": [
-    "SVG target reticle geometry",
-    "conic-gradient radar tracking",
-    "tactical HUD telemetry brackets",
-    "dynamic pitch horizon ladder",
-    "deep space starfield parallax"
+    "HTML5 Canvas 3D starfield projection with relativistic warp-streak hyperjump transition and planetary shader",
+    "Mouse-coupled 6-DOF gimbal pitch ladder, roll scale protractor, and Flight-Path-in-the-Sky tunnel gates",
+    "Scrolling vertical aviation telemetry tapes (Orbital Velocity km/s & Periapsis Altitude km)",
+    "Interactive 3-channel Reactor Power Distributor (SYS / ENG / WPN) and 3D isometric Gravidar contact radar",
+    "Procedural Web Audio API warp core spooling, target lock acquisition chimes, and thruster telemetry"
    ],
-   "recipe": "The sci-fi spacecraft HUD is composed of an interactive pitch horizon ladder and a rotating target reticle. Crisp vector optics are styled with semi-transparent cyan strokes, bracket borders, and monospace flight telemetry. Clicking the throttle adjusts warp engine velocity with visual shockwave pulses.",
+   "recipe": "Transforms the sparse visor into a full aerospace flight deck. A background 2D/3D canvas renders streaming stars, highway-in-the-sky guidance rectangles, and the locked celestial body. Surrounding the central SVG gyro reticle are dual scrolling velocity/altitude tapes and four corner tactical MFD modules (Target Nav-Com, Shield/Power Pips, Orbital Elements, and 3D Gravidar).",
    "preview": {
     "mode": "page",
-    "width": 960,
-    "height": 680
+    "width": 1080,
+    "height": 760
    },
    "hasJs": true
   },
@@ -1580,21 +1674,22 @@
     "amber",
     "dashboard",
     "wireframe",
-    "orbital-station"
+    "orbital-station",
+    "cad"
    ],
-   "description": "Teal space-agency dashboard: module list, toolbar grid, wireframe station inside rotating rings, and construction time / cost readouts with amber accents.",
+   "description": "High-detail orbital station CAD blueprint console featuring a 5-level interactive wireframe station architecture with per-level amber highlighting, automated engineering dimension callouts, exploded assembly view, X-ray internal bulkheads, and synchronized 3D orbital render preview.",
    "techniques": [
-    "inline SVG wireframe",
-    "rotating dashed rings",
-    "dot-grid background via radial-gradient",
-    "CSS variables for teal + amber palette",
-    "data-driven module list"
+    "Multi-tiered SVG CAD wireframe station divided into 5 interactive structural levels with isolated amber glow states",
+    "Dynamic engineering dimension callouts, leader lines, and target bounding brackets per selected station level",
+    "CSS transform Exploded Assembly View separating the 5 station levels vertically along the central truss axis",
+    "Synchronized orbital render viewport highlighting the active module over a rotating Earth horizon",
+    "Web Audio API CAD plotter clicks, blueprint laser scan sweep, and telemetry chimes"
    ],
-   "recipe": "Everything sits on a faint dot grid made from a single radial-gradient. The wireframe station is plain SVG with thin white strokes and no fills, so it stays crisp at any scale. Concentric dashed circles rotate at different speeds in opposite directions to suggest instrumentation, while the amber arcs are stroke-dasharray segments on a circle. Selecting a module in the left list only swaps text and one CSS variable, so no re-layout is needed.",
+   "recipe": "Preserves the classic teal-and-amber dot-grid blueprint aesthetic while upgrading the central viewport into a true 5-tier CAD assembly. Clicking a module in the left manifest—or clicking directly on any section of the wireframe station—dims non-selected tiers, illuminates the active level in glowing amber (#d9922e), reveals precision dimension arrows, and updates the orbital preview and engineering specs.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 620
+    "width": 1080,
+    "height": 720
    },
    "hasJs": true
   },

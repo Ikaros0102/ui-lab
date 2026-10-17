@@ -29,8 +29,20 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Build Manifest
         run: node tools/build-manifest.mjs
+
+      - name: Generate Component Thumbnails (WebP)
+        run: npm run build:thumbs
+
+      - name: Clean Build Dependencies Before Packaging
+        run: rm -rf node_modules
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

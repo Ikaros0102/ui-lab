@@ -7,7 +7,27 @@ import { SearchEngine } from "./core/search.js";
 import { renderFilters } from "./ui/filters.js";
 import { GridView } from "./ui/grid.js";
 import { initCodeDialog } from "./ui/code-dialog.js";
-import { setupResizeHandler } from "./ui/preview-pool.js";
+import { setupResizeHandler, notifyScrollState } from "./ui/preview-pool.js";
+
+function setupScrollGuard() {
+  let scrollTimeout = null;
+  let isScrolling = false;
+
+  window.addEventListener("scroll", () => {
+    if (!isScrolling) {
+      isScrolling = true;
+      document.body.classList.add("is-scrolling");
+      notifyScrollState(true);
+    }
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+      document.body.classList.remove("is-scrolling");
+      notifyScrollState(false);
+    }, 140);
+  }, { passive: true });
+}
 
 async function init() {
   try {
@@ -26,6 +46,7 @@ async function init() {
     renderFilters(taxonomy, items, store);
     initCodeDialog();
     setupResizeHandler();
+    setupScrollGuard();
 
     // Topbar search input
     const searchInput = document.getElementById("search");
