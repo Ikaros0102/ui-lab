@@ -3,14 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spotlight Card Grid</title>
+<title>UI LAB — Optical Spotlight Matrix (3x3 & 9x9 Multi-FX Grid)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
-  "title": "Spotlight Card Grid",
+  "title": "Spotlight Multi-FX Matrix (3x3 & 9x9)",
   "category": "cards",
   "themes": [
-    "dark"
+    "dark",
+    "cyber",
+    "glass"
   ],
   "tags": [
     "cards",
@@ -18,66 +24,292 @@
     "hover",
     "border",
     "cursor-follow",
-    "css-variables"
+    "css-variables",
+    "matrix",
+    "9x9-grid",
+    "holographic",
+    "vector-field"
   ],
-  "description": "Interactive card grid where moving the cursor illuminates borders and textures across neighboring cards synchronously.",
+  "description": "Advanced optical spotlight laboratory featuring a dual-mode grid (3x3 Detailed 9-FX Showcase & 9x9 81-Node Dense Matrix) where every cell executes a unique cursor-reactive shader/CSS effect synchronized to a unified light beam.",
   "techniques": [
-    "dynamic CSS variables --x / --y",
-    "radial-gradient border highlight",
-    "mask-composite: exclude",
-    "pointermove tracking",
-    "backdrop-filter"
+    "synchronized per-card --mouse-x, --mouse-y, and normalized --proximity variables",
+    "mask-composite: exclude perimeter border illumination across 9 or 81 cells",
+    "9 distinct cell shaders: Dot Reveal, 3D Tilt, Blueprint Crosshair, Holographic Foil, Cipher Decrypt, Sonar Rings, Vector Compass, Thermal Core, Hex Lattice",
+    "interactive radial shockwave propagation on cell click",
+    "4 spectral beam themes with adjustable spotlight radius"
   ],
-  "recipe": "A pointermove listener on the parent container computes cursor coordinates relative to each card (--mouse-x, --mouse-y). Each card's ::before layer renders a radial gradient positioned at those coordinates, masked to the border perimeter. Neighboring cards are lit synchronously by a single unified beam of light.",
+  "recipe": "A single requestAnimationFrame pointermove loop computes local coordinates and Euclidean distance for every cell in the grid. Each cell uses CSS radial masks and custom properties to drive unique internal textures, while a shared perimeter mask lights adjacent borders seamlessly.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 720
+    "width": 1120,
+    "height": 820
   }
 }
 </script>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: #090b10;
-    color: #e2e8f0;
-    font-family: system-ui, -apple-system, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
+  :root,
+  [data-spectrum="cyan"] {
+    --bg-deep: #06080d;
+    --card-bg: rgba(13, 17, 26, 0.78);
+    --beam-primary: rgba(56, 189, 248, 0.85);
+    --beam-secondary: rgba(139, 92, 246, 0.35);
+    --beam-fill: rgba(56, 189, 248, 0.11);
+    --accent-hex: #38bdf8;
+    --accent-rgb: 56, 189, 248;
+    --secondary-rgb: 139, 92, 246;
   }
 
+  [data-spectrum="amber"] {
+    --bg-deep: #0b0806;
+    --card-bg: rgba(22, 16, 12, 0.80);
+    --beam-primary: rgba(251, 146, 60, 0.88);
+    --beam-secondary: rgba(239, 68, 68, 0.35);
+    --beam-fill: rgba(251, 146, 60, 0.12);
+    --accent-hex: #fb923c;
+    --accent-rgb: 251, 146, 60;
+    --secondary-rgb: 239, 68, 68;
+  }
+
+  [data-spectrum="emerald"] {
+    --bg-deep: #050a08;
+    --card-bg: rgba(11, 22, 17, 0.80);
+    --beam-primary: rgba(52, 211, 153, 0.85);
+    --beam-secondary: rgba(16, 185, 129, 0.32);
+    --beam-fill: rgba(52, 211, 153, 0.11);
+    --accent-hex: #34d399;
+    --accent-rgb: 52, 211, 153;
+    --secondary-rgb: 6, 182, 212;
+  }
+
+  [data-spectrum="violet"] {
+    --bg-deep: #08060e;
+    --card-bg: rgba(18, 13, 28, 0.80);
+    --beam-primary: rgba(232, 121, 249, 0.88);
+    --beam-secondary: rgba(99, 102, 241, 0.38);
+    --beam-fill: rgba(232, 121, 249, 0.12);
+    --accent-hex: #e879f9;
+    --accent-rgb: 232, 121, 249;
+    --secondary-rgb: 99, 102, 241;
+  }
+
+  :root {
+    --beam-radius: 360px;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-deep);
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.10) 0%, transparent 55%),
+      linear-gradient(180deg, rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px 36px;
+    overflow-x: hidden;
+    transition: background-color 0.35s ease;
+  }
+
+  .lab-shell {
+    width: 100%;
+    max-width: 1060px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* ==========================================================================
+     TOP CONTROL HUD BAR
+     ========================================================================== */
+  .lab-hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: rgba(13, 17, 26, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 12px 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  }
+
+  .hud-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hud-pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-hex);
+    box-shadow: 0 0 12px var(--accent-hex);
+  }
+
+  .hud-title-wrap h1 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+  }
+
+  .hud-title-wrap p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #64748b;
+  }
+
+  .hud-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hud-pill-group {
+    display: flex;
+    align-items: center;
+    background: rgba(6, 8, 13, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .hud-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 11px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .hud-btn:hover {
+    color: #f8fafc;
+  }
+
+  .hud-btn.active {
+    background: rgba(var(--accent-rgb), 0.16);
+    color: var(--accent-hex);
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.45);
+  }
+
+  /* Spectrum Color Dots */
+  .spectrum-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(6, 8, 13, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+  }
+
+  .spec-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .spec-dot:hover { transform: scale(1.15); }
+  .spec-dot.active { border-color: #fff; transform: scale(1.18); }
+
+  .sd-cyan { background: #38bdf8; }
+  .sd-amber { background: #fb923c; }
+  .sd-emerald { background: #34d399; }
+  .sd-violet { background: #e879f9; }
+
+  /* Beam Radius Slider */
+  .radius-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: rgba(6, 8, 13, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #94a3b8;
+  }
+
+  .radius-slider {
+    width: 72px;
+    accent-color: var(--accent-hex);
+    cursor: pointer;
+  }
+
+  /* ==========================================================================
+     SHARED SPOTLIGHT GRID & CARD ARCHITECTURE
+     ========================================================================== */
   .spotlight-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    max-width: 940px;
     width: 100%;
+    position: relative;
+    user-select: none;
+  }
+
+  /* Mode 1: 3x3 Showcase (9 Detailed FX Cards) */
+  .spotlight-grid.mode-3x3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  /* Mode 2: 9x9 Dense Matrix (81 Procedural Micro-Cells) */
+  .spotlight-grid.mode-9x9 {
+    grid-template-columns: repeat(9, 1fr);
+    gap: 7px;
   }
 
   .spotlight-card {
     position: relative;
-    background: rgba(16, 21, 31, 0.7);
-    border-radius: 18px;
-    padding: 30px 26px;
+    background: var(--card-bg);
+    border-radius: 14px;
     overflow: hidden;
-    cursor: default;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.055);
     backdrop-filter: blur(12px);
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.25s ease;
   }
 
-  .spotlight-card:hover {
-    transform: translateY(-2px);
-    background: rgba(20, 26, 39, 0.85);
+  .mode-3x3 .spotlight-card {
+    height: 205px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
-  /* Spotlight border glow layer */
+  .mode-9x9 .spotlight-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 9px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  /* Synchronized Perimeter Border Beam (::before) */
   .spotlight-card::before {
     content: "";
     position: absolute;
@@ -85,107 +317,873 @@
     border-radius: inherit;
     padding: 1.5px;
     background: radial-gradient(
-      450px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
-      rgba(90, 160, 255, 0.65),
-      rgba(150, 80, 255, 0.25) 40%,
-      transparent 70%
+      var(--beam-radius) circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      var(--beam-primary),
+      var(--beam-secondary) 42%,
+      transparent 72%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
+    z-index: 5;
   }
 
-  /* Spotlight inner soft illumination */
+  /* Synchronized Inner Surface Glow (::after) */
   .spotlight-card::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     background: radial-gradient(
-      350px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
-      rgba(90, 160, 255, 0.08),
+      calc(var(--beam-radius) * 0.85) circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      var(--beam-fill),
       transparent 75%
     );
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
+    z-index: 1;
   }
 
   .spotlight-grid:hover .spotlight-card::before,
-  .spotlight-grid:hover .spotlight-card::after {
+  .spotlight-grid:hover .spotlight-card::after,
+  .spotlight-grid.auto-orbit .spotlight-card::before,
+  .spotlight-grid.auto-orbit .spotlight-card::after {
     opacity: 1;
   }
 
-  .icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    display: grid;
-    place-items: center;
-    color: #60a5fa;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Shockwave Ripple Animation on Click */
+  .spotlight-card.shockwave {
+    animation: cellPulse 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  h3 {
-    margin: 0 0 10px;
-    font-size: 18px;
+  @keyframes cellPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.8), inset 0 0 28px rgba(var(--accent-rgb), 0.65);
+      transform: scale(0.95);
+    }
+    50% {
+      box-shadow: 0 0 25px 4px rgba(var(--accent-rgb), 0.45), inset 0 0 14px rgba(var(--accent-rgb), 0.3);
+      transform: scale(1.02);
+    }
+    100% {
+      box-shadow: none;
+      transform: scale(1);
+    }
+  }
+
+  /* ==========================================================================
+     CARD FOREGROUND TYPOGRAPHY & HUD TAGS (3x3 MODE)
+     ========================================================================== */
+  .card-top-bar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fx-index-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
     font-weight: 600;
+    letter-spacing: 0.6px;
+    color: var(--accent-hex);
+    background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-rgb), 0.25);
+    padding: 3px 7px;
+    border-radius: 5px;
+  }
+
+  .fx-live-metric {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  .card-bottom-info {
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .card-bottom-info h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 4px;
     letter-spacing: -0.01em;
   }
 
-  p {
-    margin: 0;
+  .card-bottom-info p {
+    font-size: 12px;
     color: #94a3b8;
-    font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.45;
+  }
+
+  /* ==========================================================================
+     9 UNIQUE PER-CELL FX LAYERS (3x3 SHOWCASE)
+     ========================================================================== */
+  .fx-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  /* FX 01: Dot Matrix Reveal */
+  .fx-dots {
+    background-image: radial-gradient(rgba(var(--accent-rgb), 0.75) 1.5px, transparent 1.5px);
+    background-size: 14px 14px;
+    -webkit-mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+  }
+
+  /* FX 02: 3D Magnetic Tilt & Specular Glare */
+  .card-tilt {
+    transform: perspective(700px)
+      rotateX(calc(var(--tilt-y, 0) * 8deg))
+      rotateY(calc(var(--tilt-x, 0) * -8deg));
+    transition: transform 0.08s linear;
+  }
+  .fx-glare {
+    background: linear-gradient(
+      135deg,
+      transparent 20%,
+      rgba(255, 255, 255, calc(var(--proximity, 0) * 0.14)) 48%,
+      rgba(var(--accent-rgb), calc(var(--proximity, 0) * 0.22)) 52%,
+      transparent 80%
+    );
+  }
+
+  /* FX 03: Cyber Blueprint Grid + Dynamic Crosshair */
+  .fx-blueprint {
+    background-image:
+      linear-gradient(rgba(var(--accent-rgb), 0.22) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--accent-rgb), 0.22) 1px, transparent 1px),
+      linear-gradient(rgba(var(--accent-rgb), 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--accent-rgb), 0.07) 1px, transparent 1px);
+    background-size: 48px 48px, 48px 48px, 12px 12px, 12px 12px;
+    -webkit-mask-image: radial-gradient(
+      200px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 15%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(
+      200px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 15%,
+      transparent 75%
+    );
+  }
+  .blueprint-crosshair {
+    position: absolute;
+    inset: 0;
+    opacity: var(--proximity, 0);
+  }
+  .blueprint-crosshair::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--mouse-x, -100px);
+    width: 1px;
+    background: rgba(var(--accent-rgb), 0.45);
+  }
+  .blueprint-crosshair::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--mouse-y, -100px);
+    height: 1px;
+    background: rgba(var(--accent-rgb), 0.45);
+  }
+
+  /* FX 04: Iridescent Holographic Foil Prism */
+  .fx-holo {
+    background:
+      repeating-linear-gradient(
+        115deg,
+        rgba(255, 0, 128, 0.22) 0%,
+        rgba(255, 204, 0, 0.22) 14%,
+        rgba(0, 255, 180, 0.22) 28%,
+        rgba(0, 140, 255, 0.22) 42%,
+        rgba(180, 0, 255, 0.22) 56%,
+        rgba(255, 0, 128, 0.22) 70%
+      );
+    background-size: 260% 260%;
+    background-position: calc(var(--norm-x, 0.5) * 100%) calc(var(--norm-y, 0.5) * 100%);
+    mix-blend-mode: color-dodge;
+    -webkit-mask-image: radial-gradient(
+      220px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 10%,
+      transparent 72%
+    );
+    mask-image: radial-gradient(
+      220px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 10%,
+      transparent 72%
+    );
+  }
+
+  /* FX 05: Cryptic Matrix Cipher Reveal */
+  .fx-cipher {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    line-height: 1.35;
+    letter-spacing: 2px;
+    color: var(--accent-hex);
+    padding: 46px 18px;
+    word-break: break-all;
+    opacity: 0.85;
+    -webkit-mask-image: radial-gradient(
+      175px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(
+      175px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+  }
+
+  /* FX 06: Acoustic Sonar Concentric Rings */
+  .fx-sonar {
+    background: repeating-radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      transparent 0px,
+      transparent 16px,
+      rgba(var(--accent-rgb), 0.28) 17px,
+      transparent 19px
+    );
+    -webkit-mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 10%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 10%,
+      transparent 75%
+    );
+  }
+
+  /* FX 07: Magnetic Vector Compass Field */
+  .fx-vector-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    padding: 44px 18px 54px;
+    place-items: center;
+  }
+  .vec-needle {
+    width: 14px;
+    height: 2px;
+    background: rgba(var(--accent-rgb), 0.35);
+    border-radius: 2px;
+    position: relative;
+    transition: background 0.15s ease;
+  }
+  .vec-needle::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -2px;
+    border-left: 4px solid var(--accent-hex);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+  }
+
+  /* FX 08: Thermal Heat Core */
+  .fx-thermal {
+    background: radial-gradient(
+      170px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(250, 204, 21, 0.32) 22%,
+      rgba(249, 115, 22, 0.26) 45%,
+      rgba(225, 29, 72, 0.18) 68%,
+      transparent 85%
+    );
+    mix-blend-mode: screen;
+  }
+
+  /* FX 09: Isometric Honeycomb Lattice */
+  .fx-hex {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2338bdf8' fill-opacity='0.42'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+    mask-image: radial-gradient(
+      210px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+      #000 0%,
+      transparent 75%
+    );
+  }
+
+  /* ==========================================================================
+     MODE 2: 9x9 DENSE MATRIX (81 PROCEDURAL MICRO-NODES)
+     ========================================================================== */
+  .node-coord {
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    color: rgba(148, 163, 184, 0.35);
+    z-index: 3;
+    pointer-events: none;
+    transition: color 0.15s ease;
+  }
+
+  .node-glyph {
+    position: relative;
+    z-index: 3;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.35);
+    transition: transform 0.1s linear, color 0.15s ease;
+  }
+
+  /* 9x9 Pattern Variations inside cells */
+  .node-pat-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(var(--accent-rgb), 0.5) 1px, transparent 1px);
+    background-size: 8px 8px;
+    opacity: var(--proximity, 0);
+  }
+
+  .node-pat-stripes {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(var(--accent-rgb), 0.18) 0px,
+      rgba(var(--accent-rgb), 0.18) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+    opacity: var(--proximity, 0);
+  }
+
+  .node-pat-rings {
+    position: absolute;
+    inset: 0;
+    background: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0,
+      transparent 6px,
+      rgba(var(--accent-rgb), 0.25) 7px,
+      transparent 8px
+    );
+    opacity: var(--proximity, 0);
+  }
+
+  .node-ring-orb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(var(--accent-rgb), calc(0.2 + var(--proximity, 0) * 0.8));
+    transform: scale(calc(0.65 + var(--proximity, 0) * 0.75));
+    box-shadow: 0 0 calc(var(--proximity, 0) * 12px) var(--accent-hex);
+  }
+
+  .node-vector-arrow {
+    width: 16px;
+    height: 2px;
+    background: rgba(var(--accent-rgb), calc(0.25 + var(--proximity, 0) * 0.75));
+    transform: rotate(var(--angle, 0deg));
+    position: relative;
+  }
+  .node-vector-arrow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -2px;
+    border-left: 4px solid var(--accent-hex);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+  }
+
+  .node-cross {
+    width: 14px;
+    height: 14px;
+    position: relative;
+    transform: rotate(calc(var(--proximity, 0) * 90deg)) scale(calc(0.8 + var(--proximity, 0) * 0.5));
+  }
+  .node-cross::before,
+  .node-cross::after {
+    content: "";
+    position: absolute;
+    background: rgba(var(--accent-rgb), calc(0.3 + var(--proximity, 0) * 0.7));
+  }
+  .node-cross::before { top: 6px; left: 0; right: 0; height: 2px; }
+  .node-cross::after { left: 6px; top: 0; bottom: 0; width: 2px; }
+
+  /* Footer Telemetry Status Bar */
+  .lab-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #64748b;
+    padding: 4px 6px;
+  }
+
+  @media (max-width: 860px) {
+    .spotlight-grid.mode-3x3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .spotlight-grid.mode-9x9 {
+      grid-template-columns: repeat(6, 1fr);
+    }
   }
 </style>
 </head>
-<body>
+<body data-spectrum="cyan">
 
-<div class="spotlight-grid" id="grid">
-  <div class="spotlight-card">
-    <div class="icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13 2-2 2.5V8l3 2v4.5l-4 3-4-3V10l3-2V4.5L7 2"/></svg>
-    </div>
-    <h3>Unified Analytics</h3>
-    <p>Real-time stream telemetry with sub-millisecond query evaluation and automatic adaptive routing.</p>
-  </div>
+<div class="lab-shell">
 
-  <div class="spotlight-card">
-    <div class="icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+  <!-- ====================================================================
+       TOP CONTROL HUD: GRID MODE (3x3 vs 9x9) + SPECTRUM + RADIUS + PULSE
+       ==================================================================== -->
+  <header class="lab-hud">
+    <div class="hud-brand">
+      <div class="hud-pulse-dot"></div>
+      <div class="hud-title-wrap">
+        <h1>OPTICAL SPOTLIGHT MATRIX</h1>
+        <p id="hudSubStatus">MODE: 3×3 MULTI-SHADER SHOWCASE • 9 UNIQUE FX</p>
+      </div>
     </div>
-    <h3>Modular Architecture</h3>
-    <p>Zero coupling between interface units. Decoupled micro-state ensures seamless plug-and-play expansions.</p>
-  </div>
 
-  <div class="spotlight-card">
-    <div class="icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div class="hud-controls">
+      <!-- Switch between 3x3 (9 FX Cards) and 9x9 (81 Matrix Cells) -->
+      <div class="hud-pill-group" id="modeSwitcher">
+        <button class="hud-btn active" data-mode="3x3">3×3 Showcase (9 FX)</button>
+        <button class="hud-btn" data-mode="9x9">9×9 Matrix (81 Cells)</button>
+      </div>
+
+      <!-- Beam Spectrum Theme Dots -->
+      <div class="spectrum-dots" id="spectrumSwitcher" title="Switch Spotlight Spectrum">
+        <button class="spec-dot sd-cyan active" data-spec="cyan"></button>
+        <button class="spec-dot sd-amber" data-spec="amber"></button>
+        <button class="spec-dot sd-emerald" data-spec="emerald"></button>
+        <button class="spec-dot sd-violet" data-spec="violet"></button>
+      </div>
+
+      <!-- Spotlight Radius Slider -->
+      <div class="radius-control">
+        <span>BEAM</span>
+        <input type="range" min="180" max="620" value="360" class="radius-slider" id="radiusSlider">
+      </div>
+
+      <!-- Auto-Orbit & Shockwave Triggers -->
+      <div class="hud-pill-group">
+        <button class="hud-btn" id="autoOrbitBtn" title="Toggle autonomous light beam orbit">◎ Orbit</button>
+        <button class="hud-btn" id="shockwaveBtn" title="Trigger radial wave across all cells">⚡ Pulse</button>
+      </div>
     </div>
-    <h3>Sandboxed Isolation</h3>
-    <p>Total style encapsulation using hardware-accelerated offscreen render frames and memory containment.</p>
-  </div>
+  </header>
+
+  <!-- ====================================================================
+       MAIN INTERACTIVE SPOTLIGHT GRID CONTAINER
+       ==================================================================== -->
+  <main class="spotlight-grid mode-3x3" id="grid"></main>
+
+  <!-- ====================================================================
+       BOTTOM TELEMETRY FOOTER
+       ==================================================================== -->
+  <footer class="lab-footer">
+    <span id="cursorTelemetry">CURSOR: X: -- | Y: -- • ACTIVE NODES: 9</span>
+    <span>TIP: CLICK ANY CELL TO EMIT A RADIAL SHOCKWAVE ACROSS NEIGHBORS</span>
+  </footer>
+
 </div>
 
 <script>
-  const grid = document.getElementById("grid");
-  grid.addEventListener("pointermove", (e) => {
-    const cards = grid.querySelectorAll(".spotlight-card");
+  const grid = document.getElementById('grid');
+  const cursorTelemetry = document.getElementById('cursorTelemetry');
+  const hudSubStatus = document.getElementById('hudSubStatus');
+
+  let currentMode = '3x3';
+  let autoOrbit = false;
+  let orbitAngle = 0;
+  let orbitRaf = null;
+  let scrambleTimer = null;
+
+  // =========================================================================
+  // 1. 3x3 SHOWCASE DATA (9 DISTINCT SHADER / CSS / JS EFFECTS)
+  // =========================================================================
+  const CARDS_3X3 = [
+    {
+      id: '01 // DOT MATRIX',
+      metricId: 'm-dots',
+      metricDefault: 'PITCH: 14PX',
+      title: 'Halftone Dot Reveal',
+      desc: 'High-density micro-dot array masked dynamically to the cursor spotlight radius.',
+      layerHtml: `<div class="fx-canvas fx-dots"></div>`
+    },
+    {
+      id: '02 // 3D MAGNETIC TILT',
+      metricId: 'm-tilt',
+      metricDefault: 'TILT: 0.0°',
+      title: 'Perspective Glare Plane',
+      desc: 'Calculates normalized pitch & roll angles relative to card center with specular sheen.',
+      isTilt: true,
+      layerHtml: `<div class="fx-canvas fx-glare"></div>`
+    },
+    {
+      id: '03 // CAD BLUEPRINT',
+      metricId: 'm-cad',
+      metricDefault: 'LOC: -- : --',
+      title: 'Laser Crosshair Telemetry',
+      desc: 'Reveals dual-scale engineering subdivisions and tracks live local X/Y axes.',
+      layerHtml: `
+        <div class="fx-canvas fx-blueprint"></div>
+        <div class="fx-canvas blueprint-crosshair"></div>
+      `
+    },
+    {
+      id: '04 // HOLOGRAPHIC PRISM',
+      metricId: 'm-holo',
+      metricDefault: 'DIFFRACTION',
+      title: 'Iridescent Foil Shader',
+      desc: 'Chromatic rainbow interference shifts phase as the light angle crosses the surface.',
+      layerHtml: `<div class="fx-canvas fx-holo"></div>`
+    },
+    {
+      id: '05 // CIPHER DECRYPT',
+      metricId: 'm-cipher',
+      metricDefault: 'AES-512 LIVE',
+      title: 'Cryptographic Scrubbing',
+      desc: 'Hexadecimal memory buffer mutates in real time when illuminated by the beam.',
+      layerHtml: `<div class="fx-canvas fx-cipher" id="cipherTextLayer"></div>`
+    },
+    {
+      id: '06 // ACOUSTIC SONAR',
+      metricId: 'm-sonar',
+      metricDefault: 'WAVE: 42HZ',
+      title: 'Concentric Wavefront',
+      desc: 'Repeating radial interference rings originate directly from the cursor focal point.',
+      layerHtml: `<div class="fx-canvas fx-sonar"></div>`
+    },
+    {
+      id: '07 // VECTOR COMPASS',
+      metricId: 'm-vector',
+      metricDefault: '28 NEEDLES',
+      title: 'Magnetic Vector Field',
+      desc: 'Every micro-needle computes atan2() toward the cursor to visualize force lines.',
+      layerHtml: `<div class="fx-canvas fx-vector-grid" id="vectorFieldLayer"></div>`
+    },
+    {
+      id: '08 // THERMAL CORE',
+      metricId: 'm-thermal',
+      metricDefault: 'TEMP: 295 K',
+      title: 'Infrared Heat Signature',
+      desc: 'Multi-stop spectral gradient simulates surface heating proportional to beam proximity.',
+      layerHtml: `<div class="fx-canvas fx-thermal"></div>`
+    },
+    {
+      id: '09 // HEX LATTICE',
+      metricId: 'm-hex',
+      metricDefault: 'MESH: ACTIVE',
+      title: 'Isometric Honeycomb Shield',
+      desc: 'Procedural SVG hexagonal metamaterial illuminates structural walls under inspection.',
+      layerHtml: `<div class="fx-canvas fx-hex"></div>`
+    }
+  ];
+
+  // =========================================================================
+  // 2. BUILD GRID DOM (3x3 OR 9x9)
+  // =========================================================================
+  function buildGrid(mode) {
+    currentMode = mode;
+    grid.className = `spotlight-grid mode-${mode}` + (autoOrbit ? ' auto-orbit' : '');
+    grid.innerHTML = '';
+
+    if (mode === '3x3') {
+      hudSubStatus.textContent = 'MODE: 3×3 MULTI-SHADER SHOWCASE • 9 UNIQUE FX';
+      CARDS_3X3.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'spotlight-card' + (item.isTilt ? ' card-tilt' : '');
+        card.dataset.index = idx;
+        card.dataset.row = Math.floor(idx / 3);
+        card.dataset.col = idx % 3;
+
+        card.innerHTML = `
+          ${item.layerHtml}
+          <div class="card-top-bar">
+            <span class="fx-index-badge">${item.id}</span>
+            <span class="fx-live-metric" id="${item.metricId}">${item.metricDefault}</span>
+          </div>
+          <div class="card-bottom-info">
+            <h3>${item.title}</h3>
+            <p>${item.desc}</p>
+          </div>
+        `;
+        card.addEventListener('click', () => triggerShockwave(Number(card.dataset.row), Number(card.dataset.col), 3));
+        grid.appendChild(card);
+      });
+
+      // Populate FX 05 Cipher text & FX 07 Vector Needles
+      const cipherLayer = document.getElementById('cipherTextLayer');
+      if (cipherLayer) cipherLayer.textContent = generateCipherString(280);
+
+      const vectorLayer = document.getElementById('vectorFieldLayer');
+      if (vectorLayer) {
+        for (let i = 0; i < 28; i++) {
+          const needle = document.createElement('div');
+          needle.className = 'vec-needle';
+          vectorLayer.appendChild(needle);
+        }
+      }
+    } else {
+      // 9x9 DENSE MATRIX (81 PROCEDURAL MICRO-NODES)
+      hudSubStatus.textContent = 'MODE: 9×9 DENSE OPTICAL MATRIX • 81 AUTONOMOUS NODES';
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const idx = r * 9 + c;
+          const card = document.createElement('div');
+          card.className = 'spotlight-card';
+          card.dataset.index = idx;
+          card.dataset.row = r;
+          card.dataset.col = c;
+
+          // Assign distinct visual behavior based on cell coordinates
+          const behaviorType = (r + c) % 4;
+          const bgPattern = idx % 3 === 0 ? 'node-pat-dots' : idx % 3 === 1 ? 'node-pat-stripes' : 'node-pat-rings';
+
+          let centerWidget = '';
+          if (behaviorType === 0) {
+            centerWidget = `<div class="node-vector-arrow"></div>`;
+          } else if (behaviorType === 1) {
+            centerWidget = `<div class="node-ring-orb"></div>`;
+          } else if (behaviorType === 2) {
+            centerWidget = `<div class="node-cross"></div>`;
+          } else {
+            const hexCode = ((idx * 7 + 16) % 255).toString(16).toUpperCase().padStart(2, '0');
+            centerWidget = `<span class="node-hex-readout">0x${hexCode}</span>`;
+          }
+
+          card.innerHTML = `
+            <div class="${bgPattern}"></div>
+            <span class="node-coord">${r + 1}:${c + 1}</span>
+            <div class="node-glyph">${centerWidget}</div>
+          `;
+
+          card.addEventListener('click', () => triggerShockwave(r, c, 9));
+          grid.appendChild(card);
+        }
+      }
+    }
+  }
+
+  function generateCipherString(len) {
+    const chars = '0123456789ABCDEF<>[]{}/\\*=+-_#';
+    let out = '';
+    for (let i = 0; i < len; i++) {
+      out += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return out;
+  }
+
+  // =========================================================================
+  // 3. UNIFIED POINTER & PROXIMITY ENGINE
+  // =========================================================================
+  function updateSpotlightAt(clientX, clientY) {
+    const cards = grid.querySelectorAll('.spotlight-card');
+    const gridRect = grid.getBoundingClientRect();
+    const relGridX = Math.round(clientX - gridRect.left);
+    const relGridY = Math.round(clientY - gridRect.top);
+
+    cursorTelemetry.textContent =
+      `CURSOR: X: ${relGridX}px | Y: ${relGridY}px • ACTIVE NODES: ${cards.length}`;
+
     for (const card of cards) {
       const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty("--mouse-x", `${x}px`);
-      card.style.setProperty("--mouse-y", `${y}px`);
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      const dx = x - cx;
+      const dy = y - cy;
+      const dist = Math.hypot(dx, dy);
+      const maxDist = currentMode === '3x3' ? 280 : 190;
+      const proximity = Math.max(0, 1 - dist / maxDist);
+
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+      card.style.setProperty('--proximity', proximity.toFixed(3));
+      card.style.setProperty('--norm-x', (x / rect.width).toFixed(3));
+      card.style.setProperty('--norm-y', (y / rect.height).toFixed(3));
+
+      // Angle from cell center to cursor (used by 9x9 vector arrows)
+      const angleDeg = (Math.atan2(dy, dx) * 180) / Math.PI;
+      card.style.setProperty('--angle', `${angleDeg.toFixed(1)}deg`);
+
+      // Mode 3x3 Specific Live Telemetry Updates
+      if (currentMode === '3x3') {
+        const idx = Number(card.dataset.index);
+
+        if (idx === 1) {
+          // 3D Magnetic Tilt
+          const tiltX = proximity > 0 ? (dx / cx) * proximity : 0;
+          const tiltY = proximity > 0 ? (dy / cy) * proximity : 0;
+          card.style.setProperty('--tilt-x', tiltX.toFixed(3));
+          card.style.setProperty('--tilt-y', tiltY.toFixed(3));
+          const tiltMetric = document.getElementById('m-tilt');
+          if (tiltMetric) tiltMetric.textContent = `TILT: ${(Math.hypot(tiltX, tiltY) * 8).toFixed(1)}°`;
+        } else if (idx === 2) {
+          // CAD Crosshair Coords
+          const cadMetric = document.getElementById('m-cad');
+          if (cadMetric) {
+            cadMetric.textContent = proximity > 0.15
+              ? `X:${Math.round(x)} Y:${Math.round(y)}`
+              : 'LOC: -- : --';
+          }
+        } else if (idx === 6) {
+          // Vector Compass Needles
+          const needles = card.querySelectorAll('.vec-needle');
+          needles.forEach(needle => {
+            const nRect = needle.getBoundingClientRect();
+            const nx = nRect.left + nRect.width / 2;
+            const ny = nRect.top + nRect.height / 2;
+            const nAngle = (Math.atan2(clientY - ny, clientX - nx) * 180) / Math.PI;
+            needle.style.transform = `rotate(${nAngle.toFixed(1)}deg)`;
+          });
+        } else if (idx === 7) {
+          // Thermal Core Kelvin Readout
+          const thermalMetric = document.getElementById('m-thermal');
+          if (thermalMetric) {
+            const kelvin = Math.round(295 + proximity * 640);
+            thermalMetric.textContent = `TEMP: ${kelvin} K`;
+          }
+        }
+      } else {
+        // 9x9 Mode: Highlight coordinate & hex text when beam passes over
+        const hexSpan = card.querySelector('.node-hex-readout');
+        if (hexSpan) {
+          hexSpan.style.color = proximity > 0.35 ? 'var(--accent-hex)' : '';
+        }
+      }
     }
+  }
+
+  grid.addEventListener('pointermove', (e) => {
+    if (autoOrbit) stopAutoOrbit();
+    updateSpotlightAt(e.clientX, e.clientY);
   });
+
+  // Scramble Cipher text gently every 180ms
+  scrambleTimer = setInterval(() => {
+    if (currentMode === '3x3') {
+      const cipherLayer = document.getElementById('cipherTextLayer');
+      if (cipherLayer) cipherLayer.textContent = generateCipherString(280);
+    }
+  }, 180);
+
+  // =========================================================================
+  // 4. RADIAL SHOCKWAVE PROPAGATION ON CLICK
+  // =========================================================================
+  function triggerShockwave(originRow, originCol, gridSize) {
+    const cards = grid.querySelectorAll('.spotlight-card');
+    cards.forEach(card => {
+      const r = Number(card.dataset.row);
+      const c = Number(card.dataset.col);
+      const ringDist = Math.hypot(r - originRow, c - originCol);
+      const delay = ringDist * (gridSize === 9 ? 42 : 75);
+
+      setTimeout(() => {
+        card.classList.remove('shockwave');
+        void card.offsetWidth; // Reflow
+        card.classList.add('shockwave');
+      }, delay);
+    });
+  }
+
+  document.getElementById('shockwaveBtn').addEventListener('click', () => {
+    const center = currentMode === '9x9' ? 4 : 1;
+    const size = currentMode === '9x9' ? 9 : 3;
+    triggerShockwave(center, center, size);
+  });
+
+  // =========================================================================
+  // 5. AUTO-ORBIT LIGHT BEAM MODE
+  // =========================================================================
+  const autoOrbitBtn = document.getElementById('autoOrbitBtn');
+
+  function stepOrbit() {
+    if (!autoOrbit) return;
+    orbitAngle += 0.024;
+    const rect = grid.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2 + Math.cos(orbitAngle) * (rect.width * 0.34);
+    const cy = rect.top + rect.height / 2 + Math.sin(orbitAngle * 1.4) * (rect.height * 0.34);
+    updateSpotlightAt(cx, cy);
+    orbitRaf = requestAnimationFrame(stepOrbit);
+  }
+
+  function stopAutoOrbit() {
+    autoOrbit = false;
+    autoOrbitBtn.classList.remove('active');
+    grid.classList.remove('auto-orbit');
+    if (orbitRaf) cancelAnimationFrame(orbitRaf);
+  }
+
+  autoOrbitBtn.addEventListener('click', () => {
+    autoOrbit = !autoOrbit;
+    autoOrbitBtn.classList.toggle('active', autoOrbit);
+    grid.classList.toggle('auto-orbit', autoOrbit);
+    if (autoOrbit) stepOrbit();
+  });
+
+  // =========================================================================
+  // 6. HUD SWITCHERS (MODE, SPECTRUM, BEAM RADIUS)
+  // =========================================================================
+  document.querySelectorAll('#modeSwitcher .hud-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#modeSwitcher .hud-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      buildGrid(btn.dataset.mode);
+    });
+  });
+
+  document.querySelectorAll('#spectrumSwitcher .spec-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('#spectrumSwitcher .spec-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      document.body.setAttribute('data-spectrum', dot.dataset.spec);
+    });
+  });
+
+  document.getElementById('radiusSlider').addEventListener('input', (e) => {
+    document.documentElement.style.setProperty('--beam-radius', `${e.target.value}px`);
+  });
+
+  // Initialize Default 3x3 Grid
+  buildGrid('3x3');
 </script>
 
 </body>

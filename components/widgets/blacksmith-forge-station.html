@@ -3,670 +3,1425 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Blacksmith - Master Forge & Tempering Station</title>
+<title>Aethelgard — Relic Forge & Item Inspect Dossier</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
-  "title": "Blacksmith Forge & Tempering Station",
-  "category": "widgets",
+  "title": "Aethelgard Relic Forge & Item Dossier",
+  "category": "cards",
   "themes": [
     "dark",
-    "retro"
+    "rpg",
+    "fantasy"
   ],
   "tags": [
-    "blacksmith",
+    "dark-fantasy",
     "forge",
-    "anvil",
-    "sparks",
-    "embers",
-    "molten-metal",
-    "crafting",
-    "weapon-upgrade",
-    "rpg",
-    "fire"
+    "weapon-card",
+    "armor-card",
+    "mmorpg",
+    "tooltip",
+    "tier-selector",
+    "enchanting",
+    "attributes",
+    "runes"
   ],
-  "description": "Heavy-duty forge crafting interface with glowing charcoal coals, molten metal temperature segments, interactive hammer strikes with flying sparks, and tempering runes.",
+  "description": "Dual-panel MMORPG equipment forge and vertical inspect dossier featuring original Grade Tiers [III to Ω], dynamic enchantment glow scaling (+16), Aether Catalyst Surge system, and Astral Core socketing.",
   "techniques": [
-    "glowing molten heat gradients with box-shadow bloom",
-    "dynamic flying ember spark particles on strike",
-    "cast-iron soot texture via multi-stop linear-gradients",
-    "segmented molten heat gauge with threshold alerts",
-    "tactile metallic button press feedback"
+    "procedural SVG noise texture with engraved geometric background patterns",
+    "chamfered double-bevel metallic borders and ornamental corner filigree",
+    "original MMORPG stat breakdown formula: Total (Base +Enchant +Runes)",
+    "multi-category item switcher (Weapon / Armor / Ammunition) with custom SVG art",
+    "reactive enchant aura shifting dynamically from celestial blue to crimson prismatic"
   ],
-  "recipe": "The forge atmosphere pairs charcoal-black stone textures with fiery amber and incandescent yellow glow. The heat gauge uses segmented blocks whose border and shadow bloom shift from dull red to intense molten yellow as temperature rises. Clicking the strike button animates an array of flying ember sparks with randomized trajectories.",
+  "recipe": "Combines a modular Arcane Forge on the left with an authentic high-fantasy inspect card on the right, free of copyright lore.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1260,
+    "height": 740
   }
 }
 </script>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --iron-dark: #0f1013;
-    --iron-mid: #1c1d24;
-    --iron-rim: #363945;
-    --charcoal-black: #090a0d;
-    --ember-red: #c0392b;
-    --ember-orange: #e67e22;
-    --molten-gold: #f39c12;
-    --heat-white: #fff3cc;
-    --text-steel: #e2e8f0;
-    --text-faded: #8c93a3;
+    --bg-abyss: #07080c;
+    --panel-dark: #0d0f15;
+    --panel-mid: #131722;
+    --border-outer: #262936;
+    --border-gold: #6e5a3b;
+    --border-gold-bright: #c8a365;
+    --l2-header-bar: #1c1815;
+    --l2-header-border: #443727;
+    --text-main: #e2e8f0;
+    --text-muted: #8c96a8;
+    --text-tan: #b8a68e;
+    --stat-gold: #f5b942;
+    --enchant-glow-color: #b497ff;
+    --enchant-text-shadow: rgba(180, 151, 255, 0.5);
+    --tier-color: #38bdf8;
+    --tier-glow: rgba(56, 189, 248, 0.28);
+    --attr-color: #0ea5e9;
   }
 
   body {
-    margin: 0;
     min-height: 100vh;
-    background:
-      /* Hearth heat glow */
-      radial-gradient(circle at 50% 85%, rgba(230, 126, 34, 0.28) 0%, rgba(192, 57, 43, 0.15) 35%, transparent 65%),
-      radial-gradient(circle at 20% 20%, rgba(243, 156, 18, 0.1) 0%, transparent 40%),
-      /* Soot stone walls */
-      linear-gradient(180deg, #090a0c 0%, #12141a 50%, #08090b 100%);
-    color: var(--text-steel);
+    background-color: var(--bg-abyss);
+    background-image:
+      radial-gradient(circle at 20% 20%, var(--tier-glow) 0%, transparent 45%),
+      radial-gradient(circle at 80% 75%, rgba(217, 119, 6, 0.12) 0%, transparent 50%),
+      linear-gradient(180deg, #06070a 0%, #0d1017 50%, #060709 100%);
+    color: var(--text-main);
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 28px;
     overflow-x: hidden;
-    position: relative;
+    transition: background 0.4s ease;
   }
 
-  /* Forge Station Container */
-  .forge-station {
+  /* Subtle SVG Noise Overlay */
+  .noise-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Main Split Layout */
+  .uilab-workspace {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 960px;
-    background: linear-gradient(180deg, #181a21 0%, #0e1014 100%);
-    border: 3px solid #2e323e;
-    border-radius: 14px;
-    padding: 22px 26px;
-    box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.95),
-      0 0 45px rgba(230, 126, 34, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 0 25px rgba(0, 0, 0, 0.8);
-    position: relative;
-    z-index: 5;
-  }
-
-  /* Header */
-  .forge-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #282c37;
-    padding-bottom: 14px;
-    margin-bottom: 20px;
-  }
-
-  .brand-forge {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .anvil-icon-badge {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    background: radial-gradient(circle at 40% 30%, #3a3f4d 0%, #17181f 100%);
-    border: 1.5px solid #ff9d3b;
+    max-width: 1260px;
     display: grid;
-    place-items: center;
-    font-size: 20px;
-    box-shadow: 0 0 16px rgba(230, 126, 34, 0.4);
-  }
-
-  .forge-title h1 {
-    margin: 0;
-    font-family: 'Cinzel', serif;
-    font-size: 20px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #ffffff 0%, #ffc67a 50%, #e67e22 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .forge-title p {
-    margin: 2px 0 0;
-    font-size: 11.5px;
-    color: var(--text-faded);
-  }
-
-  .hearth-gauge {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #3d2919;
-    padding: 6px 14px;
-    border-radius: 8px;
-  }
-
-  .fire-icon {
-    font-size: 16px;
-    animation: flamePulse 1.2s infinite alternate ease-in-out;
-  }
-
-  @keyframes flamePulse {
-    0% { transform: scale(0.9); filter: drop-shadow(0 0 4px #e67e22); }
-    100% { transform: scale(1.15); filter: drop-shadow(0 0 10px #f39c12); }
-  }
-
-  .temp-display {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: #ffaa42;
-    letter-spacing: 0.5px;
-  }
-
-  /* Two-column Layout */
-  .forge-grid {
-    display: grid;
-    grid-template-columns: 1.35fr 1fr;
+    grid-template-columns: 1.28fr 0.92fr;
     gap: 22px;
+    align-items: stretch;
   }
 
-  /* Left: Anvil Workstation & Blade Preview */
-  .anvil-stage {
-    background: rgba(12, 13, 17, 0.7);
-    border: 1px solid #2a2e3a;
-    border-radius: 10px;
-    padding: 20px;
+  /* Shared Metallic Panel Frame with Chamfered Line Work */
+  .metallic-frame {
+    background:
+      linear-gradient(155deg, rgba(28, 32, 46, 0.92) 0%, rgba(12, 14, 20, 0.98) 100%);
+    border: 1px solid #353949;
+    box-shadow:
+      0 26px 65px rgba(0, 0, 0, 0.92),
+      0 0 0 1px rgba(0, 0, 0, 0.85),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 0 32px rgba(0, 0, 0, 0.75);
     position: relative;
     overflow: hidden;
+  }
+
+  /* Inner Ornamental Line Frame */
+  .metallic-frame::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(196, 164, 108, 0.16);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Diagonal Subtle Engraving Texture */
+  .engraved-lines {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.012) 0px,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+    pointer-events: none;
+  }
+
+  /* Corner Filigree Ornaments */
+  .corner-ornament {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--border-gold-bright);
+    border-style: solid;
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .c-tl { top: 4px; left: 4px; border-width: 2px 0 0 2px; }
+  .c-tr { top: 4px; right: 4px; border-width: 2px 2px 0 0; }
+  .c-bl { bottom: 4px; left: 4px; border-width: 0 0 2px 2px; }
+  .c-br { bottom: 4px; right: 4px; border-width: 0 2px 2px 0; }
+
+  /* =========================================================
+     LEFT PANEL: ARCANUM FORGE WORKBENCH
+     ========================================================= */
+  .forge-workbench {
+    padding: 20px 22px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 16px;
   }
 
-  .weapon-card-top {
+  /* Top Navigation: Archetype Switcher & Grade Selector */
+  .workbench-top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-bottom: 14px;
   }
 
-  .weapon-tier {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #ff9d3b;
-    background: rgba(230, 126, 34, 0.15);
-    border: 1px solid rgba(230, 126, 34, 0.4);
-    padding: 3px 8px;
-    border-radius: 4px;
-    text-transform: uppercase;
+  .category-tabs {
+    display: flex;
+    gap: 6px;
+    background: #090b10;
+    padding: 4px;
+    border: 1px solid #262a38;
   }
 
-  .weapon-name {
+  .cat-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
     font-family: 'Cinzel', serif;
-    font-size: 17px;
-    font-weight: 700;
-    color: #fff4e0;
-    margin: 4px 0 2px;
-  }
-
-  .weapon-material {
     font-size: 11px;
-    color: var(--text-faded);
-  }
-
-  /* Blade Graphic & Sparks Canvas */
-  .blade-display-box {
-    position: relative;
-    height: 180px;
-    margin: 16px 0;
-    background: radial-gradient(ellipse at 50% 60%, rgba(230, 126, 34, 0.18) 0%, rgba(15, 17, 22, 0.8) 70%);
-    border-radius: 8px;
-    border: 1px solid #262933;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 7px 13px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .blade-svg {
-    width: 320px;
-    filter: drop-shadow(0 0 12px rgba(230, 126, 34, 0.45));
-    transition: filter 0.2s ease, transform 0.1s ease;
-  }
-
-  /* Flying Spark Particles */
-  .spark-burst {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #fff8db;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #ffaa42, 0 0 16px #ff4500;
-    pointer-events: none;
-    opacity: 0;
-  }
-
-  /* Molten Heat Progress Bar */
-  .molten-meter-wrap {
-    margin-top: 10px;
-  }
-
-  .meter-label-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-faded);
-    margin-bottom: 6px;
-  }
-
-  .molten-track {
-    display: flex;
-    gap: 4px;
-    height: 8px;
-  }
-
-  .heat-segment {
-    flex: 1;
-    background: #181a20;
-    border-radius: 2px;
-    border: 1px solid #2a2d38;
+    gap: 7px;
     transition: all 0.2s ease;
   }
 
-  .heat-segment.lit {
-    background: linear-gradient(180deg, #ffea88 0%, #f39c12 50%, #c0392b 100%);
-    box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
-    border-color: #ffd875;
+  .cat-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.03);
   }
 
-  /* Strike Hammer Action Button */
-  .strike-btn {
-    width: 100%;
-    margin-top: 16px;
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 12px;
-    border-radius: 6px;
-    background: linear-gradient(180deg, #d35400 0%, #962d00 100%);
-    border: 1px solid #f39c12;
-    border-bottom: 3px solid #571600;
-    color: #ffffff;
-    cursor: pointer;
-    box-shadow:
-      0 4px 15px rgba(0, 0, 0, 0.7),
-      0 0 20px rgba(230, 126, 34, 0.35);
-    transition: all 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  .cat-btn.active {
+    background: linear-gradient(180deg, #27221d 0%, #171411 100%);
+    border-color: var(--border-gold);
+    color: #f7d794;
+    box-shadow: inset 0 1px 0 rgba(255, 224, 166, 0.2), 0 2px 8px rgba(0,0,0,0.5);
   }
 
-  .strike-btn:hover {
-    background: linear-gradient(180deg, #e67e22 0%, #b23b00 100%);
-    transform: translateY(-1px);
-    box-shadow:
-      0 6px 20px rgba(0, 0, 0, 0.8),
-      0 0 30px rgba(243, 156, 18, 0.6);
-  }
-
-  .strike-btn:active {
-    transform: translateY(2px);
-    border-bottom-width: 1px;
-  }
-
-  /* Right: Tempering Upgrades & Stats */
-  .tempering-panel {
-    background: rgba(12, 13, 17, 0.7);
-    border: 1px solid #2a2e3a;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .panel-section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #ff9d3b;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    border-bottom: 1px solid #282b36;
-    padding-bottom: 6px;
-  }
-
-  /* Attributes list */
-  .stat-diff-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin-bottom: 18px;
-  }
-
-  .stat-diff-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #15171e;
-    border: 1px solid #262934;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-  }
-
-  .stat-label {
-    color: var(--text-steel);
+  /* Tier Selector Pills */
+  .tier-selector-wrap {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  .stat-increase {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    color: #4ade80;
+  .tier-label-caption {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-right: 2px;
   }
 
-  /* Tempering Runes Toggles */
-  .runes-group {
+  .grade-pill {
+    background: #0b0d13;
+    border: 1px solid #2c3142;
+    color: #94a3b8;
+    font-family: 'Cinzel', serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 5px 9px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+
+  .grade-pill:hover {
+    border-color: #64748b;
+    color: #fff;
+  }
+
+  .grade-pill.active {
+    border-color: var(--tier-color);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 12px var(--tier-glow), inset 0 0 8px var(--tier-glow);
+  }
+
+  /* Centerpiece Visualizer Stage */
+  .art-stage {
+    position: relative;
+    height: 235px;
+    background:
+      radial-gradient(ellipse at 50% 52%, var(--tier-glow) 0%, rgba(10, 12, 18, 0.88) 72%),
+      linear-gradient(180deg, #090b10 0%, #10131c 100%);
+    border: 1px solid #2b3040;
+    box-shadow: inset 0 0 45px rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .stage-geometry {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    opacity: 0.16;
+    pointer-events: none;
+    animation: slowRotate 42s linear infinite;
+  }
+
+  @keyframes slowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .stage-hud-tl {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    z-index: 2;
+  }
+
+  .hud-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-tan);
+    background: rgba(10, 12, 16, 0.8);
+    border-left: 2px solid var(--tier-color);
+    padding: 3px 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .stage-hud-tr {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    z-index: 2;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    background: rgba(15, 18, 26, 0.85);
+    border: 1px solid var(--border-gold);
+    color: #f5d799;
+    letter-spacing: 0.8px;
+  }
+
+  .stage-hud-bottom {
+    position: absolute;
+    bottom: 10px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    z-index: 2;
+  }
+
+  .main-item-svg {
+    width: 290px;
+    height: 175px;
+    z-index: 2;
+    filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 18px var(--tier-glow));
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+  }
+
+  .art-stage:hover .main-item-svg {
+    transform: scale(1.04) translateY(-2px);
+  }
+
+  /* Forge Controls Grid */
+  .forge-controls-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 12px;
+  }
+
+  .control-box {
+    background: rgba(11, 13, 19, 0.9);
+    border: 1px solid #262a38;
+    padding: 12px 14px;
+    position: relative;
+  }
+
+  .control-box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-tan);
+    margin-bottom: 10px;
+  }
+
+  .enchant-stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-btn {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(180deg, #252938 0%, #141722 100%);
+    border: 1px solid #3c4257;
+    color: #f8fafc;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .step-btn:hover {
+    border-color: var(--border-gold-bright);
+    color: var(--stat-gold);
+  }
+
+  .enchant-readout {
+    flex: 1;
+    height: 32px;
+    background: #07080c;
+    border: 1px solid #2d3244;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .enchant-lvl-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--enchant-glow-color);
+    text-shadow: 0 0 10px var(--enchant-text-shadow);
+    transition: all 0.25s ease;
+  }
+
+  .enchant-rate {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  /* Elemental Affinity */
+  .element-pills {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .el-btn {
+    background: #090b10;
+    border: 1px solid #252a38;
+    padding: 6px 4px;
+    color: var(--text-muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: all 0.15s ease;
+  }
+
+  .el-btn:hover {
+    border-color: #475569;
+    color: #fff;
+  }
+
+  .el-btn.active {
+    border-color: var(--attr-color);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Astral Inscription Core Slots */
+  .soul-crystals-section {
+    background: rgba(11, 13, 19, 0.9);
+    border: 1px solid #262a38;
+    padding: 12px 14px;
+  }
+
+  .sockets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .crystal-slot {
+    background: linear-gradient(180deg, #11141d 0%, #0a0c12 100%);
+    border: 1px solid #272c3d;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+
+  .crystal-slot:hover {
+    border-color: #525b76;
+  }
+
+  .crystal-slot.active {
+    border-color: var(--border-gold-bright);
+    background: linear-gradient(180deg, rgba(64, 51, 33, 0.38) 0%, rgba(16, 18, 26, 0.95) 100%);
+    box-shadow: inset 0 0 12px rgba(200, 163, 101, 0.15);
+  }
+
+  .crystal-gem {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #3c4257;
+    background: #07090e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transform: rotate(45deg);
+    overflow: hidden;
+  }
+
+  .crystal-slot.active .crystal-gem {
+    border-color: var(--stat-gold);
+    box-shadow: 0 0 8px rgba(245, 185, 66, 0.45);
+  }
+
+  .crystal-gem span {
+    transform: rotate(-45deg);
+    font-size: 12px;
+  }
+
+  .crystal-info {
+    overflow: hidden;
+  }
+
+  .crystal-info h5 {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .crystal-info p {
+    font-size: 9.5px;
+    color: var(--stat-gold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* =========================================================
+     RIGHT PANEL: ITEM INSPECT DOSSIER
+     ========================================================= */
+  .l2-tooltip-card {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+      linear-gradient(180deg, rgba(18, 19, 24, 0.98) 0%, rgba(11, 12, 16, 0.99) 100%);
+    border: 1px solid #4a4135;
+  }
+
+  .l2-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #292521;
+  }
+
+  .l2-icon-frame {
+    width: 52px;
+    height: 52px;
+    background: radial-gradient(circle at 50% 50%, #2a2430 0%, #090a0f 100%);
+    border: 1px solid #756347;
+    box-shadow:
+      inset 0 0 10px rgba(0, 0, 0, 0.9),
+      0 2px 8px rgba(0, 0, 0, 0.8);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .l2-icon-frame svg {
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 6px var(--tier-glow));
+  }
+
+  .icon-enchant-corner {
+    position: absolute;
+    bottom: 1px;
+    left: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px #000, 0 0 4px #000;
+  }
+
+  .l2-title-block {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .l2-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .l2-item-name-wrap {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+  }
+
+  .l2-enchant-prefix {
+    color: var(--enchant-glow-color);
+    font-family: 'JetBrains Mono', monospace;
+    margin-right: 4px;
+    transition: color 0.25s ease;
+  }
+
+  .l2-item-title {
+    color: var(--tier-color);
+    text-shadow: 0 0 12px var(--tier-glow);
+  }
+
+  /* Original Tier Badge */
+  .l2-grade-badges {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .l2-grade-box {
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #fce7c8;
+    background: #1a1612;
+    border: 1px solid var(--border-gold-bright);
+    padding: 1px 6px;
+    line-height: 1.2;
+    box-shadow: inset 0 0 6px rgba(200, 163, 101, 0.2);
+  }
+
+  .l2-subtitle {
+    font-size: 11.5px;
+    color: #a89476;
+    margin-top: 3px;
+  }
+
+  /* Primary Combat Stats */
+  .l2-primary-stats {
+    padding: 11px 0;
+    border-bottom: 1px solid #292521;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .l2-major-stat-line {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .l2-major-stat-line .stat-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--stat-gold);
+  }
+
+  .l2-major-stat-line .stat-math {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #8c96a8;
+    font-weight: 500;
+  }
+
+  .l2-major-stat-line .stat-math b {
+    color: #d99b43;
+    font-weight: 600;
+  }
+
+  .l2-minor-stats-list {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+  }
+
+  .l2-minor-row {
+    color: #9ca3af;
+  }
+
+  .l2-minor-row span {
+    color: #d4b28c;
+    font-weight: 500;
+  }
+
+  .l2-minor-row .highlight-amber {
+    color: var(--stat-gold);
+    font-weight: 600;
+  }
+
+  /* Inscriptions, Notes & Passives */
+  .l2-descriptions {
+    padding: 10px 0;
+    font-size: 11.5px;
+    line-height: 1.48;
+    color: #cbd5e1;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 16px;
   }
 
-  .rune-toggle {
+  .l2-desc-tag {
+    color: #c4a46c;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  .l2-crystal-active-list {
+    color: #f5d799;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  /* Framed Section Bars */
+  .l2-section-bar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: #14161d;
-    border: 1px solid #282b36;
-    padding: 9px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    gap: 8px;
+    background: linear-gradient(90deg, #241e18 0%, #171411 65%, #12100e 100%);
+    border-top: 1px solid #4d4030;
+    border-bottom: 1px solid #362d22;
+    padding: 4px 8px;
+    margin: 6px 0;
   }
 
-  .rune-toggle:hover {
-    border-color: #f39c12;
-    background: #191c25;
+  .l2-bar-icon {
+    width: 18px;
+    height: 18px;
+    background: #14110d;
+    border: 1px solid #7c684b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #f5b942;
+    flex-shrink: 0;
   }
 
-  .rune-toggle.is-active {
-    border-color: #ff9d3b;
-    background: rgba(230, 126, 34, 0.12);
+  .l2-bar-title {
+    font-size: 11.5px;
+    color: #b8a68e;
+    font-weight: 500;
   }
 
-  .rune-symbol {
-    font-size: 16px;
+  /* Elemental Progress Gauge */
+  .l2-attribute-box {
+    padding: 4px 2px 8px;
   }
 
-  .rune-text h4 {
-    margin: 0;
+  .l2-attr-text {
     font-size: 12px;
-    font-weight: 600;
-    color: #fff0d4;
+    color: #f8fafc;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
   }
 
-  .rune-text p {
-    margin: 2px 0 0;
-    font-size: 10.5px;
-    color: var(--text-faded);
+  .l2-attr-gauge {
+    height: 7px;
+    background: #090a0f;
+    border: 1px solid #353947;
+    padding: 1px;
+    position: relative;
   }
 
-  /* Quench Button */
-  .quench-btn {
-    width: 100%;
-    font-family: 'Cinzel', serif;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 11px;
-    border-radius: 6px;
-    background: linear-gradient(180deg, #242938 0%, #151821 100%);
-    border: 1px solid #41485d;
-    color: #ccd6e6;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    transition: all 0.15s ease;
+  .l2-attr-fill {
+    height: 100%;
+    width: 78%;
+    background: linear-gradient(90deg, var(--attr-color), #bae6fd);
+    box-shadow: 0 0 8px var(--attr-color);
+    transition: width 0.25s ease, background 0.25s ease;
   }
 
-  .quench-btn:hover {
-    background: linear-gradient(180deg, #30374a 0%, #1d212d 100%);
-    border-color: #60a5fa;
-    color: #ffffff;
+  /* Attunement & Resonance Footer */
+  .l2-footer-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 6px;
+    font-size: 11px;
+    color: #8a96aa;
+  }
+
+  @media (max-width: 920px) {
+    .uilab-workspace {
+      grid-template-columns: 1fr;
+      max-width: 520px;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="forge-station">
-  <!-- Header -->
-  <div class="forge-header">
-    <div class="brand-forge">
-      <div class="anvil-icon-badge">⚒️</div>
-      <div class="forge-title">
-        <h1>Brimstone Forge & Master Anvil</h1>
-        <p>Crest of Oakhaven • Tier IV Masterwork Crafting Bench</p>
+<div class="noise-bg"></div>
+
+<div class="uilab-workspace">
+
+  <!-- =====================================================
+       LEFT PANEL: ARCANUM RELIC FORGE
+       ===================================================== -->
+  <section class="metallic-frame forge-workbench">
+    <div class="engraved-lines"></div>
+    <div class="corner-ornament c-tl"></div>
+    <div class="corner-ornament c-tr"></div>
+    <div class="corner-ornament c-bl"></div>
+    <div class="corner-ornament c-br"></div>
+
+    <!-- Top Navigation: Item Category + Original Grade Tiers -->
+    <div class="workbench-top">
+      <div class="category-tabs" id="categoryTabs">
+        <button class="cat-btn active" data-cat="weapon">⚔️ Weapon</button>
+        <button class="cat-btn" data-cat="armor">🛡️ Armor</button>
+        <button class="cat-btn" data-cat="arrows">🏹 Ammunition</button>
+      </div>
+
+      <div class="tier-selector-wrap" id="tierTabs">
+        <span class="tier-label-caption">Rank:</span>
+        <button class="grade-pill" data-tier="T3">III</button>
+        <button class="grade-pill" data-tier="T5">V</button>
+        <button class="grade-pill" data-tier="T7">VII</button>
+        <button class="grade-pill active" data-tier="T9">IX</button>
+        <button class="grade-pill" data-tier="OMEGA">Ω</button>
       </div>
     </div>
 
-    <div class="hearth-gauge">
-      <span class="fire-icon">🔥</span>
-      <span class="temp-display" id="tempDisplay">1,180°C</span>
+    <!-- Centerpiece Stage -->
+    <div class="art-stage">
+      <svg class="stage-geometry" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#c8a365" stroke-width="0.6" stroke-dasharray="4 3"/>
+        <circle cx="100" cy="100" r="72" fill="none" stroke="#c8a365" stroke-width="0.5"/>
+        <polygon points="100,16 172,142 28,142" fill="none" stroke="#c8a365" stroke-width="0.4"/>
+        <polygon points="100,184 172,58 28,58" fill="none" stroke="#c8a365" stroke-width="0.4"/>
+        <circle cx="100" cy="100" r="42" fill="none" stroke="#c8a365" stroke-width="0.6" stroke-dasharray="2 4"/>
+      </svg>
+
+      <div class="stage-hud-tl">
+        <span class="hud-tag" id="stageArchetypeTag">ARCHETYPE // CELESTIAL SPELLBLADE</span>
+        <span class="hud-tag" id="stageMaterialTag">FORGE // METEORIC STARSTEEL CORE</span>
+      </div>
+
+      <div class="stage-hud-tr" id="stageTierBadge">ASCENDANT RANK IX</div>
+
+      <div id="mainArtworkContainer"></div>
+
+      <div class="stage-hud-bottom">
+        <span id="stageCatalystInfo">Aether Catalyst Surge: Active (Rank IV)</span>
+        <span id="stageWeightInfo">Equip Load: 1,480</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Main Grid -->
-  <div class="forge-grid">
-    <!-- Left: Anvil & Molten Blade -->
-    <div class="anvil-stage" id="anvilStage">
-      <div>
-        <div class="weapon-card-top">
-          <div>
-            <div class="weapon-name">Obsidian Greatsword</div>
-            <div class="weapon-material">Dark Iron Core • Dragonfire Folded</div>
-          </div>
-          <span class="weapon-tier" id="sharpnessLevel">Rank +3 Masterwork</span>
+    <!-- Controls Row: Refinement Crucible & Element -->
+    <div class="forge-controls-grid">
+      <!-- Crucible Refinement (+Enchant) -->
+      <div class="control-box">
+        <div class="control-box-header">
+          <span>Sacred Crucible (Refinement)</span>
+          <span id="overenchantTag" style="color:#f5b942;">Safe +3</span>
         </div>
-
-        <!-- Blade Display -->
-        <div class="blade-display-box" id="bladeBox">
-          <svg class="blade-svg" id="bladeSvg" viewBox="0 0 320 60">
-            <!-- Greatsword Blade Silhouette with Molten Edge -->
-            <defs>
-              <linearGradient id="bladeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#2d313d"/>
-                <stop offset="50%" stop-color="#4d5366"/>
-                <stop offset="85%" stop-color="#ff7b00"/>
-                <stop offset="100%" stop-color="#fff2a3"/>
-              </linearGradient>
-            </defs>
-            <!-- Hilt -->
-            <rect x="10" y="26" width="35" height="8" rx="2" fill="#1b1c21" stroke="#483827" stroke-width="1.5"/>
-            <rect x="42" y="16" width="6" height="28" rx="1.5" fill="#c28c38" stroke="#f6c268" stroke-width="1"/>
-            <!-- Blade Body -->
-            <polygon points="48,22 260,24 305,30 260,36 48,38" fill="url(#bladeGradient)" stroke="#ff9a3c" stroke-width="1.5"/>
-            <!-- Full groove channel -->
-            <line x1="56" y1="30" x2="250" y2="30" stroke="#181a20" stroke-width="2"/>
-          </svg>
-        </div>
-
-        <!-- Molten Heat Progress Bar -->
-        <div class="molten-meter-wrap">
-          <div class="meter-label-row">
-            <span>Core Temperature</span>
-            <span id="heatStatusText">Optimal Forge Range</span>
+        <div class="enchant-stepper">
+          <button class="step-btn" id="enchantMinus">−</button>
+          <div class="enchant-readout">
+            <span class="enchant-lvl-val" id="enchantDisplay">+7</span>
+            <span class="enchant-rate" id="enchantRateText">Success: 68%</span>
           </div>
-          <div class="molten-track" id="heatTrack">
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment lit"></div>
-            <div class="heat-segment"></div>
-            <div class="heat-segment"></div>
-            <div class="heat-segment"></div>
-          </div>
+          <button class="step-btn" id="enchantPlus">+</button>
         </div>
       </div>
 
-      <button class="strike-btn" id="strikeBtn">
-        <span>⚒️ Strike Anvil Blow</span>
-      </button>
+      <!-- Elemental Infusion -->
+      <div class="control-box">
+        <div class="control-box-header">
+          <span>Elemental Resonance Core</span>
+          <span id="attrLvLabel">Lv. 4 (180/300)</span>
+        </div>
+        <div class="element-pills" id="elementTabs">
+          <button class="el-btn active" data-el="water">❄️ Frost</button>
+          <button class="el-btn" data-el="fire">🔥 Solar</button>
+          <button class="el-btn" data-el="wind">🌪️ Storm</button>
+          <button class="el-btn" data-el="holy">✨ Astral</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Right: Tempering Upgrades & Runes -->
-    <div class="tempering-panel">
-      <div>
-        <div class="panel-section-title">Tempering Enhancements</div>
+    <!-- Astral Inscription Core Slots -->
+    <div class="soul-crystals-section">
+      <div class="control-box-header" style="margin-bottom:8px;">
+        <span>Astral Inscriptions &amp; Core Glyphs (Click to Embed)</span>
+        <span id="activeSocketsCount">2 / 3 Active</span>
+      </div>
+      <div class="sockets-grid" id="socketsGrid"></div>
+    </div>
+  </section>
 
-        <div class="stat-diff-list">
-          <div class="stat-diff-item">
-            <span class="stat-label">⚔️ Physical Damage</span>
-            <span class="stat-increase" id="atkStat">184 (+28)</span>
-          </div>
-          <div class="stat-diff-item">
-            <span class="stat-label">🔥 Dragonfire DOT</span>
-            <span class="stat-increase" id="fireStat">+45 / sec</span>
-          </div>
-          <div class="stat-diff-item">
-            <span class="stat-label">🛡️ Poise & Armor Break</span>
-            <span class="stat-increase">+35% Impact</span>
-          </div>
+  <!-- =====================================================
+       RIGHT PANEL: MMORPG INSPECT DOSSIER
+       ===================================================== -->
+  <aside class="metallic-frame l2-tooltip-card">
+    <div class="engraved-lines"></div>
+    <div class="corner-ornament c-tl"></div>
+    <div class="corner-ornament c-tr"></div>
+    <div class="corner-ornament c-bl"></div>
+    <div class="corner-ornament c-br"></div>
+
+    <div>
+      <!-- Header Block -->
+      <div class="l2-header">
+        <div class="l2-icon-frame">
+          <div id="miniIconContainer"></div>
+          <span class="icon-enchant-corner" id="iconEnchantCorner">+7</span>
         </div>
 
-        <div class="panel-section-title">Engraved Runes</div>
-
-        <div class="runes-group">
-          <div class="rune-toggle is-active" data-fire="15" data-atk="12">
-            <span class="rune-symbol">ᚠ</span>
-            <div class="rune-text">
-              <h4>Ignite Crest (Fehu)</h4>
-              <p>Adds intense flame blast upon critical strike</p>
+        <div class="l2-title-block">
+          <div class="l2-title-row">
+            <div class="l2-item-name-wrap">
+              <span class="l2-enchant-prefix" id="tooltipEnchantPrefix">+7</span>
+              <span class="l2-item-title" id="tooltipItemName">Astraea's Dawnblade</span>
+            </div>
+            <div class="l2-grade-badges" id="tooltipGradeBadges">
+              <span class="l2-grade-box">IX</span>
             </div>
           </div>
-
-          <div class="rune-toggle" data-fire="0" data-atk="22">
-            <span class="rune-symbol">ᛏ</span>
-            <div class="rune-text">
-              <h4>Titan Edge (Tiwaz)</h4>
-              <p>Reinforces cutting edge against heavy armor</p>
-            </div>
-          </div>
+          <div class="l2-subtitle" id="tooltipSubType">Spellblade / Two-Handed</div>
         </div>
       </div>
 
-      <button class="quench-btn" id="quenchBtn">
-        <span>❄️ Quench in Oil Basin</span>
-      </button>
+      <!-- Primary Stats Breakdown -->
+      <div class="l2-primary-stats">
+        <div class="l2-major-stat-line">
+          <span id="stat1Label">Physical Power :</span>
+          <span class="stat-total" id="stat1Total">642</span>
+          <span class="stat-math">(<span id="stat1Base">526</span> <b id="stat1Bonus">+116</b>)</span>
+        </div>
+        <div class="l2-major-stat-line">
+          <span id="stat2Label">Arcane Surge :</span>
+          <span class="stat-total" id="stat2Total">484</span>
+          <span class="stat-math">(<span id="stat2Base">382</span> <b id="stat2Bonus">+102</b>)</span>
+        </div>
+
+        <div class="l2-minor-stats-list" id="minorStatsList"></div>
+      </div>
+
+      <!-- Inscription Glyphs & Enhancement Notes -->
+      <div class="l2-descriptions">
+        <p id="itemPassiveText">
+          Holds 2 Astral Inscriptions and 1 Primal Core. When refined to +4 or higher, unlocks Astral Precision and amplifies Spell Critical Flow.
+        </p>
+
+        <div>
+          <span class="l2-desc-tag">&lt;Active Inscription Glyphs&gt;</span>
+          <div class="l2-crystal-active-list" id="tooltipCrystalEffects">
+            • Solari's Dawn Glyph: Arcane +45, Cast Flow +7%<br>
+            • Vaelok's Ruin Crest: Crit Severity +12%
+          </div>
+        </div>
+
+        <div>
+          <span class="l2-desc-tag">&lt;Crucible Transcendence&gt;</span>
+          <span id="tooltipEnchantNote">
+            Refined via Sacred Aether Scroll. When upgraded to +10, can be transcended into an Ascendant Zenith Relic at the Citadel Arch-Artificer.
+          </span>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Bottom Sections: Elements & Attunement -->
+    <div>
+      <div class="l2-section-bar">
+        <div class="l2-bar-icon">✦</div>
+        <span class="l2-bar-title">Elemental Harmony</span>
+      </div>
+
+      <div class="l2-attribute-box">
+        <div class="l2-attr-text">
+          <span id="tooltipAttrText">Frost Lv 4 (Frost Pwr 180)</span>
+          <span id="tooltipAttrPct" style="color:#94a3b8;font-family:'JetBrains Mono',monospace;">180 / 300</span>
+        </div>
+        <div class="l2-attr-gauge">
+          <div class="l2-attr-fill" id="tooltipAttrFill"></div>
+        </div>
+      </div>
+
+      <div class="l2-section-bar">
+        <div class="l2-bar-icon">❖</div>
+        <span class="l2-bar-title">Attunement &amp; Resonance</span>
+      </div>
+
+      <div class="l2-footer-meta">
+        <span id="collectionStatusText">Attunement: Masterwork (Rank V)</span>
+        <span style="color:#e5d1b8;font-family:'JetBrains Mono',monospace;">Resonance: 100% Pristine</span>
+      </div>
+    </div>
+  </aside>
+
 </div>
 
 <script>
-  const strikeBtn = document.getElementById('strikeBtn');
-  const bladeBox = document.getElementById('bladeBox');
-  const bladeSvg = document.getElementById('bladeSvg');
-  const tempDisplay = document.getElementById('tempDisplay');
-  const heatStatusText = document.getElementById('heatStatusText');
-  const heatSegments = document.querySelectorAll('.heat-segment');
-  const atkStat = document.getElementById('atkStat');
-  const sharpnessLevel = document.getElementById('sharpnessLevel');
-
-  let currentTemp = 1180;
-  let strikes = 0;
-
-  // Strike Hammer Sparks Animation
-  strikeBtn.addEventListener('click', () => {
-    strikes++;
-    currentTemp += 35;
-    tempDisplay.textContent = `${currentTemp}°C`;
-
-    // Impact wobble on blade
-    bladeSvg.style.transform = 'scale(0.96) rotate(-1deg)';
-    bladeSvg.style.filter = 'drop-shadow(0 0 25px #ffaa42) brightness(1.6)';
-    setTimeout(() => {
-      bladeSvg.style.transform = 'none';
-      bladeSvg.style.filter = 'drop-shadow(0 0 12px rgba(230, 126, 34, 0.45))';
-    }, 150);
-
-    // Spawn sparks
-    for (let i = 0; i < 16; i++) {
-      const spark = document.createElement('div');
-      spark.className = 'spark-burst';
-      bladeBox.appendChild(spark);
-
-      const startX = 140 + (Math.random() - 0.5) * 40;
-      const startY = 80 + (Math.random() - 0.5) * 30;
-      const angle = (Math.random() * Math.PI * 2);
-      const dist = 50 + Math.random() * 90;
-      const targetX = startX + Math.cos(angle) * dist;
-      const targetY = startY + Math.sin(angle) * dist;
-
-      spark.style.left = `${startX}px`;
-      spark.style.top = `${startY}px`;
-      spark.style.opacity = '1';
-
-      spark.animate([
-        { transform: 'translate(0, 0) scale(1.4)', opacity: 1 },
-        { transform: `translate(${targetX - startX}px, ${targetY - startY}px) scale(0.2)`, opacity: 0 }
-      ], {
-        duration: 400 + Math.random() * 300,
-        easing: 'cubic-bezier(0, .9, .57, 1)'
-      }).onfinish = () => spark.remove();
+  // =========================================================================
+  // 1. ORIGINAL TIER & GRADE SYSTEM (NO COPYRIGHT COPIES)
+  // =========================================================================
+  const TIERS = {
+    T3: {
+      badges: ['III'],
+      banner: 'ADEPT RANK III',
+      mult: 0.52,
+      color: '#94a3b8',
+      glow: 'rgba(148, 163, 184, 0.22)',
+      rankTitle: 'Adept'
+    },
+    T5: {
+      badges: ['V'],
+      banner: 'EXALTED RANK V',
+      mult: 0.74,
+      color: '#60a5fa',
+      glow: 'rgba(96, 165, 250, 0.25)',
+      rankTitle: 'Exalted'
+    },
+    T7: {
+      badges: ['VII'],
+      banner: 'SANCTIFIED RANK VII',
+      mult: 0.90,
+      color: '#f59e0b',
+      glow: 'rgba(245, 158, 11, 0.25)',
+      rankTitle: 'Sanctified'
+    },
+    T9: {
+      badges: ['IX'],
+      banner: 'ASCENDANT RANK IX',
+      mult: 1.0,
+      color: '#38bdf8',
+      glow: 'rgba(56, 189, 248, 0.28)',
+      rankTitle: 'Ascendant'
+    },
+    OMEGA: {
+      badges: ['Ω'],
+      banner: 'PRIMORDIAL TIER Ω',
+      mult: 1.35,
+      color: '#f43f5e',
+      glow: 'rgba(244, 63, 94, 0.32)',
+      rankTitle: 'Primordial'
     }
+  };
 
-    // Update heat segments
-    const litCount = Math.min(10, 7 + Math.floor(strikes / 2));
-    heatSegments.forEach((seg, idx) => {
-      seg.classList.toggle('lit', idx < litCount);
+  // =========================================================================
+  // 2. ELEMENTAL HARMONY SYSTEM
+  // =========================================================================
+  const ELEMENTS = {
+    water: { name: 'Frost', color: '#0ea5e9', width: '74%', val: 180 },
+    fire:  { name: 'Solar', color: '#f97316', width: '86%', val: 240 },
+    wind:  { name: 'Storm', color: '#10b981', width: '68%', val: 155 },
+    holy:  { name: 'Astral', color: '#eab308', width: '94%', val: 285 }
+  };
+
+  // =========================================================================
+  // 3. ARCHETYPES WITH ORIGINAL HIGH-FANTASY LORE
+  // =========================================================================
+  const ITEMS = {
+    weapon: {
+      name: "Astraea's Dawnblade",
+      subType: 'Spellblade / Two-Handed',
+      archetypeHud: 'ARCHETYPE // CELESTIAL SPELLBLADE',
+      materialHud: 'FORGE // METEORIC STARSTEEL CORE',
+      weight: '1,480',
+      catalystInfo: 'Aether Catalyst Surge: Active (Rank IV)',
+      stat1Name: 'Physical Power :',
+      stat1Base: 526,
+      stat1PerEnchant: 15,
+      stat2Name: 'Arcane Surge :',
+      stat2Base: 382,
+      stat2PerEnchant: 13,
+      minorStats: [
+        { label: 'Attack Cadence', val: 'Swift (374)' },
+        { label: 'Critical Precision', val: '8.50%' },
+        { label: 'Catalyst Resonance Cost', val: '1 Mote' },
+        { label: 'Empowered Surge Amplification', val: '+5.40%', highlight: true },
+        { label: 'Attuned Weight', val: '1,480' }
+      ],
+      passive: 'Holds 2 Astral Inscriptions and 1 Primal Core. When refined to +4 or higher, unlocks Astral Precision and amplifies Spell Critical Flow.',
+      evolveNote: 'When honed to +10, this relic can be transcended into an Apotheosis God-Blade at the Citadel Arch-Artificer.',
+      crystals: [
+        { id: 'c1', icon: '🔮', name: "Solari's Dawn Glyph", desc: '+45 Arcane Surge / +7% Cast Flow', s1: 18, s2: 45, active: true },
+        { id: 'c2', icon: '💠', name: "Vaelok's Ruin Crest", desc: '+38 Physical Power / +10% Crit Severity', s1: 38, s2: 12, active: true },
+        { id: 'c3', icon: '🔥', name: "Aethelgard's Zenith Core", desc: '+60 All Powers / Skill Surge +8%', s1: 60, s2: 60, active: false }
+      ],
+      svg: (color) => `
+        <svg class="main-item-svg" viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bladeGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f8fafc"/>
+              <stop offset="45%" stop-color="${color}"/>
+              <stop offset="100%" stop-color="#1e293b"/>
+            </linearGradient>
+            <linearGradient id="goldHilt" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fde68a"/>
+              <stop offset="50%" stop-color="#b45309"/>
+              <stop offset="100%" stop-color="#451a03"/>
+            </linearGradient>
+          </defs>
+          <path d="M85 80 L295 80" stroke="${color}" stroke-width="18" stroke-linecap="round" opacity="0.14"/>
+          <polygon points="18,80 32,68 42,80 32,92" fill="url(#goldHilt)" stroke="#fef08a" stroke-width="1"/>
+          <rect x="40" y="75" width="46" height="10" rx="3" fill="#271c19" stroke="#92400e" stroke-width="1.2"/>
+          <path d="M84 44 C96 62, 102 72, 110 80 C102 88, 96 98, 84 116 L76 102 L86 80 L76 58 Z" fill="url(#goldHilt)" stroke="#fde68a" stroke-width="1.2"/>
+          <path d="M104 66 L262 69 L302 80 L262 91 L104 94 L118 80 Z" fill="url(#bladeGrad)" stroke="#e2e8f0" stroke-width="1.4"/>
+          <path d="M122 80 L272 80" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+          <path d="M135 74 L235 74 M135 86 L235 86" stroke="${color}" stroke-width="1.5" stroke-dasharray="8 5"/>
+          <circle cx="102" cy="80" r="8" fill="${color}" stroke="#ffffff" stroke-width="1.5"/>
+        </svg>
+      `
+    },
+
+    armor: {
+      name: 'Valiant Dreadnought Cuirass',
+      subType: 'Heavy Armor / Bulwark Chestplate',
+      archetypeHud: 'ARCHETYPE // TITANIC BASTION CUIRASS',
+      materialHud: 'FORGE // RUNIC ADAMANTITE & DRAGON EMBERS',
+      weight: '7,150',
+      catalystInfo: 'Ward Resonator: Heavy Grade Ward',
+      stat1Name: 'Physical Ward :',
+      stat1Base: 472,
+      stat1PerEnchant: 14,
+      stat2Name: 'Arcane Barrier :',
+      stat2Base: 250,
+      stat2PerEnchant: 9,
+      minorStats: [
+        { label: 'Vitality Surge Bonus', val: '+1,550 HP', highlight: true },
+        { label: 'Kinetic Impact Mitigation', val: '7.20%', highlight: true },
+        { label: 'Elemental Resistance', val: 'All Wards +35' },
+        { label: 'Bastion Synergy (5 Pcs)', val: 'CON +4, Fortitude +8%' },
+        { label: 'Attuned Weight', val: '7,150' }
+      ],
+      passive: 'Blunts incoming Critical Strikes by 16% and bestows Stagger Immunity against lesser foes when refined to +6 or higher.',
+      evolveNote: 'Can be consecrated into an Imperial Leviathan Cuirass through the High Artificer of the Capital.',
+      crystals: [
+        { id: 'a1', icon: '🛡️', name: 'Ironbark Ward Glyph', desc: '+48 Physical Ward / Block Rate +5%', s1: 48, s2: 15, active: true },
+        { id: 'a2', icon: '❤️', name: 'Bloodstone Vigor Crest', desc: '+32 Arcane Barrier / Max HP +900', s1: 18, s2: 32, active: true },
+        { id: 'a3', icon: '⚡', name: 'Celestial Aegis Core', desc: '+45 All Wards / Reflect 6%', s1: 45, s2: 45, active: false }
+      ],
+      svg: (color) => `
+        <svg class="main-item-svg" viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="plateGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f1f5f9"/>
+              <stop offset="55%" stop-color="#334155"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+          </defs>
+          <path d="M68 42 Q102 18 130 38 L118 78 Q82 72 62 58 Z" fill="url(#plateGrad)" stroke="#eab308" stroke-width="1.6"/>
+          <path d="M252 42 Q218 18 190 38 L202 78 Q238 72 258 58 Z" fill="url(#plateGrad)" stroke="#eab308" stroke-width="1.6"/>
+          <path d="M116 34 L160 44 L204 34 L214 92 L160 144 L106 92 Z" fill="url(#plateGrad)" stroke="#fde68a" stroke-width="1.8"/>
+          <polygon points="160,54 176,76 160,104 144,76" fill="${color}" stroke="#ffffff" stroke-width="1.4"/>
+          <path d="M122 62 L144 76 M198 62 L176 76 M126 98 L160 124 L194 98" stroke="#fbbf24" stroke-width="1.5"/>
+        </svg>
+      `
+    },
+
+    arrows: {
+      name: 'Voidseeker Astral Fletchings',
+      subType: 'Ammunition / Boundless Quiver Vessel',
+      archetypeHud: 'ARCHETYPE // PHANTOM PIERCING BOLTS',
+      materialHud: 'FORGE // STARFALL OBSIDIAN & GRIFFIN DOWN',
+      weight: '110',
+      catalystInfo: 'Weapon Compatibility: Tier-Matched Bows',
+      stat1Name: 'Arrow Piercing :',
+      stat1Base: 318,
+      stat1PerEnchant: 11,
+      stat2Name: 'Astral Cleave :',
+      stat2Base: 198,
+      stat2PerEnchant: 8,
+      minorStats: [
+        { label: 'Ballistic Distance', val: '+135 Range', highlight: true },
+        { label: 'Armor Cleave Ratio', val: '+15.2%', highlight: true },
+        { label: 'Ammunition Reservoir', val: 'Boundless (Self-Replenishing)' },
+        { label: 'Lethal Wound Chance', val: '+9.25%' },
+        { label: 'Attuned Weight', val: '110' }
+      ],
+      passive: 'Consumes 0 physical arrows from inventory. Manifests Astral Bleed and bypasses 15% of target barrier deflection.',
+      evolveNote: 'Combine 500 Starfall Shards with a Master Fletcher Inscription to advance this quiver to Zenith Tier.',
+      crystals: [
+        { id: 'r1', icon: '🦅', name: 'Hawkeye Wind Inscription', desc: '+34 Arrow Piercing / Range +60', s1: 34, s2: 15, active: true },
+        { id: 'r2', icon: '🩸', name: 'Heartseeker Barb Rune', desc: '+30 Cleave / Critical Rate +6%', s1: 20, s2: 30, active: true },
+        { id: 'r3', icon: '☄️', name: 'Starfall Astral Core', desc: '+48 Piercing / Area Shockwave', s1: 48, s2: 38, active: false }
+      ],
+      svg: (color) => `
+        <svg class="main-item-svg" viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g transform="rotate(-10 160 80)">
+            <line x1="45" y1="80" x2="265" y2="80" stroke="#cbd5e1" stroke-width="2.5"/>
+            <polygon points="290,80 252,67 260,80 252,93" fill="${color}" stroke="#ffffff" stroke-width="1.2"/>
+            <path d="M45 80 L25 68 L58 68 L72 80 L58 92 L25 92 Z" fill="#f59e0b" stroke="#fde68a" stroke-width="1"/>
+          </g>
+          <g transform="rotate(8 160 80)">
+            <line x1="50" y1="80" x2="265" y2="80" stroke="#f8fafc" stroke-width="3"/>
+            <polygon points="295,80 255,65 264,80 255,95" fill="${color}" stroke="#ffffff" stroke-width="1.4"/>
+            <path d="M50 80 L28 66 L62 66 L76 80 L62 94 L28 94 Z" fill="${color}" stroke="#e2e8f0" stroke-width="1"/>
+          </g>
+          <ellipse cx="165" cy="80" rx="10" ry="24" fill="none" stroke="#fbbf24" stroke-width="2.2"/>
+        </svg>
+      `
+    }
+  };
+
+  // =========================================================================
+  // 4. REACTIVE ENCHANT GLOW CALCULATION (COOL FEATURE)
+  // =========================================================================
+  function getEnchantVisuals(enchantLevel) {
+    if (enchantLevel <= 3) {
+      return {
+        color: '#38bdf8',
+        shadow: 'rgba(56, 189, 248, 0.45)',
+        status: 'Safe +3'
+      };
+    } else if (enchantLevel <= 8) {
+      return {
+        color: '#c084fc',
+        shadow: 'rgba(192, 132, 252, 0.55)',
+        status: 'Aetheric Flow'
+      };
+    } else if (enchantLevel <= 12) {
+      return {
+        color: '#f59e0b',
+        shadow: 'rgba(245, 158, 11, 0.65)',
+        status: 'Radiant Resonance'
+      };
+    } else {
+      return {
+        color: '#f43f5e',
+        shadow: 'rgba(244, 63, 94, 0.75)',
+        status: 'Primordial Overcharge'
+      };
+    }
+  }
+
+  // =========================================================================
+  // 5. APPLICATION STATE & RENDERING
+  // =========================================================================
+  let state = {
+    category: 'weapon',
+    tier: 'T9',
+    enchant: 7,
+    element: 'water'
+  };
+
+  function renderUI() {
+    const item = ITEMS[state.category];
+    const tierObj = TIERS[state.tier];
+    const elObj = ELEMENTS[state.element];
+    const enchantFx = getEnchantVisuals(state.enchant);
+
+    // Apply Dynamic Theme Styles
+    document.documentElement.style.setProperty('--tier-color', tierObj.color);
+    document.documentElement.style.setProperty('--tier-glow', tierObj.glow);
+    document.documentElement.style.setProperty('--attr-color', elObj.color);
+    document.documentElement.style.setProperty('--enchant-glow-color', enchantFx.color);
+    document.documentElement.style.setProperty('--enchant-text-shadow', enchantFx.shadow);
+
+    // Stage HUD Updates
+    document.getElementById('stageArchetypeTag').textContent = item.archetypeHud;
+    document.getElementById('stageMaterialTag').textContent = item.materialHud;
+    document.getElementById('stageTierBadge').textContent = tierObj.banner;
+    document.getElementById('stageCatalystInfo').textContent = item.catalystInfo;
+    document.getElementById('stageWeightInfo').textContent = `Equip Load: ${item.weight}`;
+
+    const svgMarkup = item.svg(tierObj.color);
+    document.getElementById('mainArtworkContainer').innerHTML = svgMarkup;
+    document.getElementById('miniIconContainer').innerHTML = svgMarkup;
+
+    // Enchant Stepper & Visual Feedback
+    const prefix = state.enchant > 0 ? `+${state.enchant}` : '';
+    document.getElementById('enchantDisplay').textContent = `+${state.enchant}`;
+    document.getElementById('iconEnchantCorner').textContent = prefix;
+    document.getElementById('tooltipEnchantPrefix').textContent = prefix;
+    document.getElementById('overenchantTag').textContent = enchantFx.status;
+    document.getElementById('overenchantTag').style.color = enchantFx.color;
+
+    const chance = state.enchant <= 3 ? 100 : Math.max(12, 92 - state.enchant * 5);
+    document.getElementById('enchantRateText').textContent = `Success: ${chance}%`;
+
+    // Tooltip Header & Badges
+    document.getElementById('tooltipItemName').textContent = item.name;
+    document.getElementById('tooltipSubType').textContent = item.subType;
+    document.getElementById('tooltipGradeBadges').innerHTML = tierObj.badges
+      .map(b => `<span class="l2-grade-box">${b}</span>`)
+      .join('');
+
+    // Calculate Dynamic Combat Stats
+    const activeCrystals = item.crystals.filter(c => c.active);
+    const crystalBonus1 = activeCrystals.reduce((sum, c) => sum + c.s1, 0);
+    const crystalBonus2 = activeCrystals.reduce((sum, c) => sum + c.s2, 0);
+
+    const base1 = Math.round(item.stat1Base * tierObj.mult);
+    const bonus1 = Math.round(state.enchant * item.stat1PerEnchant * tierObj.mult) + crystalBonus1;
+    const total1 = base1 + bonus1;
+
+    const base2 = Math.round(item.stat2Base * tierObj.mult);
+    const bonus2 = Math.round(state.enchant * item.stat2PerEnchant * tierObj.mult) + crystalBonus2;
+    const total2 = base2 + bonus2;
+
+    document.getElementById('stat1Label').textContent = item.stat1Name;
+    document.getElementById('stat1Base').textContent = base1;
+    document.getElementById('stat1Bonus').textContent = `+${bonus1}`;
+    document.getElementById('stat1Total').textContent = total1;
+
+    document.getElementById('stat2Label').textContent = item.stat2Name;
+    document.getElementById('stat2Base').textContent = base2;
+    document.getElementById('stat2Bonus').textContent = `+${bonus2}`;
+    document.getElementById('stat2Total').textContent = total2;
+
+    // Minor Combat Secondary Stats
+    document.getElementById('minorStatsList').innerHTML = item.minorStats
+      .map(row => `
+        <div class="l2-minor-row">
+          ${row.label} : <span class="${row.highlight ? 'highlight-amber' : ''}">${row.val}</span>
+        </div>
+      `)
+      .join('');
+
+    // Inscription Core Sockets Grid
+    document.getElementById('activeSocketsCount').textContent = `${activeCrystals.length} / 3 Active`;
+    const socketsGrid = document.getElementById('socketsGrid');
+    socketsGrid.innerHTML = item.crystals
+      .map((c, idx) => `
+        <div class="crystal-slot ${c.active ? 'active' : ''}" data-idx="${idx}">
+          <div class="crystal-gem"><span>${c.icon}</span></div>
+          <div class="crystal-info">
+            <h5>${c.name}</h5>
+            <p>${c.active ? c.desc : 'Unattuned Socket (Click)'}</p>
+          </div>
+        </div>
+      `)
+      .join('');
+
+    socketsGrid.querySelectorAll('.crystal-slot').forEach(slot => {
+      slot.addEventListener('click', () => {
+        const idx = Number(slot.dataset.idx);
+        item.crystals[idx].active = !item.crystals[idx].active;
+        renderUI();
+      });
     });
 
-    if (currentTemp > 1300) {
-      heatStatusText.textContent = 'White-Hot Molten! Perfect for Quenching!';
-      heatStatusText.style.color = '#ffda79';
-    }
-  });
+    // Tooltip Inscription Lines
+    const crystalLines = activeCrystals.length
+      ? activeCrystals.map(c => `• <b>${c.name}</b>: ${c.desc}`).join('<br>')
+      : '• No Astral Inscriptions embedded.';
+    document.getElementById('tooltipCrystalEffects').innerHTML = crystalLines;
 
-  // Rune Toggles
-  const runes = document.querySelectorAll('.rune-toggle');
-  runes.forEach(rune => {
-    rune.addEventListener('click', () => {
-      rune.classList.toggle('is-active');
-      const activeRunes = document.querySelectorAll('.rune-toggle.is-active');
-      atkStat.textContent = `${184 + activeRunes.length * 15} (+${28 + activeRunes.length * 15})`;
+    // Descriptions & Lore
+    document.getElementById('itemPassiveText').textContent = item.passive;
+    document.getElementById('tooltipEnchantNote').textContent =
+      `Refined through the Sacred Aether Scroll. ${item.evolveNote}`;
+
+    // Elemental Section
+    const scaledAttrVal = Math.round(elObj.val * tierObj.mult);
+    const attrRole = state.category === 'armor' ? 'Ward' : 'Pwr';
+    document.getElementById('attrLvLabel').textContent = `Lv. 4 (${scaledAttrVal}/300)`;
+    document.getElementById('tooltipAttrText').textContent =
+      `${elObj.name} Harmony Lv 4 (${elObj.name} ${attrRole} ${scaledAttrVal})`;
+    document.getElementById('tooltipAttrPct').textContent = `${scaledAttrVal} / 300`;
+    document.getElementById('tooltipAttrFill').style.width = elObj.width;
+  }
+
+  // Category Switchers
+  document.querySelectorAll('#categoryTabs .cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#categoryTabs .cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.category = btn.dataset.cat;
+      renderUI();
     });
   });
 
-  // Quench Button
-  document.getElementById('quenchBtn').addEventListener('click', () => {
-    currentTemp = 320;
-    tempDisplay.textContent = '320°C (Quenched)';
-    heatStatusText.textContent = 'Blade Tempered & Solidified!';
-    sharpnessLevel.textContent = 'Rank +4 Masterwork Reforged';
-    sharpnessLevel.style.color = '#60a5fa';
-    sharpnessLevel.style.borderColor = '#60a5fa';
-    heatSegments.forEach(seg => seg.classList.remove('lit'));
-    bladeSvg.style.filter = 'drop-shadow(0 0 15px #60a5fa)';
+  // Grade / Tier Switchers
+  document.querySelectorAll('#tierTabs .grade-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tierTabs .grade-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.tier = btn.dataset.tier;
+      renderUI();
+    });
   });
+
+  // Enchant Stepper Controls
+  document.getElementById('enchantMinus').addEventListener('click', () => {
+    if (state.enchant > 0) {
+      state.enchant--;
+      renderUI();
+    }
+  });
+  document.getElementById('enchantPlus').addEventListener('click', () => {
+    if (state.enchant < 16) {
+      state.enchant++;
+      renderUI();
+    }
+  });
+
+  // Elemental Affinity Controls
+  document.querySelectorAll('#elementTabs .el-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#elementTabs .el-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.element = btn.dataset.el;
+      renderUI();
+    });
+  });
+
+  // Initial Load
+  renderUI();
 </script>
 </body>
 </html>

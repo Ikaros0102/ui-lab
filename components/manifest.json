@@ -145,29 +145,30 @@
     "retro"
    ],
    "tags": [
-    "blacksmith",
+    "dark-fantasy",
+    "forge",
     "weapon-card",
-    "rpg",
-    "iron",
-    "fire",
-    "runes",
-    "durability",
-    "stats",
-    "tempering"
-   ],
-   "description": "Heavy forged cast-iron weapon inspect card with glowing molten durability segments, socketed fire runes, and tactile metallic action buttons.",
+    "armor-card",
+    "mmorpg",
+    "tooltip",
+    "tier-selector",
+    "enchanting",
+    "attributes",
+    "runes"
+  ],
+   "description": "Dual-panel MMORPG equipment forge and vertical inspect dossier featuring original Grade Tiers [III to Ω], dynamic enchantment glow scaling (+16), Aether Catalyst Surge system, and Astral Core socketing.",
    "techniques": [
-    "soot-blackened iron texture with chamfered metallic borders",
-    "segmented molten heat durability bar",
-    "glowing ember socketed rune indicators",
-    "dynamic stat diff comparisons with badges",
-    "tactile forged steel button states"
-   ],
-   "recipe": "The card silhouette utilizes dark slate and cast-iron linear gradients accented with molten amber borders. The durability indicator uses individual segments with glowing box-shadows, and the interactive rune sockets dynamically toggle elemental attack damage bonuses.",
+    "procedural SVG noise texture with engraved geometric background patterns",
+    "chamfered double-bevel metallic borders and ornamental corner filigree",
+    "original MMORPG stat breakdown formula: Total (Base +Enchant +Runes)",
+    "multi-category item switcher (Weapon / Armor / Ammunition) with custom SVG art",
+    "reactive enchant aura shifting dynamically from celestial blue to crimson prismatic"
+  ],
+   "recipe": "Combines a modular Arcane Forge on the left with an authentic high-fantasy inspect card on the right, free of copyright lore.",
    "preview": {
     "mode": "page",
-    "width": 900,
-    "height": 620
+    "width": 1260,
+    "height": 740
    },
    "hasJs": true
   },
@@ -322,8 +323,10 @@
    "category": "cards",
    "themes": [
     "dark",
-    "glass"
-   ],
+    "glass",
+    "retro",
+    "tactile"
+  ],
    "tags": [
     "cafe",
     "coffee",
@@ -336,15 +339,15 @@
     "warmth",
     "amber"
    ],
-   "description": "Cozy window-table cafe interface with glowing filament Edison bulbs, steaming coffee mug, lo-fi acoustic playlist, and coffeehouse journal notes.",
+   "description": "Tactile window-table cafe workspace featuring a 4-mode color palette switcher, spinning vinyl turntable with tonearm, interactive ambient mixer sliders, steaming porcelain cup, and ruled notebook with coffee ring stain toggle.",
    "techniques": [
-    "warm Edison filament glow with radial-gradient diffusion",
-    "steaming coffee cup particle animation",
-    "rain-slicked window glass overlay with car headlight bokeh",
-    "interactive acoustic lo-fi player with analog volume mixer",
-    "editorial cafe tasting notes and markdown scratchpad"
+    "multi-palette CSS variable theme engine (Amber Edison, Kyoto Matcha, Midnight Jazz, Nordic Morning)",
+    "procedural SVG wood-grain, woven speaker grille mesh, and ruled paper textures",
+    "interactive vinyl turntable with pivoting tonearm and live equalizer response",
+    "dynamic rain density and speed controlled via ambient mixer sliders",
+    "tactile journal with page tabs, brass binder clip, and toggleable SVG coffee cup stain"
    ],
-   "recipe": "The intimate cafe corner blends dark walnut tabletop textures with a glowing Edison pendant light. Animated SVG steam plumes rise from the porcelain coffee cup, while the background rain streaks and warm headlight bokeh evoke a quiet afternoon watching the storm from a bistro window.",
+   "recipe": "Combines procedural noise and repeating linear gradients to simulate walnut wood grain, woven acoustic mesh, and ruled stationery paper. Interactive controls adjust CSS variables in real time for lighting intensity, rain speed, and theme palettes.",
    "preview": {
     "mode": "page",
     "width": 1000,
@@ -390,33 +393,39 @@
   {
    "id": "spotlight-card-grid",
    "path": "components/cards/spotlight-card-grid.html",
-   "title": "Spotlight Card Grid",
+   "title": "Spotlight Multi-FX Matrix (3x3 & 9x9)",
    "category": "cards",
-   "themes": [
-    "dark"
-   ],
-   "tags": [
-    "cards",
-    "spotlight",
-    "hover",
-    "border",
-    "cursor-follow",
-    "css-variables"
-   ],
-   "description": "Interactive card grid where moving the cursor illuminates borders and textures across neighboring cards synchronously.",
-   "techniques": [
-    "dynamic CSS variables --x / --y",
-    "radial-gradient border highlight",
-    "mask-composite: exclude",
-    "pointermove tracking",
-    "backdrop-filter"
-   ],
-   "recipe": "A pointermove listener on the parent container computes cursor coordinates relative to each card (--mouse-x, --mouse-y). Each card's ::before layer renders a radial gradient positioned at those coordinates, masked to the border perimeter. Neighboring cards are lit synchronously by a single unified beam of light.",
-   "preview": {
-    "mode": "page",
-    "width": 1000,
-    "height": 720
-   },
+    "themes": [
+        "dark",
+        "cyber",
+        "glass"
+    ],
+    "tags": [
+        "cards",
+        "spotlight",
+        "hover",
+        "border",
+        "cursor-follow",
+        "css-variables",
+        "matrix",
+        "9x9-grid",
+        "holographic",
+        "vector-field"
+    ],
+    "description": "Advanced optical spotlight laboratory featuring a dual-mode grid (3x3 Detailed 9-FX Showcase & 9x9 81-Node Dense Matrix) where every cell executes a unique cursor-reactive shader/CSS effect synchronized to a unified light beam.",
+    "techniques": [
+        "synchronized per-card --mouse-x, --mouse-y, and normalized --proximity variables",
+        "mask-composite: exclude perimeter border illumination across 9 or 81 cells",
+        "9 distinct cell shaders: Dot Reveal, 3D Tilt, Blueprint Crosshair, Holographic Foil, Cipher Decrypt, Sonar Rings, Vector Compass, Thermal Core, Hex Lattice",
+        "interactive radial shockwave propagation on cell click",
+        "4 spectral beam themes with adjustable spotlight radius"
+    ],
+    "recipe": "A single requestAnimationFrame pointermove loop computes local coordinates and Euclidean distance for every cell in the grid. Each cell uses CSS radial masks and custom properties to drive unique internal textures, while a shared perimeter mask lights adjacent borders seamlessly.",
+    "preview": {
+        "mode": "page",
+        "width": 1120,
+        "height": 820
+    },
    "hasJs": true
   },
   {

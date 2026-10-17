@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rainy Café - Acoustic Soundscape & Coffeehouse Notes</title>
+<title>Rainy Café - Tactile Acoustic Soundscape & Coffeehouse Journal</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -15,7 +15,9 @@
   "category": "cards",
   "themes": [
     "dark",
-    "glass"
+    "glass",
+    "retro",
+    "tactile"
   ],
   "tags": [
     "cafe",
@@ -25,52 +27,148 @@
     "journal",
     "notes",
     "soundscape",
-    "acoustic",
-    "warmth",
-    "amber"
+    "vinyl",
+    "theme-switcher",
+    "textures"
   ],
-  "description": "Cozy window-table cafe interface with glowing filament Edison bulbs, steaming coffee mug, lo-fi acoustic playlist, and coffeehouse journal notes.",
+  "description": "Tactile window-table cafe workspace featuring a 4-mode color palette switcher, spinning vinyl turntable with tonearm, interactive ambient mixer sliders, steaming porcelain cup, and ruled notebook with coffee ring stain toggle.",
   "techniques": [
-    "warm Edison filament glow with radial-gradient diffusion",
-    "steaming coffee cup particle animation",
-    "rain-slicked window glass overlay with car headlight bokeh",
-    "interactive acoustic lo-fi player with analog volume mixer",
-    "editorial cafe tasting notes and markdown scratchpad"
+    "multi-palette CSS variable theme engine (Amber Edison, Kyoto Matcha, Midnight Jazz, Nordic Morning)",
+    "procedural SVG wood-grain, woven speaker grille mesh, and ruled paper textures",
+    "interactive vinyl turntable with pivoting tonearm and live equalizer response",
+    "dynamic rain density and speed controlled via ambient mixer sliders",
+    "tactile journal with page tabs, brass binder clip, and toggleable SVG coffee cup stain"
   ],
-  "recipe": "The intimate cafe corner blends dark walnut tabletop textures with a glowing Edison pendant light. Animated SVG steam plumes rise from the porcelain coffee cup, while the background rain streaks and warm headlight bokeh evoke a quiet afternoon watching the storm from a bistro window.",
+  "recipe": "Combines procedural noise and repeating linear gradients to simulate walnut wood grain, woven acoustic mesh, and ruled stationery paper. Interactive controls adjust CSS variables in real time for lighting intensity, rain speed, and theme palettes.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1060,
+    "height": 740
   }
 }
 </script>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ==========================================================================
+     THEME PALETTES (CSS CUSTOM PROPERTIES)
+     ========================================================================== */
+  :root,
+  [data-theme="amber"] {
+    --bg-outer-1: #0e0906;
+    --bg-outer-2: #1a110b;
+    --table-surface-1: #2a1910;
+    --table-surface-2: #160c07;
+    --table-border: #4d2f1d;
+    --panel-bg: rgba(19, 11, 7, 0.82);
+    --panel-card: #1f120a;
+    --panel-border: #3f2617;
+    --accent-main: #ffaa3b;
+    --accent-soft: #d89f68;
+    --accent-glow: rgba(255, 170, 59, 0.30);
+    --bokeh-1: rgba(255, 195, 95, 0.20);
+    --bokeh-2: rgba(225, 75, 50, 0.14);
+    --text-primary: #fff3e2;
+    --text-secondary: #b59b84;
+    --text-muted: #846c58;
+    --paper-bg: #f6efe2;
+    --paper-lines: rgba(138, 112, 90, 0.16);
+    --paper-margin: rgba(198, 92, 78, 0.32);
+    --paper-ink: #23150c;
+    --paper-muted: #7a6655;
+    --paper-border: #d9cbb8;
+  }
+
+  [data-theme="matcha"] {
+    --bg-outer-1: #070f0b;
+    --bg-outer-2: #0f1d16;
+    --table-surface-1: #16261d;
+    --table-surface-2: #0b140f;
+    --table-border: #2c4a39;
+    --panel-bg: rgba(10, 20, 15, 0.82);
+    --panel-card: #122119;
+    --panel-border: #264233;
+    --accent-main: #6ee7b7;
+    --accent-soft: #a7f3d0;
+    --accent-glow: rgba(110, 231, 183, 0.25);
+    --bokeh-1: rgba(110, 231, 183, 0.16);
+    --bokeh-2: rgba(251, 191, 36, 0.12);
+    --text-primary: #ecfdf5;
+    --text-secondary: #99b8a8;
+    --text-muted: #648273;
+    --paper-bg: #f1f5ef;
+    --paper-lines: rgba(88, 122, 102, 0.15);
+    --paper-margin: rgba(16, 185, 129, 0.28);
+    --paper-ink: #112218;
+    --paper-muted: #597364;
+    --paper-border: #c8d8ce;
+  }
+
+  [data-theme="midnight"] {
+    --bg-outer-1: #070913;
+    --bg-outer-2: #101528;
+    --table-surface-1: #171d33;
+    --table-surface-2: #0c0f1d;
+    --table-border: #2e385c;
+    --panel-bg: rgba(11, 14, 27, 0.85);
+    --panel-card: #13182c;
+    --panel-border: #293356;
+    --accent-main: #f472b6;
+    --accent-soft: #818cf8;
+    --accent-glow: rgba(244, 114, 182, 0.28);
+    --bokeh-1: rgba(56, 189, 248, 0.18);
+    --bokeh-2: rgba(244, 114, 182, 0.16);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --paper-bg: #192036;
+    --paper-lines: rgba(148, 163, 184, 0.12);
+    --paper-margin: rgba(244, 114, 182, 0.30);
+    --paper-ink: #f1f5f9;
+    --paper-muted: #94a3b8;
+    --paper-border: #334155;
+  }
+
+  [data-theme="nordic"] {
+    --bg-outer-1: #1c2026;
+    --bg-outer-2: #282e36;
+    --table-surface-1: #3b352e;
+    --table-surface-2: #26221e;
+    --table-border: #5c5349;
+    --panel-bg: rgba(34, 31, 28, 0.82);
+    --panel-card: #2c2723;
+    --panel-border: #4a423b;
+    --accent-main: #fb923c;
+    --accent-soft: #fdba74;
+    --accent-glow: rgba(251, 146, 60, 0.26);
+    --bokeh-1: rgba(253, 224, 71, 0.16);
+    --bokeh-2: rgba(147, 197, 253, 0.15);
+    --text-primary: #fafaf9;
+    --text-secondary: #d6d3d1;
+    --text-muted: #a8a29e;
+    --paper-bg: #fcfaf7;
+    --paper-lines: rgba(120, 113, 108, 0.15);
+    --paper-margin: rgba(234, 88, 12, 0.28);
+    --paper-ink: #1c1917;
+    --paper-muted: #78716c;
+    --paper-border: #e7e5e4;
+  }
 
   :root {
-    --cafe-table: #1e130c;
-    --table-wood: #2c1a11;
-    --edison-amber: #ffaa3b;
-    --edison-glow: rgba(255, 170, 59, 0.28);
-    --coffee-crema: #d89f68;
-    --paper-note: #f8f3ea;
-    --ink-espresso: #24170f;
-    --ink-muted: #786658;
+    --rain-speed: 1.1s;
+    --rain-opacity: 0.65;
+    --bulb-intensity: 1;
   }
 
   body {
-    margin: 0;
     min-height: 100vh;
     background:
-      /* Amber Edison light overhead */
-      radial-gradient(circle at 75% 15%, rgba(255, 170, 59, 0.3) 0%, rgba(220, 120, 30, 0.12) 40%, transparent 65%),
-      /* City bokeh through rain */
-      radial-gradient(circle at 20% 70%, rgba(255, 200, 100, 0.18) 0%, transparent 45%),
-      radial-gradient(circle at 35% 40%, rgba(220, 70, 50, 0.15) 0%, transparent 40%),
-      linear-gradient(180deg, #100b08 0%, #19110c 50%, #0a0705 100%);
-    color: #f7ede2;
+      radial-gradient(circle at 75% 12%, var(--accent-glow) 0%, transparent 58%),
+      radial-gradient(circle at 18% 72%, var(--bokeh-1) 0%, transparent 45%),
+      radial-gradient(circle at 38% 36%, var(--bokeh-2) 0%, transparent 42%),
+      linear-gradient(180deg, var(--bg-outer-1) 0%, var(--bg-outer-2) 55%, var(--bg-outer-1) 100%);
+    color: var(--text-primary);
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
     align-items: center;
@@ -78,48 +176,93 @@
     padding: 24px;
     overflow-x: hidden;
     position: relative;
+    transition: background 0.45s ease, color 0.3s ease;
   }
 
-  /* Rain on Glass Overlay */
-  .cafe-rain-glass {
-    position: absolute;
+  /* Subtle Film & Wood Grain SVG Noise */
+  .tactile-grain {
+    position: fixed;
     inset: 0;
     pointer-events: none;
+    opacity: 0.045;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Rain on Window Glass Overlay */
+  .cafe-rain-glass {
+    position: fixed;
+    inset: -60px 0;
+    pointer-events: none;
+    z-index: 2;
     background:
-      repeating-linear-gradient(102deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 40px),
-      repeating-linear-gradient(92deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 65px);
-    opacity: 0.7;
-    animation: rainSlide 1.2s linear infinite;
+      repeating-linear-gradient(102deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 2px, transparent 38px),
+      repeating-linear-gradient(96deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 2px, transparent 62px);
+    opacity: var(--rain-opacity);
+    animation: rainSlide var(--rain-speed) linear infinite;
+    transition: opacity 0.3s ease;
   }
 
   @keyframes rainSlide {
-    0% { transform: translateY(-35px); }
-    100% { transform: translateY(35px); }
+    0% { transform: translateY(-40px); }
+    100% { transform: translateY(40px); }
   }
 
-  /* Table Station Container */
+  /* ==========================================================================
+     MAIN TABLETOP CONTAINER WITH WOOD TEXTURE & BRASS CORNERS
+     ========================================================================== */
   .cafe-station {
     width: 100%;
-    max-width: 960px;
-    background: linear-gradient(180deg, #281910 0%, #170d07 100%);
-    border: 3px solid #4a2e1c;
-    border-radius: 16px;
-    padding: 22px 28px;
+    max-width: 1020px;
+    background:
+      /* Subtle horizontal wood grain streaks */
+      repeating-linear-gradient(
+        3deg,
+        rgba(255, 255, 255, 0.012) 0px,
+        rgba(255, 255, 255, 0.012) 2px,
+        transparent 2px,
+        transparent 11px
+      ),
+      linear-gradient(180deg, var(--table-surface-1) 0%, var(--table-surface-2) 100%);
+    border: 2px solid var(--table-border);
+    border-radius: 18px;
+    padding: 22px 26px;
     box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.95),
-      0 0 45px var(--edison-glow),
-      inset 0 1px 1px rgba(255, 220, 150, 0.25);
+      0 30px 70px rgba(0, 0, 0, 0.92),
+      0 0 calc(50px * var(--bulb-intensity)) var(--accent-glow),
+      inset 0 1px 1px rgba(255, 255, 255, 0.18),
+      inset 0 0 40px rgba(0, 0, 0, 0.65);
     position: relative;
     z-index: 5;
+    transition: all 0.35s ease;
   }
 
-  /* Top Bar */
+  /* Brass Corner Brackets */
+  .brass-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--accent-soft);
+    border-style: solid;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .bc-tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; border-top-left-radius: 6px; }
+  .bc-tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; border-top-right-radius: 6px; }
+  .bc-bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; border-bottom-left-radius: 6px; }
+  .bc-br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; border-bottom-right-radius: 6px; }
+
+  /* ==========================================================================
+     TOP HEADER: BRAND + PALETTE SWITCHER + INTERACTIVE EDISON BULB
+     ========================================================================== */
   .cafe-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #3c2314;
-    padding-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 14px;
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 16px;
     margin-bottom: 20px;
   }
 
@@ -130,125 +273,285 @@
   }
 
   .mug-icon-badge {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 30%, #54341c 0%, #1e1107 100%);
-    border: 1.5px solid var(--edison-amber);
+    background: radial-gradient(circle at 35% 30%, var(--table-surface-1) 0%, var(--bg-outer-1) 100%);
+    border: 1.5px solid var(--accent-main);
     display: grid;
     place-items: center;
-    font-size: 20px;
-    box-shadow: 0 0 16px var(--edison-glow);
+    box-shadow: 0 0 18px var(--accent-glow), inset 0 1px 2px rgba(255,255,255,0.2);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .mug-icon-badge:hover {
+    transform: scale(1.06);
   }
 
   .cafe-titles h1 {
-    margin: 0;
     font-family: 'Playfair Display', serif;
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 700;
-    color: #fff1db;
-    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    letter-spacing: 0.4px;
   }
 
   .cafe-titles p {
-    margin: 2px 0 0;
+    margin-top: 2px;
     font-size: 11.5px;
-    color: #ad947f;
+    color: var(--text-secondary);
   }
 
-  /* Steaming Cup & Edison Bulb Meta */
-  .corner-atmosphere-pill {
+  /* Header Right Controls: Theme Switcher & Bulb Dimmer */
+  .header-controls {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #170d07;
-    border: 1px solid #452816;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #ffdca3;
+    flex-wrap: wrap;
+  }
+
+  .palette-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-outer-1);
+    border: 1px solid var(--panel-border);
+    padding: 5px 10px;
+    border-radius: 24px;
+  }
+
+  .palette-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+
+  .theme-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+  }
+
+  .theme-dot:hover {
+    transform: scale(1.15);
+  }
+
+  .theme-dot.active {
+    border-color: #ffffff;
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+  }
+
+  .dot-amber { background: linear-gradient(135deg, #ffaa3b, #54341c); }
+  .dot-matcha { background: linear-gradient(135deg, #6ee7b7, #163024); }
+  .dot-midnight { background: linear-gradient(135deg, #f472b6, #1e1b4b); }
+  .dot-nordic { background: linear-gradient(135deg, #fb923c, #78716c); }
+
+  /* Interactive Edison Filament Pill */
+  .corner-atmosphere-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-outer-1);
+    border: 1px solid var(--panel-border);
+    padding: 7px 14px;
+    border-radius: 24px;
+    font-size: 11.5px;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+
+  .corner-atmosphere-pill:hover {
+    border-color: var(--accent-main);
   }
 
   .edison-bulb-icon {
-    width: 12px;
-    height: 12px;
-    background: var(--edison-amber);
+    width: 11px;
+    height: 11px;
+    background: var(--accent-main);
     border-radius: 50%;
-    box-shadow: 0 0 12px var(--edison-amber);
+    box-shadow: 0 0 calc(14px * var(--bulb-intensity)) var(--accent-main);
     animation: filamentBreathe 2.5s infinite alternate ease-in-out;
   }
 
   @keyframes filamentBreathe {
-    0% { opacity: 0.7; transform: scale(0.9); }
-    100% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 18px var(--edison-amber); }
+    0% { opacity: 0.75; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1.15); }
   }
 
-  /* Two Column Layout */
+  /* ==========================================================================
+     TWO COLUMN MAIN GRID
+     ========================================================================== */
   .cafe-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1.35fr;
-    gap: 24px;
+    grid-template-columns: 1.12fr 1.38fr;
+    gap: 22px;
   }
 
-  /* Left: Acoustic Soundscape & Coffee Origin */
+  /* ==========================================================================
+     LEFT PANEL: ACOUSTIC VINYL DECK, AMBIENT MIXER & STEAMING CUP
+     ========================================================================== */
   .soundboard-panel {
-    background: rgba(18, 10, 6, 0.75);
-    border: 1px solid #3c2415;
-    border-radius: 10px;
-    padding: 20px;
+    background:
+      /* Woven acoustic speaker cloth texture */
+      radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0),
+      radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 0),
+      var(--panel-bg);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 14px;
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.5);
   }
 
-  .now-playing-box {
-    margin-bottom: 18px;
-  }
-
-  .subhead-small {
+  .subhead-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-family: 'Playfair Display', serif;
     font-size: 13.5px;
     font-weight: 600;
-    color: var(--coffee-crema);
+    color: var(--accent-soft);
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 6px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #382113;
-    padding-bottom: 4px;
   }
 
-  .track-card {
-    background: #201309;
-    border: 1px solid #432817;
-    border-radius: 8px;
+  .subhead-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* Vinyl Turntable Card */
+  .turntable-card {
+    background: var(--panel-card);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
     padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 14px;
+    margin-bottom: 10px;
+    position: relative;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 14px rgba(0,0,0,0.35);
   }
 
-  .vinyl-cover {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
-    background: radial-gradient(circle, #ffaa3b 15%, #2a1608 16%, #150904 70%);
-    border: 1px solid #824f28;
-    display: grid;
-    place-items: center;
-    font-size: 16px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  .vinyl- platter-wrap {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    flex-shrink: 0;
+  }
+
+  .vinyl-disc {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--accent-main) 0%, var(--accent-main) 18%, #111 19%, #1c1c1c 32%, #0d0d0d 34%, #222 48%, #111 50%, #1d1d1d 66%, #0a0a0a 70%);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+    position: relative;
+    animation: spinVinyl 6s linear infinite;
+  }
+
+  .vinyl-disc.paused {
+    animation-play-state: paused;
+  }
+
+  /* Center Spindle Hole */
+  .vinyl-disc::after {
+    content: "";
+    position: absolute;
+    inset: 26px;
+    border-radius: 50%;
+    background: #1a110b;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+
+  @keyframes spinVinyl {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Tonearm SVG Overlay */
+  .tonearm {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    width: 28px;
+    height: 54px;
+    pointer-events: none;
+    transform-origin: 20px 8px;
+    transform: rotate(18deg);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .tonearm.paused {
+    transform: rotate(-12deg);
+  }
+
+  .track-meta {
+    flex: 1;
+    min-width: 0;
   }
 
   .track-meta h3 {
-    margin: 0;
     font-size: 13.5px;
     font-weight: 600;
-    color: #fff4e3;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .track-meta p {
-    margin: 2px 0 0;
+    margin-top: 2px;
     font-size: 11px;
-    color: #9d836e;
+    color: var(--text-secondary);
+  }
+
+  .player-btns {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .mini-ctrl-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    border-radius: 5px;
+    padding: 4px 9px;
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mini-ctrl-btn:hover,
+  .mini-ctrl-btn.active {
+    background: var(--accent-main);
+    color: #120b07;
+    border-color: var(--accent-main);
   }
 
   /* Audio Equalizer Bars */
@@ -256,103 +559,381 @@
     display: flex;
     align-items: flex-end;
     gap: 3px;
-    height: 36px;
-    padding: 6px 10px;
-    background: rgba(0,0,0,0.3);
+    height: 32px;
+    padding: 5px 10px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--panel-border);
     border-radius: 6px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .wave-bar {
     flex: 1;
-    background: linear-gradient(180deg, #ffc87a 0%, #d87d2a 100%);
+    background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent-main) 100%);
     border-radius: 2px 2px 0 0;
-    height: 30%;
-    animation: waveDance 1.2s infinite alternate ease-in-out;
+    height: 25%;
+    animation: waveDance 1.1s infinite alternate ease-in-out;
+    transition: opacity 0.25s ease;
+  }
+
+  .audio-waveform.paused .wave-bar {
+    animation-play-state: paused;
+    height: 15% !important;
+    opacity: 0.4;
   }
 
   @keyframes waveDance {
-    0% { height: 15%; }
-    100% { height: 85%; }
+    0% { height: 16%; }
+    100% { height: 92%; }
   }
 
-  /* Coffee Tasting Origin Card */
-  .roast-card {
-    background: #170d06;
-    border: 1px solid #3a2213;
+  /* Interactive Ambient Soundscape Sliders */
+  .ambient-mixer {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--panel-border);
     border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mixer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .mixer-label {
+    width: 110px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mixer-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .mixer-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--accent-main);
+    border: 2px solid #fff;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .mixer-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    width: 32px;
+    text-align: right;
+    color: var(--accent-soft);
+  }
+
+  /* Interactive Coffee Cup & Origin Selector Card */
+  .roast-card {
+    background: var(--panel-card);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
     padding: 12px 14px;
+    position: relative;
+  }
+
+  .brew-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .brew-tab {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .brew-tab.active {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--accent-soft);
+    color: var(--text-primary);
+  }
+
+  .roast-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Animated Steaming Coffee Cup SVG */
+  .steaming-cup-box {
+    width: 56px;
+    height: 56px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .steam-plume {
+    stroke: var(--accent-soft);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.7;
+    animation: steamRise 2.4s infinite ease-in-out;
+  }
+
+  .steam-plume.s2 { animation-delay: 0.8s; }
+  .steam-plume.s3 { animation-delay: 1.5s; }
+
+  @keyframes steamRise {
+    0% { transform: translateY(3px); opacity: 0.15; }
+    50% { opacity: 0.75; }
+    100% { transform: translateY(-6px); opacity: 0; }
+  }
+
+  .roast-info {
+    flex: 1;
+  }
+
+  .roast-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   }
 
   .roast-name {
     font-family: 'Playfair Display', serif;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 600;
-    color: #f7d5a5;
-    margin-bottom: 2px;
+    color: var(--text-primary);
+  }
+
+  .cup-temp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-main);
   }
 
   .roast-notes {
-    font-size: 11.5px;
-    color: #9d836e;
-    line-height: 1.4;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.38;
+    margin-top: 2px;
+  }
+
+  .roast-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
   }
 
   .flavor-tags {
     display: flex;
-    gap: 6px;
-    margin-top: 8px;
+    gap: 5px;
+    flex-wrap: wrap;
   }
 
   .flavor-tag {
     font-size: 9.5px;
-    background: rgba(216, 159, 104, 0.15);
-    border: 1px solid rgba(216, 159, 104, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
     padding: 2px 6px;
-    border-radius: 3px;
-    color: #e5b98a;
+    border-radius: 4px;
+    color: var(--accent-soft);
   }
 
-  /* Right: Editorial Journal & Notepad */
+  .sip-btn {
+    background: transparent;
+    border: 1px solid var(--accent-soft);
+    color: var(--accent-soft);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .sip-btn:hover {
+    background: var(--accent-soft);
+    color: #140c07;
+  }
+
+  /* ==========================================================================
+     RIGHT PANEL: TACTILE RULED NOTEBOOK WITH BINDER CLIP & COFFEE STAIN
+     ========================================================================== */
   .notebook-panel {
-    background: var(--paper-note);
-    border: 1px solid #dcd1be;
-    border-radius: 10px;
-    padding: 22px 24px;
-    color: var(--ink-espresso);
+    background-color: var(--paper-bg);
+    background-image:
+      /* Vertical red margin line */
+      linear-gradient(90deg, transparent 34px, var(--paper-margin) 34px, var(--paper-margin) 35.5px, transparent 35.5px),
+      /* Horizontal ruled lines */
+      repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 27px,
+        var(--paper-lines) 27px,
+        var(--paper-lines) 28px
+      );
+    border: 1px solid var(--paper-border);
+    border-radius: 12px;
+    padding: 22px 24px 18px 46px;
+    color: var(--paper-ink);
     box-shadow:
-      0 6px 18px rgba(0,0,0,0.4),
-      inset 0 0 40px rgba(160, 130, 80, 0.1);
+      0 10px 28px rgba(0,0,0,0.5),
+      inset 0 0 45px rgba(150, 120, 80, 0.12),
+      4px 4px 0 rgba(0,0,0,0.22);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 410px;
+    min-height: 460px;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.35s ease, color 0.3s ease;
+  }
+
+  /* Left Spiral Binding Holes */
+  .spiral-holes {
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    bottom: 24px;
+    width: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .spiral-hole {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--table-surface-2);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.75);
+    border: 1px solid rgba(0,0,0,0.2);
+  }
+
+  /* Realistic Coffee Ring Stain SVG Overlay */
+  .coffee-ring-stain {
+    position: absolute;
+    right: 22px;
+    bottom: 58px;
+    width: 115px;
+    height: 115px;
+    pointer-events: none;
+    opacity: 0.22;
+    transform: rotate(-18deg) scale(1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .coffee-ring-stain.hidden {
+    opacity: 0;
+    transform: rotate(-18deg) scale(0.85);
+  }
+
+  /* Notebook Page Tabs + Header */
+  .notebook-tabs-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .page-tabs {
+    display: flex;
+    gap: 5px;
+  }
+
+  .page-tab-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--paper-border);
+    color: var(--paper-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .page-tab-btn.active {
+    background: var(--paper-ink);
+    color: var(--paper-bg);
+    border-color: var(--paper-ink);
+  }
+
+  .stain-toggle-btn {
+    background: transparent;
+    border: 1px dashed var(--paper-muted);
+    color: var(--paper-muted);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .stain-toggle-btn:hover {
+    border-color: var(--paper-ink);
+    color: var(--paper-ink);
   }
 
   .notebook-top {
-    border-bottom: 1px solid rgba(120, 102, 88, 0.2);
-    padding-bottom: 10px;
-    margin-bottom: 14px;
+    border-bottom: 1.5px solid var(--paper-lines);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    gap: 10px;
   }
 
   .chapter-heading {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
     font-weight: 700;
-    color: #1f1208;
-    margin: 0;
+    color: var(--paper-ink);
   }
 
   .timestamp-tag {
     font-size: 11px;
-    color: var(--ink-muted);
+    color: var(--paper-muted);
     font-style: italic;
+    white-space: nowrap;
   }
 
-  /* Journal Textarea & Content */
+  /* Journal Textarea aligned with 28px ruled lines */
   .journal-textarea {
     width: 100%;
     flex: 1;
@@ -362,9 +943,38 @@
     resize: none;
     font-family: 'Playfair Display', serif;
     font-size: 15px;
-    line-height: 1.6;
-    color: #26160c;
-    min-height: 200px;
+    line-height: 28px;
+    color: var(--paper-ink);
+    min-height: 245px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Quick Mood Stamp Chips */
+  .journal-stamps-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stamp-chip {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--paper-border);
+    color: var(--paper-muted);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .stamp-chip:hover {
+    background: var(--paper-ink);
+    color: var(--paper-bg);
   }
 
   /* Footer Save Bar */
@@ -372,146 +982,493 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(120, 102, 88, 0.2);
-    padding-top: 12px;
-    margin-top: 12px;
+    border-top: 1.5px solid var(--paper-lines);
+    padding-top: 10px;
+    margin-top: 10px;
     font-size: 11.5px;
+    position: relative;
+    z-index: 2;
   }
 
   .word-counter {
-    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--paper-muted);
   }
 
   .save-note-btn {
-    background: #2a180e;
-    border: 1px solid #6b4124;
-    color: #f7ede2;
+    background: var(--paper-ink);
+    border: 1px solid var(--paper-ink);
+    color: var(--paper-bg);
     padding: 6px 14px;
     border-radius: 6px;
     font-family: inherit;
     font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.18s ease;
   }
 
   .save-note-btn:hover {
-    background: #422615;
-    color: #ffffff;
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 880px) {
+    .cafe-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
-<body>
+<body data-theme="amber">
 
-<div class="cafe-rain-glass"></div>
+<div class="tactile-grain"></div>
+<div class="cafe-rain-glass" id="rainOverlay"></div>
 
 <div class="cafe-station">
-  <!-- Top Bar -->
+  <div class="brass-corner bc-tl"></div>
+  <div class="brass-corner bc-tr"></div>
+  <div class="brass-corner bc-bl"></div>
+  <div class="brass-corner bc-br"></div>
+
+  <!-- ====================================================================
+       TOP HEADER: BRAND + COLOR PALETTE SWITCHER + EDISON DIMMER
+       ==================================================================== -->
   <div class="cafe-header">
     <div class="cafe-brand">
-      <div class="mug-icon-badge">☕</div>
+      <div class="mug-icon-badge" id="mugBadgeBtn" title="Click to warm up your cup">☕</div>
       <div class="cafe-titles">
         <h1>Café des Deux Rêves • Table 4</h1>
-        <p>Corner Window Seat • Rainy Afternoon Acoustics & Journaling</p>
+        <p>Corner Window Seat • Tactile Acoustic Soundscape &amp; Field Notes</p>
       </div>
     </div>
 
-    <div class="corner-atmosphere-pill">
-      <div class="edison-bulb-icon"></div>
-      <span>Warm Edison Glow • 14°C Light Rain</span>
+    <div class="header-controls">
+      <!-- 4-Palette Theme Switcher -->
+      <div class="palette-switcher" id="paletteSwitcher">
+        <span class="palette-label">Palette</span>
+        <button class="theme-dot dot-amber active" data-theme="amber" title="Amber Edison (Warm Walnut)"></button>
+        <button class="theme-dot dot-matcha" data-theme="matcha" title="Kyoto Matcha (Emerald Bamboo)"></button>
+        <button class="theme-dot dot-midnight" data-theme="midnight" title="Midnight Jazz (Noir Indigo)"></button>
+        <button class="theme-dot dot-nordic" data-theme="nordic" title="Nordic Morning (Ash & Linen)"></button>
+      </div>
+
+      <!-- Interactive Edison Filament Dimmer Pill -->
+      <div class="corner-atmosphere-pill" id="bulbTogglePill" title="Click to cycle Edison bulb brightness">
+        <div class="edison-bulb-icon"></div>
+        <span id="bulbStateText">Warm Edison Glow • 14°C Rain</span>
+      </div>
     </div>
   </div>
 
-  <!-- Main Grid -->
+  <!-- ====================================================================
+       MAIN TWO-COLUMN WORKSPACE
+       ==================================================================== -->
   <div class="cafe-grid">
-    <!-- Left: Soundscape & Tasting Notes -->
+
+    <!-- LEFT COLUMN: VINYL TURNTABLE, AMBIENT MIXER & COFFEE TASTING -->
     <div class="soundboard-panel">
       <div>
-        <div class="now-playing-box">
-          <div class="subhead-small">Acoustic Vinyl Stream</div>
-          <div class="track-card">
-            <div class="vinyl-cover">🎷</div>
-            <div class="track-meta">
-              <h3>Rue de Rennes • Quiet Rain</h3>
-              <p>Acoustic Nylon Guitar & Soft Vinyl Crackle</p>
-            </div>
+        <div class="subhead-row">
+          <span>Acoustic Vinyl Deck</span>
+          <span class="subhead-badge" id="rpmBadge">33⅓ RPM • STEREO</span>
+        </div>
+
+        <!-- Vinyl Player Card -->
+        <div class="turntable-card">
+          <div class="vinyl-platter-wrap" style="position:relative;width:62px;height:62px;">
+            <div class="vinyl-disc" id="vinylDisc"></div>
+            <svg class="tonearm" id="tonearmSvg" viewBox="0 0 30 60">
+              <circle cx="20" cy="8" r="5" fill="#d89f68" stroke="#24170f" stroke-width="1.5"/>
+              <path d="M20 8 L18 38 L8 50" stroke="#e2e8f0" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+              <rect x="4" y="47" width="7" height="5" rx="1" fill="#ffaa3b"/>
+            </svg>
           </div>
 
-          <div class="audio-waveform">
-            <div class="wave-bar" style="animation-delay: 0.1s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.4s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.2s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.6s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.3s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.5s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.25s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.7s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.15s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.45s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.35s;"></div>
-            <div class="wave-bar" style="animation-delay: 0.55s;"></div>
+          <div class="track-meta">
+            <h3 id="trackTitle">Rue de Rennes • Quiet Rain</h3>
+            <p id="trackArtist">Acoustic Nylon Guitar &amp; Soft Vinyl Crackle</p>
+            <div class="player-btns">
+              <button class="mini-ctrl-btn active" id="playPauseBtn">⏸ Pause</button>
+              <button class="mini-ctrl-btn" id="nextTrackBtn">⏭ Next Vinyl</button>
+            </div>
           </div>
         </div>
 
-        <!-- Coffee Origin -->
-        <div class="roast-card">
-          <div class="roast-name">Single Origin: Ethiopia Yirgacheffe</div>
-          <div class="roast-notes">Washed heirloom beans roasted in small batches. Steaming in thick ceramic cup beside the rain-streaked pane.</div>
-          <div class="flavor-tags">
+        <!-- Animated Equalizer Waveform -->
+        <div class="audio-waveform" id="waveformBox">
+          <div class="wave-bar" style="animation-delay: 0.1s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.4s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.2s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.6s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.3s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.5s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.25s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.7s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.15s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.45s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.35s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.55s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.2s;"></div>
+          <div class="wave-bar" style="animation-delay: 0.65s;"></div>
+        </div>
+
+        <!-- Interactive Ambient Soundscape Mixer -->
+        <div class="subhead-row" style="margin-top:4px;">
+          <span>Window &amp; Room Ambience Mix</span>
+          <span class="subhead-badge">LIVE VISUALS</span>
+        </div>
+
+        <div class="ambient-mixer">
+          <div class="mixer-row">
+            <span class="mixer-label">🌧️ Rain on Pane</span>
+            <input type="range" min="10" max="100" value="70" class="mixer-slider" id="rainSlider">
+            <span class="mixer-val" id="rainVal">70%</span>
+          </div>
+          <div class="mixer-row">
+            <span class="mixer-label">📻 Vinyl Crackle</span>
+            <input type="range" min="0" max="100" value="45" class="mixer-slider" id="crackleSlider">
+            <span class="mixer-val" id="crackleVal">45%</span>
+          </div>
+          <div class="mixer-row">
+            <span class="mixer-label">☕ Bistro Murmur</span>
+            <input type="range" min="0" max="100" value="30" class="mixer-slider" id="murmurSlider">
+            <span class="mixer-val" id="murmurVal">30%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steaming Cup & Single Origin Selector -->
+      <div class="roast-card">
+        <div class="brew-tabs" id="brewTabs">
+          <button class="brew-tab active" data-brew="ethiopia">Pour-Over</button>
+          <button class="brew-tab" data-brew="cortado">Velvet Cortado</button>
+          <button class="brew-tab" data-brew="chai">Spiced Chai</button>
+        </div>
+
+        <div class="roast-body">
+          <div class="steaming-cup-box">
+            <svg width="42" height="42" viewBox="0 0 48 48">
+              <path class="steam-plume s1" d="M16 15 Q14 9 18 5" />
+              <path class="steam-plume s2" d="M24 14 Q27 8 23 4" />
+              <path class="steam-plume s3" d="M31 15 Q29 10 33 6" />
+              <path d="M11 20 H35 V31 C35 37 30 41 23 41 C16 41 11 37 11 31 Z" fill="none" stroke="currentColor" stroke-width="2.2"/>
+              <path d="M35 23 H39 C41 23 42 25 42 27 C42 29 41 31 39 31 H35" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="8" y1="43" x2="38" y2="43" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="roast-info">
+            <div class="roast-name-row">
+              <span class="roast-name" id="roastName">Ethiopia Yirgacheffe</span>
+              <span class="cup-temp" id="cupTempLabel">86°C • Full Cup</span>
+            </div>
+            <div class="roast-notes" id="roastDesc">
+              Washed heirloom beans brewed in a ceramic V60 beside the rain-streaked window.
+            </div>
+          </div>
+        </div>
+
+        <div class="roast-footer">
+          <div class="flavor-tags" id="flavorTags">
             <span class="flavor-tag">Bergamot</span>
             <span class="flavor-tag">Jasmine</span>
             <span class="flavor-tag">Candied Peach</span>
           </div>
+          <button class="sip-btn" id="takeSipBtn">Take a Sip ☕</button>
         </div>
-      </div>
-
-      <div style="font-size: 11px; color: #8e7460; text-align: center; border-top: 1px solid #331d10; padding-top: 8px;">
-        "Rain is grace; rain is the sky descending to the earth."
       </div>
     </div>
 
-    <!-- Right: Editorial Notepad -->
+    <!-- RIGHT COLUMN: TACTILE NOTEBOOK WITH PAGE TABS & COFFEE RING STAIN -->
     <div class="notebook-panel">
+      <!-- Spiral Perforation Holes -->
+      <div class="spiral-holes">
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+        <div class="spiral-hole"></div>
+      </div>
+
+      <!-- Toggleable Realistic Coffee Cup Ring Stain SVG -->
+      <svg class="coffee-ring-stain" id="coffeeStainSvg" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="46" fill="none" stroke="#6b3e1e" stroke-width="4.5" stroke-dasharray="180 14 45 8"/>
+        <circle cx="62" cy="58" r="43" fill="none" stroke="#854d27" stroke-width="1.8" opacity="0.7"/>
+        <circle cx="96" cy="34" r="3.5" fill="#6b3e1e" opacity="0.65"/>
+        <circle cx="22" cy="88" r="2.2" fill="#6b3e1e" opacity="0.5"/>
+      </svg>
+
       <div>
-        <div class="notebook-top">
-          <h2 class="chapter-heading">The Architecture of Rainy Afternoons</h2>
-          <span class="timestamp-tag">October 14 • 16:35</span>
+        <!-- Page Switcher & Coffee Ring Stain Toggle -->
+        <div class="notebook-tabs-bar">
+          <div class="page-tabs" id="pageTabs">
+            <button class="page-tab-btn active" data-page="0">01 • Rainy Boulevard</button>
+            <button class="page-tab-btn" data-page="1">02 • UI Sketchbook</button>
+            <button class="page-tab-btn" data-page="2">03 • Tasting Log</button>
+          </div>
+          <button class="stain-toggle-btn" id="stainToggleBtn">☕ Toggle Mug Ring</button>
         </div>
 
-        <textarea class="journal-textarea" id="cafeJournal" placeholder="Jot down quiet thoughts as the storm passes over the boulevard...">There is an uncommon luxury in sitting by a misted window while heavy autumn raindrops race across the glass. The hum of the espresso grinder, the smell of damp wool coats, and the warm amber halo of the Edison bulb overhead make this small table an island apart from the bustling world.</textarea>
+        <div class="notebook-top">
+          <h2 class="chapter-heading" id="noteHeading">The Architecture of Rainy Afternoons</h2>
+          <span class="timestamp-tag" id="noteTimestamp">October 14 • 16:35</span>
+        </div>
+
+        <textarea class="journal-textarea" id="cafeJournal" placeholder="Jot down quiet thoughts as the storm passes over the boulevard..."></textarea>
+
+        <!-- Quick Insert Stamp Chips -->
+        <div class="journal-stamps-bar">
+          <span style="font-size:10px;color:var(--paper-muted);font-weight:600;">Insert Stamp:</span>
+          <button class="stamp-chip" data-stamp=" [🌧️ Heavy Downpour] ">+ 🌧️ Downpour</button>
+          <button class="stamp-chip" data-stamp=" [☕ Fresh Pour-Over] ">+ ☕ Fresh Cup</button>
+          <button class="stamp-chip" data-stamp=" [💡 UI Inspiration] ">+ 💡 UI Idea</button>
+        </div>
       </div>
 
       <div class="notebook-bottom">
-        <span class="word-counter" id="wordCount">54 words</span>
-        <button class="save-note-btn" id="saveNoteBtn">Save to Notes</button>
+        <span class="word-counter" id="wordCount">54 words • 312 chars</span>
+        <button class="save-note-btn" id="saveNoteBtn">Save Entry to Archive</button>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
+  // =========================================================================
+  // 1. COLOR PALETTE SWITCHER
+  // =========================================================================
+  const themeDots = document.querySelectorAll('#paletteSwitcher .theme-dot');
+  themeDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      themeDots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      document.body.setAttribute('data-theme', dot.dataset.theme);
+    });
+  });
+
+  // =========================================================================
+  // 2. EDISON BULB BRIGHTNESS CYCLER
+  // =========================================================================
+  const bulbPill = document.getElementById('bulbTogglePill');
+  const bulbText = document.getElementById('bulbStateText');
+  const bulbModes = [
+    { intensity: 1,   label: 'Warm Edison Glow • 14°C Rain' },
+    { intensity: 1.6, label: 'Bright Filament Halo • 14°C Rain' },
+    { intensity: 0.35, label: 'Candlelight Dim Mode • 14°C Rain' }
+  ];
+  let bulbIdx = 0;
+
+  bulbPill.addEventListener('click', () => {
+    bulbIdx = (bulbIdx + 1) % bulbModes.length;
+    document.documentElement.style.setProperty('--bulb-intensity', bulbModes[bulbIdx].intensity);
+    bulbText.textContent = bulbModes[bulbIdx].label;
+  });
+
+  // =========================================================================
+  // 3. VINYL TURNTABLE & TRACK CYCLER
+  // =========================================================================
+  const tracks = [
+    { title: 'Rue de Rennes • Quiet Rain', artist: 'Acoustic Nylon Guitar & Soft Vinyl Crackle' },
+    { title: 'Montmartre Espresso Waltz', artist: 'Muted Rhodes Piano & Brushed Snare' },
+    { title: 'Late Tram on Boulevard St-Germain', artist: 'Warm Upright Bass & Rain Ambience' },
+    { title: 'Paperback & Steam', artist: 'Solo Fingerpicked Folk Guitar' }
+  ];
+  let trackIdx = 0;
+  let isPlaying = true;
+
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const nextTrackBtn = document.getElementById('nextTrackBtn');
+  const vinylDisc = document.getElementById('vinylDisc');
+  const tonearmSvg = document.getElementById('tonearmSvg');
+  const waveformBox = document.getElementById('waveformBox');
+
+  playPauseBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    vinylDisc.classList.toggle('paused', !isPlaying);
+    tonearmSvg.classList.toggle('paused', !isPlaying);
+    waveformBox.classList.toggle('paused', !isPlaying);
+    playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Spin Vinyl';
+    playPauseBtn.classList.toggle('active', isPlaying);
+  });
+
+  nextTrackBtn.addEventListener('click', () => {
+    trackIdx = (trackIdx + 1) % tracks.length;
+    document.getElementById('trackTitle').textContent = tracks[trackIdx].title;
+    document.getElementById('trackArtist').textContent = tracks[trackIdx].artist;
+  });
+
+  // =========================================================================
+  // 4. AMBIENT MIXER SLIDERS (CONTROLS RAIN SPEED/DENSITY & WAVEFORM)
+  // =========================================================================
+  const rainSlider = document.getElementById('rainSlider');
+  const crackleSlider = document.getElementById('crackleSlider');
+  const murmurSlider = document.getElementById('murmurSlider');
+
+  rainSlider.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    document.getElementById('rainVal').textContent = `${val}%`;
+    const opacity = (val / 100) * 0.9;
+    const speed = Math.max(0.45, 1.8 - (val / 100) * 1.2).toFixed(2) + 's';
+    document.documentElement.style.setProperty('--rain-opacity', opacity);
+    document.documentElement.style.setProperty('--rain-speed', speed);
+  });
+
+  crackleSlider.addEventListener('input', (e) => {
+    document.getElementById('crackleVal').textContent = `${e.target.value}%`;
+  });
+
+  murmurSlider.addEventListener('input', (e) => {
+    document.getElementById('murmurVal').textContent = `${e.target.value}%`;
+  });
+
+  // =========================================================================
+  // 5. COFFEE BREW SELECTOR & "TAKE A SIP" INTERACTION
+  // =========================================================================
+  const brews = {
+    ethiopia: {
+      name: 'Ethiopia Yirgacheffe',
+      temp: '86°C',
+      desc: 'Washed heirloom beans brewed in a ceramic V60 beside the rain-streaked window.',
+      tags: ['Bergamot', 'Jasmine', 'Candied Peach']
+    },
+    cortado: {
+      name: 'Velvet Oat Cortado',
+      temp: '74°C',
+      desc: 'Double ristretto pulled dark and folded with silky micro-foamed oat milk in ribbed glass.',
+      tags: ['Dark Cocoa', 'Toasted Hazelnut', 'Caramel']
+    },
+    chai: {
+      name: 'Cardamom Spiced Chai',
+      temp: '82°C',
+      desc: 'Crushed green cardamom pods, Ceylon cinnamon bark, and Assam black tea simmered slow.',
+      tags: ['Cardamom', 'Star Anise', 'Wild Honey']
+    }
+  };
+
+  let sipsLeft = 4;
+  let currentBrew = 'ethiopia';
+
+  function renderBrew() {
+    const b = brews[currentBrew];
+    document.getElementById('roastName').textContent = b.name;
+    document.getElementById('roastDesc').textContent = b.desc;
+    const cupStatus = sipsLeft === 4 ? 'Full Cup' : sipsLeft === 0 ? 'Empty Mug' : `${sipsLeft * 25}% Left`;
+    document.getElementById('cupTempLabel').textContent = `${b.temp} • ${cupStatus}`;
+    document.getElementById('flavorTags').innerHTML = b.tags
+      .map(t => `<span class="flavor-tag">${t}</span>`)
+      .join('');
+    document.getElementById('takeSipBtn').textContent = sipsLeft > 0 ? 'Take a Sip ☕' : 'Refill Cup ↻';
+  }
+
+  document.querySelectorAll('#brewTabs .brew-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#brewTabs .brew-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentBrew = tab.dataset.brew;
+      sipsLeft = 4;
+      renderBrew();
+    });
+  });
+
+  document.getElementById('takeSipBtn').addEventListener('click', () => {
+    if (sipsLeft > 0) {
+      sipsLeft--;
+    } else {
+      sipsLeft = 4;
+    }
+    renderBrew();
+  });
+
+  // =========================================================================
+  // 6. NOTEBOOK MULTI-PAGE TABS, COFFEE STAIN & WORD COUNTER
+  // =========================================================================
+  const pages = [
+    {
+      heading: 'The Architecture of Rainy Afternoons',
+      time: 'October 14 • 16:35',
+      content: 'There is an uncommon luxury in sitting by a misted window while heavy autumn raindrops race across the glass. The hum of the espresso grinder, the smell of damp wool coats, and the warm amber halo of the Edison bulb overhead make this small table an island apart from the bustling world.'
+    },
+    {
+      heading: 'UI Lab Component Concept: Tactile Surfaces',
+      time: 'October 14 • 17:10',
+      content: 'Note for the next design iteration: flat cards often feel sterile because they lack micro-imperfections. Adding subtle ruled lines, woven speaker cloth patterns, and warm radial falloff immediately grounds the interface in a physical space.'
+    },
+    {
+      heading: 'Roastery Tasting Log #19',
+      time: 'October 14 • 17:42',
+      content: 'Cupping notes on the washed Yirgacheffe: bright floral aroma upfront with a lingering honeyed peach finish as the cup cools below 70°C. Pairs effortlessly with acoustic nylon guitar.'
+    }
+  ];
+
+  let activePageIdx = 0;
   const journal = document.getElementById('cafeJournal');
   const wordCount = document.getElementById('wordCount');
-  const saveBtn = document.getElementById('saveNoteBtn');
 
   function updateWords() {
     const text = journal.value.trim();
     const words = text ? text.split(/\s+/).length : 0;
-    wordCount.textContent = `${words} words`;
+    wordCount.textContent = `${words} words • ${journal.value.length} chars`;
+    pages[activePageIdx].content = journal.value;
   }
+
+  function loadPage(idx) {
+    activePageIdx = idx;
+    document.getElementById('noteHeading').textContent = pages[idx].heading;
+    document.getElementById('noteTimestamp').textContent = pages[idx].time;
+    journal.value = pages[idx].content;
+    updateWords();
+  }
+
+  document.querySelectorAll('#pageTabs .page-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#pageTabs .page-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPage(Number(btn.dataset.page));
+    });
+  });
 
   journal.addEventListener('input', updateWords);
 
-  saveBtn.addEventListener('click', () => {
-    saveBtn.textContent = '✓ Saved to Archive';
-    saveBtn.style.background = '#10b981';
-    saveBtn.style.borderColor = '#34d399';
-    setTimeout(() => {
-      saveBtn.textContent = 'Save to Notes';
-      saveBtn.style.background = '#2a180e';
-      saveBtn.style.borderColor = '#6b4124';
-    }, 2000);
+  // Stamp Chips Insertion
+  document.querySelectorAll('.stamp-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      journal.value += chip.dataset.stamp;
+      updateWords();
+      journal.focus();
+    });
   });
+
+  // Toggle Coffee Ring Stain on Notebook
+  const stainSvg = document.getElementById('coffeeStainSvg');
+  document.getElementById('stainToggleBtn').addEventListener('click', () => {
+    stainSvg.classList.toggle('hidden');
+  });
+
+  // Save Button Feedback
+  const saveBtn = document.getElementById('saveNoteBtn');
+  saveBtn.addEventListener('click', () => {
+    const origText = saveBtn.textContent;
+    saveBtn.textContent = '✓ Archived to Field Journal';
+    saveBtn.style.background = '#10b981';
+    saveBtn.style.borderColor = '#10b981';
+    saveBtn.style.color = '#ffffff';
+    setTimeout(() => {
+      saveBtn.textContent = origText;
+      saveBtn.style.background = '';
+      saveBtn.style.borderColor = '';
+      saveBtn.style.color = '';
+    }, 1800);
+  });
+
+  // Initialize first page
+  loadPage(0);
 </script>
 </body>
 </html>
