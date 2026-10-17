@@ -3,205 +3,1494 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Station Blueprint Console</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Station Blueprint Console — Multi-Level Orbital CAD Terminal</title>
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;700;800&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
   "title": "Station Blueprint Console",
   "category": "widgets",
   "themes": ["dark"],
-  "tags": ["space", "sci-fi", "hud", "blueprint", "teal", "amber", "dashboard", "wireframe", "orbital-station"],
-  "description": "Teal space-agency dashboard: module list, toolbar grid, wireframe station inside rotating rings, and construction time / cost readouts with amber accents.",
-  "techniques": ["inline SVG wireframe", "rotating dashed rings", "dot-grid background via radial-gradient", "CSS variables for teal + amber palette", "data-driven module list"],
-  "recipe": "Everything sits on a faint dot grid made from a single radial-gradient. The wireframe station is plain SVG with thin white strokes and no fills, so it stays crisp at any scale. Concentric dashed circles rotate at different speeds in opposite directions to suggest instrumentation, while the amber arcs are stroke-dasharray segments on a circle. Selecting a module in the left list only swaps text and one CSS variable, so no re-layout is needed.",
-  "preview": { "mode": "page", "width": 1000, "height": 620 }
+  "tags": [
+    "space",
+    "sci-fi",
+    "hud",
+    "blueprint",
+    "teal",
+    "amber",
+    "dashboard",
+    "wireframe",
+    "orbital-station",
+    "cad"
+  ],
+  "description": "High-detail orbital station CAD blueprint console featuring a 5-level interactive wireframe station architecture with per-level amber highlighting, automated engineering dimension callouts, exploded assembly view, X-ray internal bulkheads, and synchronized 3D orbital render preview.",
+  "techniques": [
+    "Multi-tiered SVG CAD wireframe station divided into 5 interactive structural levels with isolated amber glow states",
+    "Dynamic engineering dimension callouts, leader lines, and target bounding brackets per selected station level",
+    "CSS transform Exploded Assembly View separating the 5 station levels vertically along the central truss axis",
+    "Synchronized orbital render viewport highlighting the active module over a rotating Earth horizon",
+    "Web Audio API CAD plotter clicks, blueprint laser scan sweep, and telemetry chimes"
+  ],
+  "recipe": "Preserves the classic teal-and-amber dot-grid blueprint aesthetic while upgrading the central viewport into a true 5-tier CAD assembly. Clicking a module in the left manifest—or clicking directly on any section of the wireframe station—dims non-selected tiers, illuminates the active level in glowing amber (#d9922e), reveals precision dimension arrows, and updates the orbital preview and engineering specs.",
+  "preview": { "mode": "page", "width": 1080, "height": 720 }
 }
 </script>
 
 <style>
   * { box-sizing: border-box; }
+
   :root {
     --teal: #3fd8d8;
-    --teal-dim: rgba(63, 216, 216, .35);
-    --teal-faint: rgba(63, 216, 216, .12);
-    --amber: #d9922e;
+    --teal-bright: #a8ffff;
+    --teal-dim: rgba(63, 216, 216, 0.35);
+    --teal-faint: rgba(63, 216, 216, 0.12);
+    --amber: #f09c2b;
+    --amber-bright: #ffd080;
+    --amber-glow: rgba(240, 156, 43, 0.65);
+    --amber-dim: rgba(240, 156, 43, 0.22);
     --bg: #04161d;
     --text: #bfe9ea;
     --muted: #5d8f95;
   }
+
   body {
-    margin: 0; min-height: 100vh;
-    display: grid; place-items: center;
-    background: #020a0e;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 45%, #051821 0%, #010609 85%);
     color: var(--text);
     font: 11px/1.45 "Share Tech Mono", ui-monospace, monospace;
-    letter-spacing: .06em;
-    overflow: hidden;
+    letter-spacing: 0.06em;
+    padding: 14px;
+    overflow-x: hidden;
+    user-select: none;
   }
+
+  /* ==========================================================================
+     MAIN BLUEPRINT CONSOLE SCREEN (1040 x 650)
+  ========================================================================== */
   .screen {
     position: relative;
-    width: 960px; height: 580px;
+    width: 1040px;
+    height: 650px;
     background:
-      radial-gradient(circle, rgba(63,216,216,.16) 1px, transparent 1.4px) 0 0 / 22px 22px,
-      radial-gradient(80% 90% at 50% 50%, #0a2833, var(--bg) 75%);
-    border: 1px solid var(--teal-faint);
+      linear-gradient(rgba(63, 216, 216, 0.04) 1px, transparent 1px) 0 0 / 88px 88px,
+      linear-gradient(90deg, rgba(63, 216, 216, 0.04) 1px, transparent 1px) 0 0 / 88px 88px,
+      radial-gradient(circle, rgba(63, 216, 216, 0.18) 1px, transparent 1.4px) 0 0 / 22px 22px,
+      radial-gradient(80% 90% at 50% 50%, #0a2a36, var(--bg) 76%);
+    border: 1px solid var(--teal-dim);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.95),
+      inset 0 0 60px rgba(0, 0, 0, 0.65);
     display: grid;
-    grid-template-columns: 200px 1fr 270px;
-    grid-template-rows: 34px 1fr 64px;
+    grid-template-columns: 225px 1fr 285px;
+    grid-template-rows: 36px 1fr 52px;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 16px;
+    overflow: hidden;
   }
-  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
-  .topbar .sq { width: 30px; height: 30px; background: var(--teal); box-shadow: 0 0 16px var(--teal-dim); }
-  .topbar .coords { margin-left: 12px; color: var(--muted); flex: 1; }
-  .topbar .clock { font-size: 15px; letter-spacing: .18em; color: #e6fbfb; }
 
-  /* ---------- left list ---------- */
-  .modules { overflow: hidden; border-top: 1px solid var(--amber); }
+  /* Subtle CRT Blueprint Scanline Overlay */
+  .screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.12) 0px 1px,
+      transparent 1px 3px
+    );
+    pointer-events: none;
+    z-index: 30;
+  }
+
+  /* ==========================================================================
+     TOP BAR
+  ========================================================================== */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--teal-faint);
+    padding-bottom: 6px;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topbar .sq {
+    width: 28px;
+    height: 28px;
+    background: var(--teal);
+    box-shadow: 0 0 16px var(--teal-dim);
+    display: grid;
+    place-items: center;
+    color: #021014;
+    font-weight: 700;
+    font-size: 10px;
+  }
+  .topbar .coords {
+    color: var(--muted);
+    font-size: 10.5px;
+  }
+  .topbar .coords strong {
+    color: var(--teal);
+    font-weight: 400;
+  }
+  .topbar-center-badge {
+    background: rgba(63, 216, 216, 0.08);
+    border: 1px solid var(--teal-dim);
+    padding: 3px 12px;
+    font-size: 10px;
+    color: var(--teal-bright);
+    letter-spacing: 0.15em;
+  }
+  .topbar .clock {
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    color: #e6fbfb;
+  }
+
+  /* ==========================================================================
+     LEFT COLUMN: LEVEL MODULE MANIFEST
+  ========================================================================== */
+  .modules {
+    overflow-y: auto;
+    border-top: 2px solid var(--amber);
+    border-right: 1px solid var(--teal-faint);
+    padding-right: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: initial;
+  }
+
   .mod {
-    all: unset; display: block; box-sizing: border-box; width: 100%; cursor: pointer;
-    padding: 9px 4px 8px; border-bottom: 1px solid var(--teal-faint);
+    all: unset;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    cursor: pointer;
+    padding: 8px 8px 7px;
+    border-bottom: 1px solid var(--teal-faint);
+    border-left: 2px solid transparent;
+    transition: all 0.18s ease;
+    position: relative;
   }
-  .mod h4 { margin: 0 0 4px; font-size: 12px; color: #fff; font-weight: 400; border-bottom: 1px solid var(--teal-dim); padding-bottom: 3px; }
-  .mod dl { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 12px; color: var(--muted); font-size: 9px; }
-  .mod dd { margin: 0; text-align: right; }
-  .mod:hover h4, .mod[aria-pressed="true"] h4 { color: var(--amber); border-color: var(--amber); }
-  .mod[aria-pressed="true"] { background: linear-gradient(90deg, rgba(217,146,46,.1), transparent); }
 
-  /* ---------- center ---------- */
-  .stage { position: relative; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--teal-faint); }
-  .menu { position: absolute; top: 0; left: 44px; right: 0; display: flex; border-bottom: 1px solid var(--teal-faint); }
-  .menu span { flex: 1; text-align: center; padding: 3px 0; border-left: 1px solid var(--teal-faint); color: var(--muted); font-size: 9px; }
-  .tools { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; display: grid; align-content: start; gap: 6px; padding: 6px; border-right: 1px solid var(--teal-faint); }
-  .tools i { display: block; height: 26px; border: 1px solid var(--teal-dim); position: relative; }
-  .tools i::after { content: ""; position: absolute; inset: 7px; border: 1px solid var(--teal-dim); border-radius: 2px; }
-  .tools i:nth-child(3n)::after { border-radius: 50%; }
-  svg.station { width: 100%; height: 100%; }
-  .ring-a { transform-origin: 250px 230px; animation: spin 60s linear infinite; }
-  .ring-b { transform-origin: 250px 230px; animation: spin 90s linear infinite reverse; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .mod-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--teal-dim);
+    padding-bottom: 3px;
+    margin-bottom: 4px;
+    transition: border-color 0.18s ease;
+  }
 
-  .readout { position: absolute; bottom: 8px; display: flex; flex-direction: column; }
-  .readout b { font-size: 30px; font-weight: 400; color: var(--amber); line-height: 1; text-shadow: 0 0 12px rgba(217,146,46,.5); }
-  .readout small { color: var(--muted); font-size: 8px; white-space: nowrap; }
-  .readout.l { left: 54px; } .readout.r { right: 10px; text-align: right; }
+  .mod h4 {
+    margin: 0;
+    font-size: 12px;
+    color: #ffffff;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
 
-  /* ---------- right ---------- */
-  .side { display: grid; grid-template-rows: 150px 1fr; gap: 12px; }
+  .lvl-pill {
+    font-size: 8.5px;
+    color: var(--teal);
+    border: 1px solid var(--teal-dim);
+    padding: 0 4px;
+  }
+
+  .mod dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 10px;
+    row-gap: 1px;
+    color: var(--muted);
+    font-size: 9px;
+  }
+  .mod dd {
+    margin: 0;
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* Mini Progress Bar inside each Module Card */
+  .mod-prog-track {
+    height: 3px;
+    background: rgba(63, 216, 216, 0.12);
+    margin-top: 5px;
+    overflow: hidden;
+  }
+  .mod-prog-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.3s ease, background 0.2s ease;
+  }
+
+  .mod:hover h4,
+  .mod[aria-pressed="true"] h4 {
+    color: var(--amber);
+  }
+  .mod:hover .mod-head,
+  .mod[aria-pressed="true"] .mod-head {
+    border-color: var(--amber);
+  }
+  .mod[aria-pressed="true"] {
+    border-left-color: var(--amber);
+    background: linear-gradient(90deg, rgba(240, 156, 43, 0.16), rgba(240, 156, 43, 0.02));
+  }
+  .mod[aria-pressed="true"] .lvl-pill {
+    color: #04161d;
+    background: var(--amber);
+    border-color: var(--amber);
+    font-weight: 700;
+  }
+  .mod[aria-pressed="true"] .mod-prog-fill {
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+  }
+
+  /* ==========================================================================
+     CENTER STAGE: CAD BLUEPRINT VIEWPORT & MULTI-LEVEL STATION SVG
+  ========================================================================== */
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--teal-dim);
+    background: radial-gradient(circle at 52% 52%, rgba(63, 216, 216, 0.07) 0%, transparent 68%);
+  }
+
+  /* Top CAD Menu Bar */
+  .menu {
+    position: absolute;
+    top: 0;
+    left: 44px;
+    right: 0;
+    height: 24px;
+    display: flex;
+    border-bottom: 1px solid var(--teal-faint);
+    background: rgba(4, 22, 29, 0.78);
+    z-index: 12;
+  }
+  .menu button {
+    all: unset;
+    flex: 1;
+    text-align: center;
+    border-left: 1px solid var(--teal-faint);
+    color: var(--muted);
+    font-size: 9px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: grid;
+    place-items: center;
+  }
+  .menu button:hover,
+  .menu button.active {
+    color: var(--amber);
+    background: rgba(240, 156, 43, 0.1);
+  }
+
+  /* Left CAD Tool Palette */
+  .tools {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding: 6px;
+    border-right: 1px solid var(--teal-faint);
+    background: rgba(4, 22, 29, 0.78);
+    z-index: 12;
+  }
+  .tool-icon {
+    all: unset;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    height: 28px;
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-size: 9px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+  .tool-icon:hover,
+  .tool-icon.active {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(240, 156, 43, 0.14);
+    box-shadow: 0 0 10px rgba(240, 156, 43, 0.3);
+  }
+
+  /* Blueprint Laser Scan Bar */
+  .laser-scan-bar {
+    position: absolute;
+    left: 44px;
+    right: 0;
+    top: -10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--amber), var(--teal-bright), var(--amber), transparent);
+    box-shadow: 0 0 18px 3px var(--amber);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+  }
+  .laser-scan-bar.scanning {
+    opacity: 1;
+    animation: blueprintSweep 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes blueprintSweep {
+    0%   { top: 24px; opacity: 1; }
+    90%  { top: 96%; opacity: 1; }
+    100% { top: 98%; opacity: 0; }
+  }
+
+  /* ==========================================================================
+     STATION WIREFRAME SVG & LEVEL HIGHLIGHTING SYSTEM
+  ========================================================================== */
+  svg.station {
+    width: 100%;
+    height: 100%;
+    padding-left: 36px;
+    padding-top: 20px;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  svg.station.zoomed {
+    transform: scale(1.22);
+  }
+
+  .ring-a {
+    transform-origin: 260px 235px;
+    animation: spin 65s linear infinite;
+  }
+  .ring-b {
+    transform-origin: 260px 235px;
+    animation: spin 95s linear infinite reverse;
+  }
+  .ring-amber-arc {
+    transform-origin: 260px 235px;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), stroke-dasharray 0.55s ease;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Interactive Station Structural Levels */
+  .station-level {
+    cursor: pointer;
+    stroke: #d8ffff;
+    stroke-width: 0.85;
+    fill: rgba(63, 216, 216, 0.015);
+    transition:
+      opacity 0.3s ease,
+      stroke 0.3s ease,
+      filter 0.3s ease,
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Dim non-selected levels slightly so the active level pops */
+  svg.station[data-focus="true"] .station-level:not(.active-level) {
+    opacity: 0.32;
+    stroke: #3fd8d8;
+  }
+
+  .station-level:hover {
+    opacity: 0.92 !important;
+    stroke: var(--teal-bright) !important;
+    filter: drop-shadow(0 0 5px var(--teal));
+  }
+
+  /* ACTIVE SELECTED LEVEL: Bright Amber Blueprint Glow + Subtle Amber Fill */
+  .station-level.active-level {
+    opacity: 1 !important;
+    stroke: var(--amber) !important;
+    stroke-width: 1.25;
+    fill: rgba(240, 156, 43, 0.09);
+    filter: drop-shadow(0 0 8px var(--amber-glow)) drop-shadow(0 0 2px #fff);
+  }
+
+  /* Internal X-Ray Bulkheads & ribs (Toggled via X-RAY tool) */
+  .xray-detail {
+    opacity: 0.28;
+    stroke-dasharray: 2 2;
+    transition: opacity 0.25s ease;
+  }
+  svg.station.xray-on .xray-detail {
+    opacity: 0.95;
+    stroke: var(--teal-bright);
+  }
+  .station-level.active-level .xray-detail {
+    stroke: var(--amber-bright);
+    opacity: 0.9;
+  }
+
+  /* EXPLODED ASSEMBLY VIEW: Separates the 5 levels vertically along the Y axis! */
+  svg.station.exploded .lvl-0 { transform: translateY(-28px); }
+  svg.station.exploded .lvl-1 { transform: translateY(-14px); }
+  svg.station.exploded .lvl-2 { transform: translateY(0px);   }
+  svg.station.exploded .lvl-3 { transform: translateY(15px);  }
+  svg.station.exploded .lvl-4 { transform: translateY(30px);  }
+
+  /* Dynamic CAD Dimension Callouts Layer */
+  .cad-dimensions-layer {
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  svg.station.hide-dims .cad-dimensions-layer {
+    opacity: 0;
+  }
+
+  /* Bottom-Left & Bottom-Right Amber Readouts inside Stage */
+  .readout {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 12;
+    pointer-events: none;
+  }
+  .readout b {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--amber);
+    line-height: 1;
+    text-shadow: 0 0 14px rgba(240, 156, 43, 0.55);
+  }
+  .readout small {
+    color: var(--muted);
+    font-size: 8.5px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .readout.l { left: 56px; }
+  .readout.r { right: 12px; text-align: right; }
+
+  /* Floating Level Tag in Top-Left of Stage */
+  .stage-level-tag {
+    position: absolute;
+    top: 32px;
+    left: 56px;
+    z-index: 12;
+    pointer-events: none;
+    background: rgba(4, 22, 29, 0.85);
+    border-left: 2px solid var(--amber);
+    padding: 4px 8px;
+    font-size: 9.5px;
+  }
+  .stage-level-tag strong {
+    color: var(--amber);
+    display: block;
+    font-size: 11px;
+  }
+
+  /* ==========================================================================
+     RIGHT COLUMN: SYNCHRONIZED ORBITAL RENDER PREVIEW & SPEC CAPSULE
+  ========================================================================== */
+  .side {
+    display: grid;
+    grid-template-rows: 165px 1fr;
+    gap: 12px;
+  }
+
   .preview {
-    position: relative; overflow: hidden; border: 1px solid var(--teal-dim);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--teal-dim);
     background:
-      radial-gradient(120% 90% at 105% 110%, #5fb0ff 0 22%, #1c4f86 30%, #071a30 52%, transparent 53%),
-      radial-gradient(1px 1px at 30% 20%, #fff, transparent), radial-gradient(1px 1px at 60% 40%, #fff, transparent),
-      radial-gradient(1px 1px at 80% 15%, #fff, transparent), #02060d;
+      radial-gradient(125% 95% at 105% 112%, #6ec2ff 0 20%, #1d5796 29%, #071b34 52%, transparent 53.5%),
+      radial-gradient(1px 1px at 22% 18%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 58% 36%, #fff, transparent),
+      radial-gradient(1px 1px at 82% 16%, #fff, transparent),
+      radial-gradient(1px 1px at 14% 68%, #fff, transparent),
+      #02060d;
   }
-  .preview::after { content: "RENDER // HOLDER"; position: absolute; bottom: 4px; right: 6px; font-size: 8px; color: var(--muted); }
-  .sat { position: absolute; left: 22%; top: 38%; width: 90px; height: 16px; background: #8a9099; transform: rotate(-24deg); box-shadow: 0 0 0 2px #1b2128 inset; }
-  .sat::before, .sat::after { content: ""; position: absolute; top: -20px; width: 40px; height: 56px; background: repeating-linear-gradient(90deg, #cdd3da 0 3px, #5b636d 3px 5px); transform: skewY(-12deg); }
-  .sat::before { left: -48px; } .sat::after { right: -48px; }
+  .preview-header {
+    position: absolute;
+    top: 5px;
+    left: 7px;
+    right: 7px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: var(--teal);
+    z-index: 3;
+  }
+  .preview::after {
+    content: "ORBITAL CAM // LIVE SYNC";
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: 8px;
+    color: var(--muted);
+  }
 
-  .info { position: relative; border: 1px solid var(--teal-dim); border-radius: 50% / 40%; padding: 18px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .info h3 { margin: 0 0 6px; font-weight: 400; font-size: 14px; letter-spacing: .3em; color: #e6fbfb; }
-  .info p { margin: 0 0 8px; font-size: 9px; color: var(--muted); }
-  .info ul { margin: auto 0 0; padding: 6px 8px; list-style: none; border: 1px solid var(--teal-dim); font-size: 9px; text-align: left; width: 100%; }
+  /* Interactive SVG Mini-Station inside Preview that highlights the selected level! */
+  .preview-sat-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-18deg);
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.85));
+  }
+  .prev-part {
+    stroke: #8a99ad;
+    stroke-width: 1;
+    fill: #273240;
+    transition: all 0.25s ease;
+  }
+  .prev-part.active-prev {
+    stroke: var(--amber-bright);
+    stroke-width: 1.6;
+    fill: rgba(240, 156, 43, 0.55);
+    filter: drop-shadow(0 0 8px var(--amber));
+  }
 
-  .footer { grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 8px; }
-  .footer button { all: unset; cursor: pointer; padding: 6px 14px; border: 1px solid var(--teal-dim); color: var(--teal); }
-  .footer button:hover { background: var(--teal-faint); }
+  /* Oval Engineering Spec Capsule */
+  .info {
+    position: relative;
+    border: 1px solid var(--teal-dim);
+    border-radius: 42% / 28%;
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at 50% 35%, rgba(63, 216, 216, 0.06), transparent 75%);
+  }
+  .info-sub {
+    font-size: 8.5px;
+    color: var(--amber);
+    letter-spacing: 0.2em;
+    margin-bottom: 2px;
+  }
+  .info h3 {
+    margin: 0 0 6px;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    color: #e6fbfb;
+  }
+  .info p {
+    margin: 0 0 8px;
+    font-size: 9.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Subsystem Telemetry Bars inside Capsule */
+  .subsys-bars {
+    width: 100%;
+    display: grid;
+    gap: 4px;
+    margin-bottom: 8px;
+    text-align: left;
+    font-size: 8.5px;
+  }
+  .subsys-row {
+    display: grid;
+    grid-template-columns: 58px 1fr 32px;
+    align-items: center;
+    gap: 6px;
+  }
+  .subsys-track {
+    height: 4px;
+    background: rgba(63, 216, 216, 0.12);
+    border: 1px solid var(--teal-faint);
+  }
+  .subsys-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.35s ease;
+  }
+
+  .info ul {
+    margin: auto 0 0;
+    padding: 6px 9px;
+    list-style: none;
+    border: 1px solid var(--teal-dim);
+    background: rgba(2, 12, 16, 0.65);
+    font-size: 9px;
+    text-align: left;
+    width: 100%;
+  }
+  .info ul li {
+    padding: 1.5px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .info ul li strong {
+    color: var(--amber);
+    font-weight: 400;
+  }
+
+  /* ==========================================================================
+     FOOTER NAVIGATION & CAD ACTION BAR
+  ========================================================================== */
+  .footer {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--teal-faint);
+    padding-top: 6px;
+  }
+  .footer-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer button {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 12px;
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-size: 10px;
+    transition: all 0.15s ease;
+  }
+  .footer button:hover,
+  .footer button.active {
+    background: var(--teal-faint);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  @media (max-width: 1060px) {
+    .screen {
+      transform: scale(0.9);
+      transform-origin: center center;
+    }
+  }
 </style>
 </head>
 <body>
+
 <div class="screen">
+  <!-- ========================================================================
+       TOP TELEMETRY BAR
+  ========================================================================= -->
   <header class="topbar">
-    <div class="sq"></div>
-    <div class="coords">51.4839101, -3.1640422</div>
-    <div class="clock" id="clock">02.10.2019 20:56</div>
+    <div class="topbar-left">
+      <div class="sq">CAD</div>
+      <div class="coords">
+        ORBITAL VECTOR: <strong>51.4839° N, -3.1640° W</strong> // ALT: <strong>408.2 KM</strong>
+      </div>
+    </div>
+    <div class="topbar-center-badge" id="topActiveBanner">
+      ACTIVE BLUEPRINT: LEVEL 01 // ATV_03_01
+    </div>
+    <div class="clock" id="clock">17.10.2026 02:55</div>
   </header>
 
-  <nav class="modules" id="modules" aria-label="Modules"></nav>
+  <!-- ========================================================================
+       LEFT COLUMN: 5 STRUCTURAL STATION LEVELS MANIFEST
+  ========================================================================= -->
+  <nav class="modules" id="modules" aria-label="Station Structural Levels"></nav>
 
-  <section class="stage">
-    <div class="menu"><span>File</span><span>Edit</span><span>Create</span><span>Select</span><span>Modify</span><span>Render</span><span>Window</span><span>Help</span></div>
-    <div class="tools"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <!-- ========================================================================
+       CENTER STAGE: MULTI-LEVEL WIREFRAME BLUEPRINT VIEWPORT
+  ========================================================================= -->
+  <section class="stage" id="blueprintStage">
+    <!-- Top CAD Menu -->
+    <div class="menu">
+      <button id="menuAllLevels" title="Highlight All 5 Station Levels">ALL LEVELS</button>
+      <button id="menuExplode" title="Toggle Exploded Vertical Assembly View">EXPLODE</button>
+      <button id="menuXray" title="Toggle Internal X-Ray Bulkheads">X-RAY</button>
+      <button id="menuDims" class="active" title="Toggle Engineering Dimension Callouts">DIMS</button>
+      <button id="menuZoom" title="Toggle 1.22x Blueprint Zoom">ZOOM</button>
+      <button id="menuScan" title="Run Laser Blueprint Verification">SCAN</button>
+      <button id="menuAudio" class="active" title="Toggle CAD Plotter Sound">AUDIO</button>
+    </div>
 
-    <svg class="station" viewBox="0 0 500 460" fill="none" stroke="#dff" stroke-width=".8">
-      <g class="ring-b" stroke="#3fd8d8" stroke-opacity=".5" stroke-dasharray="2 5"><circle cx="250" cy="230" r="205"/></g>
-      <g class="ring-a" stroke="#3fd8d8" stroke-opacity=".6"><circle cx="250" cy="230" r="170"/><circle cx="250" cy="230" r="150" stroke-dasharray="14 6"/></g>
-      <circle cx="250" cy="230" r="188" stroke="#d9922e" stroke-width="3" stroke-dasharray="90 200" stroke-opacity=".8" transform="rotate(-30 250 230)"/>
-      <!-- central truss -->
-      <g stroke-opacity=".9">
-        <rect x="236" y="40" width="28" height="30"/><rect x="243" y="70" width="14" height="150"/>
-        <rect x="228" y="120" width="44" height="12"/><rect x="238" y="220" width="24" height="22"/>
-        <ellipse cx="250" cy="300" rx="120" ry="34"/><ellipse cx="250" cy="300" rx="90" ry="22"/><ellipse cx="250" cy="300" rx="52" ry="12"/>
-        <rect x="244" y="300" width="12" height="150"/>
-        <path d="M130 300 L60 330 L110 345 L170 322 M370 300 L440 330 L390 345 L330 322"/>
-        <path d="M130 290 L60 262 L110 252 L172 278 M370 290 L440 262 L390 252 L328 278"/>
+    <!-- Left CAD Tool Icons -->
+    <div class="tools">
+      <button class="tool-icon active" data-lvl="0" title="Level 01: Upper Cargo & Docking Spire">L1</button>
+      <button class="tool-icon" data-lvl="1" title="Level 02: FGB Core Propulsion Block">L2</button>
+      <button class="tool-icon" data-lvl="2" title="Level 03: Central Mating Node & Airlock">L3</button>
+      <button class="tool-icon" data-lvl="3" title="Level 04: Centrifuge Habitation Ring & Solar Arrays">L4</button>
+      <button class="tool-icon" data-lvl="4" title="Level 05: Lower Thermal Radiator Array">L5</button>
+      <button class="tool-icon" id="toolExplodeBtn" title="Explode Levels">EXP</button>
+      <button class="tool-icon" id="toolScanBtn" title="Blueprint Scan">SCN</button>
+    </div>
+
+    <!-- Laser Scan Sweep Line -->
+    <div class="laser-scan-bar" id="laserScanBar"></div>
+
+    <!-- Floating Active Level Indicator -->
+    <div class="stage-level-tag">
+      <span style="color:var(--muted);">SELECTED TIER</span>
+      <strong id="stageTierLabel">LVL-01 // ATV CARGO SPIRE</strong>
+    </div>
+
+    <!-- ======================================================================
+         HIGH-DETAIL 5-LEVEL ORBITAL STATION CAD WIREFRAME SVG
+         Click ANY level directly on the blueprint to select and highlight it!
+    ======================================================================= -->
+    <svg class="station" id="stationSvg" data-focus="true" viewBox="0 0 520 470" fill="none">
+      <defs>
+        <marker id="dimArrow" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1 L 6 3 L 0 5 z" fill="#f09c2b"/>
+        </marker>
+      </defs>
+
+      <!-- Background Polar Grid & Crosshairs -->
+      <g stroke="#3fd8d8" stroke-opacity="0.16" stroke-width="0.6">
+        <line x1="260" y1="15" x2="260" y2="455"/>
+        <line x1="40" y1="235" x2="480" y2="235"/>
+        <circle cx="260" cy="235" r="95" stroke-dasharray="3 6"/>
       </g>
-      <g stroke-opacity=".55">
-        <path d="M60 330 L110 345 M60 262 L110 252 M440 330 L390 345 M440 262 L390 252"/>
-        <path d="M80 322 L128 336 M86 270 L130 262 M420 322 L372 336 M414 270 L370 262"/>
+
+      <!-- Counter-Rotating Instrumentation Rings -->
+      <g class="ring-b" stroke="#3fd8d8" stroke-opacity="0.45" stroke-dasharray="2 5" stroke-width="0.9">
+        <circle cx="260" cy="235" r="206"/>
+        <circle cx="260" cy="235" r="198" stroke-dasharray="1 10"/>
+      </g>
+      <g class="ring-a" stroke="#3fd8d8" stroke-opacity="0.55" stroke-width="0.9">
+        <circle cx="260" cy="235" r="172"/>
+        <circle cx="260" cy="235" r="154" stroke-dasharray="14 6"/>
+      </g>
+
+      <!-- Dynamic Amber Gauge Arc (rotates to point at the active station level!) -->
+      <circle
+        class="ring-amber-arc"
+        id="amberArcRing"
+        cx="260"
+        cy="235"
+        r="188"
+        stroke="#f09c2b"
+        stroke-width="3.2"
+        stroke-dasharray="95 220"
+        stroke-opacity="0.88"
+        transform="rotate(-45 260 235)"
+      />
+
+      <!-- ====================================================================
+           LEVEL 01 (TOP): ATV_03_01 — AUTOMATED TRANSFER VEHICLE & DOCKING SPIRE
+           Y-Range: 26 .. 98
+      ===================================================================== -->
+      <g class="station-level lvl-0 active-level" data-level="0">
+        <!-- Upper KURS Radar Needle & Laser Rangefinder -->
+        <line x1="260" y1="22" x2="260" y2="38"/>
+        <circle cx="260" cy="22" r="2.2"/>
+        <line x1="252" y1="30" x2="268" y2="30"/>
+        <!-- Docking Probe & Conical Drogue Collar -->
+        <polygon points="248,38 272,38 268,48 252,48"/>
+        <!-- Main ATV Pressurized Avionics & Cargo Hull -->
+        <rect x="238" y="48" width="44" height="34" rx="2"/>
+        <line x1="238" y1="58" x2="282" y2="58"/>
+        <line x1="238" y1="72" x2="282" y2="72"/>
+        <!-- Internal X-Ray Cargo Racks -->
+        <g class="xray-detail">
+          <line x1="246" y1="48" x2="246" y2="82"/>
+          <line x1="274" y1="48" x2="274" y2="82"/>
+          <circle cx="260" cy="65" r="5"/>
+        </g>
+        <!-- Conical Aft Service Thruster Skirt -->
+        <polygon points="242,82 278,82 269,96 251,96"/>
+        <!-- Deploying X-Wing Solar Array Wings (Left & Right) -->
+        <polyline points="238,64 176,46 164,56 238,72"/>
+        <line x1="205" y1="54" x2="198" y2="63"/>
+        <line x1="186" y1="49" x2="179" y2="59"/>
+        <polyline points="282,64 344,46 356,56 282,72"/>
+        <line x1="315" y1="54" x2="322" y2="63"/>
+        <line x1="334" y1="49" x2="341" y2="59"/>
+        <!-- Attitude Control RCS Thruster Pods -->
+        <rect x="233" y="52" width="5" height="7"/>
+        <rect x="282" y="52" width="5" height="7"/>
+      </g>
+
+      <!-- ====================================================================
+           LEVEL 02: FGB_10_03 — ZARYA CORE PROPULSION & HABITATION BLOCK
+           Y-Range: 98 .. 205
+      ===================================================================== -->
+      <g class="station-level lvl-1" data-level="1">
+        <!-- Forward Pressurized Adapter Neck -->
+        <rect x="249" y="96" width="22" height="16"/>
+        <!-- Main Cylindrical FGB Pressure Hull -->
+        <rect x="234" y="112" width="52" height="92" rx="3"/>
+        <!-- Structural Ring Frames & Longerons -->
+        <line x1="234" y1="128" x2="286" y2="128"/>
+        <line x1="234" y1="146" x2="286" y2="146"/>
+        <line x1="234" y1="168" x2="286" y2="168"/>
+        <line x1="234" y1="186" x2="286" y2="186"/>
+        <line x1="246" y1="112" x2="246" y2="204"/>
+        <line x1="274" y1="112" x2="274" y2="204"/>
+        <!-- 8 External Cylindrical Propellant Tanks (Left & Right Flanks) -->
+        <rect x="225" y="118" width="9" height="24" rx="4"/>
+        <rect x="225" y="148" width="9" height="24" rx="4"/>
+        <rect x="225" y="176" width="9" height="22" rx="4"/>
+        <rect x="286" y="118" width="9" height="24" rx="4"/>
+        <rect x="286" y="148" width="9" height="24" rx="4"/>
+        <rect x="286" y="176" width="9" height="22" rx="4"/>
+        <!-- Folded Navigation Radiator Boom -->
+        <rect x="208" y="124" width="17" height="10"/>
+        <rect x="295" y="124" width="17" height="10"/>
+        <!-- Viewport Portholes & Internal X-Ray Habitation Decks -->
+        <circle cx="260" cy="137" r="4"/>
+        <circle cx="260" cy="157" r="4"/>
+        <circle cx="260" cy="177" r="4"/>
+        <g class="xray-detail">
+          <path d="M 238,118 L 282,142 M 282,118 L 238,142"/>
+          <path d="M 238,170 L 282,198 M 282,170 L 238,198"/>
+        </g>
+      </g>
+
+      <!-- ====================================================================
+           LEVEL 03: PMA_03_31 — CENTRAL MATING NODE, AIRLOCK & CANADARM
+           Y-Range: 205 .. 262
+      ===================================================================== -->
+      <g class="station-level lvl-2" data-level="2">
+        <!-- Upper Conical Pressurized Mating Adapter -->
+        <polygon points="242,204 278,204 288,218 232,218"/>
+        <!-- Multi-Axis Berthing Node Sphere / Octagon -->
+        <polygon points="224,218 296,218 306,230 306,246 296,258 224,258 214,246 214,230"/>
+        <!-- Lateral EVA Airlock Hatches (Port & Starboard) -->
+        <rect x="196" y="226" width="18" height="24"/>
+        <line x1="196" y1="238" x2="214" y2="238"/>
+        <rect x="306" y="226" width="18" height="24"/>
+        <line x1="306" y1="238" x2="324" y2="238"/>
+        <!-- Central Observation Cupola Window -->
+        <circle cx="260" cy="238" r="12"/>
+        <circle cx="260" cy="238" r="6"/>
+        <line x1="248" y1="238" x2="272" y2="238"/>
+        <line x1="260" y1="226" x2="260" y2="250"/>
+        <!-- Articulated Robotic Manipulator Crane (Canadarm2) -->
+        <polyline points="214,222 178,202 152,220 162,232"/>
+        <circle cx="178" cy="202" r="3"/>
+        <circle cx="152" cy="220" r="2.5"/>
+        <g class="xray-detail">
+          <rect x="232" y="224" width="56" height="28"/>
+        </g>
+      </g>
+
+      <!-- ====================================================================
+           LEVEL 04: S1_01_20 — CENTRIFUGE HABITATION TORUS & MAIN SOLAR ARRAYS
+           Y-Range: 262 .. 346
+      ===================================================================== -->
+      <g class="station-level lvl-3" data-level="3">
+        <!-- Central Core Hub Shaft through Centrifuge -->
+        <rect x="246" y="258" width="28" height="84"/>
+        <!-- Triple-Ring Rotating Artificial Gravity Centrifuge Torus -->
+        <ellipse cx="260" cy="302" rx="126" ry="36"/>
+        <ellipse cx="260" cy="302" rx="106" ry="28"/>
+        <ellipse cx="260" cy="302" rx="64" ry="15"/>
+        <!-- 6 Pressurized Radial Elevator Spokes connecting Hub to Centrifuge -->
+        <line x1="196" y1="302" x2="134" y2="302"/>
+        <line x1="324" y1="302" x2="386" y2="302"/>
+        <line x1="215" y1="291" x2="168" y2="277"/>
+        <line x1="305" y1="291" x2="352" y2="277"/>
+        <line x1="215" y1="313" x2="168" y2="327"/>
+        <line x1="305" y1="313" x2="352" y2="327"/>
+
+        <!-- PORT & STARBOARD GIANT SOLAR PHOTOVOLTAIC WINGS -->
+        <!-- Left Upper & Lower Solar Blankets -->
+        <polygon points="134,292 48,256 98,244 176,278"/>
+        <polygon points="134,310 48,342 98,356 176,324"/>
+        <!-- Solar Cell Grid Subdivisions (Left) -->
+        <line x1="73" y1="250" x2="155" y2="285"/>
+        <line x1="82" y1="270" x2="116" y2="252"/>
+        <line x1="112" y1="282" x2="146" y2="265"/>
+        <line x1="73" y1="349" x2="155" y2="317"/>
+        <line x1="82" y1="330" x2="116" y2="348"/>
+        <line x1="112" y1="318" x2="146" y2="336"/>
+
+        <!-- Right Upper & Lower Solar Blankets -->
+        <polygon points="386,292 472,256 422,244 344,278"/>
+        <polygon points="386,310 472,342 422,356 344,324"/>
+        <!-- Solar Cell Grid Subdivisions (Right) -->
+        <line x1="447" y1="250" x2="365" y2="285"/>
+        <line x1="438" y1="270" x2="404" y2="252"/>
+        <line x1="408" y1="282" x2="374" y2="265"/>
+        <line x1="447" y1="349" x2="365" y2="317"/>
+        <line x1="438" y1="330" x2="404" y2="348"/>
+        <line x1="408" y1="318" x2="374" y2="336"/>
+      </g>
+
+      <!-- ====================================================================
+           LEVEL 05 (BOTTOM): S2_01_40 — THERMAL RADIATOR & DEEP-SPACE RELAY SPINE
+           Y-Range: 346 .. 448
+      ===================================================================== -->
+      <g class="station-level lvl-4" data-level="4">
+        <!-- Lower Structural Truss Spine -->
+        <rect x="250" y="342" width="20" height="86"/>
+        <!-- Internal Cross-Bracing Truss Bays -->
+        <polyline points="250,342 270,358 250,374 270,390 250,406 270,422"/>
+        <polyline points="270,342 250,358 270,374 250,390 270,406 250,422"/>
+        <!-- Port & Starboard Accordion Ammonia Heat-Rejection Radiator Panels -->
+        <rect x="178" y="352" width="72" height="18"/>
+        <line x1="192" y1="352" x2="192" y2="370"/>
+        <line x1="206" y1="352" x2="206" y2="370"/>
+        <line x1="220" y1="352" x2="220" y2="370"/>
+        <line x1="234" y1="352" x2="234" y2="370"/>
+
+        <rect x="192" y="378" width="58" height="18"/>
+        <line x1="206" y1="378" x2="206" y2="396"/>
+        <line x1="220" y1="378" x2="220" y2="396"/>
+        <line x1="234" y1="378" x2="234" y2="396"/>
+
+        <rect x="270" y="352" width="72" height="18"/>
+        <line x1="286" y1="352" x2="286" y2="370"/>
+        <line x1="300" y1="352" x2="300" y2="370"/>
+        <line x1="314" y1="352" x2="314" y2="370"/>
+        <line x1="328" y1="352" x2="328" y2="370"/>
+
+        <rect x="270" y="378" width="58" height="18"/>
+        <line x1="286" y1="378" x2="286" y2="396"/>
+        <line x1="300" y1="378" x2="300" y2="396"/>
+        <line x1="314" y1="378" x2="314" y2="396"/>
+
+        <!-- Deep-Space High-Gain Parabolic Dish at Bottom Tip -->
+        <path d="M 236,434 Q 260,418 284,434"/>
+        <line x1="260" y1="428" x2="260" y2="446"/>
+        <circle cx="260" cy="446" r="2.5"/>
+      </g>
+
+      <!-- ====================================================================
+           DYNAMIC CAD ENGINEERING DIMENSION CALLOUTS LAYER
+           Automatically repositions to measure the currently selected level!
+      ===================================================================== -->
+      <g class="cad-dimensions-layer" id="cadDimsGroup" stroke="#f09c2b" stroke-width="0.9">
+        <!-- Left Vertical Span Dimension Arrow -->
+        <line id="dimLineV" x1="142" y1="38" x2="142" y2="96" marker-start="url(#dimArrow)" marker-end="url(#dimArrow)"/>
+        <line id="dimTickTop" x1="136" y1="38" x2="235" y2="38" stroke-dasharray="2 3" stroke-opacity="0.65"/>
+        <line id="dimTickBot" x1="136" y1="96" x2="235" y2="96" stroke-dasharray="2 3" stroke-opacity="0.65"/>
+        <rect id="dimLabelBox" x="78" y="58" width="58" height="16" fill="#04161d" stroke="#f09c2b" stroke-width="0.8"/>
+        <text id="dimTextV" x="107" y="69" fill="#ffd080" font-size="8.5" text-anchor="middle" stroke="none">H: 10.3M</text>
+
+        <!-- Right Callout Pointer & Span Spec -->
+        <polyline id="dimLeaderR" points="286,65 375,65 390,52" fill="none"/>
+        <circle id="dimDotR" cx="286" cy="65" r="2.5" fill="#f09c2b"/>
+        <text id="dimTextR" x="394" y="50" fill="#ffd080" font-size="8.5" stroke="none">Ø 4.5M // MASS 20.7T</text>
+        <text id="dimSubR" x="394" y="61" fill="#3fd8d8" font-size="7.5" stroke="none">TOLERANCE: ±0.02MM</text>
       </g>
     </svg>
 
-    <div class="readout l"><b id="rTime">2Y</b><small id="rDate">06/10/2021 · EST. TIME &amp; DATE</small></div>
-    <div class="readout r"><b id="rCost">50.000M</b><small id="rFull">49.873.290.017$ · EST. COST</small></div>
+    <div class="readout l">
+      <b id="rTime">2Y</b>
+      <small id="rDate">06/10/2021 · EST. TIME &amp; DATE</small>
+    </div>
+    <div class="readout r">
+      <b id="rCost">50.000M</b>
+      <small id="rFull">49.873.290.017$ · EST. COST</small>
+    </div>
   </section>
 
+  <!-- ========================================================================
+       RIGHT COLUMN: SYNCHRONIZED ORBITAL RENDER & ENGINEERING CAPSULE
+  ========================================================================= -->
   <aside class="side">
-    <div class="preview"><div class="sat"></div></div>
+    <!-- Synchronized Orbital Render Viewport -->
+    <div class="preview">
+      <div class="preview-header">
+        <span>CAM-04 // LEO HORIZON</span>
+        <span id="prevHighlightTag" style="color:var(--amber);">FOCUS: LVL-01</span>
+      </div>
+
+      <!-- Mini 3D Station Silhouette with synchronized level highlighting -->
+      <svg class="preview-sat-svg" viewBox="0 0 280 160">
+        <!-- Solar Wings (Level 4) -->
+        <g class="prev-part" data-prev="3">
+          <polygon points="55,68 115,68 110,92 50,92"/>
+          <polygon points="165,68 225,68 220,92 160,92"/>
+          <ellipse cx="140" cy="80" rx="34" ry="12" fill="none" stroke-width="2"/>
+        </g>
+        <!-- Upper Cargo Spire (Level 1) -->
+        <g class="prev-part active-prev" data-prev="0">
+          <rect x="132" y="22" width="16" height="20"/>
+          <line x1="112" y1="30" x2="168" y2="30" stroke-width="2"/>
+        </g>
+        <!-- Core FGB Block (Level 2) -->
+        <g class="prev-part" data-prev="1">
+          <rect x="129" y="42" width="22" height="26"/>
+        </g>
+        <!-- Central PMA Node (Level 3) -->
+        <g class="prev-part" data-prev="2">
+          <rect x="125" y="68" width="30" height="16" rx="3"/>
+        </g>
+        <!-- Lower Radiator Spine (Level 5) -->
+        <g class="prev-part" data-prev="4">
+          <rect x="135" y="84" width="10" height="36"/>
+          <rect x="114" y="92" width="20" height="10"/>
+          <rect x="146" y="92" width="20" height="10"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Engineering Spec Capsule -->
     <div class="info">
+      <div class="info-sub" id="iTierCode">STRUCTURAL LEVEL 01</div>
       <h3>&lt;//: <span id="iName">ATV</span> :///&gt;</h3>
       <p id="iText">The Automated Transfer Vehicle was an expendable cargo spacecraft developed by the European Space Agency.</p>
+
+      <div class="subsys-bars">
+        <div class="subsys-row">
+          <span>INTEGRITY</span>
+          <div class="subsys-track"><div class="subsys-fill" id="barInteg" style="width:94%"></div></div>
+          <span id="valInteg">94%</span>
+        </div>
+        <div class="subsys-row">
+          <span>PWR DRAW</span>
+          <div class="subsys-track"><div class="subsys-fill" id="barPwr" style="width:42%"></div></div>
+          <span id="valPwr">4.8kW</span>
+        </div>
+        <div class="subsys-row">
+          <span>SHIELDING</span>
+          <div class="subsys-track"><div class="subsys-fill" id="barShield" style="width:88%"></div></div>
+          <span id="valShield">88%</span>
+        </div>
+      </div>
+
       <ul>
-        <li id="iTime">Estimated construction time: 2 month</li>
-        <li id="iDead">Estimated deadline: 06/12/2019</li>
-        <li id="iCost">Estimated cost: 295 $</li>
+        <li><span>CONSTR. TIME:</span> <strong id="iTime">2 MONTH</strong></li>
+        <li><span>EST. DEADLINE:</span> <strong id="iDead">14/02/2020</strong></li>
+        <li><span>UNIT EXTRA COST:</span> <strong id="iCost">1K $</strong></li>
+        <li><span>CREW CAPACITY:</span> <strong id="iCrew">UNCREWED CARGO</strong></li>
       </ul>
     </div>
   </aside>
 
-  <footer class="footer"><button id="prev">↓ PREV</button><button id="next">NEXT ↑</button></footer>
+  <!-- ========================================================================
+       FOOTER NAVIGATION & CAD ACTIONS
+  ========================================================================= -->
+  <footer class="footer">
+    <div class="footer-group">
+      <button id="prev">↓ PREV LEVEL</button>
+      <button id="next">NEXT LEVEL ↑</button>
+      <span style="color:var(--muted); font-size:9.5px; margin-left:8px;">
+        TIP: CLICK DIRECTLY ON ANY STATION LEVEL IN THE BLUEPRINT OR USE [↑ / ↓] KEYS
+      </span>
+    </div>
+    <div class="footer-group">
+      <button id="btnToggleExplode">EXPLODE ASSEMBLY</button>
+      <button id="btnRunScan">LASER VERIFY</button>
+    </div>
+  </footer>
 </div>
 
 <script>
+  // ==========================================================================
+  // 1. MULTI-LEVEL STATION BLUEPRINT DATABASE
+  // ==========================================================================
   const DATA = [
-    { id: "ATV_03_01", name: "ATV",  prog: "30%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "2Y",  d: "06/10/2021", total: "50.000M", full: "49.873.290.017$", text: "The Automated Transfer Vehicle was an expendable cargo spacecraft developed by the European Space Agency." },
-    { id: "FGB_10_03", name: "FGB",  prog: "12%", delay: "2 MONTH",  cost: "2M $",  dead: "15/04/2020", t: "3Y",  d: "11/03/2022", total: "72.400M", full: "72.388.120.412$", text: "Functional Cargo Block: the first module of the station, providing power, storage and propulsion." },
-    { id: "PMA_03_31", name: "PMA",  prog: "38%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "1Y",  d: "21/09/2020", total: "08.900M", full: "08.871.002.390$", text: "Pressurized Mating Adapter: converts the docking mechanism between modules." },
-    { id: "S1_01_20",  name: "S1",   prog: "48%", delay: "NO DELAY", cost: "190K $", dead: "23/08/2020", t: "4Y", d: "02/01/2023", total: "93.100M", full: "93.017.554.221$", text: "Starboard truss segment carrying radiators and solar array rotary joints." },
-    { id: "S2_01_40",  name: "S2",   prog: "28%", delay: "NO DELAY", cost: "1K $",  dead: "14/02/2020", t: "2Y",  d: "17/05/2021", total: "41.250M", full: "41.199.730.865$", text: "Secondary truss segment housing thermal control and data relay equipment." }
+    {
+      id: "ATV_03_01",
+      lvlTag: "LVL-01",
+      tierTitle: "LVL-01 // ATV CARGO & DOCKING SPIRE",
+      name: "ATV",
+      prog: "30%",
+      progNum: 30,
+      delay: "NO DELAY",
+      cost: "1K $",
+      dead: "14/02/2020",
+      t: "2Y",
+      d: "06/10/2021",
+      total: "50.000M",
+      full: "49.873.290.017$",
+      crew: "UNCREWED CARGO",
+      integ: 96,
+      pwr: "4.8kW",
+      pwrPct: 38,
+      shield: 88,
+      arcAngle: -65,
+      dimY1: 26,
+      dimY2: 96,
+      dimH: "H: 10.3M",
+      dimSpec: "Ø 4.5M // MASS 20.7T",
+      leaderY: 64,
+      leaderX: 284,
+      text: "Automated Transfer Vehicle: upper orbital resupply spacecraft with KURS radar docking probe and X-wing solar arrays."
+    },
+    {
+      id: "FGB_10_03",
+      lvlTag: "LVL-02",
+      tierTitle: "LVL-02 // FGB ZARYA PROPULSION CORE",
+      name: "FGB",
+      prog: "62%",
+      progNum: 62,
+      delay: "2 MONTH",
+      cost: "2M $",
+      dead: "15/04/2020",
+      t: "3Y",
+      d: "11/03/2022",
+      total: "72.400M",
+      full: "72.388.120.412$",
+      crew: "3 CREW HAB",
+      integ: 99,
+      pwr: "9.2kW",
+      pwrPct: 68,
+      shield: 95,
+      arcAngle: -25,
+      dimY1: 98,
+      dimY2: 204,
+      dimH: "H: 12.6M",
+      dimSpec: "Ø 4.1M // 16 FUEL TANKS",
+      leaderY: 152,
+      leaderX: 296,
+      text: "Functional Cargo Block (Zarya): primary station backbone providing attitude control, propellant storage, and habitation."
+    },
+    {
+      id: "PMA_03_31",
+      lvlTag: "LVL-03",
+      tierTitle: "LVL-03 // CENTRAL MATING NODE & CUPOLA",
+      name: "PMA",
+      prog: "78%",
+      progNum: 78,
+      delay: "NO DELAY",
+      cost: "1K $",
+      dead: "14/02/2020",
+      t: "1Y",
+      d: "21/09/2020",
+      total: "08.900M",
+      full: "08.871.002.390$",
+      crew: "6 CREW NODE",
+      integ: 92,
+      pwr: "6.4kW",
+      pwrPct: 52,
+      shield: 91,
+      arcAngle: 15,
+      dimY1: 204,
+      dimY2: 258,
+      dimH: "H: 06.8M",
+      dimSpec: "SPAN 14.2M // CANADARM2",
+      leaderY: 236,
+      leaderX: 324,
+      text: "Pressurized Mating Adapter & Airlock Node: central berthing hub featuring observation cupola and robotic manipulator arm."
+    },
+    {
+      id: "S1_01_20",
+      lvlTag: "LVL-04",
+      tierTitle: "LVL-04 // CENTRIFUGE TORUS & SOLAR WINGS",
+      name: "S1",
+      prog: "48%",
+      progNum: 48,
+      delay: "NO DELAY",
+      cost: "190K $",
+      dead: "23/08/2020",
+      t: "4Y",
+      d: "02/01/2023",
+      total: "93.100M",
+      full: "93.017.554.221$",
+      crew: "12 CREW (0.6G)",
+      integ: 97,
+      pwr: "120kW",
+      pwrPct: 96,
+      shield: 94,
+      arcAngle: 68,
+      dimY1: 258,
+      dimY2: 348,
+      dimH: "H: 18.4M",
+      dimSpec: "WINGSPAN 109M // 0.6G RING",
+      leaderY: 302,
+      leaderX: 386,
+      text: "Main Starboard Truss & Artificial Gravity Centrifuge: rotates at 4.2 RPM to generate 0.6G alongside quad solar blankets."
+    },
+    {
+      id: "S2_01_40",
+      lvlTag: "LVL-05",
+      tierTitle: "LVL-05 // THERMAL RADIATOR & DEEP RELAY",
+      name: "S2",
+      prog: "84%",
+      progNum: 84,
+      delay: "NO DELAY",
+      cost: "1K $",
+      dead: "14/02/2020",
+      t: "2Y",
+      d: "17/05/2021",
+      total: "41.250M",
+      full: "41.199.730.865$",
+      crew: "AUTOMATED",
+      integ: 91,
+      pwr: "14.5kW",
+      pwrPct: 74,
+      shield: 86,
+      arcAngle: 122,
+      dimY1: 344,
+      dimY2: 446,
+      dimH: "H: 15.2M",
+      dimSpec: "RADIATORS 70KW // X-BAND",
+      leaderY: 382,
+      leaderX: 342,
+      text: "Lower Thermal Control Truss: accordion ammonia heat-rejection panels and high-gain parabolic deep-space telemetry dish."
+    }
   ];
+
   const $ = (id) => document.getElementById(id);
   const list = $("modules");
+  const stationSvg = $("stationSvg");
   let cur = 0;
+  let allLevelsMode = false;
+  let audioEnabled = true;
 
-  list.innerHTML = DATA.map((m, i) => `
+  // ==========================================================================
+  // 2. WEB AUDIO API CAD PLOTTER & SCANNER SOUND SYNTHESIS
+  // ==========================================================================
+  let audioCtx = null;
+  function playCadSound(type = "select") {
+    if (!audioEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === "select") {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(740, now);
+        osc.frequency.exponentialRampToValueAtTime(1180, now + 0.055);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.065);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } else if (type === "scan") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(1480, now + 0.45);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.52);
+      }
+    } catch (e) {}
+  }
+
+  // ==========================================================================
+  // 3. BUILD LEFT MODULE MANIFEST
+  // ==========================================================================
+  list.innerHTML = DATA.map(
+    (m, i) => `
     <button class="mod" data-i="${i}" aria-pressed="${i === 0}">
-      <h4>${m.id}</h4>
-      <dl><dt>GENERAL PROGRESS</dt><dd>${m.prog}</dd><dt>DELAY</dt><dd>${m.delay}</dd><dt>EXTRA COST</dt><dd>${m.cost}</dd><dt>DEADLINE</dt><dd>${m.dead}</dd></dl>
-    </button>`).join("");
+      <div class="mod-head">
+        <h4>${m.id}</h4>
+        <span class="lvl-pill">${m.lvlTag}</span>
+      </div>
+      <dl>
+        <dt>GENERAL PROGRESS</dt><dd>${m.prog}</dd>
+        <dt>DELAY</dt><dd>${m.delay}</dd>
+        <dt>EXTRA COST</dt><dd>${m.cost}</dd>
+        <dt>DEADLINE</dt><dd>${m.dead}</dd>
+      </dl>
+      <div class="mod-prog-track">
+        <div class="mod-prog-fill" style="width:${m.progNum}%"></div>
+      </div>
+    </button>`
+  ).join("");
 
-  function select(i) {
+  // ==========================================================================
+  // 4. UPDATE CAD DIMENSION CALLOUTS & LEVEL HIGHLIGHTING
+  // ==========================================================================
+  function updateCadDimensions(m) {
+    const midY = (m.dimY1 + m.dimY2) * 0.5;
+    $("dimLineV").setAttribute("y1", m.dimY1);
+    $("dimLineV").setAttribute("y2", m.dimY2);
+    $("dimTickTop").setAttribute("y1", m.dimY1);
+    $("dimTickTop").setAttribute("y2", m.dimY1);
+    $("dimTickBot").setAttribute("y1", m.dimY2);
+    $("dimTickBot").setAttribute("y2", m.dimY2);
+
+    $("dimLabelBox").setAttribute("y", midY - 8);
+    $("dimTextV").setAttribute("y", midY + 3);
+    $("dimTextV").textContent = m.dimH;
+
+    $("dimLeaderR").setAttribute(
+      "points",
+      `${m.leaderX},${m.leaderY} 375,${m.leaderY} 390,${m.leaderY - 12}`
+    );
+    $("dimDotR").setAttribute("cx", m.leaderX);
+    $("dimDotR").setAttribute("cy", m.leaderY);
+    $("dimTextR").setAttribute("y", m.leaderY - 14);
+    $("dimTextR").textContent = m.dimSpec;
+    $("dimSubR").setAttribute("y", m.leaderY - 3);
+  }
+
+  function select(i, playSound = true) {
+    allLevelsMode = false;
+    $("menuAllLevels").classList.remove("active");
+    stationSvg.setAttribute("data-focus", "true");
+
     cur = (i + DATA.length) % DATA.length;
     const m = DATA[cur];
-    list.querySelectorAll(".mod").forEach((b, k) => b.setAttribute("aria-pressed", k === cur));
-    $("iName").textContent = m.name; $("iText").textContent = m.text;
-    $("rTime").textContent = m.t; $("rDate").textContent = m.d + " · EST. TIME & DATE";
-    $("rCost").textContent = m.total; $("rFull").textContent = m.full + " · EST. COST";
-    $("iDead").textContent = "Estimated deadline: " + m.dead; $("iCost").textContent = "Estimated cost: " + m.cost;
+    if (playSound) playCadSound("select");
+
+    // 1. Update Left Module List
+    list.querySelectorAll(".mod").forEach((b, k) => {
+      b.setAttribute("aria-pressed", k === cur);
+    });
+
+    // 2. Highlight Corresponding Station Level on Blueprint SVG
+    document.querySelectorAll(".station-level").forEach((lvlEl) => {
+      const idx = Number(lvlEl.dataset.level);
+      lvlEl.classList.toggle("active-level", idx === cur);
+    });
+
+    // 3. Highlight Left Tool Palette Button
+    document.querySelectorAll(".tool-icon[data-lvl]").forEach((tBtn) => {
+      tBtn.classList.toggle("active", Number(tBtn.dataset.lvl) === cur);
+    });
+
+    // 4. Rotate Outer Amber Arc Ring
+    $("amberArcRing").setAttribute("transform", `rotate(${m.arcAngle} 260 235)`);
+
+    // 5. Reposition Engineering Dimension Callouts
+    updateCadDimensions(m);
+
+    // 6. Update Synchronized Orbital Render Preview
+    document.querySelectorAll(".prev-part").forEach((part) => {
+      part.classList.toggle("active-prev", Number(part.dataset.prev) === cur);
+    });
+    $("prevHighlightTag").textContent = `FOCUS: ${m.lvlTag}`;
+
+    // 7. Update Readouts & Right Info Capsule
+    $("topActiveBanner").textContent = `ACTIVE BLUEPRINT: ${m.lvlTag} // ${m.id}`;
+    $("stageTierLabel").textContent = m.tierTitle;
+    $("iTierCode").textContent = `STRUCTURAL ${m.lvlTag}`;
+    $("iName").textContent = m.name;
+    $("iText").textContent = m.text;
+    $("rTime").textContent = m.t;
+    $("rDate").textContent = m.d + " · EST. TIME & DATE";
+    $("rCost").textContent = m.total;
+    $("rFull").textContent = m.full + " · EST. COST";
+
+    $("iTime").textContent = m.t + " (" + m.prog + " DONE)";
+    $("iDead").textContent = m.dead;
+    $("iCost").textContent = m.cost;
+    $("iCrew").textContent = m.crew;
+
+    $("barInteg").style.width = m.integ + "%";
+    $("valInteg").textContent = m.integ + "%";
+    $("barPwr").style.width = m.pwrPct + "%";
+    $("valPwr").textContent = m.pwr;
+    $("barShield").style.width = m.shield + "%";
+    $("valShield").textContent = m.shield + "%";
   }
-  list.addEventListener("click", (e) => { const b = e.target.closest(".mod"); if (b) select(+b.dataset.i); });
+
+  // Click on Left Module List
+  list.addEventListener("click", (e) => {
+    const b = e.target.closest(".mod");
+    if (b) select(Number(b.dataset.i));
+  });
+
+  // Click Directly on ANY Level of the Wireframe Station SVG!
+  document.querySelectorAll(".station-level").forEach((lvlEl) => {
+    lvlEl.addEventListener("click", () => {
+      select(Number(lvlEl.dataset.level));
+    });
+  });
+
+  // Click on Left Tool Palette Level Buttons (L1..L5)
+  document.querySelectorAll(".tool-icon[data-lvl]").forEach((btn) => {
+    btn.addEventListener("click", () => select(Number(btn.dataset.lvl)));
+  });
+
+  // Fixed Original Prev/Next Buttons
   $("prev").onclick = () => select(cur - 1);
   $("next").onclick = () => select(cur + 1);
 
+  // ==========================================================================
+  // 5. CAD TOOLBAR ACTIONS (EXPLODE, X-RAY, DIMS, ZOOM, LASER SCAN)
+  // ==========================================================================
+  function toggleExplode() {
+    playCadSound("select");
+    const isExp = stationSvg.classList.toggle("exploded");
+    $("menuExplode").classList.toggle("active", isExp);
+    $("toolExplodeBtn").classList.toggle("active", isExp);
+    $("btnToggleExplode").classList.toggle("active", isExp);
+  }
+  $("menuExplode").onclick = toggleExplode;
+  $("toolExplodeBtn").onclick = toggleExplode;
+  $("btnToggleExplode").onclick = toggleExplode;
+
+  $("menuXray").onclick = (e) => {
+    playCadSound("select");
+    const on = stationSvg.classList.toggle("xray-on");
+    e.currentTarget.classList.toggle("active", on);
+  };
+
+  $("menuDims").onclick = (e) => {
+    playCadSound("select");
+    const hidden = stationSvg.classList.toggle("hide-dims");
+    e.currentTarget.classList.toggle("active", !hidden);
+  };
+
+  $("menuZoom").onclick = (e) => {
+    playCadSound("select");
+    const z = stationSvg.classList.toggle("zoomed");
+    e.currentTarget.classList.toggle("active", z);
+  };
+
+  $("menuAllLevels").onclick = (e) => {
+    playCadSound("scan");
+    allLevelsMode = !allLevelsMode;
+    e.currentTarget.classList.toggle("active", allLevelsMode);
+    if (allLevelsMode) {
+      stationSvg.removeAttribute("data-focus");
+      document.querySelectorAll(".station-level").forEach((el) => el.classList.add("active-level"));
+      $("stageTierLabel").textContent = "ALL 5 LEVELS // FULL ASSEMBLY";
+    } else {
+      select(cur, false);
+    }
+  };
+
+  function runLaserScan() {
+    playCadSound("scan");
+    const bar = $("laserScanBar");
+    bar.classList.remove("scanning");
+    void bar.offsetWidth;
+    bar.classList.add("scanning");
+  }
+  $("menuScan").onclick = runLaserScan;
+  $("toolScanBtn").onclick = runLaserScan;
+  $("btnRunScan").onclick = runLaserScan;
+
+  $("menuAudio").onclick = (e) => {
+    audioEnabled = !audioEnabled;
+    e.currentTarget.classList.toggle("active", audioEnabled);
+  };
+
+  // Keyboard Navigation (Up / Down Arrows to cycle Station Levels, E to Explode)
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      e.preventDefault();
+      select(cur + 1);
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      select(cur - 1);
+    } else if (e.key.toLowerCase() === "e") {
+      toggleExplode();
+    }
+  });
+
+  // Live Clock
   const tick = () => {
-    const d = new Date(), p = (n) => String(n).padStart(2, "0");
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
     $("clock").textContent = `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
   };
-  tick(); setInterval(tick, 10000);
+  tick();
+  setInterval(tick, 10000);
+
+  // Initialize Level 01
+  select(0, false);
 </script>
 </body>
 </html>

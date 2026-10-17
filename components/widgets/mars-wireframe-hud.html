@@ -3,189 +3,1530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mars Wireframe HUD</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>ARES-IX // Mars Orbital Wireframe Telemetry HUD</title>
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;700;800&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
   "title": "Mars Wireframe HUD",
   "category": "widgets",
   "themes": ["dark", "retro"],
-  "tags": ["space", "hud", "mars", "planet", "wireframe", "canvas", "sci-fi", "mint", "loading"],
-  "description": "Mint-on-black planetary HUD: a textured Mars sphere wrapped in a rotating canvas-drawn node mesh, with side gauges, equalizer strip, mini map, hex badge counter and a loading bar.",
-  "techniques": ["canvas 3D point sphere with connecting lines", "radial-gradient planet texture", "clip-path chamfered panels", "SVG circular gauges with stroke-dashoffset", "requestAnimationFrame paused when off-screen"],
-  "recipe": "The mesh around the planet is drawn on a 2D canvas: points are distributed on a sphere with the golden-angle spiral, rotated each frame around the Y axis, projected with a simple perspective divide, and connected whenever two points are closer than a threshold. Line alpha depends on depth so the back of the sphere fades out. The planet itself is only radial-gradients, so the whole HUD stays small. The animation loop stops when the tab is hidden.",
-  "preview": { "mode": "page", "width": 1000, "height": 640 }
+  "tags": [
+    "space",
+    "hud",
+    "mars",
+    "planet",
+    "wireframe",
+    "canvas",
+    "sci-fi",
+    "mint",
+    "telemetry",
+    "orbital"
+  ],
+  "description": "Tactical mint-on-obsidian Mars orbital reconnaissance HUD featuring a true dual-layer 3D Fibonacci geodesic mesh (occluded back-hemisphere + foreground hemisphere), orbiting Phobos & Deimos moons, clickable surface landing beacons, interactive drag-to-rotate globe physics, and procedural Web Audio telemetry.",
+  "techniques": [
+    "Dual-pass 2D Canvas 3D renderer splitting back-hemisphere (z < 0) behind the CSS planet and front-hemisphere (z >= 0) in front",
+    "Golden-angle Fibonacci sphere distribution with real-time mouse drag rotation and interactive GAIN / PHASE / ORBIT hardware knobs",
+    "3D surface landing beacons (Olympus Mons, Valles Marineris, Jezero Crater) with screen-space reticle projection",
+    "Multi-layered CSS radial-gradient Mars globe with polar ice cap, atmospheric limb scattering, and terminator shadow",
+    "SVG dual-ring telemetry gauges, Tharsis topographic radar map, and Web Audio API orbital sonar synthesis"
+  ],
+  "recipe": "Fixes the original syntax bugs and upgrades the single flat canvas into a true depth-sorted 3D planetary system. Back-facing geodesic edges render on #meshBack behind the shaded Mars sphere, while front-facing edges, orbital rings, and surface beacons render on #meshFront. Clicking any beacon or dragging the globe updates the regional spectrometer, equalizer, and topographic map.",
+  "preview": { "mode": "page", "width": 1060, "height": 720 }
 }
 </script>
 
 <style>
   * { box-sizing: border-box; }
-  :root { --mint: #7fe8c8; --mint-dim: rgba(127,232,200,.35); --mint-faint: rgba(127,232,200,.12); --text: #bfe9dc; --muted: #5a8277; }
-  body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center; background: #010204; color: var(--text);
-    font: 10px/1.4 "Share Tech Mono", ui-monospace, monospace; letter-spacing: .1em; overflow: hidden;
+
+  :root {
+    --mint: #7fe8c8;
+    --mint-bright: #b8ffea;
+    --mint-dim: rgba(127, 232, 200, 0.36);
+    --mint-faint: rgba(127, 232, 200, 0.11);
+    --mint-glow: rgba(127, 232, 200, 0.45);
+    --amber: #ff9e44;
+    --crimson: #ff5252;
+    --text: #c9f2e6;
+    --muted: #5a8277;
+    --bg-deep: #020407;
   }
+
+  /* Color Spectrum Variants */
+  body[data-spectrum="amber"] {
+    --mint: #ffae42;
+    --mint-bright: #ffe2b0;
+    --mint-dim: rgba(255, 174, 66, 0.36);
+    --mint-faint: rgba(255, 174, 66, 0.11);
+    --mint-glow: rgba(255, 174, 66, 0.45);
+    --text: #ffe8c8;
+    --muted: #8c6a3d;
+  }
+
+  body[data-spectrum="cyan"] {
+    --mint: #38bdf8;
+    --mint-bright: #bae6fd;
+    --mint-dim: rgba(56, 189, 248, 0.36);
+    --mint-faint: rgba(56, 189, 248, 0.11);
+    --mint-glow: rgba(56, 189, 248, 0.45);
+    --text: #e0f2fe;
+    --muted: #4b7a96;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 45%, #070d12 0%, #010204 80%);
+    color: var(--text);
+    font: 10px/1.4 "Share Tech Mono", ui-monospace, monospace;
+    letter-spacing: 0.1em;
+    padding: 16px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ==========================================================================
+     MAIN ORBITAL HUD VIEWPORT (980 x 620)
+  ========================================================================== */
   .hud {
-    position: relative; width: 960px; height: 600px; border-radius: 12px; border: 1px solid var(--mint-faint);
+    position: relative;
+    width: 980px;
+    height: 620px;
+    border-radius: 14px;
+    border: 1px solid var(--mint-dim);
     background:
       linear-gradient(var(--mint-faint) 1px, transparent 1px) 0 0 / 40px 40px,
       linear-gradient(90deg, var(--mint-faint) 1px, transparent 1px) 0 0 / 40px 40px,
-      radial-gradient(60% 70% at 50% 50%, #0b1015, #040609 80%);
+      radial-gradient(62% 72% at 50% 50%, #0b1318 0%, #030609 82%);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.95),
+      0 0 40px rgba(127, 232, 200, 0.06),
+      inset 0 0 60px rgba(0, 0, 0, 0.85);
     overflow: hidden;
   }
-  .hud::before, .hud::after { content: ""; position: absolute; width: 60px; height: 14px; border: 1px solid var(--mint-dim); }
-  .hud::before { left: 10px; top: 10px; border-right: 0; border-bottom: 0; }
-  .hud::after  { right: 10px; bottom: 10px; border-left: 0; border-top: 0; }
 
-  .ticker { position: absolute; top: 14px; left: 200px; right: 200px; height: 18px; border-top: 2px solid var(--mint); border-bottom: 1px solid var(--mint-faint); display: flex; justify-content: space-between; color: var(--muted); font-size: 8px; padding-top: 2px; }
-  .ticker span:nth-child(odd) { color: var(--mint); }
-
-  canvas#mesh { z-index: 2; pointer-events: none; position: absolute; left: 50%; top: 50%; width: 460px; height: 460px; margin: -230px 0 0 -230px; }
-  .planet {
-    position: absolute; left: 50%; top: 50%; width: 270px; height: 270px; margin: -135px 0 0 -135px; border-radius: 50%;
-    background:
-      radial-gradient(circle at 34% 32%, rgba(255,210,170,.5), transparent 38%),
-      radial-gradient(ellipse 40% 12% at 40% 58%, rgba(90,30,15,.55), transparent 70%),
-      radial-gradient(ellipse 28% 9% at 62% 40%, rgba(90,30,15,.4), transparent 70%),
-      radial-gradient(circle at 40% 40%, #e98a52, #b4501f 55%, #4a1b0a 85%);
-    box-shadow: inset -40px -26px 70px rgba(0,0,0,.85), 0 0 50px rgba(220,100,40,.28);
-    animation: drift 40s linear infinite; background-size: 140% 140%, 100% 100%, 100% 100%, 100% 100%;
+  /* CRT Fine Scanline Overlay */
+  .hud-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18) 0px 1px,
+      transparent 1px 3px
+    );
+    pointer-events: none;
+    z-index: 20;
   }
-  @keyframes drift { to { background-position: 140% 0, 0 0, 0 0, 0 0; } }
 
-  .panel { position: absolute; border: 1px solid var(--mint-dim); background: rgba(127,232,200,.04); }
-  .title { left: 38px; top: 140px; width: 120px; padding: 6px 10px; font-size: 18px; letter-spacing: .5em; color: var(--mint); }
-  .globe-chip { left: 38px; top: 184px; width: 120px; height: 56px; display: grid; place-items: center; }
-  .globe-chip i { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--mint); position: relative; }
-  .globe-chip i::before, .globe-chip i::after { content: ""; position: absolute; inset: 0; border: 1px solid var(--mint-dim); border-radius: 50%; }
-  .globe-chip i::before { transform: scaleX(.45); } .globe-chip i::after { transform: scaleY(.45); }
-  svg.gauge { position: absolute; }
-  .gauge circle { fill: none; stroke: var(--mint-dim); }
-  .gauge .arc { stroke: var(--mint); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset .6s; }
-  .gauge text { fill: var(--mint); font: 10px "Share Tech Mono"; }
+  /* Corner Tactical Brackets */
+  .hud::before,
+  .hud::after,
+  .corner-tr,
+  .corner-bl {
+    content: "";
+    position: absolute;
+    width: 56px;
+    height: 16px;
+    border: 1.5px solid var(--mint);
+    pointer-events: none;
+    z-index: 15;
+  }
+  .hud::before { left: 12px; top: 12px; border-right: 0; border-bottom: 0; }
+  .hud::after  { right: 12px; bottom: 12px; border-left: 0; border-top: 0; }
+  .corner-tr   { right: 12px; top: 12px; border-left: 0; border-bottom: 0; }
+  .corner-bl   { left: 12px; bottom: 12px; border-right: 0; border-top: 0; }
 
-  .populate { position: absolute; left: 38px; bottom: 130px; display: flex; gap: 8px; align-items: center; }
-  .hex { width: 40px; height: 44px; background: var(--mint-dim); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); display: grid; place-items: center; }
-  .hex::after { content: ""; width: 34px; height: 38px; background: #0a1210; clip-path: inherit; }
-  .count { border: 1px solid var(--mint-dim); padding: 4px 10px; font-size: 15px; color: var(--mint); min-width: 60px; text-align: center; }
-  .count button { all: unset; cursor: pointer; padding: 0 6px; color: var(--muted); } .count button:hover { color: var(--mint); }
+  /* ==========================================================================
+     TOP TELEMETRY TICKER & SOL CLOCK
+  ========================================================================== */
+  .ticker-wrap {
+    position: absolute;
+    top: 14px;
+    left: 175px;
+    right: 175px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-  .map { position: absolute; left: 100px; bottom: 28px; width: 220px; height: 84px; background:
-    radial-gradient(circle, var(--mint-dim) 1px, transparent 1.4px) 0 0 / 6px 6px; opacity: .8;
-    -webkit-mask: radial-gradient(ellipse at 30% 50%, #000 20%, transparent 22%), radial-gradient(ellipse at 62% 40%, #000 18%, transparent 20%), radial-gradient(ellipse at 80% 62%, #000 12%, transparent 14%);
-    mask: radial-gradient(ellipse at 30% 50%, #000 20%, transparent 22%), radial-gradient(ellipse at 62% 40%, #000 18%, transparent 20%), radial-gradient(ellipse at 80% 62%, #000 12%, transparent 14%); border: 0; }
-  .map-frame { position: absolute; left: 100px; bottom: 28px; width: 220px; height: 84px; border: 1px solid var(--mint-dim); }
+  .ticker {
+    height: 20px;
+    border-top: 2px solid var(--mint);
+    border-bottom: 1px solid var(--mint-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 8.5px;
+    padding: 0 6px;
+    background: rgba(4, 10, 12, 0.65);
+  }
+  .ticker span:nth-child(odd) {
+    color: var(--mint);
+  }
 
-  .eq { right: 40px; top: 120px; width: 150px; height: 26px; display: flex; align-items: center; gap: 2px; padding: 4px 6px; }
-  .eq i { flex: 1; background: var(--mint); height: calc(var(--h) * 1%); opacity: .8; }
-  .console { right: 40px; top: 170px; width: 150px; padding: 8px; display: grid; gap: 6px; }
-  .console .row { display: flex; justify-content: space-between; align-items: center; }
-  .knob { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--mint); cursor: pointer; position: relative; }
-  .knob::after { content: ""; position: absolute; left: 50%; top: 2px; width: 1px; height: 6px; background: var(--mint); transform-origin: 0 7px; transform: rotate(var(--a, 0deg)); }
-  .readouts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; color: var(--mint); font-size: 8px; text-align: center; }
-  .stars { right: 40px; top: 360px; width: 40px; padding: 6px 0; display: grid; justify-items: center; gap: 4px; color: var(--mint); font-size: 9px; }
-  .stars span { width: 6px; height: 6px; background: var(--mint); } .stars span.off { background: transparent; border: 1px solid var(--mint-dim); }
-  .table { right: 100px; bottom: 36px; width: 120px; height: 70px; background: repeating-linear-gradient(0deg, var(--mint-faint) 0 1px, transparent 1px 8px); }
+  .sub-header-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+  .sub-header-bar strong {
+    color: var(--mint);
+    font-weight: 400;
+  }
 
-  .loader { position: absolute; left: 50%; bottom: 20px; width: 260px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; }
-  .loader .bar { flex: 1; height: 14px; border: 1px solid var(--mint-dim); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
-  .loader .bar i { display: block; height: 100%; width: var(--p, 100%); background: var(--mint-dim); transition: width .4s; }
-  .loader button { all: unset; cursor: pointer; color: var(--mint); border: 1px solid var(--mint-dim); padding: 2px 8px; }
+  /* ==========================================================================
+     CENTRAL 3D PLANETARY SYSTEM:
+     1. #meshBack  (z-index: 2) -> Back hemisphere wireframe & behind-planet orbit
+     2. .planet    (z-index: 4) -> Shaded Mars sphere with drifting surface & ice cap
+     3. #meshFront (z-index: 6) -> Front hemisphere wireframe, beacons, Phobos/Deimos
+  ========================================================================== */
+  .planet-stage {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    width: 500px;
+    height: 500px;
+    margin: -250px 0 0 -250px;
+    cursor: grab;
+    z-index: 5;
+  }
+  .planet-stage:active {
+    cursor: grabbing;
+  }
+
+  canvas.mesh-layer {
+    position: absolute;
+    inset: 0;
+    width: 500px;
+    height: 500px;
+    pointer-events: none;
+  }
+  #meshBack  { z-index: 2; }
+  #meshFront { z-index: 6; }
+
+  /* Realistic Multi-Layered Mars Sphere */
+  .planet {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 276px;
+    height: 276px;
+    margin: -138px 0 0 -138px;
+    border-radius: 50%;
+    z-index: 4;
+    pointer-events: none;
+    background:
+      /* North Polar Ice Cap */
+      radial-gradient(ellipse 34% 10% at 46% 7%, rgba(255, 245, 238, 0.72) 0%, rgba(255, 220, 200, 0.2) 55%, transparent 80%),
+      /* Sunlit Specular Highlight */
+      radial-gradient(circle at 32% 30%, rgba(255, 215, 175, 0.48), transparent 38%),
+      /* Valles Marineris & Syrtis Major Dark Albedo Features */
+      radial-gradient(ellipse 42% 13% at 38% 56%, rgba(72, 20, 8, 0.65), transparent 70%),
+      radial-gradient(ellipse 30% 10% at 65% 42%, rgba(80, 24, 10, 0.52), transparent 68%),
+      radial-gradient(circle at 28% 70%, rgba(95, 32, 12, 0.45), transparent 55%),
+      /* Core Iron-Oxide Regolith Gradient */
+      radial-gradient(circle at 38% 38%, #f09256 0%, #c85a24 48%, #7a280d 76%, #240a04 96%);
+    box-shadow:
+      /* Deep Night Terminator Shadow */
+      inset -46px -30px 75px rgba(0, 0, 0, 0.92),
+      /* Mint Tactical Scanner Rim-Light + Warm Atmospheric Limb Haze */
+      inset 4px 4px 16px rgba(255, 195, 145, 0.35),
+      inset -2px -2px 12px rgba(127, 232, 200, 0.22),
+      0 0 55px rgba(225, 95, 35, 0.3),
+      0 0 95px rgba(127, 232, 200, 0.08);
+    background-size: 100% 100%, 100% 100%, 140% 140%, 140% 140%, 140% 140%, 100% 100%;
+    animation: planetSurfaceDrift 36s linear infinite;
+  }
+
+  @keyframes planetSurfaceDrift {
+    to {
+      background-position: 0 0, 0 0, 140% 0, -140% 0, 140% 0, 0 0;
+    }
+  }
+
+  /* Outer Equatorial Reticle Ring around Planet */
+  .orbital-compass-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 416px;
+    height: 416px;
+    margin: -208px 0 0 -208px;
+    border-radius: 50%;
+    border: 1px dashed rgba(127, 232, 200, 0.16);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ==========================================================================
+     MODULAR HUD PANELS (LEFT & RIGHT COLUMNS)
+  ========================================================================== */
+  .panel {
+    position: absolute;
+    border: 1px solid var(--mint-dim);
+    background: rgba(8, 18, 17, 0.62);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    box-shadow: inset 0 0 15px rgba(127, 232, 200, 0.05);
+  }
+
+  .panel-label {
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--mint-faint);
+    padding: 3px 7px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Top-Left Primary Gauge */
+  svg.gauge {
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+  }
+  .gauge circle {
+    fill: none;
+    stroke: var(--mint-faint);
+  }
+  .gauge .arc {
+    stroke: var(--mint);
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px var(--mint-glow));
+    transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .gauge text {
+    fill: var(--mint);
+    font: 11px "Share Tech Mono", monospace;
+  }
+  .gauge .gauge-sub {
+    fill: var(--muted);
+    font-size: 7.5px;
+  }
+
+  /* Title Block & Wireframe Globe Chip */
+  .title-box {
+    left: 34px;
+    top: 142px;
+    width: 148px;
+    padding: 7px 11px;
+  }
+  .title-box h1 {
+    margin: 0;
+    font-family: "Orbitron", sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.38em;
+    color: var(--mint);
+    text-shadow: 0 0 10px var(--mint-glow);
+  }
+  .title-box .coords-sub {
+    font-size: 8.5px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .globe-chip {
+    left: 34px;
+    top: 202px;
+    width: 148px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+  }
+  .globe-chip i {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--mint);
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 0 10px var(--mint-faint);
+    animation: miniSpin 12s linear infinite;
+  }
+  .globe-chip i::before,
+  .globe-chip i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--mint-dim);
+    border-radius: 50%;
+  }
+  .globe-chip i::before { transform: scaleX(0.45); }
+  .globe-chip i::after  { transform: scaleY(0.45); }
+
+  @keyframes miniSpin {
+    0%, 100% { transform: rotate(-12deg); }
+    50% { transform: rotate(12deg); }
+  }
+
+  .chip-meta {
+    text-align: right;
+    font-size: 8.5px;
+    line-height: 1.45;
+  }
+  .chip-meta strong {
+    color: var(--mint);
+    display: block;
+    font-size: 10px;
+  }
+
+  /* Secondary Harmonics Gauge + Selected Beacon Info */
+  .beacon-inspector {
+    left: 34px;
+    top: 348px;
+    width: 162px;
+    padding: 7px 9px;
+  }
+  .beacon-name {
+    color: var(--amber);
+    font-size: 10.5px;
+    font-weight: 700;
+    margin: 4px 0 2px;
+    text-shadow: 0 0 6px rgba(255, 158, 68, 0.4);
+  }
+  .beacon-stats {
+    font-size: 8.5px;
+    color: var(--text);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 6px;
+  }
+  .beacon-stats span {
+    color: var(--muted);
+  }
+
+  /* Hex Colony Counter */
+  .populate {
+    position: absolute;
+    left: 34px;
+    bottom: 124px;
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    z-index: 10;
+  }
+  .hex {
+    width: 42px;
+    height: 46px;
+    background: var(--mint);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    display: grid;
+    place-items: center;
+    position: relative;
+    box-shadow: 0 0 12px var(--mint-glow);
+  }
+  .hex::after {
+    content: "HAB";
+    width: 36px;
+    height: 40px;
+    background: #06100e;
+    clip-path: inherit;
+    display: grid;
+    place-items: center;
+    font-size: 8px;
+    color: var(--mint);
+  }
+  .count {
+    border: 1px solid var(--mint-dim);
+    background: rgba(8, 18, 17, 0.7);
+    padding: 5px 10px;
+    font-size: 15px;
+    color: var(--mint);
+    min-width: 78px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .count button {
+    all: unset;
+    cursor: pointer;
+    padding: 0 6px;
+    color: var(--muted);
+    font-size: 16px;
+    transition: color 0.15s;
+  }
+  .count button:hover {
+    color: var(--mint-bright);
+  }
+
+  /* Bottom-Left Tharsis Topographic Mini-Map with Target Crosshair */
+  .map-container {
+    position: absolute;
+    left: 34px;
+    bottom: 26px;
+    width: 236px;
+    height: 86px;
+    border: 1px solid var(--mint-dim);
+    background: rgba(6, 14, 13, 0.72);
+    z-index: 10;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+  .map-dots {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, var(--mint) 1px, transparent 1.5px) 0 0 / 6px 6px;
+    opacity: 0.75;
+    -webkit-mask:
+      radial-gradient(ellipse at 28% 52%, #000 22%, transparent 25%),
+      radial-gradient(ellipse at 60% 42%, #000 19%, transparent 22%),
+      radial-gradient(ellipse at 82% 64%, #000 13%, transparent 16%);
+    mask:
+      radial-gradient(ellipse at 28% 52%, #000 22%, transparent 25%),
+      radial-gradient(ellipse at 60% 42%, #000 19%, transparent 22%),
+      radial-gradient(ellipse at 82% 64%, #000 13%, transparent 16%);
+  }
+  .map-crosshair {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--amber);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    left: 60%;
+    top: 42%;
+    box-shadow: 0 0 8px var(--amber);
+    transition: left 0.35s ease, top 0.35s ease;
+    pointer-events: none;
+  }
+  .map-crosshair::before,
+  .map-crosshair::after {
+    content: "";
+    position: absolute;
+    background: var(--amber);
+  }
+  .map-crosshair::before { left: -180px; right: -180px; top: 50%; height: 0.5px; opacity: 0.35; }
+  .map-crosshair::after  { top: -90px; bottom: -90px; left: 50%; width: 0.5px; opacity: 0.35; }
+  .map-label {
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    font-size: 7.5px;
+    color: var(--muted);
+  }
+
+  /* ==========================================================================
+     RIGHT COLUMN: EQUALIZER, HARDWARE KNOBS, ATMOSPHERE & TELEMETRY LOG
+  ========================================================================== */
+  .eq {
+    right: 34px;
+    top: 76px;
+    width: 175px;
+    height: 36px;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    padding: 5px 7px;
+  }
+  .eq i {
+    flex: 1;
+    background: var(--mint);
+    height: calc(var(--h, 40) * 1%);
+    opacity: 0.85;
+    transition: height 0.2s ease;
+    box-shadow: 0 0 4px var(--mint-faint);
+  }
+
+  .console {
+    right: 34px;
+    top: 122px;
+    width: 175px;
+    padding: 8px 10px;
+    display: grid;
+    gap: 7px;
+  }
+  .console .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+  }
+  .row-val {
+    color: var(--mint);
+    font-size: 9px;
+    margin-left: auto;
+    margin-right: 8px;
+  }
+  .knob {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--mint);
+    background: radial-gradient(circle at 35% 35%, #162925, #060c0b);
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 0 8px var(--mint-faint);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .knob:hover {
+    border-color: var(--mint-bright);
+    transform: scale(1.08);
+  }
+  .knob::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 2px;
+    width: 1.5px;
+    height: 7px;
+    background: var(--mint-bright);
+    transform-origin: 0 8px;
+    transform: rotate(var(--a, 0deg));
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .readouts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    color: var(--mint);
+    font-size: 8.5px;
+    text-align: center;
+    border-top: 1px solid var(--mint-faint);
+    padding-top: 6px;
+  }
+  .readouts span {
+    background: rgba(127, 232, 200, 0.06);
+    padding: 2px 0;
+    border: 1px solid var(--mint-faint);
+  }
+
+  /* Atmospheric Spectrometer Panel */
+  .atmo-panel {
+    right: 34px;
+    top: 274px;
+    width: 175px;
+    padding: 7px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .gas-bar-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 34px;
+    align-items: center;
+    gap: 6px;
+    font-size: 8.5px;
+  }
+  .gas-track {
+    height: 5px;
+    background: rgba(127, 232, 200, 0.1);
+    border: 1px solid var(--mint-faint);
+    overflow: hidden;
+  }
+  .gas-fill {
+    height: 100%;
+    background: var(--mint);
+    box-shadow: 0 0 6px var(--mint);
+  }
+
+  /* Signal Lock Stars & Live Telemetry Stream Table */
+  .stars {
+    right: 173px;
+    bottom: 122px;
+    width: 36px;
+    padding: 6px 0;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+  }
+  .stars span {
+    width: 7px;
+    height: 7px;
+    background: var(--mint);
+    box-shadow: 0 0 5px var(--mint);
+    cursor: pointer;
+  }
+  .stars span.off {
+    background: transparent;
+    border: 1px solid var(--mint-dim);
+    box-shadow: none;
+  }
+
+  .table-log {
+    right: 34px;
+    bottom: 26px;
+    width: 175px;
+    height: 165px;
+    padding: 6px 8px;
+    background:
+      repeating-linear-gradient(0deg, var(--mint-faint) 0 1px, transparent 1px 16px),
+      rgba(6, 14, 13, 0.72);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .log-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 8px;
+    color: var(--text);
+    overflow: hidden;
+  }
+  .log-lines div {
+    display: flex;
+    justify-content: space-between;
+    white-space: nowrap;
+  }
+  .log-lines div em {
+    font-style: normal;
+    color: var(--mint);
+  }
+
+  /* ==========================================================================
+     BOTTOM CHAMFERED PROGRESS LOADER & SCAN TRIGGER
+  ========================================================================== */
+  .loader {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    width: 320px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    z-index: 12;
+  }
+  .loader-pct {
+    min-width: 34px;
+    color: var(--mint);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  /* Fixed original broken calc(100% - 10px) syntax! */
+  .loader .bar {
+    flex: 1;
+    height: 16px;
+    border: 1px solid var(--mint-dim);
+    background: rgba(6, 15, 14, 0.8);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    padding: 2px;
+  }
+  .loader .bar i {
+    display: block;
+    height: 100%;
+    width: var(--p, 100%);
+    background: linear-gradient(90deg, var(--mint-dim), var(--mint));
+    box-shadow: 0 0 12px var(--mint-glow);
+    transition: width 0.25s ease;
+  }
+  .loader button {
+    all: unset;
+    cursor: pointer;
+    color: var(--mint);
+    border: 1px solid var(--mint);
+    background: rgba(127, 232, 200, 0.08);
+    padding: 4px 10px;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    transition: all 0.15s ease;
+  }
+  .loader button:hover {
+    background: var(--mint);
+    color: #020806;
+    box-shadow: 0 0 12px var(--mint-glow);
+  }
+
+  /* ==========================================================================
+     BOTTOM UI-LAB CONTROL DECK (OUTSIDE HUD)
+  ========================================================================== */
+  .uilab-deck {
+    width: 980px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--mint-faint);
+    background: rgba(6, 12, 14, 0.85);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+  }
+  .deck-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .deck-btn {
+    background: rgba(127, 232, 200, 0.06);
+    border: 1px solid var(--mint-dim);
+    color: var(--text);
+    font: inherit;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .deck-btn:hover,
+  .deck-btn.active {
+    background: var(--mint);
+    color: #030908;
+    border-color: var(--mint);
+  }
+
+  @media (max-width: 1020px) {
+    .hud, .uilab-deck {
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="hud">
-  <div class="ticker" id="ticker"></div>
 
-  <canvas id="mesh" width="920" height="920"></canvas>
-  <div class="planet"></div>
+<div class="hud" id="hudRoot">
+  <div class="hud-scanlines"></div>
+  <div class="corner-tr"></div>
+  <div class="corner-bl"></div>
 
-  <div class="panel title">MARS</div>
-  <div class="panel globe-chip"><i></i></div>
-
-  <svg class="gauge" style="left:38px;top:40px" width="90" height="90" viewBox="0 0 90 90">
-    <circle cx="45" cy="45" r="36"/><circle cx="45" cy="45" r="28" stroke-dasharray="3 4"/>
-    <circle class="arc" id="arc" cx="45" cy="45" r="36" stroke-dasharray="226" stroke-dashoffset="70" transform="rotate(-90 45 45)"/>
-    <text x="45" y="49" text-anchor="middle" id="arcTxt">69%</text>
-  </svg>
-  <svg class="gauge" style="left:48px;top:256px" width="70" height="70" viewBox="0 0 70 70">
-    <circle cx="35" cy="35" r="30"/><circle cx="35" cy="35" r="22" stroke-dasharray="2 5"/>
-  </svg>
-
-  <div class="populate"><div class="hex"></div><div class="count"><button id="dec">−</button><span id="cnt">09</span><button id="inc">+</button></div></div>
-  <div class="map"></div><div class="map-frame"></div>
-
-  <div class="panel eq" id="eq"></div>
-  <div class="panel console">
-    <div class="row"><span>GAIN</span><span class="knob" data-k></span></div>
-    <div class="row"><span>PHASE</span><span class="knob" data-k></span></div>
-    <div class="row"><span>ORBIT</span><span class="knob" data-k></span></div>
-    <div class="readouts"><span id="r0">42.1</span><span id="r1">07.3</span><span id="r2">18.9</span><span id="r3">64.0</span></div>
+  <!-- Top Telemetry Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker"></div>
+    <div class="sub-header-bar">
+      <span>ORBITAL INCLINATION: <strong>92.8° SUN-SYNC</strong></span>
+      <span id="solClockText">SOL 0684 // 14:22:09 MTC</span>
+      <span>DRAG GLOBE TO ROTATE • CLICK BEACONS</span>
+    </div>
   </div>
-  <div class="panel stars" id="stars"></div>
-  <div class="panel table"></div>
 
-  <div class="loader"><span>100%</span><div class="bar"><i id="loadFill"></i></div><button id="reload">LOADING</button></div>
+  <!-- ========================================================================
+       CENTRAL 3D PLANETARY SYSTEM (BACK MESH + MARS GLOBE + FRONT MESH)
+  ========================================================================= -->
+  <div class="planet-stage" id="planetStage" title="Drag to rotate Mars 3D Mesh • Click orange surface beacons">
+    <div class="orbital-compass-ring"></div>
+    <canvas id="meshBack" class="mesh-layer" width="1000" height="1000"></canvas>
+    <div class="planet" id="marsPlanet"></div>
+    <canvas id="meshFront" class="mesh-layer" width="1000" height="1000"></canvas>
+  </div>
+
+  <!-- ========================================================================
+       LEFT TELEMETRY COLUMN
+  ========================================================================= -->
+  <!-- Primary O2 / Shield Gauge -->
+  <svg class="gauge" id="gaugePrimary" style="left:34px;top:38px" width="92" height="92" viewBox="0 0 90 90">
+    <circle cx="45" cy="45" r="37"/>
+    <circle cx="45" cy="45" r="29" stroke-dasharray="3 4"/>
+    <circle class="arc" id="arc" cx="45" cy="45" r="37" stroke-dasharray="232.5" stroke-dashoffset="72" transform="rotate(-90 45 45)"/>
+    <text x="45" y="46" text-anchor="middle" id="arcTxt">69%</text>
+    <text x="45" y="57" text-anchor="middle" class="gauge-sub">SYNC LINK</text>
+  </svg>
+
+  <!-- Title & Coordinates -->
+  <div class="panel title-box">
+    <h1>MARS</h1>
+    <div class="coords-sub">
+      <span id="lonReadout">LON 226.2°E</span>
+      <span>R: 3,389 KM</span>
+    </div>
+  </div>
+
+  <!-- Globe Wireframe Chip -->
+  <div class="panel globe-chip">
+    <i></i>
+    <div class="chip-meta">
+      <strong>GEODESIC MESH</strong>
+      <span id="nodeCountText">96 NODES ACTIVE</span><br>
+      <span>PHOBOS + DEIMOS</span>
+    </div>
+  </div>
+
+  <!-- Secondary Gravity Harmonics Gauge -->
+  <svg class="gauge" id="gaugeSecondary" style="left:34px;top:272px" width="68" height="68" viewBox="0 0 70 70">
+    <circle cx="35" cy="35" r="30"/>
+    <circle cx="35" cy="35" r="22" stroke-dasharray="2 5"/>
+    <circle class="arc" id="arc2" cx="35" cy="35" r="30" stroke-dasharray="188.5" stroke-dashoffset="52" transform="rotate(-90 35 35)"/>
+    <text x="35" y="38" text-anchor="middle" id="arc2Txt">3.71</text>
+    <text x="35" y="48" text-anchor="middle" class="gauge-sub">m/s² G</text>
+  </svg>
+
+  <!-- Selected Surface Landing Site Inspector -->
+  <div class="panel beacon-inspector">
+    <div class="panel-label">
+      <span>SURFACE BEACON</span>
+      <span id="beaconCode">SITE-01</span>
+    </div>
+    <div class="beacon-name" id="beaconName">OLYMPUS MONS</div>
+    <div class="beacon-stats">
+      <div><span>ELEV:</span> <b id="beaconElev">+21.9 KM</b></div>
+      <div><span>TEMP:</span> <b id="beaconTemp">-62 °C</b></div>
+      <div><span>LAT:</span> <b id="beaconLat">18.65° N</b></div>
+      <div><span>RAD:</span> <b id="beaconRad">0.24 mSv</b></div>
+    </div>
+  </div>
+
+  <!-- Hex Habitat Population Counter -->
+  <div class="populate">
+    <div class="hex"></div>
+    <div class="count">
+      <button id="dec" title="Decrease Active Domes">−</button>
+      <span id="cnt">09</span>
+      <button id="inc" title="Increase Active Domes">+</button>
+    </div>
+  </div>
+
+  <!-- Bottom-Left Tharsis Topographic Map -->
+  <div class="map-container" id="topoMap" title="Click anywhere on Tharsis Map to relocate orbital reticle">
+    <div class="map-dots"></div>
+    <div class="map-crosshair" id="mapCrosshair"></div>
+    <div class="map-label">THARSIS TOPOGRAPHY // CLICK TO PING</div>
+  </div>
+
+  <!-- ========================================================================
+       RIGHT TELEMETRY COLUMN
+  ========================================================================= -->
+  <!-- Equalizer Strip -->
+  <div class="panel eq" id="eq"></div>
+
+  <!-- Interactive Mesh Physics Knobs Console -->
+  <div class="panel console">
+    <div class="panel-label">
+      <span>MESH PARAMETERS</span>
+      <span>CLICK KNOBS</span>
+    </div>
+    <div class="row">
+      <span>GAIN (LINK)</span>
+      <span class="row-val" id="gainVal">195PX</span>
+      <span class="knob" id="knobGain" title="Adjust Node Connection Threshold"></span>
+    </div>
+    <div class="row">
+      <span>PHASE (TILT)</span>
+      <span class="row-val" id="phaseVal">25.2°</span>
+      <span class="knob" id="knobPhase" title="Adjust Planetary Axial Tilt"></span>
+    </div>
+    <div class="row">
+      <span>ORBIT (SPD)</span>
+      <span class="row-val" id="orbitVal">1.0X</span>
+      <span class="knob" id="knobOrbit" title="Adjust Orbital Rotation Speed"></span>
+    </div>
+    <div class="readouts">
+      <span id="r0">42.1</span>
+      <span id="r1">07.3</span>
+      <span id="r2">18.9</span>
+      <span id="r3">64.0</span>
+    </div>
+  </div>
+
+  <!-- Atmospheric Spectrometer -->
+  <div class="panel atmo-panel">
+    <div class="panel-label">
+      <span>ATMO SPECTROMETER</span>
+      <span>6.1 MBAR</span>
+    </div>
+    <div class="gas-bar-row">
+      <span>CO2</span>
+      <div class="gas-track"><div class="gas-fill" style="width:95%"></div></div>
+      <span>95.3%</span>
+    </div>
+    <div class="gas-bar-row">
+      <span>N2</span>
+      <div class="gas-track"><div class="gas-fill" style="width:26%"></div></div>
+      <span>02.7%</span>
+    </div>
+    <div class="gas-bar-row">
+      <span>AR</span>
+      <div class="gas-track"><div class="gas-fill" style="width:18%"></div></div>
+      <span>01.6%</span>
+    </div>
+  </div>
+
+  <!-- Signal Strength Stars -->
+  <div class="panel stars" id="stars"></div>
+
+  <!-- Live Telemetry Stream Table -->
+  <div class="panel table-log">
+    <div class="panel-label">
+      <span>DOWNLINK LOG</span>
+      <span>X-BAND</span>
+    </div>
+    <div class="log-lines" id="logLines"></div>
+  </div>
+
+  <!-- ========================================================================
+       BOTTOM CHAMFERED RADAR SWEEP LOADER
+  ========================================================================= -->
+  <div class="loader">
+    <span class="loader-pct" id="loadPctTxt">100%</span>
+    <div class="bar"><i id="loadFill"></i></div>
+    <button id="reload">DEEP SCAN</button>
+  </div>
+</div>
+
+<!-- UI-Lab External Controls -->
+<div class="uilab-deck">
+  <div class="deck-group">
+    <span style="color:var(--muted);">HUD PHOSPHOR:</span>
+    <button class="deck-btn active" data-spec="mint">MINT (DEFAULT)</button>
+    <button class="deck-btn" data-spec="amber">AMBER</button>
+    <button class="deck-btn" data-spec="cyan">CRYO CYAN</button>
+  </div>
+
+  <div class="deck-group">
+    <span style="color:var(--muted);">BEACON TARGETS:</span>
+    <button class="deck-btn" data-site="0">OLYMPUS</button>
+    <button class="deck-btn" data-site="1">MARINERIS</button>
+    <button class="deck-btn" data-site="2">JEZERO</button>
+    <button class="deck-btn" data-site="3">GALE</button>
+    <button class="deck-btn active" id="sfxBtn">🔊 SFX: ON</button>
+  </div>
 </div>
 
 <script>
   const $ = (id) => document.getElementById(id);
-  $("ticker").innerHTML = Array.from({ length: 18 }, (_, i) => `<span>${String(i * 37 % 999).padStart(3, "0")}</span>`).join("");
-  $("eq").innerHTML = Array.from({ length: 22 }, () => "<i></i>").join("");
-  $("stars").innerHTML = Array.from({ length: 5 }, (_, i) => `<span class="${i > 3 ? "off" : ""}"></span>`).join("");
 
-  // ---------- canvas node mesh ----------
-  const cv = $("mesh"), ctx = cv.getContext("2d"), N = 90, R = 700, C = 460;
+  // ==========================================================================
+  // 1. WEB AUDIO API SCI-FI TELEMETRY SYNTHESIZER
+  // ==========================================================================
+  let audioCtx = null;
+  let sfxEnabled = true;
+
+  function playBeep(freq = 880, dur = 0.06, type = "sine") {
+    if (!sfxEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.25, now + dur);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + dur);
+    } catch (e) {}
+  }
+
+  // ==========================================================================
+  // 2. INITIALIZE STATIC HUD strips (FIXED ORIGINAL SYNTAX BUGS)
+  // ==========================================================================
+  $("ticker").innerHTML = Array.from(
+    { length: 18 },
+    (_, i) => `<span>${String((i * 37) % 999).padStart(3, "0")}</span>`
+  ).join("");
+
+  $("eq").innerHTML = Array.from({ length: 24 }, () => "<i></i>").join("");
+  $("stars").innerHTML = Array.from(
+    { length: 5 },
+    (_, i) => `<span class="${i > 3 ? "off" : ""}"></span>`
+  ).join("");
+
+  // Populate initial telemetry log lines
+  const logMessages = [
+    ["MRO RELAY", "LOCKED"],
+    ["ALBEDO SCAN", "0.170"],
+    ["DUST TAU", "0.42 OPT"],
+    ["MAG ANOMALY", "SOUTH"],
+    ["PERSEVERANCE", "PING OK"],
+    ["PHOBOS ALT", "5,989KM"],
+    ["ICE SUBSURFACE", "DETECT"],
+    ["SAR DOPPLER", "+1.4KHZ"]
+  ];
+  const logContainer = $("logLines");
+  function pushLogEntry(label, val) {
+    const row = document.createElement("div");
+    row.innerHTML = `<span>>${label}</span><em>${val}</em>`;
+    logContainer.prepend(row);
+    while (logContainer.children.length > 7) {
+      logContainer.lastChild.remove();
+    }
+  }
+  logMessages.forEach(([l, v]) => pushLogEntry(l, v));
+
+  // ==========================================================================
+  // 3. DUAL-LAYER 3D FIBONACCI SPHERE + ORBITING MOONS + SURFACE BEACONS
+  // ==========================================================================
+  const cvBack = $("meshBack");
+  const ctxBack = cvBack.getContext("2d");
+  const cvFront = $("meshFront");
+  const ctxFront = cvFront.getContext("2d");
+
+  const N = 96;          // Number of geodesic nodes on sphere
+  const R = 335;         // Sphere radius in 1000x1000 canvas space
+  const C = 500;         // Center (500, 500)
+
+  // Golden-angle spiral node distribution
   const pts = Array.from({ length: N }, (_, i) => {
-    const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), t = i * 2.399963;
+    const y = 1 - (i / (N - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const t = i * 2.3999632297;
     return { x: Math.cos(t) * r, y, z: Math.sin(t) * r };
   });
-  let ang = 0, running = true, raf = 0;
-  function frame() {
-    ang += 0.0035;
-    const ca = Math.cos(ang), sa = Math.sin(ang), tilt = 0.35, ct = Math.cos(tilt), st = Math.sin(tilt);
-    const P = pts.map((p) => {
-      const x = p.x * ca + p.z * sa, z0 = -p.x * sa + p.z * ca;
-      const y = p.y * ct - z0 * st, z = p.y * st + z0 * ct, s = 1 / (2.2 - z * 0.4);
-      return { x: C + x * R * s, y: C + y * R * s, z };
-    });
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    ctx.lineWidth = 1;
-    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
-      const a = P[i], b = P[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < 190) { ctx.strokeStyle = `rgba(220,235,235,${(1 - d / 190) * 0.45 * (0.3 + (a.z + b.z + 2) / 4)})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
-    }
-    for (const p of P) { ctx.fillStyle = `rgba(255,255,255,${0.35 + (p.z + 1) * 0.3})`; ctx.beginPath(); ctx.arc(p.x, p.y, 2.2, 0, 7); ctx.fill(); }
-    if (running) raf = requestAnimationFrame(frame);
-  }
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce) { running = false; frame(); } else frame();
-  document.addEventListener("visibilitychange", () => { running = !document.hidden && !reduce; if (running) frame(); });
 
-  // ---------- equalizer + readouts ----------
+  // 5 Authentic Mars Landing / Reconnaissance Sites anchored on the 3D sphere
+  const surfaceBeacons = [
+    {
+      code: "SITE-01",
+      name: "OLYMPUS MONS",
+      elev: "+21.9 KM",
+      temp: "-62 °C",
+      lat: "18.65° N",
+      rad: "0.24 mSv",
+      theta: 0.6,
+      phi: -0.32,
+      mapX: 28,
+      mapY: 42
+    },
+    {
+      code: "SITE-02",
+      name: "VALLES MARINERIS",
+      elev: "-7.2 KM",
+      temp: "-41 °C",
+      lat: "13.90° S",
+      rad: "0.18 mSv",
+      theta: 1.85,
+      phi: 0.24,
+      mapX: 58,
+      mapY: 56
+    },
+    {
+      code: "SITE-03",
+      name: "JEZERO CRATER",
+      elev: "-2.5 KM",
+      temp: "-54 °C",
+      lat: "18.38° N",
+      rad: "0.21 mSv",
+      theta: 3.1,
+      phi: -0.31,
+      mapX: 74,
+      mapY: 36
+    },
+    {
+      code: "SITE-04",
+      name: "GALE CRATER",
+      elev: "-4.5 KM",
+      temp: "-48 °C",
+      lat: "05.40° S",
+      rad: "0.19 mSv",
+      theta: 4.35,
+      phi: 0.12,
+      mapX: 82,
+      mapY: 64
+    },
+    {
+      code: "SITE-05",
+      name: "CYDONIA MENSAE",
+      elev: "-1.8 KM",
+      temp: "-68 °C",
+      lat: "40.75° N",
+      rad: "0.27 mSv",
+      theta: 5.4,
+      phi: -0.58,
+      mapX: 44,
+      mapY: 24
+    }
+  ];
+
+  // Dynamic Physics State controlled by Knobs & Mouse Drag
+  let angY = 0;
+  let tiltX = 0.44;          // Controlled by PHASE knob (25.2 deg)
+  let linkThreshold = 195;   // Controlled by GAIN knob
+  let orbitSpeed = 0.0035;   // Controlled by ORBIT knob
+  let selectedBeaconIdx = 0;
+  let scanWaveAngle = -1;
+  let projectedBeacons = [];
+
+  // Rotate & project any 3D unit point {x, y, z} into 2D canvas space
+  function projectPoint(p, ca, sa, ct, st, radius = R) {
+    const x = p.x * ca + p.z * sa;
+    const z0 = -p.x * sa + p.z * ca;
+    const y = p.y * ct - z0 * st;
+    const z = p.y * st + z0 * ct;
+    const perspective = 1 / (2.15 - z * 0.42);
+    return {
+      x: C + x * radius * perspective * 1.85,
+      y: C + y * radius * perspective * 1.85,
+      z
+    };
+  }
+
+  function selectBeacon(idx) {
+    selectedBeaconIdx = idx;
+    const b = surfaceBeacons[idx];
+    $("beaconCode").textContent = b.code;
+    $("beaconName").textContent = b.name;
+    $("beaconElev").textContent = b.elev;
+    $("beaconTemp").textContent = b.temp;
+    $("beaconLat").textContent = b.lat;
+    $("beaconRad").textContent = b.rad;
+    $("mapCrosshair").style.left = b.mapX + "%";
+    $("mapCrosshair").style.top = b.mapY + "%";
+    pushLogEntry("TARGET", b.name.slice(0, 10));
+    playBeep(1120, 0.07, "triangle");
+
+    document.querySelectorAll("[data-site]").forEach((btn) => {
+      btn.classList.toggle("active", Number(btn.dataset.site) === idx);
+    });
+  }
+
+  // Main 60FPS Render Loop
+  let running = true;
+  let isDragging = false;
+
+  function frame() {
+    if (!isDragging) {
+      angY += orbitSpeed;
+    }
+
+    const ca = Math.cos(angY);
+    const sa = Math.sin(angY);
+    const ct = Math.cos(tiltX);
+    const st = Math.sin(tiltX);
+
+    // Update Longitude Readout
+    const lonDeg = (((angY * 180) / Math.PI) % 360 + 360) % 360;
+    $("lonReadout").textContent = `LON ${lonDeg.toFixed(1).padStart(5, "0")}°E`;
+
+    const P = pts.map((p) => projectPoint(p, ca, sa, ct, st, R));
+
+    ctxBack.clearRect(0, 0, cvBack.width, cvBack.height);
+    ctxFront.clearRect(0, 0, cvFront.width, cvFront.height);
+
+    ctxBack.lineWidth = 1;
+    ctxFront.lineWidth = 1.15;
+
+    // 1. Draw Geodesic Connecting Edges (Split into Back & Front Hemispheres!)
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const a = P[i];
+        const b = P[j];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < linkThreshold) {
+          const avgZ = (a.z + b.z) * 0.5;
+          const distFactor = 1 - d / linkThreshold;
+          const depthAlpha = Math.max(0.06, 0.3 + (a.z + b.z + 2) / 4);
+          const alpha = distFactor * 0.55 * depthAlpha;
+
+          const targetCtx = avgZ < -0.05 ? ctxBack : ctxFront;
+          targetCtx.strokeStyle = `rgba(165, 242, 220, ${alpha.toFixed(3)})`;
+          targetCtx.beginPath();
+          targetCtx.moveTo(a.x, a.y);
+          targetCtx.lineTo(b.x, b.y);
+          targetCtx.stroke();
+        }
+      }
+    }
+
+    // 2. Draw Geodesic Vertex Nodes
+    for (const p of P) {
+      const targetCtx = p.z < 0 ? ctxBack : ctxFront;
+      const alpha = Math.max(0.15, 0.35 + (p.z + 1) * 0.32);
+
+      // Highlight nodes when Deep Scan wave passes over them
+      const boost = scanWaveAngle >= 0 && Math.abs(p.y - scanWaveAngle) < 38 ? 0.45 : 0;
+
+      targetCtx.fillStyle = boost > 0
+        ? `rgba(255, 180, 90, ${Math.min(1, alpha + boost)})`
+        : `rgba(230, 255, 248, ${alpha.toFixed(3)})`;
+      targetCtx.beginPath();
+      targetCtx.arc(p.x, p.y, p.z > 0.2 ? 2.6 : 1.9, 0, Math.PI * 2);
+      targetCtx.fill();
+    }
+
+    // 3. Draw Orbiting Moons (Phobos & Deimos)
+    const moons = [
+      { name: "PHOBOS", r: 435, speed: 2.3, phase: 0.4, yTilt: 0.18 },
+      { name: "DEIMOS", r: 475, speed: -1.4, phase: 3.6, yTilt: -0.22 }
+    ];
+    moons.forEach((m) => {
+      const mAng = angY * m.speed + m.phase;
+      const mp = projectPoint(
+        { x: Math.cos(mAng), y: m.yTilt, z: Math.sin(mAng) },
+        1, 0, ct, st, m.r
+      );
+      const mCtx = mp.z < 0 ? ctxBack : ctxFront;
+      mCtx.fillStyle = "#7fe8c8";
+      mCtx.beginPath();
+      mCtx.arc(mp.x, mp.y, 4, 0, Math.PI * 2);
+      mCtx.fill();
+
+      if (mp.z >= 0) {
+        mCtx.font = '14px "Share Tech Mono", monospace';
+        mCtx.fillStyle = "rgba(127, 232, 200, 0.85)";
+        mCtx.fillText(m.name, mp.x + 8, mp.y + 4);
+      }
+    });
+
+    // 4. Draw Clickable Surface Landing Beacons on Front Hemisphere
+    projectedBeacons = [];
+    surfaceBeacons.forEach((b, idx) => {
+      const cy = Math.cos(b.phi);
+      const unitPt = {
+        x: Math.cos(b.theta) * cy,
+        y: Math.sin(b.phi),
+        z: Math.sin(b.theta) * cy
+      };
+      const proj = projectPoint(unitPt, ca, sa, ct, st, R * 0.86);
+      projectedBeacons.push({ ...proj, idx });
+
+      if (proj.z > 0.05) {
+        const isSel = idx === selectedBeaconIdx;
+        ctxFront.save();
+        ctxFront.strokeStyle = isSel ? "#ff9e44" : "rgba(127, 232, 200, 0.85)";
+        ctxFront.fillStyle = isSel ? "#ff9e44" : "#7fe8c8";
+        ctxFront.lineWidth = isSel ? 2.2 : 1.4;
+
+        // Target Diamond / Reticle
+        ctxFront.beginPath();
+        ctxFront.arc(proj.x, proj.y, isSel ? 9 : 5, 0, Math.PI * 2);
+        ctxFront.stroke();
+
+        ctxFront.beginPath();
+        ctxFront.arc(proj.x, proj.y, 2.5, 0, Math.PI * 2);
+        ctxFront.fill();
+
+        if (isSel) {
+          ctxFront.font = '15px "Share Tech Mono", monospace';
+          ctxFront.fillText(b.name, proj.x + 14, proj.y + 5);
+        }
+        ctxFront.restore();
+      }
+    });
+
+    // Advance Deep Scan horizontal laser sweep if active
+    if (scanWaveAngle >= 0) {
+      ctxFront.strokeStyle = "rgba(255, 158, 68, 0.65)";
+      ctxFront.lineWidth = 2;
+      ctxFront.beginPath();
+      ctxFront.moveTo(120, scanWaveAngle);
+      ctxFront.lineTo(880, scanWaveAngle);
+      ctxFront.stroke();
+
+      scanWaveAngle += 14;
+      if (scanWaveAngle > 920) scanWaveAngle = -1;
+    }
+
+    if (running) requestAnimationFrame(frame);
+  }
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) {
+    running = false;
+    frame();
+  } else {
+    frame();
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    running = !document.hidden && !reduce;
+    if (running) frame();
+  });
+
+  // ==========================================================================
+  // 4. INTERACTIVE DRAG-TO-ROTATE GLOBE & CLICKABLE BEACONS
+  // ==========================================================================
+  const planetStage = $("planetStage");
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let movedDist = 0;
+
+  planetStage.addEventListener("pointerdown", (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    movedDist = 0;
+    planetStage.setPointerCapture(e.pointerId);
+  });
+
+  planetStage.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    movedDist += Math.hypot(dx, dy);
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+
+    angY += dx * 0.007;
+    tiltX = Math.max(-0.85, Math.min(0.85, tiltX + dy * 0.006));
+    $("phaseVal").textContent = `${((tiltX * 180) / Math.PI).toFixed(1)}°`;
+  });
+
+  planetStage.addEventListener("pointerup", (e) => {
+    isDragging = false;
+    // If it was a clean click (not drag), check if user clicked near a visible surface beacon
+    if (movedDist < 6) {
+      const rect = planetStage.getBoundingClientRect();
+      const clickX = ((e.clientX - rect.left) / rect.width) * 1000;
+      const clickY = ((e.clientY - rect.top) / rect.height) * 1000;
+
+      let closestIdx = -1;
+      let minDist = 45;
+      for (const b of projectedBeacons) {
+        if (b.z > 0.05) {
+          const d = Math.hypot(clickX - b.x, clickY - b.y);
+          if (d < minDist) {
+            minDist = d;
+            closestIdx = b.idx;
+          }
+        }
+      }
+      if (closestIdx >= 0) {
+        selectBeacon(closestIdx);
+      }
+    }
+  });
+
+  // ==========================================================================
+  // 5. EQUALIZER, SOL CLOCK & HARDWARE KNOBS
+  // ==========================================================================
+  let solSeconds = 51729;
   setInterval(() => {
-    document.querySelectorAll("#eq i").forEach((b) => b.style.setProperty("--h", 20 + Math.random() * 80));
-    ["r0", "r1", "r2", "r3"].forEach((id) => $(id).textContent = (Math.random() * 90).toFixed(1).padStart(4, "0"));
+    document.querySelectorAll("#eq i").forEach((b) => {
+      b.style.setProperty("--h", 18 + Math.random() * 82);
+    });
+    ["r0", "r1", "r2", "r3"].forEach((id) => {
+      $(id).textContent = (Math.random() * 90).toFixed(1).padStart(4, "0");
+    });
+
+    solSeconds++;
+    const hrs = String(Math.floor(solSeconds / 3600) % 24).padStart(2, "0");
+    const mins = String(Math.floor((solSeconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(solSeconds % 60).padStart(2, "0");
+    $("solClockText").textContent = `SOL 0684 // ${hrs}:${mins}:${secs} MTC`;
   }, 450);
 
-  // ---------- gauge, counter, knobs, loader ----------
-  const arc = $("arc"), arcTxt = $("arcTxt");
+  // Primary & Secondary SVG Gauges
+  const arc = $("arc");
+  const arcTxt = $("arcTxt");
   let pct = 69;
-  const setPct = (v) => { pct = (v + 101) % 101; arc.style.strokeDashoffset = 226 * (1 - pct / 100); arcTxt.textContent = pct + "%"; };
-  setPct(pct); $("arcTxt").parentNode.addEventListener("click", () => setPct(pct + 11));
-
-  let cnt = 9; const showCnt = () => $("cnt").textContent = String(cnt).padStart(2, "0");
-  $("inc").onclick = () => { cnt = Math.min(99, cnt + 1); showCnt(); }; $("dec").onclick = () => { cnt = Math.max(0, cnt - 1); showCnt(); };
-
-  document.querySelectorAll("[data-k]").forEach((k) => { let a = 0; k.addEventListener("click", () => { a = (a + 60) % 360; k.style.setProperty("--a", a + "deg"); }); });
-
-  $("reload").onclick = () => {
-    const f = $("loadFill"); f.style.transition = "none"; f.style.setProperty("--p", "0%");
-    requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transition = "width 1.6s linear"; f.style.setProperty("--p", "100%"); }));
+  const setPct = (v) => {
+    pct = (v + 101) % 101;
+    arc.style.strokeDashoffset = 232.5 * (1 - pct / 100);
+    arcTxt.textContent = pct + "%";
   };
+  setPct(pct);
+  $("gaugePrimary").addEventListener("click", () => {
+    playBeep(940, 0.05);
+    setPct(pct + 11);
+  });
+
+  // Habitat Counter
+  let cnt = 9;
+  const showCnt = () => ($("cnt").textContent = String(cnt).padStart(2, "0"));
+  $("inc").onclick = () => {
+    playBeep(1040, 0.04);
+    cnt = Math.min(99, cnt + 1);
+    showCnt();
+  };
+  $("dec").onclick = () => {
+    playBeep(680, 0.04);
+    cnt = Math.max(0, cnt - 1);
+    showCnt();
+  };
+
+  // Interactive Knobs (GAIN, PHASE, ORBIT)
+  let gainStep = 1;
+  const gainLevels = [155, 195, 235, 270];
+  $("knobGain").addEventListener("click", (e) => {
+    playBeep(780, 0.05);
+    gainStep = (gainStep + 1) % gainLevels.length;
+    linkThreshold = gainLevels[gainStep];
+    $("gainVal").textContent = linkThreshold + "PX";
+    e.currentTarget.style.setProperty("--a", gainStep * 75 + "deg");
+  });
+
+  let phaseStep = 1;
+  const phaseTilts = [-0.45, 0.0, 0.44, 0.72];
+  $("knobPhase").addEventListener("click", (e) => {
+    playBeep(880, 0.05);
+    phaseStep = (phaseStep + 1) % phaseTilts.length;
+    tiltX = phaseTilts[phaseStep];
+    $("phaseVal").textContent = `${((tiltX * 180) / Math.PI).toFixed(1)}°`;
+    e.currentTarget.style.setProperty("--a", phaseStep * 75 + "deg");
+  });
+
+  let orbitStep = 1;
+  const orbitSpeeds = [0, 0.0035, 0.009, -0.005];
+  const orbitLabels = ["HOLD", "1.0X", "2.5X", "REV"];
+  $("knobOrbit").addEventListener("click", (e) => {
+    playBeep(980, 0.05);
+    orbitStep = (orbitStep + 1) % orbitSpeeds.length;
+    orbitSpeed = orbitSpeeds[orbitStep];
+    $("orbitVal").textContent = orbitLabels[orbitStep];
+    e.currentTarget.style.setProperty("--a", orbitStep * 75 + "deg");
+  });
+
+  // Clickable Tharsis Mini-Map
+  $("topoMap").addEventListener("click", (e) => {
+    playBeep(1250, 0.06);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const xPct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    const yPct = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+    $("mapCrosshair").style.left = xPct + "%";
+    $("mapCrosshair").style.top = yPct + "%";
+    pushLogEntry("MAP PING", `${xPct}E/${yPct}N`);
+  });
+
+  // Deep Scan Loader Bar
+  $("reload").onclick = () => {
+    playBeep(640, 0.14, "sawtooth");
+    scanWaveAngle = 80;
+    const f = $("loadFill");
+    const pctLabel = $("loadPctTxt");
+    f.style.transition = "none";
+    f.style.setProperty("--p", "0%");
+    pctLabel.textContent = "0%";
+
+    let step = 0;
+    const timer = setInterval(() => {
+      step += 10;
+      f.style.transition = "width 0.12s linear";
+      f.style.setProperty("--p", step + "%");
+      pctLabel.textContent = step + "%";
+      if (step >= 100) {
+        clearInterval(timer);
+        pushLogEntry("DEEP SCAN", "COMPLETE");
+        playBeep(1320, 0.09);
+      }
+    }, 120);
+  };
+
+  // Bottom UI-Lab Deck Buttons
+  document.querySelectorAll("[data-spec]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      playBeep(820, 0.04);
+      document.querySelectorAll("[data-spec]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.body.dataset.spectrum = btn.dataset.spec === "mint" ? "" : btn.dataset.spec;
+    });
+  });
+
+  document.querySelectorAll("[data-site]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.site);
+      // Smoothly rotate globe toward chosen beacon
+      angY = -surfaceBeacons[idx].theta + Math.PI * 0.5;
+      selectBeacon(idx);
+    });
+  });
+
+  $("sfxBtn").addEventListener("click", (e) => {
+    sfxEnabled = !sfxEnabled;
+    e.currentTarget.classList.toggle("active", sfxEnabled);
+    e.currentTarget.textContent = sfxEnabled ? "🔊 SFX: ON" : "🔇 SFX: OFF";
+  });
 </script>
 </body>
 </html>

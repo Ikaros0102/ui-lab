@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpine × Aura DSP 1-DIN Digital Media Receiver</title>
+
+<!-- Clean Direct stylesheet + Explicit @font-face for DSEG14 & DSEG7 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Modern 1-DIN DSP Car Stereo Head Unit",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "car-radio",
+    "head-unit",
+    "alpine",
+    "jvc",
+    "dsp",
+    "dseg14",
+    "rotary-knob",
+    "equalizer",
+    "rgb-lighting",
+    "skeuomorphic"
+  ],
+  "description": "High-detail modern 1-DIN automotive CD/USB/Bluetooth DSP receiver combining Alpine's spun-aluminum rotary encoder and curved arc buttons, Aura Indigo's dual-line DSEG14 + 12-band spectrum analyzer VA-LCD, and JVC's lower prism RGB lightbar and illuminated USB shutter.",
+  "techniques": [
+    "Direct @font-face DSEG14-Classic & DSEG7-Classic italic matrix LCD typography",
+    "Conic-gradient spun-metal rotary encoder with 3 wrapping curved arc bezel buttons",
+    "Live 12-band segmented dot-matrix spectrum analyzer & illuminated badge strip ([EON], [BT], [LOUD], [SUB-W])",
+    "Tightly packed lower preset strip with under-bezel RGB lightguide wings and single DISP 5-zone color cycler",
+    "Recessed 3.5mm AUX jack and sliding vertical USB port cover with LED edge-lit slot"
+  ],
+  "recipe": "Synthesizes three iconic 1-DIN designs: the left cluster features a Jewel-lit SOURCE key and three curved arc buttons hugging a spun-aluminum volume encoder; the center piano-black acrylic lens houses a DSEG14 main readout, DSEG7 clock/date, and live spectrum bars; the lower edge packs slim sculpted preset keys above a multi-zone RGB lightbar.",
+  "preview": {
+    "mode": "page",
+    "width": 1040,
+    "height": 500
+  }
+}
+</script>
+
+<style>
+  /* Explicit @font-face guarantee so DSEG14 & DSEG7 never fall back to sans-serif */
+  @font-face {
+    font-family: 'DSEG14-Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'DSEG14-Classic-Italic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Italic.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'DSEG7-Classic-Italic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Italic.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  * { box-sizing: border-box; }
+
+  /* ==========================================================================
+     5 MULTI-ZONE ILLUMINATION THEMES (CYCLED BY THE "☼ DISP" BUTTON)
+     1. "aura"   (Ref 1: Violet-Magenta LCD + Ice-Blue Left + Mint-Green Preset/USB)
+     2. "alpine" (Ref 2: Crisp White LCD + Sapphire Blue Key & Bezel Illumination)
+     3. "jvc"    (Ref 3: Pure White LCD + Cyan-Blue Keys + Rainbow Prism Lightbar)
+     4. "red"    (Night Sport: Crimson Red LCD & Keys)
+     5. "amber"  (Classic Touring: Warm Amber Gold LCD & Keys)
+  ========================================================================== */
+  :root {
+    /* Theme 1 Default: Aura Indigo 877DSP Multi-Zone */
+    --lcd-main: #e85cff;
+    --lcd-glow: rgba(232, 92, 255, 0.75);
+    --lcd-ghost: rgba(232, 92, 255, 0.065);
+    --lcd-sub: #d946ef;
+
+    --key-left: #3b82f6;
+    --key-left-glow: rgba(59, 130, 246, 0.75);
+
+    --key-accent: #34d399;
+    --key-accent-glow: rgba(52, 211, 153, 0.7);
+
+    --lightbar-grad: linear-gradient(90deg, #3b82f6 0%, #a855f7 35%, #ec4899 68%, #10b981 100%);
+  }
+
+  body[data-theme="alpine"] {
+    --lcd-main: #f1f5f9;
+    --lcd-glow: rgba(226, 232, 240, 0.65);
+    --lcd-ghost: rgba(226, 232, 240, 0.055);
+    --lcd-sub: #38bdf8;
+
+    --key-left: #0ea5e9;
+    --key-left-glow: rgba(14, 165, 233, 0.85);
+
+    --key-accent: #0ea5e9;
+    --key-accent-glow: rgba(14, 165, 233, 0.8);
+
+    --lightbar-grad: linear-gradient(90deg, #0284c7 0%, #38bdf8 50%, #0284c7 100%);
+  }
+
+  body[data-theme="jvc"] {
+    --lcd-main: #ffffff;
+    --lcd-glow: rgba(255, 255, 255, 0.68);
+    --lcd-ghost: rgba(255, 255, 255, 0.055);
+    --lcd-sub: #cbd5e1;
+
+    --key-left: #2563eb;
+    --key-left-glow: rgba(37, 99, 235, 0.85);
+
+    --key-accent: #38bdf8;
+    --key-accent-glow: rgba(56, 189, 248, 0.8);
+
+    --lightbar-grad: linear-gradient(90deg, #1d4ed8 0%, #06b6d4 22%, #a855f7 50%, #ec4899 75%, #2563eb 100%);
+  }
+
+  body[data-theme="red"] {
+    --lcd-main: #ff2e2e;
+    --lcd-glow: rgba(255, 46, 46, 0.78);
+    --lcd-ghost: rgba(255, 46, 46, 0.065);
+    --lcd-sub: #ff5252;
+
+    --key-left: #ef4444;
+    --key-left-glow: rgba(239, 68, 68, 0.8);
+
+    --key-accent: #ef4444;
+    --key-accent-glow: rgba(239, 68, 68, 0.8);
+
+    --lightbar-grad: linear-gradient(90deg, #991b1b 0%, #ef4444 50%, #991b1b 100%);
+  }
+
+  body[data-theme="amber"] {
+    --lcd-main: #ff9f1c;
+    --lcd-glow: rgba(255, 159, 28, 0.75);
+    --lcd-ghost: rgba(255, 159, 28, 0.065);
+    --lcd-sub: #ffb703;
+
+    --key-left: #ff9f1c;
+    --key-left-glow: rgba(255, 159, 28, 0.8);
+
+    --key-accent: #ff9f1c;
+    --key-accent-glow: rgba(255, 159, 28, 0.8);
+
+    --lightbar-grad: linear-gradient(90deg, #b45309 0%, #ff9f1c 50%, #b45309 100%);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 35%, #22252c 0%, #0c0e12 75%, #050608 100%);
+    color: #e2e8f0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 14px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ==========================================================================
+     OUTER 1-DIN MOUNTING CAGE & #383838 METALLIC FACEPLATE SHELL
+  ========================================================================== */
+  .din-outer-sleeve {
+    width: 100%;
+    max-width: 980px;
+    background: linear-gradient(180deg, #1b1d21 0%, #0e1013 50%, #16181c 100%);
+    border: 2px solid #090a0c;
+    border-radius: 18px;
+    padding: 13px 15px;
+    box-shadow:
+      0 42px 95px rgba(0, 0, 0, 0.94),
+      0 14px 32px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(255, 255, 255, 0.14),
+      0 0 0 3px #25272c;
+  }
+
+  /* Main Detachable Faceplate (#383838 Brushed Gunmetal + Piano Black Core) */
+  .headunit-faceplate {
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px 1px, transparent 1px 2px),
+      linear-gradient(180deg, #484a4f 0%, #383838 22%, #2c2d30 82%, #1e1f22 100%);
+    border: 1.5px solid #111214;
+    border-radius: 11px;
+    padding: 7px 10px 8px;
+    box-shadow:
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.25),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+  }
+
+  /* ==========================================================================
+     TOP CD SLOT BAR & EJECT BUTTON (ALPINE STYLE)
+  ========================================================================== */
+  .top-cd-bar {
+    display: grid;
+    grid-template-columns: 118px 1fr 56px;
+    align-items: center;
+    gap: 10px;
+    height: 24px;
+    padding: 0 4px;
+  }
+
+  .preout-badge {
+    font-family: "Barlow Condensed", sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #cbd5e1;
+    padding-left: 8px;
+    text-shadow: 0 1px 2px #000;
+  }
+  .preout-badge span {
+    color: var(--key-left);
+  }
+
+  /* Recessed Disc Loading Slot with Dual Blue Edge LEDs */
+  .cd-slot-well {
+    height: 15px;
+    background: linear-gradient(180deg, #060709 0%, #14161a 100%);
+    border-top: 1.5px solid #040506;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    border-left: 2px solid #0a0b0d;
+    border-right: 2px solid #0a0b0d;
+    border-radius: 3px 3px 2px 2px;
+    box-shadow: inset 0 3px 6px #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    position: relative;
+    cursor: pointer;
+    /* Angled chamfer like Alpine top lip */
+    clip-path: polygon(1.5% 0%, 98.5% 0%, 100% 100%, 0% 100%);
+  }
+
+  /* Soft Velvet Dust Guard Slit inside CD Slot */
+  .cd-slot-well::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background: #020203;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .cd-slot-led {
+    width: 6px;
+    height: 4px;
+    border-radius: 1px;
+    background: var(--key-left);
+    box-shadow: 0 0 6px var(--key-left-glow);
+    z-index: 2;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  /* Top-Right Eject Key */
+  .btn-eject {
+    all: unset;
+    box-sizing: border-box;
+    height: 19px;
+    background: linear-gradient(180deg, #32353b 0%, #1d1f24 100%);
+    border: 1px solid #101114;
+    border-radius: 3px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 1px 2px rgba(0, 0, 0, 0.8);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--key-left);
+    font-size: 9px;
+    transition: all 0.12s ease;
+  }
+  .btn-eject:hover {
+    filter: brightness(1.15);
+  }
+  .btn-eject:active {
+    transform: translateY(1px);
+    border-color: var(--key-left);
+    box-shadow: 0 0 8px var(--key-left-glow);
+  }
+
+  /* ==========================================================================
+     MAIN CORE BAY:
+     [LEFT ASYMMETRIC CONTROL CLUSTER] + [CENTER PIANO-BLACK LCD & PRESETS] + [RIGHT USB/AUX BAY]
+  ========================================================================== */
+  .main-core-grid {
+    display: grid;
+    grid-template-columns: 274px 1fr 74px;
+    gap: 6px;
+    align-items: stretch;
+    min-height: 162px;
+  }
+
+  /* --------------------------------------------------------------------------
+     1. LEFT ASYMMETRIC CONTROL CLUSTER (SOURCE JEWEL + ARC KEYS + SPUN KNOB)
+  -------------------------------------------------------------------------- */
+  .left-control-pod {
+    position: relative;
+    background: linear-gradient(180deg, #2a2c31 0%, #1c1e22 50%, #15171a 100%);
+    border: 1.5px solid #0d0e10;
+    border-radius: 8px 4px 4px 8px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 2px 5px rgba(0, 0, 0, 0.7);
+    display: grid;
+    grid-template-columns: 102px 48px 1fr;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  /* Sub-Column 1A: Outer Left Stack ([|<< >>|] + [JEWEL SOURCE] + [▶/|| BAND]) */
+  .outer-left-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px 5px;
+    border-right: 1.5px solid #0e1013;
+    background: linear-gradient(180deg, #27292e 0%, #181a1e 100%);
+    position: relative;
+  }
+
+  /* Top & Bottom Blue/Accent Edge Light Bars (like Alpine & JVC) */
+  .edge-accent-bar {
+    height: 2.5px;
+    background: var(--key-left);
+    box-shadow: 0 0 8px var(--key-left-glow);
+    border-radius: 1px;
+    margin: 0 2px;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .seek-rocker-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    height: 24px;
+  }
+
+  .sculpted-dark-key {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    background:
+      linear-gradient(180deg, #3c3f46 0%, #282a2f 22%, #1f2126 78%, #141518 100%);
+    border: 1px solid #101114;
+    border-radius: 3px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 1px 2px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--key-left);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-shadow: 0 0 6px var(--key-left-glow);
+    transition: all 0.1s ease;
+  }
+  .sculpted-dark-key small {
+    font-size: 6.5px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-shadow: none;
+    line-height: 1;
+    margin-bottom: 1px;
+  }
+  .sculpted-dark-key:hover {
+    filter: brightness(1.14);
+  }
+  .sculpted-dark-key:active,
+  .sculpted-dark-key.active {
+    transform: translateY(1px);
+    border-color: var(--key-left);
+    box-shadow:
+      0 0 0 1px var(--key-left),
+      0 0 9px var(--key-left-glow),
+      inset 0 0 5px var(--key-left-glow);
+  }
+
+  /* Iconic Alpine Chrome-Framed Translucent Jewel SOURCE / POWER Key */
+  .source-jewel-bezel {
+    padding: 3.5px;
+    background: linear-gradient(145deg, #c4cbd4 0%, #525863 48%, #23262c 52%, #8b939e 100%);
+    border-radius: 5px;
+    box-shadow:
+      0 3px 7px rgba(0, 0, 0, 0.85),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    margin: 2px 4px;
+  }
+
+  .source-jewel-btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: 54px;
+    cursor: pointer;
+    border-radius: 3px;
+    background:
+      radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.48) 0%, transparent 55%),
+      linear-gradient(180deg, var(--key-left) 0%, color-mix(in srgb, var(--key-left) 62%, #050811) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+      0 0 14px var(--key-left-glow),
+      inset 0 1px 2px rgba(255, 255, 255, 0.55),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    transition: all 0.15s ease;
+  }
+  .source-jewel-btn:hover {
+    filter: brightness(1.1);
+  }
+  .source-jewel-btn:active {
+    transform: scale(0.96);
+    box-shadow:
+      0 0 22px var(--key-left-glow),
+      inset 0 2px 6px rgba(0, 0, 0, 0.75);
+  }
+
+  /* Sub-Column 1B: 3 Curved Arc Keys Hugging the Rotary Encoder (📞 BT | ↩ BACK | AUDIO) */
+  .arc-keys-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3px 0;
+    position: relative;
+    z-index: 3;
+    margin-right: -12px;
+  }
+
+  .arc-key {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1;
+    cursor: pointer;
+    background: linear-gradient(90deg, #363940 0%, #222429 75%, #17191d 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1.5px solid var(--key-left);
+    border-left: 2px solid var(--key-left);
+    padding-left: 7px;
+    padding-right: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--key-left);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 6px var(--key-left-glow);
+    transition: all 0.14s ease;
+  }
+  .arc-key.top-arc {
+    border-radius: 14px 0 0 0;
+    clip-path: polygon(14% 0%, 100% 0%, 82% 100%, 0% 100%);
+  }
+  .arc-key.mid-arc {
+    margin: 2px 0;
+    background: linear-gradient(90deg, #747b86 0%, #40454e 45%, #23262b 100%);
+    color: var(--key-left);
+    clip-path: polygon(0% 0%, 82% 0%, 82% 100%, 0% 100%);
+  }
+  .arc-key.bot-arc {
+    border-radius: 0 0 0 14px;
+    border-bottom: 1px solid #0e1013;
+    clip-path: polygon(0% 0%, 82% 0%, 100% 100%, 14% 100%);
+  }
+
+  .arc-key:hover {
+    filter: brightness(1.18);
+  }
+  .arc-key:active,
+  .arc-key.active {
+    background: linear-gradient(90deg, var(--key-left) 0%, #1c2434 90%);
+    color: #ffffff;
+    box-shadow: inset 0 0 10px var(--key-left-glow);
+  }
+
+  /* Sub-Column 1C: Spun-Aluminum Rotary Volume / DSP Encoder */
+  .rotary-dial-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+
+  /* Outer Dark Shroud with Curved Silkscreen Callouts (ENTER / OPTION) */
+  .dial-shroud {
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0d0e11 58%, #22252b 72%, #121417 100%);
+    border: 2px solid #0a0b0d;
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.9),
+      inset 0 0 0 2px var(--key-left),
+      inset 0 0 14px var(--key-left-glow);
+    display: grid;
+    place-items: center;
+    position: relative;
+    cursor: grab;
+    transition: box-shadow 0.25s ease;
+  }
+  .dial-shroud:active {
+    cursor: grabbing;
+  }
+
+  /* Knurled Chrome Outer Gear Ring */
+  .dial-knurl-ring {
+    width: 98px;
+    height: 98px;
+    border-radius: 50%;
+    background:
+      repeating-conic-gradient(#78808c 0% 1%, #1b1d22 1% 2%),
+      radial-gradient(circle, #484d56, #181a1f);
+    padding: 6px;
+    box-shadow:
+      0 6px 14px rgba(0, 0, 0, 0.85),
+      inset 0 1px 1px rgba(255, 255, 255, 0.45);
+    transform: rotate(var(--knob-rot, 0deg));
+  }
+
+  /* Authentic Conic Spun-Metal Brushed Aluminum Cap (Exact match to Alpine & JVC!) */
+  .dial-spun-face {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        from 40deg,
+        #3a3e47 0deg,
+        #b8c0cc 42deg,
+        #424752 88deg,
+        #1f2228 135deg,
+        #9aa2af 182deg,
+        #363a42 225deg,
+        #c4ccd8 268deg,
+        #2b2e36 318deg,
+        #3a3e47 360deg
+      );
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.65);
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Subtle Illuminated Center Prism Triangle (Aura Indigo touch) */
+  .dial-center-emblem {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(12, 14, 18, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .dial-center-emblem svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--key-left);
+    filter: drop-shadow(0 0 5px var(--key-left-glow));
+    transition: stroke 0.25s ease, filter 0.25s ease;
+  }
+
+  /* Curved Silkscreen Labels around Right Edge of Encoder */
+  .dial-perimeter-label {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 112px;
+    width: 28px;
+    pointer-events: none;
+  }
+
+  /* --------------------------------------------------------------------------
+     2. CENTER PIANO-BLACK ACRYLIC LENS, DUAL DSEG DISPLAY & TIGHT PRESETS
+  -------------------------------------------------------------------------- */
+  .center-display-deck {
+    background: #08090c;
+    border: 1.5px solid #040507;
+    border-radius: 6px;
+    box-shadow:
+      inset 0 0 35px rgba(0, 0, 0, 0.98),
+      0 1px 0 rgba(255, 255, 255, 0.14);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px 10px 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Glossy Piano-Black Diagonal Specular Sheen */
+  .center-display-deck::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.045) 0%,
+      rgba(255, 255, 255, 0.012) 38%,
+      transparent 38.5%
+    );
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Top Brand & DSP Header Strip inside Piano Black Lens */
+  .lens-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    color: #94a3b8;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding-bottom: 3px;
+    z-index: 2;
+  }
+
+  .alpine-slash-logo {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 900;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    color: #f1f5f9;
+  }
+  .alpine-slashes {
+    letter-spacing: -1px;
+    color: var(--key-left);
+    font-weight: 900;
+  }
+
+  .dsp-model-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8.5px;
+    color: #94a3b8;
+  }
+
+  /* VA-LCD Screen Matrix Window */
+  .va-lcd-screen {
+    background: #030406;
+    border: 1.5px solid #14171f;
+    border-radius: 5px;
+    padding: 6px 12px 6px;
+    margin: 2px 0;
+    box-shadow: inset 0 0 24px #000;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Main Row: Left Status Icons + Big 14-Segment DSEG14 Readout + Right Signal Icons */
+  .lcd-primary-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 34px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lcd-side-glyphs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--lcd-main);
+    text-shadow: 0 0 6px var(--lcd-glow);
+  }
+  .glyph-box {
+    border: 1px solid currentColor;
+    padding: 0 3px;
+    border-radius: 2px;
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  /* TRUE DSEG14-Classic Italic 14-Segment Display */
+  .dseg14-stage {
+    display: grid;
+    align-items: center;
+    font-family: 'DSEG14-Classic-Italic', 'DSEG14-Classic', monospace;
+    font-style: italic;
+    font-size: 29px;
+    line-height: 1.05;
+    letter-spacing: 0.06em;
+    overflow: hidden;
+  }
+  .dseg14-stage > * {
+    grid-area: 1 / 1;
+    white-space: pre;
+  }
+
+  .dseg14-ghost {
+    color: var(--lcd-ghost);
+    user-select: none;
+  }
+
+  .dseg14-lit {
+    color: var(--lcd-main);
+    text-shadow:
+      0 0 8px var(--lcd-glow),
+      0 0 18px var(--lcd-glow);
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+
+  /* Secondary Row: Left DSEG7 Date/Clock + Right 12-Band Graphic Spectrum Analyzer */
+  .lcd-secondary-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 2px;
+  }
+
+  .dseg7-sub-stage {
+    display: grid;
+    font-family: 'DSEG7-Classic-Italic', 'DSEG14-Classic-Italic', monospace;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+  }
+  .dseg7-sub-stage > * {
+    grid-area: 1 / 1;
+    white-space: pre;
+  }
+
+  /* 12-Band Dot-Matrix Spectrum Analyzer (like Aura DSP Ref 1) */
+  .spectrum-analyzer {
+    flex: 1;
+    max-width: 240px;
+    height: 18px;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  .spec-col {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.5px;
+  }
+
+  .spec-seg {
+    flex: 1;
+    background: var(--lcd-ghost);
+    border-radius: 0.5px;
+    transition: background 0.08s ease, box-shadow 0.08s ease;
+  }
+  .spec-seg.lit {
+    background: var(--lcd-main);
+    box-shadow: 0 0 5px var(--lcd-glow);
+  }
+
+  .codec-clock-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--lcd-main);
+    text-shadow: 0 0 6px var(--lcd-glow);
+  }
+
+  /* Bottom LCD Status Badge Strip ([EON] [BT] [TP] [LOUD] [TA] [AF] [SUB-W] [USB]) */
+  .lcd-badges-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding-top: 3px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .lcd-pill-badge {
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 1px 4.5px;
+    border-radius: 2px;
+    background: var(--lcd-ghost);
+    color: rgba(255, 255, 255, 0.25);
+    transition: all 0.2s ease;
+  }
+  .lcd-pill-badge.on {
+    background: var(--lcd-main);
+    color: #050608;
+    box-shadow: 0 0 8px var(--lcd-glow);
+  }
+
+  /* --------------------------------------------------------------------------
+     TIGHTLY PACKED LOWER PRESET BUTTON BANK + UNDER-BEZEL RGB LIGHTBAR
+     (Zero wasted vertical gap — directly hugs the bottom of the LCD lens!)
+  -------------------------------------------------------------------------- */
+  .lower-preset-bank {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    z-index: 3;
+    margin-top: 2px;
+  }
+
+  .preset-keys-strip {
+    display: grid;
+    grid-template-columns: 44px repeat(6, 1fr) 56px;
+    gap: 3px;
+    height: 24px;
+  }
+
+  .preset-slim-btn {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    /* Sculpted 3-Plane Bevel with tiny registration dimple */
+    background:
+      linear-gradient(
+        180deg,
+        #444850 0%,
+        #2b2e34 22%,
+        #1e2025 78%,
+        #111215 100%
+      );
+    border: 1px solid #2e3239;
+    border-radius: 3px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 1px 2px rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--key-left);
+    text-shadow: 0 0 6px var(--key-left-glow);
+    position: relative;
+    transition: all 0.12s ease;
+  }
+
+  .preset-slim-btn small {
+    font-size: 7.5px;
+    opacity: 0.85;
+  }
+
+  .preset-slim-btn:hover {
+    filter: brightness(1.15);
+  }
+
+  /* Active / Pressed Illuminated Contour Ring */
+  .preset-slim-btn:active,
+  .preset-slim-btn.active {
+    transform: translateY(1px);
+    border-color: var(--key-accent);
+    color: #ffffff;
+    box-shadow:
+      0 0 0 1px var(--key-accent),
+      0 0 10px var(--key-accent-glow),
+      inset 0 0 7px var(--key-accent-glow);
+  }
+
+  /* Harmonious Single 5-Color Illumination Cycler Button (Rightmost Key, like Ref 1) */
+  .preset-slim-btn.disp-color-cycler {
+    background: linear-gradient(180deg, #2a3a35 0%, #16221e 100%);
+    border-color: var(--key-accent);
+    color: var(--key-accent);
+    text-shadow: 0 0 6px var(--key-accent-glow);
+  }
+
+  /* JVC-Style Multi-Zone Prism RGB Lightbar along Bottom Edge */
+  .prism-lightbar-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: center;
+    gap: 4px;
+    height: 6px;
+  }
+
+  .lightbar-wing {
+    height: 100%;
+    background: var(--key-accent);
+    box-shadow: 0 0 10px var(--key-accent-glow);
+    border-radius: 2px;
+    clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .lightbar-center-strip {
+    height: 3.5px;
+    background: var(--lightbar-grad);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--lcd-glow);
+    transition: background 0.25s ease;
+  }
+
+  /* --------------------------------------------------------------------------
+     3. RIGHT MEDIA BAY: ILLUMINATED SLIDING USB SHUTTER & 3.5MM AUX JACK
+  -------------------------------------------------------------------------- */
+  .right-media-pod {
+    background: linear-gradient(180deg, #282a2f 0%, #181a1e 100%);
+    border: 1.5px solid #0d0e10;
+    border-radius: 4px 8px 8px 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 2px 5px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Vertical USB Port Door with Glowing Edge Slot (Alpine / Aura / JVC fusion) */
+  .usb-shutter-well {
+    width: 100%;
+    height: 92px;
+    background: #0b0c0f;
+    border: 1.5px solid #060708;
+    border-radius: 5px;
+    padding: 4px;
+    box-shadow: inset 0 2px 6px #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .usb-door-plate {
+    flex: 1;
+    height: 100%;
+    background: linear-gradient(180deg, #24272d 0%, #16181c 50%, #1d2025 100%);
+    border: 1px solid var(--key-accent);
+    border-radius: 3px;
+    box-shadow:
+      0 0 8px var(--key-accent-glow),
+      inset 0 0 6px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--key-accent);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    transition: all 0.2s ease;
+  }
+
+  .usb-led-bar {
+    width: 3.5px;
+    height: 72%;
+    margin-left: 3px;
+    border-radius: 2px;
+    background: var(--key-accent);
+    box-shadow: 0 0 10px var(--key-accent-glow);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  /* Recessed 3.5mm Stereo AUX Input Jack */
+  .aux-jack-housing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
+  .aux-ring {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #646b75, #1f2228 65%, #0c0d10);
+    border: 1.5px solid #383c45;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.85);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .aux-bore {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #020203;
+    border: 1.5px solid #8a929e;
+    box-shadow: inset 0 2px 4px #000;
+  }
+
+  .aux-label {
+    font-size: 7.5px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 980px) {
+    .din-outer-sleeve {
+      transform: scale(0.88);
+      transform-origin: center center;
+    }
+  }
+</style>
+</head>
+<body data-theme="aura">
+
+<div class="din-outer-sleeve">
+  <div class="headunit-faceplate">
+
+    <!-- ======================================================================
+         TOP CD SLOT & EJECT ROW (ALPINE CDE-HD138BT INSPIRATION)
+    ======================================================================= -->
+    <div class="top-cd-bar">
+      <div class="preout-badge"><span>4V</span> PreOut · 8CH DSP</div>
+
+      <div class="cd-slot-well" id="cdSlot" title="Click to insert/load CD-DA / FLAC Disc">
+        <span class="cd-slot-led"></span>
+        <span class="cd-slot-led"></span>
+      </div>
+
+      <button class="btn-eject" id="ejectBtn" title="Eject Disc">⏏</button>
+    </div>
+
+    <!-- ======================================================================
+         MAIN CORE BAY:
+         [LEFT ASYMMETRIC KNOB & ARC CLUSTER] + [CENTER VA-LCD & PRESETS] + [RIGHT USB/AUX]
+    ======================================================================= -->
+    <div class="main-core-grid">
+
+      <!-- 1. LEFT CLUSTER: SOURCE JEWEL + 3 CURVED ARC KEYS + SPUN ALUMINUM KNOB -->
+      <div class="left-control-pod">
+
+        <!-- Outer Left Column: Track Seek |<< >>|, Jewel SOURCE, Band/Play -->
+        <div class="outer-left-stack">
+          <div class="edge-accent-bar"></div>
+
+          <div class="seek-rocker-pair">
+            <button class="sculpted-dark-key" id="prevTrackBtn" title="Previous Track / Station Down">
+              <span>⏮</span>
+            </button>
+            <button class="sculpted-dark-key" id="nextTrackBtn" title="Next Track / Station Up">
+              <span>⏭</span>
+            </button>
+          </div>
+
+          <div class="source-jewel-bezel">
+            <button class="source-jewel-btn" id="srcBtn" title="Switch Audio Source (AURA DSP / BT / HD RADIO / USB FLAC)">
+              <span>SOURCE</span>
+              <span style="font-size:11px;">⏻</span>
+            </button>
+          </div>
+
+          <div class="seek-rocker-pair">
+            <button class="sculpted-dark-key" id="playPauseBtn" title="Play / Pause">
+              <small>TUNE</small>
+              <span>▶/⏸</span>
+            </button>
+            <button class="sculpted-dark-key" id="bandSwitchBtn" title="Cycle Radio Band (FM1 / FM2 / DAB+)">
+              <small>A.ME</small>
+              <span>BAND</span>
+            </button>
+          </div>
+
+          <div class="edge-accent-bar"></div>
+        </div>
+
+        <!-- Middle Curved Arc Buttons Hugging the Rotary Encoder -->
+        <div class="arc-keys-column">
+          <button class="arc-key top-arc" id="btCallBtn" title="Bluetooth Hands-Free Call">
+            <span style="font-size:6.5px; opacity:0.8;">BT SETUP</span>
+            <span style="font-size:11px;">📞</span>
+          </button>
+
+          <button class="arc-key mid-arc" id="returnBtn" title="Return / Back">
+            <span style="font-size:12px;">↩</span>
+          </button>
+
+          <button class="arc-key bot-arc" id="audioDspBtn" title="Open 8-Channel DSP Equalizer Preset">
+            <span>AUDIO</span>
+            <span style="font-size:6.5px; opacity:0.8;">DSP EQ</span>
+          </button>
+        </div>
+
+        <!-- Right Spun-Aluminum Rotary Volume Encoder -->
+        <div class="rotary-dial-stage">
+          <div class="dial-shroud" id="volKnob" title="Drag vertically to adjust Volume • Click center for DSP Enter">
+            <div class="dial-knurled-wrap">
+              <div class="dial-knurl-ring" id="knobRing" style="--knob-rot: -18deg;">
+                <div class="dial-spun-face">
+                  <div class="dial-center-emblem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2">
+                      <polygon points="12,4 20,19 4,19"/>
+                      <line x1="7" y1="15" x2="17" y2="15"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curved Silkscreen Callout Along Encoder Right Rim -->
+          <svg class="dial-perimeter-label" viewBox="0 0 28 112">
+            <path d="M 2,12 A 54,54 0 0,1 2,100" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="2 2"/>
+            <text x="8" y="34" fill="#94a3b8" font-size="6.5" font-weight="700" transform="rotate(68 8,34)">ENTER</text>
+            <text x="8" y="78" fill="#94a3b8" font-size="6.5" font-weight="700" transform="rotate(-68 8,78)">OPTION</text>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- 2. CENTER PIANO-BLACK ACRYLIC LENS, VA-LCD & TIGHT PRESETS -->
+      <div class="center-display-deck">
+
+        <!-- Top Brand Header inside Lens -->
+        <div class="lens-header-row">
+          <span>8-CHANNEL CORE-DSP™</span>
+          <span style="color:#e2e8f0; font-weight:700; letter-spacing:0.16em;">INDIGO // SERIES</span>
+          <div class="alpine-slash-logo">
+            <span class="alpine-slashes">/////</span><span>ALPINE</span>
+          </div>
+        </div>
+
+        <!-- Multi-Element VA-LCD Matrix Window -->
+        <div class="va-lcd-screen">
+
+          <!-- Primary Row: Left Tags + DSEG14 Main Text + Right Signal Telemetry -->
+          <div class="lcd-primary-row">
+            <div class="lcd-side-glyphs">
+              <span class="glyph-box" id="hdTag">HD))</span>
+              <span class="glyph-box" id="bandBoxTag">FM1</span>
+            </div>
+
+            <div class="dseg14-stage">
+              <span class="dseg14-ghost">~~~~~~~~~~~~</span>
+              <span class="dseg14-lit" id="mainLcdText">AURA DSP</span>
+            </div>
+
+            <div class="lcd-side-glyphs" style="align-items:flex-end;">
+              <span>ᛒ 📡</span>
+              <span class="glyph-box">🔋</span>
+            </div>
+          </div>
+
+          <!-- Secondary Row: Left DSEG7 Date/Clock + Center 12-Band Spectrum Analyzer + Right Codec -->
+          <div class="lcd-secondary-row">
+            <div class="dseg7-sub-stage">
+              <span class="dseg14-ghost">88:88</span>
+              <span class="dseg14-lit" id="subLcdText" style="font-size:15px;">26SEP</span>
+            </div>
+
+            <!-- Live 12-Band Graphic Spectrum Analyzer -->
+            <div class="spectrum-analyzer" id="spectrumBox"></div>
+
+            <div class="codec-clock-tag" id="clockTag">11:45 PM</div>
+          </div>
+
+          <!-- Bottom Illuminated Status Pill Strip -->
+          <div class="lcd-badges-strip">
+            <span class="lcd-pill-badge on">EON</span>
+            <span class="lcd-pill-badge on">BT</span>
+            <span class="lcd-pill-badge on">TP</span>
+            <span class="lcd-pill-badge on" id="badgeLoud">LOUD</span>
+            <span class="lcd-pill-badge on" id="badgeRpt">⇄</span>
+            <span class="lcd-pill-badge" id="badgeShuf">🔀</span>
+            <span class="lcd-pill-badge on">TA</span>
+            <span class="lcd-pill-badge on">AF</span>
+            <span class="lcd-pill-badge on" id="badgeSub">SUB-W</span>
+            <span class="lcd-pill-badge on">USB</span>
+            <span class="lcd-pill-badge on">FLAC</span>
+          </div>
+
+        </div>
+
+        <!-- Tightly Packed Lower Preset Button Strip + JVC Prism RGB Lightbar -->
+        <div class="lower-preset-bank">
+          <div class="preset-keys-strip">
+            <button class="preset-slim-btn" id="viewModeBtn" title="Toggle Secondary Display (Date / Clock / Bitrate)">
+              <small>VIEW</small><span>👁</span>
+            </button>
+
+            <button class="preset-slim-btn preset-ch active" data-ch="1" data-text="AURA DSP">
+              <span>1</span><small>▼</small>
+            </button>
+
+            <button class="preset-slim-btn preset-ch" data-ch="2" data-text="HD/SIRIUS">
+              <small>▲</small><span>2</span>
+            </button>
+
+            <button class="preset-slim-btn preset-ch" data-ch="3" data-text="BT/IPHONE">
+              <span>3</span><small>⇄</small>
+            </button>
+
+            <button class="preset-slim-btn preset-ch" data-ch="4" data-text="104.7 SYNTH">
+              <small>🔀</small><span>4</span>
+            </button>
+
+            <button class="preset-slim-btn preset-ch" data-ch="5" data-text="98.1 NIGHT">
+              <span>5</span><small>▶/⏸</small>
+            </button>
+
+            <button class="preset-slim-btn preset-ch" data-ch="6" data-text="FLAC 96KHZ">
+              <small>INT</small><span>6</span>
+            </button>
+
+            <!-- Single Harmonious 5-Color Illumination Cycler Button -->
+            <button class="preset-slim-btn disp-color-cycler" id="colorCycleBtn" title="Cycle 5 Multi-Zone Illumination Colors">
+              <span>☼</span><small id="themeShortTag">AURA</small>
+            </button>
+          </div>
+
+          <!-- Prism RGB Lightguide Bar with Illuminated Side Wings -->
+          <div class="prism-lightbar-row">
+            <div class="lightbar-wing"></div>
+            <div class="lightbar-center-strip"></div>
+            <div class="lightbar-wing"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3. RIGHT MEDIA BAY: ILLUMINATED USB SHUTTER + 3.5MM AUX IN -->
+      <div class="right-media-pod">
+        <div class="usb-shutter-well" id="usbPortBtn" title="Click to switch to USB FLAC Media">
+          <div class="usb-door-plate">
+            <svg width="14" height="20" viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="8" cy="19" r="2.2" fill="currentColor"/>
+              <line x1="8" y1="3" x2="8" y2="17"/>
+              <polyline points="5,6 8,2 11,6"/>
+              <path d="M8,13 L4,10 L4,7"/>
+              <path d="M8,15 L12,12 L12,8"/>
+            </svg>
+            <span>USB</span>
+          </div>
+          <div class="usb-led-bar"></div>
+        </div>
+
+        <div class="aux-jack-housing" id="auxPortBtn" title="3.5mm Front AUX Input">
+          <div class="aux-ring">
+            <div class="aux-bore"></div>
+          </div>
+          <span class="aux-label">AUX</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const mainLcdText = document.getElementById("mainLcdText");
+  const subLcdText = document.getElementById("subLcdText");
+  const bandBoxTag = document.getElementById("bandBoxTag");
+  const presetBtns = document.querySelectorAll(".preset-ch");
+
+  let savedMainText = "AURA DSP";
+  let tempTimer = null;
+
+  function showTempReadout(text, ms = 1000) {
+    mainLcdText.textContent = text;
+    clearTimeout(tempTimer);
+    tempTimer = setTimeout(() => {
+      mainLcdText.textContent = savedMainText;
+    }, ms);
+  }
+
+  // ==========================================================================
+  // 1. BUILD 12-BAND DOT-MATRIX SPECTRUM ANALYZER (6 SEGMENTS PER COLUMN)
+  // ==========================================================================
+  const spectrumBox = document.getElementById("spectrumBox");
+  const COLS = 12;
+  const ROWS = 5;
+  const specCols = [];
+
+  for (let c = 0; c < COLS; c++) {
+    const col = document.createElement("div");
+    col.className = "spec-col";
+    const segs = [];
+    for (let r = 0; r < ROWS; r++) {
+      const s = document.createElement("div");
+      s.className = "spec-seg";
+      col.appendChild(s);
+      segs.push(s);
+    }
+    spectrumBox.appendChild(col);
+    specCols.push(segs);
+  }
+
+  let isPlaying = true;
+  let eqPhase = 0;
+  setInterval(() => {
+    eqPhase += 0.45;
+    specCols.forEach((segs, colIdx) => {
+      const wave = isPlaying
+        ? Math.round(1.5 + Math.abs(Math.sin(colIdx * 0.65 + eqPhase) * 3.4))
+        : 1;
+      segs.forEach((seg, rIdx) => {
+        seg.classList.toggle("lit", rIdx < wave);
+      });
+    });
+  }, 110);
+
+  // ==========================================================================
+  // 2. SINGLE-BUTTON 5-COLOR MULTI-ZONE ILLUMINATION CYCLER
+  // ==========================================================================
+  const THEMES = [
+    { id: "aura",   short: "AURA", label: "CLR INDIGO" },
+    { id: "alpine", short: "BLUE", label: "CLR ALPINE" },
+    { id: "jvc",    short: "PRSM", label: "CLR PRISM"  },
+    { id: "red",    short: "RED",  label: "CLR SPORT"  },
+    { id: "amber",  short: "AMBR", label: "CLR AMBER"  }
+  ];
+  let themeIdx = 0;
+
+  document.getElementById("colorCycleBtn").addEventListener("click", () => {
+    themeIdx = (themeIdx + 1) % THEMES.length;
+    const t = THEMES[themeIdx];
+    document.body.dataset.theme = t.id;
+    document.getElementById("themeShortTag").textContent = t.short;
+    showTempReadout(t.label, 950);
+  });
+
+  // ==========================================================================
+  // 3. PRESET BUTTONS (1..6), SOURCE JEWEL & CURVED ARC KEYS
+  // ==========================================================================
+  presetBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      presetBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      savedMainText = btn.dataset.text;
+      mainLcdText.textContent = savedMainText;
+      subLcdText.textContent = "CH-0" + btn.dataset.ch;
+    });
+  });
+
+  // Jewel SOURCE Button
+  const SOURCES = [
+    { name: "AURA DSP",    band: "DSP", sub: "26SEP" },
+    { name: "HD/SIRIUS",   band: "SAT", sub: "CH104" },
+    { name: "BT/IPHONE",   band: "A2D", sub: "18JAN" },
+    { name: "USB FLAC",    band: "USB", sub: "24BIT" }
+  ];
+  let srcIdx = 0;
+  document.getElementById("srcBtn").addEventListener("click", () => {
+    srcIdx = (srcIdx + 1) % SOURCES.length;
+    const s = SOURCES[srcIdx];
+    savedMainText = s.name;
+    mainLcdText.textContent = savedMainText;
+    bandBoxTag.textContent = s.band;
+    subLcdText.textContent = s.sub;
+  });
+
+  // DSP EQ Arc Button
+  const EQ_MODES = ["EQ FLAT", "EQ BASS+", "EQ VOCAL", "EQ STAGE"];
+  let eqIdx = 0;
+  document.getElementById("audioDspBtn").addEventListener("click", () => {
+    eqIdx = (eqIdx + 1) % EQ_MODES.length;
+    showTempReadout(EQ_MODES[eqIdx], 1000);
+  });
+
+  document.getElementById("btCallBtn").addEventListener("click", () => {
+    showTempReadout("BT PAIRING", 1100);
+  });
+
+  document.getElementById("returnBtn").addEventListener("click", () => {
+    showTempReadout("MAIN MENU", 900);
+  });
+
+  // View Button cycles sub-display (26SEP -> 11:45 -> 96KHZ)
+  const SUB_VIEWS = ["26SEP", "11:45", "14.4V"];
+  let viewIdx = 0;
+  document.getElementById("viewModeBtn").addEventListener("click", () => {
+    viewIdx = (viewIdx + 1) % SUB_VIEWS.length;
+    subLcdText.textContent = SUB_VIEWS[viewIdx];
+  });
+
+  // Track Prev / Next & Play/Pause
+  const TRACKS = ["TRK01 SYNTH", "TRK02 NIGHT", "TRK03 DRIVE", "TRK04 TOKYO"];
+  let trkIdx = 0;
+  document.getElementById("prevTrackBtn").addEventListener("click", () => {
+    trkIdx = (trkIdx - 1 + TRACKS.length) % TRACKS.length;
+    savedMainText = TRACKS[trkIdx];
+    mainLcdText.textContent = savedMainText;
+  });
+  document.getElementById("nextTrackBtn").addEventListener("click", () => {
+    trkIdx = (trkIdx + 1) % TRACKS.length;
+    savedMainText = TRACKS[trkIdx];
+    mainLcdText.textContent = savedMainText;
+  });
+
+  document.getElementById("playPauseBtn").addEventListener("click", () => {
+    isPlaying = !isPlaying;
+    showTempReadout(isPlaying ? "PLAYING" : "PAUSED", 850);
+  });
+
+  const BANDS = ["FM1", "FM2", "FM3", "DAB"];
+  let bIdx = 0;
+  document.getElementById("bandSwitchBtn").addEventListener("click", () => {
+    bIdx = (bIdx + 1) % BANDS.length;
+    bandBoxTag.textContent = BANDS[bIdx];
+    showTempReadout("BAND " + BANDS[bIdx], 850);
+  });
+
+  // USB, AUX, CD Slot & Eject
+  document.getElementById("usbPortBtn").addEventListener("click", () => {
+    savedMainText = "BT/IPHONE/USB";
+    mainLcdText.textContent = savedMainText;
+    bandBoxTag.textContent = "USB";
+  });
+  document.getElementById("auxPortBtn").addEventListener("click", () => {
+    savedMainText = "FRONT AUX";
+    mainLcdText.textContent = savedMainText;
+    bandBoxTag.textContent = "AUX";
+  });
+  document.getElementById("cdSlot").addEventListener("click", () => {
+    savedMainText = "DISC PLAY";
+    mainLcdText.textContent = savedMainText;
+    bandBoxTag.textContent = "CD";
+  });
+  document.getElementById("ejectBtn").addEventListener("click", () => {
+    showTempReadout("EJECTING", 1100);
+  });
+
+  // ==========================================================================
+  // 4. SPUN-ALUMINUM ROTARY VOLUME ENCODER DRAG INTERACTION
+  // ==========================================================================
+  const volKnob = document.getElementById("volKnob");
+  const knobRing = document.getElementById("knobRing");
+  let dragging = false;
+  let startY = 0;
+  let currentRot = -18;
+  let vol = 22;
+
+  volKnob.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    startY = e.clientY;
+    volKnob.setPointerCapture(e.pointerId);
+  });
+
+  volKnob.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const dy = startY - e.clientY;
+    if (Math.abs(dy) < 2) return;
+    currentRot = Math.max(-140, Math.min(140, currentRot + dy * 2.4));
+    vol = Math.round(((currentRot + 140) / 280) * 35);
+    startY = e.clientY;
+    knobRing.style.setProperty("--knob-rot", `${currentRot}deg`);
+    showTempReadout(`VOL   ${String(vol).padStart(2, "0")}`, 850);
+  });
+
+  const endDrag = () => { dragging = false; };
+  volKnob.addEventListener("pointerup", endDrag);
+  volKnob.addEventListener("pointercancel", endDrag);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blaupunkt Hamburg SQM 23 DAB Retro Head Unit</title>
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Blaupunkt Hamburg SQM 23 Head Unit",
+  "category": "widgets",
+  "themes": [
+    "retro",
+    "dark"
+  ],
+  "tags": [
+    "car-radio",
+    "head-unit",
+    "blaupunkt",
+    "retro",
+    "dseg14",
+    "lcd",
+    "audio",
+    "vintage",
+    "automotive"
+  ],
+  "description": "Authentic recreation of the Blaupunkt Hamburg SQM 23 DAB retro head unit with 14-segment LCD display, multi-color illumination toggle, cassette slot, and tactile preset buttons.",
+  "techniques": [
+    "DSEG14 14-segment alphanumeric font display",
+    "multi-color illumination switcher (green, amber, red, white, blue)",
+    "tactile matte plastic chassis texture",
+    "working volume encoder and rotary controls",
+    "dynamic frequency tuner and cassette bay"
+  ],
+  "recipe": "Recreates the iconic 80s Blaupunkt car stereo styling with authentic matte black chassis texture and a DSEG14 digital readout. Custom CSS variables dynamically switch the backlit key and LCD illumination between emerald green, classic amber, red, and ice blue.",
+  "preview": {
+    "mode": "page",
+    "width": 1040,
+    "height": 520
+  }
+}
+</script>
+
+<!-- Digital Font DSEG14 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,600&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  @font-face {
+    font-family: 'DSEG14-Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Regular.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'DSEG14-Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Italic.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  * { box-sizing: border-box; }
+
+  :root {
+    --chassis-main: #2b2b2d;
+    --chassis-dark: #202022;
+    --piano-black: #0b0c0e;
+
+    /* Изумрудно-зеленый по умолчанию */
+    --illum: #2ce65c;
+    --illum-bright: #a7f3d0;
+    --illum-glow: rgba(44, 230, 92, 0.65);
+    --illum-soft: rgba(44, 230, 92, 0.22);
+    --illum-ghost: rgba(44, 230, 92, 0.08);
+    --zone-line: #d8af53;
+  }
+
+  body[data-illum="amber"] {
+    --illum: #ffaa1d;
+    --illum-bright: #ffe099;
+    --illum-glow: rgba(255, 170, 29, 0.72);
+    --illum-soft: rgba(255, 170, 29, 0.24);
+    --illum-ghost: rgba(255, 170, 29, 0.07);
+    --zone-line: #e2b458;
+  }
+
+  body[data-illum="red"] {
+    --illum: #ff2a1f;
+    --illum-bright: #ff948d;
+    --illum-glow: rgba(255, 42, 31, 0.75);
+    --illum-soft: rgba(255, 42, 31, 0.26);
+    --illum-ghost: rgba(255, 42, 31, 0.07);
+    --zone-line: #e2b458;
+  }
+
+  body[data-illum="white"] {
+    --illum: #f1f5f9;
+    --illum-bright: #ffffff;
+    --illum-glow: rgba(241, 245, 249, 0.7);
+    --illum-soft: rgba(241, 245, 249, 0.22);
+    --illum-ghost: rgba(241, 245, 249, 0.065);
+    --zone-line: #dfc072;
+  }
+
+  body[data-illum="blue"] {
+    --illum: #3b82f6;
+    --illum-bright: #93c5fd;
+    --illum-glow: rgba(59, 130, 246, 0.75);
+    --illum-soft: rgba(59, 130, 246, 0.26);
+    --illum-ghost: rgba(59, 130, 246, 0.075);
+    --zone-line: #dfc072;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #1f2227 0%, #0c0d10 80%, #050607 100%);
+    color: #e2e8f0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  .stereo-chassis {
+    width: 100%;
+    max-width: 980px;
+    background:
+      repeating-radial-gradient(circle at 30% 30%, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px),
+      linear-gradient(180deg, #38383a 0%, var(--chassis-main) 16%, #232325 84%, #18181a 100%);
+    border: 2px solid #141416;
+    border-radius: 12px;
+    padding: 14px 18px 16px;
+    box-shadow:
+      0 40px 90px rgba(0, 0, 0, 0.94),
+      0 12px 28px rgba(0, 0, 0, 0.8),
+      inset 0 1.5px 0.5px rgba(255, 255, 255, 0.18),
+      inset 0 -3px 5px rgba(0, 0, 0, 0.85);
+    position: relative;
+  }
+
+  .faceplate-molding {
+    background: linear-gradient(180deg, #2b2b2d 0%, #2f2f31 50%, #252527 100%);
+    border-radius: 8px;
+    border-top: 1.5px solid #19191a;
+    border-left: 1.5px solid #1d1d1f;
+    border-right: 1.5px solid #1d1d1f;
+    border-bottom: 1.5px solid #3c3c3e;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.7);
+    padding: 12px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+  }
+
+  .din-hole {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #0d0d0f;
+    border: 1.5px solid #222225;
+    box-shadow: inset 0 2px 4px #000, 0 1px 0 rgba(255, 255, 255, 0.12);
+    z-index: 5;
+  }
+  .din-hole.tl { left: 8px; top: 52px; }
+  .din-hole.bl { left: 8px; bottom: 34px; }
+  .din-hole.tr { right: 8px; top: 52px; }
+  .din-hole.br { right: 8px; bottom: 34px; }
+
+  /* ==========================================================================
+     ВЕРХНИЙ ЯРУС
+  ========================================================================== */
+  .upper-deck {
+    display: grid;
+    grid-template-columns: 350px 44px 1fr 78px;
+    gap: 9px;
+    align-items: stretch;
+    height: 94px;
+    padding: 0 4px;
+  }
+
+  .radio-display-bezel {
+    background: linear-gradient(180deg, #121316 0%, #1e2025 100%);
+    padding: 5px;
+    border-radius: 7px;
+    border: 1.5px solid #0f1012;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 2px 5px rgba(0, 0, 0, 0.95);
+    display: flex;
+  }
+
+  .radio-display {
+    flex: 1;
+    background: var(--piano-black);
+    border: 1.5px solid #060608;
+    border-radius: 5px;
+    padding: 6px 12px 5px;
+    box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.98), inset 0 3px 8px rgba(0, 0, 0, 0.9);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .radio-display::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(118deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 36%, transparent 36.5%),
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0px 1.5px, transparent 1.5px 3.5px);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .display-meta-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    color: var(--illum);
+    opacity: 0.78;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+
+  .display-digits {
+    display: grid;
+    align-items: center;
+    font-family: "DSEG14-Classic", "DSEG14 Classic", monospace, sans-serif;
+    font-style: italic;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    margin: 1px 0;
+  }
+  .display-digits > * {
+    grid-area: 1 / 1;
+    white-space: pre;
+  }
+
+  .digits-bg {
+    color: var(--illum-ghost);
+    user-select: none;
+  }
+
+  .digits-fg {
+    color: var(--illum);
+    text-shadow:
+      0 0 6px var(--illum-glow),
+      0 0 16px var(--illum-soft);
+  }
+
+  .display-icons-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--illum);
+  }
+
+  .lcd-ico {
+    opacity: 0.18;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .lcd-ico.on {
+    opacity: 1;
+    text-shadow: 0 0 5px var(--illum-glow);
+  }
+  .lcd-ico.box-tag {
+    border: 1px solid currentColor;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-size: 7px;
+  }
+
+  .well-slot {
+    background: #111214;
+    border: 1.5px solid #090a0c;
+    border-radius: 6px;
+    padding: 3px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.95), 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+  }
+
+  .sculpted-btn {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1;
+    cursor: pointer;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #444 0%, #343436 18%, #28282a 50%, #1e1e20 85%, #151516 100%);
+    border: 1px solid #3a3a3c;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 2px rgba(0, 0, 0, 0.8), 0 2px 3px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--illum);
+    text-shadow: 0 0 5px var(--illum-glow);
+    transition: transform 0.08s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+  }
+  .sculpted-btn:hover { filter: brightness(1.08); }
+  .sculpted-btn:active, .sculpted-btn.active {
+    transform: translateY(1px);
+    border-color: var(--illum);
+    box-shadow: 0 0 0 1px var(--illum), 0 0 9px var(--illum-glow);
+  }
+  .disp-color-btn span { font-size: 8.5px; font-weight: 800; }
+  .disp-color-btn small { font-size: 6.5px; opacity: 0.8; margin-top: 1px; }
+
+  /* ==========================================================================
+     ВОЗВРАЩЕННАЯ ДИЗАЙНЕРСКАЯ ШТОРКА КАССЕТЫ/USB С ЛИНИЯМИ И STEREO
+  ========================================================================== */
+  .cassette-deck-well {
+    background: #121316;
+    border: 1.5px solid #0b0c0e;
+    border-radius: 7px;
+    padding: 5px 7px;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.98), 0 1px 0 rgba(255, 255, 255, 0.12);
+    display: flex;
+    position: relative;
+  }
+
+  .cassette-flap {
+    flex: 1;
+    background:
+      linear-gradient(125deg, rgba(255,255,255,0.05) 0%, transparent 42%),
+      linear-gradient(180deg, #1d1f23 0%, #111316 52%, #0b0c0e 100%);
+    border: 1px solid #2b2d33;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 2px 4px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+  }
+
+  .cassette-flap::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 68px;
+    height: 4px;
+    background: #070809;
+    border-top: 1px solid #2e3138;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .flap-graphic-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .flap-line {
+    stroke: var(--zone-line);
+    stroke-width: 1.4;
+    fill: none;
+  }
+
+  .flap-stereo-txt {
+    position: relative;
+    z-index: 2;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--zone-line);
+    margin-left: 20px;
+  }
+
+  .flap-usb-icon {
+    position: relative;
+    z-index: 2;
+    color: var(--zone-line);
+    display: flex;
+    align-items: center;
+    margin-right: 6px;
+  }
+
+  .upper-right-keys {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  /* СРЕДНЯЯ ПЛАНКА */
+  .middle-brand-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 10px 4px;
+    position: relative;
+  }
+  .middle-brand-bar::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: -1px;
+    height: 1.5px;
+    background: linear-gradient(180deg, #161617 0%, #3e3e40 100%);
+  }
+  .blaupunkt-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: #f1f5f9;
+  }
+  .blue-point-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #60a5fa, #0284c7 70%, #0369a1);
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+  }
+  .model-designation {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--zone-line);
+  }
+
+  /* ==========================================================================
+     НИЖНИЙ ЯРУС
+  ========================================================================== */
+  .lower-deck {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px 4px;
+    min-height: 84px;
+  }
+
+  /* Крутилка громкости */
+  .rotary-encoder-zone {
+    position: relative;
+    width: 104px;
+    height: 84px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-left: 6px;
+    padding-bottom: 2px;
+    flex-shrink: 0;
+  }
+
+  .knob-arc-svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 104px;
+    height: 84px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .knob-well {
+    position: relative;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: #0f1012;
+    border: 2px solid #191a1d;
+    box-shadow:
+      0 6px 14px rgba(0, 0, 0, 0.85),
+      inset 0 0 0 1.5px var(--illum),
+      inset 0 0 8px var(--illum-glow);
+    display: grid;
+    place-items: center;
+    cursor: grab;
+    z-index: 3;
+    transition: box-shadow 0.25s ease;
+  }
+  .knob-well:active { cursor: grabbing; }
+
+  .knob-knurled {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background:
+      repeating-conic-gradient(#25262a 0% 1.4%, #121315 1.4% 2.8%),
+      radial-gradient(circle, #303033, #151516);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    position: relative;
+    transform: rotate(var(--knob-rot, -20deg));
+  }
+  .knob-cap {
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, #3d3e42 0%, #242427 55%, #151517 100%);
+    border: 1.5px solid #1b1c1e;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.75), 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .knob-notch {
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 6px;
+    background: #42444a;
+    border: 1px solid #5a5d66;
+    border-radius: 2px;
+    z-index: 4;
+  }
+  .mic-pinhole {
+    position: absolute;
+    right: 2px;
+    top: 28px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #070709;
+    box-shadow: inset 0 1px 2px #000, 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  /* ВСЕ СГРУППИРОВАННЫЕ КНОПКИ НИЖНЕГО ЯРУСА */
+  .zoned-buttons-cluster {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .button-zone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* НАСТРОЕН GAP: 15px КАК ТРЕБОВАЛОСЬ */
+  .zone-bracket-box {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 15px; /* Зазор между кнопками внутри группы */
+    padding: 0 6px;
+  }
+
+  .zone-bracket-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -15px;
+    bottom: 8px;
+    border: 1.4px solid var(--zone-line);
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .zone-title-mask {
+    position: absolute;
+    top: -21px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2b2b2d;
+    padding: 0 5px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--zone-line);
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .key-unit {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .key-legend {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--illum);
+    text-shadow: 0 0 5px var(--illum-glow);
+    background: #2b2b2d;
+    padding: 0 2px;
+    line-height: 1;
+  }
+  .key-legend.ta-red {
+    color: #ff382e;
+    text-shadow: 0 0 6px rgba(255, 56, 46, 0.7);
+  }
+
+  .micro-well-narrow {
+    width: 20px;
+    height: 35px;
+    background: #0f1012;
+    border: 1.5px solid #070809;
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.08);
+    display: flex;
+  }
+
+  .micro-well-preset {
+    width: 32px;
+    height: 33px;
+    background: #0f1012;
+    border: 1.5px solid #070809;
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.08);
+    display: flex;
+  }
+
+  .micro-key {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1;
+    cursor: pointer;
+    border-radius: 2.5px;
+    position: relative;
+    background:
+      linear-gradient(
+        180deg,
+        #4c4c4e 0%,
+        #363638 18%,
+        #29292a 20%,
+        #252526 74%,
+        #171718 77%,
+        #101011 100%
+      );
+    border: 1px solid #38383a;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 1px rgba(0, 0, 0, 0.9), 0 2px 3px rgba(0, 0, 0, 0.7);
+    transition: transform 0.08s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  }
+
+  .micro-well-preset .micro-key::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 3px;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 4px);
+    pointer-events: none;
+  }
+
+  .micro-key:hover { filter: brightness(1.1); }
+  .micro-key:active, .micro-key.active {
+    transform: translateY(1.5px);
+    border-color: var(--illum);
+    box-shadow: 0 0 0 1px var(--illum), 0 0 8px var(--illum-glow), inset 0 0 5px var(--illum-soft);
+  }
+  .micro-key.ta-key:active, .micro-key.ta-key.active {
+    border-color: #ff382e;
+    box-shadow: 0 0 0 1px #ff382e, 0 0 9px rgba(255, 56, 46, 0.8), inset 0 0 5px rgba(255, 56, 46, 0.35);
+  }
+
+  /* КАЧАЛКА ПОИСКА */
+  .seek-rocker-zone {
+    position: relative;
+    padding: 0 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .seek-rocker-zone::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -12px;
+    bottom: 15px;
+    border: 1.4px solid var(--zone-line);
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+    pointer-events: none;
+  }
+  .rocker-hook-l, .rocker-hook-r {
+    position: absolute;
+    bottom: 15px;
+    width: 5px;
+    height: 1.4px;
+    background: var(--zone-line);
+  }
+  .rocker-hook-l { left: 0; }
+  .rocker-hook-r { right: 0; }
+
+  .seek-arrows-header {
+    position: absolute;
+    top: -19px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    background: #2b2b2d;
+    padding: 0 6px;
+    z-index: 2;
+  }
+  .seek-arrow-glyph {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--illum);
+    text-shadow: 0 0 5px var(--illum-glow);
+    line-height: 1;
+  }
+
+  .rocker-well {
+    position: relative;
+    z-index: 3;
+    width: 108px;
+    height: 44px;
+    background: #0a0b0d;
+    border: 1.8px solid #060608;
+    border-radius: 5px;
+    padding: 2.5px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.85), inset 0 2px 4px #000;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .rocker-half {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    height: 100%;
+    position: relative;
+    transition: transform 0.08s ease;
+  }
+  .rocker-half.left-wing {
+    border-radius: 3px 0 0 3px;
+    background:
+      repeating-linear-gradient(90deg, #161719 0px 2.5px, #2e3034 2.5px 5px) 0 0 / 28px 100% no-repeat,
+      linear-gradient(90deg, #242528 55%, #313337 100%);
+    border-top: 1px solid #42444a;
+    border-left: 1px solid #42444a;
+    border-bottom: 1px solid #141516;
+  }
+  .rocker-half.right-wing {
+    border-radius: 0 3px 3px 0;
+    background:
+      repeating-linear-gradient(90deg, #2e3034 0px 2.5px, #161719 2.5px 5px) right 0 / 28px 100% no-repeat,
+      linear-gradient(90deg, #313337 0%, #242528 45%);
+    border-top: 1px solid #42444a;
+    border-right: 1px solid #42444a;
+    border-bottom: 1px solid #141516;
+  }
+  .rocker-half.left-wing:active { transform: perspective(200px) rotateY(-8deg); }
+  .rocker-half.right-wing:active { transform: perspective(200px) rotateY(8deg); }
+
+  @media (max-width: 990px) {
+    .stereo-chassis { transform: scale(0.88); transform-origin: center center; }
+  }
+</style>
+</head>
+<body data-illum="green">
+
+<div class="stereo-chassis">
+  <!-- DIN монтажные отверстия -->
+  <div class="din-hole tl"></div>
+  <div class="din-hole bl"></div>
+  <div class="din-hole tr"></div>
+  <div class="din-hole br"></div>
+
+  <div class="faceplate-molding">
+
+    <!-- ВЕРХНИЙ ЯРУС -->
+    <div class="upper-deck">
+
+      <!-- ЖК-дисплей 14-сегментный -->
+      <div class="radio-display-bezel">
+        <div class="radio-display">
+          <div class="display-meta-top">
+            <span id="srcLabel">FM TUNER</span>
+            <span id="presetLabel">CH 02</span>
+            <span id="bandName">FM-1</span>
+          </div>
+
+          <div class="display-digits">
+            <span class="digits-bg">~~~~~~~~~~~~</span>
+            <span class="digits-fg" id="mainReadout">BLAUPUNKT</span>
+          </div>
+
+          <div class="display-icons-row">
+            <span class="lcd-ico on" id="icoUsb">🔌</span>
+            <span class="lcd-ico on">📁</span>
+            <span class="lcd-ico on">♪</span>
+            <span class="lcd-ico" id="icoRpt">⇄</span>
+            <span class="lcd-ico" id="icoShuf">🔀</span>
+            <span class="lcd-ico box-tag" id="icoDab">DAB+</span>
+            <span class="lcd-ico box-tag on" id="icoFm">FM</span>
+            <span class="lcd-ico box-tag" id="icoTa">TA</span>
+            <span class="lcd-ico on">ᛒ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопка MENU / переключатель подсветки -->
+      <div class="well-slot">
+        <button class="sculpted-btn disp-color-btn" id="illumCycleBtn" title="Нажмите для смены цвета подсветки">
+          <span>MENU</span>
+          <small id="colorNameTag">GRN</small>
+        </button>
+      </div>
+
+      <!-- ВОЗВРАЩЕННАЯ ДИЗАЙНЕРСКАЯ ШТОРКА КАССЕТЫ/USB С ЛИНИЯМИ И STEREO -->
+      <div class="cassette-deck-well">
+        <div class="cassette-flap">
+          <svg class="flap-graphic-svg" viewBox="0 0 340 80" preserveAspectRatio="none">
+            <polyline class="flap-line" points="6,22 238,22 262,12 332,12"/>
+            <polyline class="flap-line" points="6,58 238,58 262,68 332,68"/>
+          </svg>
+          <span class="flap-stereo-txt">STEREO</span>
+          <div class="flap-usb-icon" title="Hidden USB / Media Port Behind Flap">
+            <svg width="16" height="22" viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="8" cy="19" r="2.2" fill="currentColor"/>
+              <line x1="8" y1="3" x2="8" y2="17"/>
+              <polyline points="5,6 8,2 11,6"/>
+              <path d="M8,13 L4,10 L4,7"/>
+              <path d="M8,15 L12,12 L12,8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопки звонка / Handsfree -->
+      <div class="upper-right-keys">
+        <div class="well-slot">
+          <button class="sculpted-btn" id="btnHangup" title="Сбросить">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 9c-4.5 0-8.5 1.8-11 4.8l2.5 2.5c1.8-1.8 4.2-2.8 6.8-3v-2.6c1.1-.2 2.3-.2 3.4 0v2.6c2.6.2 5 1.2 6.8 3l2.5-2.5C20.5 10.8 16.5 9 12 9z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="well-slot">
+          <button class="sculpted-btn" id="btnPickup" title="Ответить">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.6 10.8c1.5 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- СРЕДНЯЯ ПЛАНКА -->
+    <div class="middle-brand-bar">
+      <div class="blaupunkt-brand">
+        <span class="blue-point-dot"></span>
+        <span>BLAUPUNKT</span>
+      </div>
+      <div class="model-designation">HAMBURG SQM 23 DAB</div>
+    </div>
+
+    <!-- НИЖНИЙ ЯРУС -->
+    <div class="lower-deck">
+
+      <!-- Регулятор громкости -->
+      <div class="rotary-encoder-zone">
+        <svg class="knob-arc-svg" viewBox="0 0 104 84">
+          <!-- Значок Включения (Power) над ручкой -->
+          <g stroke="var(--zone-line)" stroke-width="1.3" fill="none" stroke-linecap="round">
+            <circle cx="21" cy="11" r="3.2"/>
+            <line x1="21" y1="6" x2="21" y2="10"/>
+          </g>
+          
+          <!-- Значок Динамика / Громкости над ручкой -->
+          <g fill="var(--zone-line)" stroke="var(--zone-line)" stroke-width="1.1">
+            <rect x="34" y="8" width="2.5" height="6" rx="0.4"/>
+            <polygon points="36.5,8 43,4.5 43,17.5 36.5,14"/>
+            <polygon points="46,14 56,14 56,8 46,12" stroke-linejoin="round"/>
+          </g>
+          
+          <!-- Круговая шкала с выверенным радиусом вокруг ручки -->
+          <path d="M 58,15 A 39,39 0 0,1 74,68" fill="none" stroke="var(--zone-line)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+
+        <div class="knob-well" id="volKnob" title="Тяните вверх/вниз для громкости">
+          <div class="knob-knurled" style="--knob-rot: -20deg;">
+            <div class="knob-cap"></div>
+            <div class="knob-notch"></div>
+          </div>
+        </div>
+
+        <div class="mic-pinhole" title="Встроенный микрофон"></div>
+      </div>
+
+      <!-- КНОПОЧНЫЕ МОДУЛИ -->
+      <div class="zoned-buttons-cluster">
+
+        <!-- 1. НОВЫЙ БЛОК СЛЕВА: SOUND (AUDIO EQ / LOUD) -->
+        <div class="button-zone">
+          <div class="zone-bracket-box">
+            <span class="zone-title-mask">SOUND</span>
+
+            <div class="key-unit">
+              <span class="key-legend">AUD</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key" id="audBtn" title="Эквалайзер / Тембр"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">LOUD</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key" id="loudBtn" title="Loudness (Тонкомпенсация)"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Кнопка SRC -->
+        <div class="key-unit">
+          <span class="key-legend">SRC</span>
+          <div class="micro-well-narrow">
+            <button class="micro-key" id="srcBtn" title="Выбор источника"></button>
+          </div>
+        </div>
+
+        <!-- 3. ГРУППА BAND (DAB, FM, TA) с gap: 15px -->
+        <div class="button-zone">
+          <div class="zone-bracket-box">
+            <span class="zone-title-mask">BAND</span>
+
+            <div class="key-unit">
+              <span class="key-legend">DAB</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key" id="dabBtn" title="Диапазон DAB+"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">FM</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key active" id="fmBtn" title="Диапазон FM"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend ta-red">TA</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key ta-key" id="taBtn" title="Дорожные сообщения"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ГРУППА STATION (1-5) с gap: 15px -->
+        <div class="button-zone">
+          <div class="zone-bracket-box">
+            <span class="zone-title-mask">STATION</span>
+
+            <div class="key-unit">
+              <span class="key-legend">1</span>
+              <div class="micro-well-preset">
+                <button class="micro-key preset-btn" data-ch="01" data-station="89.5 ROCK"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">2</span>
+              <div class="micro-well-preset">
+                <button class="micro-key preset-btn active" data-ch="02" data-station="BLAUPUNKT"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">3</span>
+              <div class="micro-well-preset">
+                <button class="micro-key preset-btn" data-ch="03" data-station="98.1 JAZZ"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">4</span>
+              <div class="micro-well-preset">
+                <button class="micro-key preset-btn" data-ch="04" data-station="101.2 WAVE"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">5</span>
+              <div class="micro-well-preset">
+                <button class="micro-key preset-btn" data-ch="05" data-station="107.9 RETRO"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. НОВЫЙ БЛОК СПРАВА: RDS (PTY / AF) -->
+        <div class="button-zone">
+          <div class="zone-bracket-box">
+            <span class="zone-title-mask">RDS</span>
+
+            <div class="key-unit">
+              <span class="key-legend">PTY</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key" id="ptyBtn" title="Program Type Search"></button>
+              </div>
+            </div>
+
+            <div class="key-unit">
+              <span class="key-legend">AF</span>
+              <div class="micro-well-narrow">
+                <button class="micro-key" id="afBtn" title="Alternative Frequency"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Качалка поиска частоты/трека -->
+      <div class="seek-rocker-zone">
+        <div class="rocker-hook-l"></div>
+        <div class="rocker-hook-r"></div>
+
+        <div class="seek-arrows-header">
+          <span class="seek-arrow-glyph">&lt;</span>
+          <span class="seek-arrow-glyph">&gt;</span>
+        </div>
+
+        <div class="rocker-well">
+          <button class="rocker-half left-wing" id="seekPrevBtn" title="Поиск вниз"></button>
+          <button class="rocker-half right-wing" id="seekNextBtn" title="Поиск вверх"></button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const readout = document.getElementById("mainReadout");
+  const srcLabel = document.getElementById("srcLabel");
+  const presetLabel = document.getElementById("presetLabel");
+  const bandName = document.getElementById("bandName");
+  const presetBtns = document.querySelectorAll(".preset-btn");
+
+  const ILLUM_THEMES = [
+    { id: "green", tag: "GRN", label: "COLOR GREEN" },
+    { id: "amber", tag: "AMB", label: "COLOR AMBER" },
+    { id: "red",   tag: "RED", label: "COLOR RED"   },
+    { id: "white", tag: "WHT", label: "COLOR WHITE" },
+    { id: "blue",  tag: "BLU", label: "COLOR BLUE"  }
+  ];
+  let illumIdx = 0;
+  let tempMsgTimer = null;
+  let savedReadout = "BLAUPUNKT";
+
+  function flashTempMessage(msg, duration = 1000) {
+    readout.textContent = msg;
+    clearTimeout(tempMsgTimer);
+    tempMsgTimer = setTimeout(() => {
+      readout.textContent = savedReadout;
+    }, duration);
+  }
+
+  const illumCycleBtn = document.getElementById("illumCycleBtn");
+  const colorNameTag = document.getElementById("colorNameTag");
+
+  illumCycleBtn.addEventListener("click", () => {
+    illumIdx = (illumIdx + 1) % ILLUM_THEMES.length;
+    const theme = ILLUM_THEMES[illumIdx];
+    document.body.dataset.illum = theme.id;
+    colorNameTag.textContent = theme.tag;
+    flashTempMessage(theme.label, 900);
+  });
+
+  presetBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      presetBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      savedReadout = btn.dataset.station;
+      readout.textContent = savedReadout;
+      presetLabel.textContent = "CH " + btn.dataset.ch;
+    });
+  });
+
+  // НОВЫЕ КНОПКИ SOUND И RDS
+  const EQ_MODES = ["FLAT EQ", "ROCK EQ", "CLASSIC", "JAZZ EQ", "VOCAL EQ"];
+  let eqIdx = 0;
+  document.getElementById("audBtn").addEventListener("click", (e) => {
+    e.currentTarget.classList.add("active");
+    setTimeout(() => e.currentTarget.classList.remove("active"), 180);
+    eqIdx = (eqIdx + 1) % EQ_MODES.length;
+    flashTempMessage(EQ_MODES[eqIdx], 1000);
+  });
+
+  const loudBtn = document.getElementById("loudBtn");
+  loudBtn.addEventListener("click", () => {
+    const isLoud = loudBtn.classList.toggle("active");
+    flashTempMessage(isLoud ? "LOUD ON" : "LOUD OFF", 900);
+  });
+
+  document.getElementById("ptyBtn").addEventListener("click", (e) => {
+    e.currentTarget.classList.add("active");
+    setTimeout(() => e.currentTarget.classList.remove("active"), 200);
+    flashTempMessage("PTY POP M", 1000);
+  });
+
+  const afBtn = document.getElementById("afBtn");
+  afBtn.addEventListener("click", () => {
+    const isAf = afBtn.classList.toggle("active");
+    flashTempMessage(isAf ? "AF ON" : "AF OFF", 900);
+  });
+
+  const SOURCES = [
+    { src: "FM TUNER",  band: "FM-1", text: "BLAUPUNKT"   },
+    { src: "DAB+ MUX",  band: "DAB1", text: "DAB DIGITAL" },
+    { src: "BT AUDIO",  band: "A2DP", text: "STREAMING"   },
+    { src: "USB MEDIA", band: "FLAC", text: "TRK 04 WAV"  }
+  ];
+  let srcIdx = 0;
+
+  document.getElementById("srcBtn").addEventListener("click", (e) => {
+    e.currentTarget.classList.add("active");
+    setTimeout(() => e.currentTarget.classList.remove("active"), 180);
+
+    srcIdx = (srcIdx + 1) % SOURCES.length;
+    const s = SOURCES[srcIdx];
+    srcLabel.textContent = s.src;
+    bandName.textContent = s.band;
+    savedReadout = s.text;
+    readout.textContent = savedReadout;
+
+    document.getElementById("icoDab").classList.toggle("on", s.src === "DAB+ MUX");
+    document.getElementById("icoFm").classList.toggle("on", s.src === "FM TUNER");
+  });
+
+  const dabBtn = document.getElementById("dabBtn");
+  const fmBtn = document.getElementById("fmBtn");
+  const taBtn = document.getElementById("taBtn");
+
+  dabBtn.addEventListener("click", () => {
+    dabBtn.classList.add("active");
+    fmBtn.classList.remove("active");
+    srcLabel.textContent = "DAB+ MUX";
+    bandName.textContent = "DAB1";
+    savedReadout = "DAB DIGITAL";
+    readout.textContent = savedReadout;
+    document.getElementById("icoDab").classList.add("on");
+    document.getElementById("icoFm").classList.remove("on");
+  });
+
+  let fmTier = 1;
+  fmBtn.addEventListener("click", () => {
+    fmBtn.classList.add("active");
+    dabBtn.classList.remove("active");
+    srcLabel.textContent = "FM TUNER";
+    bandName.textContent = "FM-" + fmTier;
+    fmTier = (fmTier % 3) + 1;
+    savedReadout = "BLAUPUNKT";
+    readout.textContent = savedReadout;
+    document.getElementById("icoFm").classList.add("on");
+    document.getElementById("icoDab").classList.remove("on");
+  });
+
+  taBtn.addEventListener("click", () => {
+    const isOn = taBtn.classList.toggle("active");
+    document.getElementById("icoTa").classList.toggle("on", isOn);
+    flashTempMessage(isOn ? "TRAFFIC ON" : "TRAFFIC OFF", 850);
+  });
+
+  document.getElementById("btnPickup").addEventListener("click", () => {
+    flashTempMessage("CALL ACTIVE", 1100);
+  });
+  document.getElementById("btnHangup").addEventListener("click", () => {
+    flashTempMessage("CALL ENDED", 950);
+  });
+
+  let currentFreq = 104.1;
+  function stepFrequency(dir) {
+    presetBtns.forEach((b) => b.classList.remove("active"));
+    currentFreq = Math.min(108.0, Math.max(87.5, +(currentFreq + dir * 0.2).toFixed(1)));
+    savedReadout = `${currentFreq.toFixed(1)} MHZ`;
+    readout.textContent = savedReadout;
+    presetLabel.textContent = "MANUAL";
+  }
+
+  document.getElementById("seekPrevBtn").addEventListener("click", () => stepFrequency(-1));
+  document.getElementById("seekNextBtn").addEventListener("click", () => stepFrequency(1));
+
+  // Регулятор громкости
+  const volKnob = document.getElementById("volKnob");
+  const knurled = volKnob.querySelector(".knob-knurled");
+  let dragging = false;
+  let startY = 0;
+  let currentRot = -20;
+  let volumeLevel = 18;
+
+  volKnob.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    startY = e.clientY;
+    volKnob.setPointerCapture(e.pointerId);
+  });
+
+  volKnob.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const deltaY = startY - e.clientY;
+    if (Math.abs(deltaY) < 2) return;
+    currentRot = Math.max(-135, Math.min(135, currentRot + deltaY * 2.2));
+    volumeLevel = Math.round(((currentRot + 135) / 270) * 40);
+    startY = e.clientY;
+    knurled.style.setProperty("--knob-rot", `${currentRot}deg`);
+    flashTempMessage(`VOL ${String(volumeLevel).padStart(2, "0")}`, 750);
+  });
+
+  const stopDrag = () => { dragging = false; };
+  volKnob.addEventListener("pointerup", stopDrag);
+  volKnob.addEventListener("pointercancel", stopDrag);
+</script>
+
+</body>
+</html>

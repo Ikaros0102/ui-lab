@@ -3,188 +3,1319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Satellite Fleet Control</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<title>Satellite Fleet Control — Orbital Constellation Telemetry</title>
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap](https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
   "title": "Satellite Fleet Control",
   "category": "widgets",
   "themes": ["dark", "glass"],
-  "tags": ["space", "satellite", "mission-control", "globe", "dashboard", "glass", "telemetry", "alert"],
-  "description": "Glossy mission control dashboard: satellite list with live stats, a dotted globe with orbiting rings and markers, signal bars, payload diagnostics and an anomaly alert card.",
-  "techniques": ["dotted sphere from radial-gradient dot pattern", "tilted orbit rings with rotateX", "backdrop-filter glass panels", "canvas-free signal bar chart", "selection state shared across list, markers and diagnostics"],
-  "recipe": "The globe is a circle filled with a tiny repeating radial-gradient dot pattern, masked by a radial gradient so the dots fade toward the edge like a lit sphere. Orbit rings are ellipses made with rotateX on bordered circles, and satellites ride a wrapper that rotates around the globe centre. Clicking a satellite anywhere updates one selected id; the list, the marker highlight and the diagnostics all read from it, so the three views never drift apart.",
-  "preview": { "mode": "page", "width": 1000, "height": 620 }
+  "tags": [
+    "space",
+    "satellite",
+    "mission-control",
+    "globe",
+    "dashboard",
+    "glass",
+    "telemetry",
+    "alert",
+    "constellation"
+  ],
+  "description": "Glossy orbital constellation mission control dashboard: real-time 3D/2D/Ground globe projection with moving satellites, optical inter-satellite laser crosslinks, ground station footprints, live RF spectrum analyzer, and interactive thruster burn anomaly resolution.",
+  "techniques": [
+    "Multi-mode central viewport switching between 3D Tilted Globe, 2D Mercator Sine Ground-Track, and Polar Ground-Station Footprint",
+    "Real-time parametric orbital motion with dynamic SVG inter-satellite laser relay links and ground downlink cones",
+    "Backdrop-filter frosted glass cards with live telemetry sparklines and SVG spacecraft thumbnails",
+    "Interactive Anomaly Resolution sequence that fires RCS thrusters to normalize orbital deviation and thermal load",
+    "Synchronized selection state across fleet manifest, orbital markers, RF spectrum bars, and payload diagnostics"
+  ],
+  "recipe": "The central stage combines a CSS radial-dot sphere, drifting continent masks, and an SVG telemetry overlay that draws live laser crosslinks between moving satellites. Switching between 3D, 2D, and Ground views morphs the globe container and recalculates marker projections in real time, while clicking Respond executes an automated orbital correction maneuver.",
+  "preview": { "mode": "page", "width": 1060, "height": 680 }
 }
 </script>
 
 <style>
   * { box-sizing: border-box; }
+
   :root {
-    --bg: #070a0c; --panel: rgba(255,255,255,.04); --line: rgba(255,255,255,.1);
-    --text: #e8eceb; --muted: #7d8884; --ok: #6fdc9a; --warn: #f0a63a; --bad: #e5484d; --live: #e5484d;
+    --bg: #06090b;
+    --panel: rgba(255, 255, 255, 0.045);
+    --panel-hover: rgba(255, 255, 255, 0.075);
+    --line: rgba(255, 255, 255, 0.11);
+    --line-bright: rgba(160, 255, 215, 0.38);
+    --text: #ecf2f0;
+    --muted: #7d8b86;
+    --mint: #7fe8c8;
+    --ok: #5ce092;
+    --warn: #f5a623;
+    --bad: #ef4444;
+    --live: #ef4444;
   }
+
   body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center; background: #000; color: var(--text);
-    font: 11px/1.4 "Space Grotesk", system-ui, sans-serif; overflow: hidden;
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 25%, #0f1714 0%, #020304 80%);
+    color: var(--text);
+    font: 11px/1.4 "Space Grotesk", system-ui, sans-serif;
+    padding: 14px;
+    overflow-x: hidden;
+    user-select: none;
   }
+
+  /* ==========================================================================
+     MAIN MISSION CONTROL SHELL (1020 x 630)
+  ========================================================================== */
   .app {
-    position: relative; width: 960px; height: 580px; display: grid; grid-template-columns: 220px 1fr 220px; gap: 12px; padding: 14px;
-    background: radial-gradient(70% 70% at 50% 0%, #1a2420, var(--bg) 70%); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
-  }
-  .panel {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
-    backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
-  }
-  h2 { margin: 0 0 8px; font-size: 15px; font-weight: 500; }
-  h3 { margin: 0 0 8px; font-size: 11px; font-weight: 500; color: var(--muted); }
-
-  /* ---------- left ---------- */
-  .left { display: flex; flex-direction: column; gap: 10px; }
-  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 3px; background: rgba(0,0,0,.35); border-radius: 8px; }
-  .tabs button { all: unset; text-align: center; padding: 5px 0; border-radius: 6px; cursor: pointer; color: var(--muted); font-size: 10px; }
-  .tabs button[aria-pressed="true"] { background: rgba(255,255,255,.12); color: #fff; }
-  .sats { display: grid; gap: 8px; overflow: hidden; }
-  .sat { all: unset; cursor: pointer; display: grid; grid-template-columns: 42px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.03); }
-  .sat[aria-pressed="true"] { border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.08); }
-  .thumb { grid-row: span 3; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #3a4642, #0c1210); position: relative; }
-  .thumb::after { content: ""; position: absolute; inset: 14px 6px; background: repeating-linear-gradient(90deg, #aeb7b2 0 2px, #505a55 2px 4px); transform: skewY(-10deg); }
-  .sat .row { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
-  .sat .name { display: flex; justify-content: space-between; font-size: 11px; color: var(--text); }
-  .pill { font-size: 8px; padding: 1px 6px; border-radius: 99px; border: 1px solid var(--ok); color: var(--ok); }
-  .pill.warn { border-color: var(--warn); color: var(--warn); }
-
-  /* ---------- center ---------- */
-  .center { position: relative; display: grid; place-items: center; overflow: hidden; }
-  .globe-wrap { position: relative; width: 340px; height: 340px; margin-top: -20px; }
-  .globe {
-    position: absolute; inset: 0; border-radius: 50%;
+    position: relative;
+    width: 1020px;
+    height: 630px;
+    display: grid;
+    grid-template-columns: 245px 1fr 255px;
+    gap: 12px;
+    padding: 14px;
     background:
-      radial-gradient(circle at 36% 30%, rgba(255,255,255,.14), transparent 45%),
-      radial-gradient(circle, rgba(220,255,240,.55) 1px, transparent 1.4px) 0 0 / 7px 7px,
-      #0b100e;
-    -webkit-mask: radial-gradient(circle, #000 55%, rgba(0,0,0,.35) 100%); mask: radial-gradient(circle, #000 55%, rgba(0,0,0,.35) 100%);
-    box-shadow: inset -30px -20px 60px rgba(0,0,0,.85);
+      radial-gradient(65% 65% at 50% 0%, rgba(45, 78, 66, 0.42), var(--bg) 72%),
+      linear-gradient(180deg, #0b110f 0%, #050807 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 20px;
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.92),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    overflow: hidden;
   }
-  .halo { position: absolute; inset: -6px; border-radius: 50%; box-shadow: 0 0 60px rgba(160,255,215,.18), inset 0 0 0 1px rgba(200,255,230,.25); pointer-events: none; }
-  .ring { position: absolute; left: -40px; right: -40px; top: 50%; height: 260px; margin-top: -130px; border-radius: 50%; border: 1px solid rgba(255,255,255,.28); transform: rotateX(72deg) rotateZ(var(--r, 0deg)); }
-  .ring:nth-of-type(2) { --r: 28deg; border-color: rgba(255,255,255,.18); }
-  .ring:nth-of-type(3) { --r: -22deg; border-color: rgba(255,255,255,.14); }
-  .marker {
-    position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 2px solid #fff;
-    background: #1b2420; cursor: pointer; display: grid; place-items: center; font-size: 8px; transition: transform .2s, box-shadow .2s;
-  }
-  .marker::after { content: attr(data-label); position: absolute; left: 26px; white-space: nowrap; font-size: 9px; color: #dfe; }
-  .marker[aria-pressed="true"] { transform: scale(1.35); box-shadow: 0 0 0 4px rgba(255,255,255,.18), 0 0 18px #fff; }
-  .marker.warn { border-color: var(--warn); }
-  .marker.bad  { border-color: var(--bad); }
-  .modes { position: absolute; bottom: 8px; display: flex; gap: 6px; align-items: center; }
-  .modes button { all: unset; cursor: pointer; padding: 6px 16px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--muted); }
-  .modes button[aria-pressed="true"] { color: #fff; background: rgba(255,255,255,.16); }
-  .live { color: var(--live) !important; border-color: rgba(229,72,77,.5) !important; }
-  .utc { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; font-variant-numeric: tabular-nums; }
 
-  /* ---------- right ---------- */
-  .right { display: flex; flex-direction: column; gap: 10px; }
-  .bars { display: flex; align-items: flex-end; gap: 3px; height: 54px; }
-  .bars i { flex: 1; background: linear-gradient(#eaf5ef, #5b6a63); border-radius: 2px; height: calc(var(--h) * 1%); transition: height .5s; }
-  .signal-top { display: flex; justify-content: space-between; align-items: baseline; }
-  .signal-top b { font-size: 17px; font-weight: 500; }
-  .kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; font-size: 10px; color: var(--muted); }
-  .kv dd { margin: 0; color: var(--text); }
-  .alert { border-color: rgba(240,166,58,.5); background: linear-gradient(180deg, rgba(240,166,58,.14), rgba(255,255,255,.03)); }
-  .alert h3 { color: var(--warn); display: flex; gap: 6px; align-items: center; font-size: 12px; }
-  .meter { margin: 8px 0; }
-  .meter .t { display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); }
-  .meter .b { height: 3px; margin-top: 3px; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
-  .meter .b i { display: block; height: 100%; width: var(--v); background: var(--warn); }
-  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-  .actions button { all: unset; cursor: pointer; text-align: center; padding: 6px 0; border-radius: 8px; border: 1px solid var(--line); }
-  .actions .primary { background: var(--warn); color: #20150a; border-color: var(--warn); font-weight: 700; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  /* ==========================================================================
+     LEFT COLUMN: MISSION MODE & SATELLITE FLEET MANIFEST
+  ========================================================================== */
+  .left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .left-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fleet-count-badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    color: var(--ok);
+    background: rgba(92, 224, 146, 0.1);
+    border: 1px solid rgba(92, 224, 146, 0.3);
+    padding: 2px 7px;
+    border-radius: 99px;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 3px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 9px;
+  }
+
+  .tabs button {
+    all: unset;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+  }
+
+  .tabs button:hover {
+    color: var(--text);
+  }
+
+  .tabs button[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.13);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  .sats {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .sat {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 5px 9px;
+    padding: 8px 9px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.025);
+    transition: all 0.18s ease;
+    position: relative;
+  }
+
+  .sat:hover {
+    background: var(--panel-hover);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .sat[aria-pressed="true"] {
+    border-color: rgba(127, 232, 200, 0.55);
+    background: linear-gradient(135deg, rgba(127, 232, 200, 0.13), rgba(255, 255, 255, 0.04));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(127, 232, 200, 0.08);
+  }
+
+  .thumb {
+    grid-row: span 3;
+    border-radius: 8px;
+    background: radial-gradient(circle at 50% 35%, #2f3d38, #090e0c);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .thumb svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .sat .name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .sat .row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 9.5px;
+  }
+
+  .sat .row strong {
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+    font-size: 9px;
+  }
+
+  .pill {
+    font-size: 8.5px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 99px;
+    border: 1px solid var(--ok);
+    color: var(--ok);
+    background: rgba(92, 224, 146, 0.08);
+  }
+
+  .pill.warn {
+    border-color: var(--warn);
+    color: var(--warn);
+    background: rgba(245, 166, 35, 0.12);
+  }
+
+  /* Mini Battery & Link Bar inside Satellite Card */
+  .sat-mini-bars {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding-top: 3px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .mini-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 8px;
+    color: var(--muted);
+  }
+  .mini-bar-track {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    background: var(--ok);
+    border-radius: 2px;
+  }
+
+  /* ==========================================================================
+     CENTER STAGE: MULTI-MODE GLOBE (3D ORBIT / 2D MERCATOR / GROUND RADAR)
+  ========================================================================== */
+  .center {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+      radial-gradient(circle at 50% 46%, rgba(111, 220, 154, 0.07) 0%, transparent 65%),
+      radial-gradient(1px 1px at 15% 22%, rgba(255,255,255,0.45), transparent),
+      radial-gradient(1px 1px at 84% 18%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.5px 1.5px at 78% 76%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1px 1px at 22% 80%, rgba(255,255,255,0.4), transparent),
+      rgba(5, 8, 9, 0.55);
+    overflow: hidden;
+  }
+
+  /* Top Stage Telemetry Bar */
+  .center-hud-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--muted);
+    z-index: 6;
+  }
+
+  .hud-tag-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hud-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    color: var(--text);
+  }
+
+  .hud-chip strong {
+    color: var(--mint);
+    font-weight: 600;
+  }
+
+  /* Globe Viewport Container */
+  .globe-wrap {
+    position: relative;
+    width: 390px;
+    height: 390px;
+    display: grid;
+    place-items: center;
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* DottedLit Sphere */
+  .globe {
+    position: absolute;
+    width: 310px;
+    height: 310px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.18), transparent 45%),
+      /* Continental Landmass Clusters */
+      radial-gradient(ellipse 26% 18% at 35% 38%, rgba(127, 232, 200, 0.22), transparent 70%),
+      radial-gradient(ellipse 32% 22% at 68% 46%, rgba(127, 232, 200, 0.18), transparent 75%),
+      radial-gradient(ellipse 18% 28% at 42% 68%, rgba(127, 232, 200, 0.16), transparent 70%),
+      /* Fine Dot Matrix Pattern */
+      radial-gradient(circle, rgba(210, 255, 235, 0.62) 1px, transparent 1.45px) 0 0 / 7.5px 7.5px,
+      #08100d;
+    -webkit-mask: radial-gradient(circle, #000 56%, rgba(0, 0, 0, 0.25) 100%);
+    mask: radial-gradient(circle, #000 56%, rgba(0, 0, 0, 0.25) 100%);
+    box-shadow:
+      inset -36px -24px 65px rgba(0, 0, 0, 0.92),
+      inset 10px 10px 28px rgba(160, 255, 215, 0.12);
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* 2D Mercator Map Projection Transformation */
+  .globe-wrap[data-proj="2D"] .globe {
+    width: 440px;
+    height: 250px;
+    border-radius: 14px;
+    -webkit-mask: none;
+    mask: none;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
+  }
+
+  .halo {
+    position: absolute;
+    width: 322px;
+    height: 322px;
+    border-radius: 50%;
+    box-shadow:
+      0 0 65px rgba(127, 232, 200, 0.16),
+      inset 0 0 0 1px rgba(190, 255, 230, 0.24);
+    pointer-events: none;
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .globe-wrap[data-proj="2D"] .halo {
+    width: 448px;
+    height: 258px;
+    border-radius: 16px;
+  }
+
+  /* 3D Tilted Orbit Rings */
+  .ring {
+    position: absolute;
+    width: 396px;
+    height: 248px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    transform: rotateX(70deg) rotateZ(var(--r, 0deg));
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.45s ease;
+  }
+  .ring.r1 { --r: -18deg; border-color: rgba(127, 232, 200, 0.28); }
+  .ring.r2 { --r: 26deg;  border-color: rgba(255, 255, 255, 0.18); }
+  .ring.r3 { --r: -52deg; border-color: rgba(255, 255, 255, 0.13); }
+
+  .globe-wrap[data-proj="2D"] .ring {
+    opacity: 0;
+  }
+  .globe-wrap[data-proj="Ground"] .ring {
+    transform: rotateX(0deg) scale(0.78);
+    border-style: dashed;
+  }
+
+  /* Dynamic SVG Overlay for Laser Relay Crosslinks, Ground Cones & 2D Sine Track */
+  .orbital-links-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
+  }
+
+  /* Ground Station Beacons on Globe */
+  .ground-station-pin {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 10px var(--mint);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .ground-station-pin::after {
+    content: attr(data-gs);
+    position: absolute;
+    left: 11px;
+    top: -4px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    color: rgba(190, 255, 230, 0.75);
+    white-space: nowrap;
+  }
+
+  /* Orbiting Satellite Markers */
+  .marker {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    background: #141e1a;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 9px;
+    z-index: 5;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .marker::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+
+  .marker::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 28px;
+    white-space: nowrap;
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #e8eceb;
+    background: rgba(7, 12, 10, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 1px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .marker:hover {
+    transform: scale(1.18);
+  }
+
+  .marker[aria-pressed="true"] {
+    transform: scale(1.36);
+    border-color: var(--mint);
+    box-shadow:
+      0 0 0 5px rgba(127, 232, 200, 0.22),
+      0 0 22px var(--mint);
+    z-index: 8;
+  }
+
+  .marker.warn {
+    border-color: var(--warn);
+  }
+  .marker.warn::before {
+    background: var(--warn);
+    box-shadow: 0 0 8px var(--warn);
+  }
+
+  /* Bottom View Mode Bar */
+  .modes {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+    z-index: 6;
+  }
+
+  .modes button {
+    all: unset;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.045);
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+  }
+
+  .modes button:hover {
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .modes button[aria-pressed="true"] {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  .live {
+    color: var(--live) !important;
+    border-color: rgba(239, 68, 68, 0.45) !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    font-weight: 600 !important;
+  }
+  .live.paused {
+    color: var(--muted) !important;
+    border-color: var(--line) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  .utc {
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    color: var(--mint);
+  }
+
+  /* ==========================================================================
+     RIGHT COLUMN: RF SPECTRUM, PAYLOAD DIAGNOSTICS & ANOMALY RESPONSE
+  ========================================================================== */
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .signal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .signal-top b {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mint);
+  }
+
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 52px;
+    padding-top: 4px;
+  }
+  .bars i {
+    flex: 1;
+    background: linear-gradient(180deg, #dffef0 0%, #6fdc9a 45%, #2b473b 100%);
+    border-radius: 2px;
+    height: calc(var(--h, 40) * 1%);
+    transition: height 0.35s ease;
+  }
+
+  .signal-sub-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 9.5px;
+    color: var(--muted);
+  }
+  .signal-sub-row strong {
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 500;
+  }
+
+  .kv {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 8px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .kv dd {
+    margin: 0;
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+  }
+
+  /* Attitude Quaternion Mini-Grid */
+  .attitude-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .att-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    padding: 4px 6px;
+    text-align: center;
+    font-size: 8.5px;
+    color: var(--muted);
+  }
+  .att-box strong {
+    display: block;
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    margin-top: 1px;
+  }
+
+  /* Anomaly Alert Card */
+  .alert {
+    border-color: rgba(245, 166, 35, 0.5);
+    background: linear-gradient(180deg, rgba(245, 166, 35, 0.14), rgba(255, 255, 255, 0.03));
+    transition: all 0.35s ease;
+  }
+  .alert.resolved {
+    border-color: rgba(92, 224, 146, 0.45);
+    background: linear-gradient(180deg, rgba(92, 224, 146, 0.12), rgba(255, 255, 255, 0.03));
+  }
+
+  .alert h3 {
+    color: var(--warn);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .alert.resolved h3 {
+    color: var(--ok);
+  }
+
+  .meter {
+    margin: 7px 0;
+  }
+  .meter .t {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--muted);
+  }
+  .meter .t span:last-child {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text);
+  }
+  .meter .b {
+    height: 4px;
+    margin-top: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .meter .b i {
+    display: block;
+    height: 100%;
+    width: var(--v);
+    background: var(--warn);
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease;
+  }
+  .alert.resolved .meter .b i {
+    background: var(--ok);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .actions button {
+    all: unset;
+    cursor: pointer;
+    text-align: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .actions button:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .actions .primary {
+    background: var(--warn);
+    color: #1c1204;
+    border-color: var(--warn);
+  }
+  .actions .primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 14px rgba(245, 166, 35, 0.45);
+  }
+  .alert.resolved .actions .primary {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: #06180e;
+  }
+
+  @media (max-width: 1040px) {
+    .app {
+      transform: scale(0.9);
+      transform-origin: center center;
+    }
+  }
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- ========================================================================
+       LEFT PANEL: MISSION MODE & SATELLITE CONSTELLATION MANIFEST
+  ========================================================================= -->
   <aside class="panel left">
-    <h2>Mission mode</h2>
-    <div class="tabs" id="mode"><button aria-pressed="false">Tracking</button><button aria-pressed="false">Inspection</button><button aria-pressed="true">Relay</button></div>
+    <div class="left-header">
+      <h2>Mission mode</h2>
+      <span class="fleet-count-badge" id="fleetStatusBadge">4 OK · 1 WARN</span>
+    </div>
+
+    <div class="tabs" id="mode">
+      <button data-mode="Tracking" aria-pressed="false">Tracking</button>
+      <button data-mode="Inspection" aria-pressed="false">Inspection</button>
+      <button data-mode="Relay" aria-pressed="true">Relay</button>
+    </div>
+
     <div class="sats" id="sats"></div>
   </aside>
 
+  <!-- ========================================================================
+       CENTER STAGE: INTERACTIVE ORBITAL GLOBE & CROSSLINK OVERLAY
+  ========================================================================= -->
   <section class="center">
-    <div class="globe-wrap">
-      <div class="globe"></div><div class="halo"></div>
-      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="center-hud-top">
+      <div class="hud-tag-group">
+        <span class="hud-chip">CONSTELLATION: <strong>AEGIS-MESH</strong></span>
+        <span class="hud-chip">MODE: <strong id="activeModeChip">OPTICAL RELAY</strong></span>
+      </div>
+      <div class="hud-tag-group">
+        <span class="hud-chip">GROUND LINK: <strong id="gsLinkName">SVALBARD-02</strong></span>
+      </div>
+    </div>
+
+    <div class="globe-wrap" id="globeWrap" data-proj="3D">
+      <div class="globe"></div>
+      <div class="halo"></div>
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+
+      <!-- Ground Station Pins -->
+      <div class="ground-station-pin" data-gs="DSN-GOLDSTONE" style="left:28%; top:42%;"></div>
+      <div class="ground-station-pin" data-gs="SVALBARD-RX" style="left:54%; top:22%;"></div>
+      <div class="ground-station-pin" data-gs="CANBERRA-04" style="left:76%; top:72%;"></div>
+
+      <!-- Dynamic SVG Layer for Inter-Satellite Laser Links & Ground Footprint Cones -->
+      <svg class="orbital-links-svg" id="linksSvg" viewBox="0 0 390 390"></svg>
+
+      <!-- Moving Satellite Markers -->
       <div id="markers"></div>
     </div>
+
     <div class="modes" id="view">
-      <button aria-pressed="false">2D</button><button aria-pressed="true">3D</button><button aria-pressed="false">Ground</button>
-      <button class="live">● Live</button><span class="utc" id="utc">20:58:31 UTC</span>
+      <button data-proj="2D" aria-pressed="false">2D Track</button>
+      <button data-proj="3D" aria-pressed="true">3D Globe</button>
+      <button data-proj="Ground" aria-pressed="false">Ground</button>
+      <button class="live" id="liveBtn">● Live</button>
+      <span class="utc" id="utc">20:58:31 UTC</span>
     </div>
   </section>
 
+  <!-- ========================================================================
+       RIGHT PANEL: RF SPECTRUM, PAYLOAD TELEMETRY & ANOMALY CARD
+  ========================================================================= -->
   <aside class="right">
+    <!-- Signal Strength & RF Spectrum Bars -->
     <div class="panel">
-      <div class="signal-top"><h3>Signal strength</h3><b id="sig">−62 dBm</b></div>
+      <div class="signal-top">
+        <h3>Signal strength (Ka-Band)</h3>
+        <b id="sig">−62 dBm</b>
+      </div>
       <div class="bars" id="bars"></div>
+      <div class="signal-sub-row">
+        <span>DOWNLINK: <strong id="downlinkRate">1.84 Gbps</strong></span>
+        <span>SNR: <strong id="snrVal">14.2 dB</strong></span>
+      </div>
     </div>
+
+    <!-- Payload Diagnostics & 3-Axis Attitude -->
     <div class="panel">
       <h3>Payload diagnostics</h3>
-      <dl class="kv"><dt>Payload temp</dt><dd id="pTemp">49.4°C</dd><dt>TX power</dt><dd id="pTx">24.8 dBm</dd><dt>Selected</dt><dd id="pSel">Aurora-1</dd></dl>
+      <dl class="kv">
+        <dt>Selected craft</dt><dd id="pSel" style="color:var(--mint); font-weight:600;">Aurora-1</dd>
+        <dt>Payload temp</dt><dd id="pTemp">49.4°C</dd>
+        <dt>TX power</dt><dd id="pTx">24.8 dBm</dd>
+        <dt>Orbit velocity</dt><dd id="pVel">7.58 km/s</dd>
+        <dt>Solar array bus</dt><dd id="pBat">91% (28.4V)</dd>
+      </dl>
+      <div class="attitude-pills">
+        <div class="att-box">ROLL<strong id="attRoll">+0.02°</strong></div>
+        <div class="att-box">PITCH<strong id="attPitch">-0.14°</strong></div>
+        <div class="att-box">YAW<strong id="attYaw">+0.05°</strong></div>
+      </div>
     </div>
-    <div class="panel alert">
-      <h3>⚠ Anomaly detected</h3>
-      <div class="meter" style="--v:62%"><div class="t"><span>Orbit deviation</span><span>12%</span></div><div class="b"><i></i></div></div>
-      <div class="meter" style="--v:88%"><div class="t"><span>Thermal threshold</span><span>88%</span></div><div class="b"><i></i></div></div>
-      <div class="meter" style="--v:46%"><div class="t"><span>Power budget</span><span>46%</span></div><div class="b"><i></i></div></div>
-      <div class="actions"><button id="dismiss">Dismiss</button><button class="primary" id="respond">Respond</button></div>
+
+    <!-- Interactive Anomaly Card -->
+    <div class="panel alert" id="alertCard">
+      <h3 id="alertTitle">
+        <span>⚠ Anomaly detected</span>
+        <span style="font-size:9.5px; opacity:0.85;" id="alertTargetTag">Helios-A</span>
+      </h3>
+      <div class="meter" id="mDev" style="--v:62%">
+        <div class="t"><span>Orbit deviation</span><span id="valDev">12.4%</span></div>
+        <div class="b"><i></i></div>
+      </div>
+      <div class="meter" id="mTherm" style="--v:88%">
+        <div class="t"><span>Thermal threshold</span><span id="valTherm">88.0%</span></div>
+        <div class="b"><i></i></div>
+      </div>
+      <div class="meter" id="mPwr" style="--v:46%">
+        <div class="t"><span>Power budget</span><span id="valPwr">46.0%</span></div>
+        <div class="b"><i></i></div>
+      </div>
+      <div class="actions">
+        <button id="dismiss">Inspect Helios-A</button>
+        <button class="primary" id="respond">Respond (Burn)</button>
+      </div>
     </div>
   </aside>
+
 </div>
 
 <script>
+  // ==========================================================================
+  // 1. SATELLITE CONSTELLATION EPHEMERIS DATA
+  // ==========================================================================
   const SATS = [
-    { id: "Aurora-1", status: "Normal", alt: "5,520 km", sig: 86, bat: 91, x: 18, y: 26, temp: "49.4°C", tx: "24.8 dBm" },
-    { id: "Aurora-2", status: "Normal", alt: "5,532 km", sig: 74, bat: 83, x: 34, y: 54, temp: "47.1°C", tx: "23.9 dBm" },
-    { id: "Helios-A", status: "Warning", alt: "6,248 km", sig: 52, bat: 62, x: 52, y: 78, temp: "61.8°C", tx: "21.2 dBm", cls: "warn" },
-    { id: "Meridian-1", status: "Normal", alt: "6,090 km", sig: 80, bat: 77, x: 74, y: 30, temp: "48.8°C", tx: "24.1 dBm" },
-    { id: "Zenith-X", status: "Normal", alt: "7,410 km", sig: 68, bat: 88, x: 80, y: 60, temp: "50.2°C", tx: "23.0 dBm" }
+    {
+      id: "Aurora-1",
+      status: "Normal",
+      alt: "5,520 km",
+      vel: "7.58 km/s",
+      sig: 86,
+      bat: 91,
+      temp: "49.4°C",
+      tx: "24.8 dBm",
+      rate: "2.40 Gbps",
+      snr: "16.8 dB",
+      roll: "+0.02°",
+      pitch: "-0.14°",
+      yaw: "+0.05°",
+      // Parametric orbit parameters
+      cx: 50, cy: 50, rx: 40, ry: 18, tilt: -18, angle: 0.4, speed: 0.0055,
+      devPct: 1.8, thermPct: 44, pwrPct: 91,
+      gsX: 54, gsY: 22, gsName: "SVALBARD-RX"
+    },
+    {
+      id: "Aurora-2",
+      status: "Normal",
+      alt: "5,532 km",
+      vel: "7.56 km/s",
+      sig: 78,
+      bat: 84,
+      temp: "47.1°C",
+      tx: "23.9 dBm",
+      rate: "1.95 Gbps",
+      snr: "14.5 dB",
+      roll: "-0.04°",
+      pitch: "+0.08°",
+      yaw: "-0.02°",
+      cx: 50, cy: 50, rx: 40, ry: 18, tilt: -18, angle: 3.5, speed: 0.0055,
+      devPct: 2.1, thermPct: 41, pwrPct: 84,
+      gsX: 28, gsY: 42, gsName: "DSN-GOLDSTONE"
+    },
+    {
+      id: "Helios-A",
+      status: "Warning",
+      alt: "6,248 km",
+      vel: "7.31 km/s",
+      sig: 52,
+      bat: 62,
+      temp: "61.8°C",
+      tx: "21.2 dBm",
+      rate: "0.68 Gbps",
+      snr: "08.4 dB",
+      roll: "+1.85°",
+      pitch: "-2.40°",
+      yaw: "+0.92°",
+      cls: "warn",
+      cx: 50, cy: 50, rx: 42, ry: 20, tilt: 26, angle: 1.65, speed: 0.0042,
+      devPct: 62, thermPct: 88, pwrPct: 46,
+      gsX: 76, gsY: 72, gsName: "CANBERRA-04"
+    },
+    {
+      id: "Meridian-1",
+      status: "Normal",
+      alt: "6,090 km",
+      vel: "7.42 km/s",
+      sig: 82,
+      bat: 79,
+      temp: "48.8°C",
+      tx: "24.1 dBm",
+      rate: "2.12 Gbps",
+      snr: "15.6 dB",
+      roll: "+0.01°",
+      pitch: "+0.03°",
+      yaw: "0.00°",
+      cx: 50, cy: 50, rx: 42, ry: 20, tilt: 26, angle: 4.9, speed: 0.0042,
+      devPct: 1.4, thermPct: 46, pwrPct: 79,
+      gsX: 54, gsY: 22, gsName: "SVALBARD-RX"
+    },
+    {
+      id: "Zenith-X",
+      status: "Normal",
+      alt: "7,410 km",
+      vel: "7.09 km/s",
+      sig: 71,
+      bat: 88,
+      temp: "50.2°C",
+      tx: "23.0 dBm",
+      rate: "1.64 Gbps",
+      snr: "13.1 dB",
+      roll: "-0.02°",
+      pitch: "-0.05°",
+      yaw: "+0.03°",
+      cx: 50, cy: 50, rx: 43, ry: 19, tilt: -52, angle: 2.3, speed: 0.0036,
+      devPct: 2.5, thermPct: 48, pwrPct: 88,
+      gsX: 28, gsY: 42, gsName: "DSN-GOLDSTONE"
+    }
   ];
+
   const $ = (id) => document.getElementById(id);
+  const SVG_NS = $("linksSvg").namespaceURI;
   let sel = 0;
+  let currentMissionMode = "Relay";
+  let currentProj = "3D";
+  let isLive = true;
+  let anomalyResolved = false;
 
-  $("sats").innerHTML = SATS.map((s, i) => `
-    <button class="sat" data-i="${i}">
-      <div class="thumb"></div>
-      <div class="name"><span>${s.id}</span><span class="pill ${s.cls || ""}">${s.status}</span></div>
-      <div class="row"><span>Alt</span><span>${s.alt}</span></div>
-      <div class="row"><span>Signal</span><span>${s.sig}%</span></div>
-    </button>`).join("");
-  $("markers").innerHTML = SATS.map((s, i) => `<button class="marker ${s.cls || ""}" data-i="${i}" data-label="${s.id}" style="left:${s.x}%;top:${s.y}%"></button>`).join("");
+  // ==========================================================================
+  // 2. RENDER SATELLITE MANIFEST CARDS & GLOBE MARKERS
+  // ==========================================================================
+  function renderFleetList() {
+    $("sats").innerHTML = SATS.map(
+      (s, i) => `
+      <button class="sat" data-i="${i}" aria-pressed="${i === sel}">
+        <div class="thumb">
+          <svg viewBox="0 0 36 36" fill="none">
+            <rect x="3" y="13" width="9" height="10" rx="1" fill="#4f635c" stroke="#9ab8ae" stroke-width="0.8"/>
+            <rect x="24" y="13" width="9" height="10" rx="1" fill="#4f635c" stroke="#9ab8ae" stroke-width="0.8"/>
+            <line x1="12" y1="18" x2="24" y2="18" stroke="#dfe8e4" stroke-width="1.5"/>
+            <rect x="14" y="12" width="8" height="12" rx="2" fill="#23302b" stroke="${s.cls === 'warn' ? '#f5a623' : '#7fe8c8'}" stroke-width="1.2"/>
+            <circle cx="18" cy="18" r="1.8" fill="${s.cls === 'warn' ? '#f5a623' : '#7fe8c8'}"/>
+          </svg>
+        </div>
+        <div class="name">
+          <span>${s.id}</span>
+          <span class="pill ${s.cls || ""}" id="pill-${i}">${s.status}</span>
+        </div>
+        <div class="row"><span>Altitude</span><strong>${s.alt}</strong></div>
+        <div class="row"><span>Telemetry</span><strong>${s.sig}% · ${s.bat}% BAT</strong></div>
+        <div class="sat-mini-bars">
+          <div class="mini-bar-wrap">
+            <span>SIG</span>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${s.sig}%; background:${s.cls === 'warn' ? 'var(--warn)' : 'var(--ok)'}"></div></div>
+          </div>
+          <div class="mini-bar-wrap">
+            <span>PWR</span>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${s.bat}%"></div></div>
+          </div>
+        </div>
+      </button>`
+    ).join("");
+  }
+
+  $("markers").innerHTML = SATS.map(
+    (s, i) => `<button class="marker ${s.cls || ""}" id="marker-${i}" data-i="${i}" data-label="${s.id}"></button>`
+  ).join("");
+
   $("bars").innerHTML = Array.from({ length: 28 }, () => "<i></i>").join("");
+  renderFleetList();
 
+  // ==========================================================================
+  // 3. SYNCHRONIZED SELECTION & DIAGNOSTICS PAINT
+  // ==========================================================================
   function paint() {
     const s = SATS[sel];
-    document.querySelectorAll(".sat, .marker").forEach((el) => el.setAttribute("aria-pressed", +el.dataset.i === sel));
-    $("sig").textContent = "−" + (100 - s.sig) + " dBm";
-    $("pTemp").textContent = s.temp; $("pTx").textContent = s.tx; $("pSel").textContent = s.id;
-    document.querySelectorAll(".bars i").forEach((b, k) => b.style.setProperty("--h", Math.max(14, Math.min(100, s.sig - 20 + ((k * 37) % 40)))));
+    document.querySelectorAll(".sat, .marker").forEach((el) => {
+      el.setAttribute("aria-pressed", Number(el.dataset.i) === sel);
+    });
+
+    $("sig").textContent = "−" + (115 - Math.round(s.sig * 0.62)) + " dBm";
+    $("downlinkRate").textContent = s.rate;
+    $("snrVal").textContent = s.snr;
+
+    $("pSel").textContent = s.id;
+    $("pTemp").textContent = s.temp;
+    $("pTemp").style.color = s.cls === "warn" ? "var(--warn)" : "var(--text)";
+    $("pTx").textContent = s.tx;
+    $("pVel").textContent = s.vel;
+    $("pBat").textContent = `${s.bat}% (28.4V)`;
+
+    $("attRoll").textContent = s.roll;
+    $("attPitch").textContent = s.pitch;
+    $("attYaw").textContent = s.yaw;
+
+    $("gsLinkName").textContent = s.gsName;
+
+    // Update RF Spectrum Bars
+    document.querySelectorAll(".bars i").forEach((b, k) => {
+      const h = Math.max(14, Math.min(100, s.sig - 18 + ((k * 37 + sel * 13) % 38)));
+      b.style.setProperty("--h", h);
+    });
   }
-  const pick = (e) => { const b = e.target.closest("[data-i]"); if (b) { sel = +b.dataset.i; paint(); } };
-  $("sats").addEventListener("click", pick); $("markers").addEventListener("click", pick);
 
-  const group = (id) => $(id).addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b || b.classList.contains("live")) return;
-    $(id).querySelectorAll("button:not(.live)").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  const pick = (e) => {
+    const b = e.target.closest("[data-i]");
+    if (b) {
+      sel = Number(b.dataset.i);
+      paint();
+    }
+  };
+  $("sats").addEventListener("click", pick);
+  $("markers").addEventListener("click", pick);
+
+  // ==========================================================================
+  // 4. REAL-TIME ORBITAL MOTION & INTER-SATELLITE LASER LINK RENDERER
+  // ==========================================================================
+  const linksSvg = $("linksSvg");
+
+  function computeSatPosition(s, idx) {
+    if (currentProj === "2D") {
+      // Mercator Sine-Wave Ground Track across flat map
+      const normX = (((s.angle / (Math.PI * 2)) + idx * 0.18) % 1 + 1) % 1;
+      const x = 10 + normX * 80;
+      const y = 50 + Math.sin(normX * Math.PI * 2 + idx) * 24;
+      return { x, y };
+    }
+
+    if (currentProj === "Ground") {
+      // Polar Radar Ground View
+      const r = 22 + idx * 4.5;
+      const x = 50 + Math.cos(s.angle) * r;
+      const y = 50 + Math.sin(s.angle) * r;
+      return { x, y };
+    }
+
+    // Default 3D Tilted Elliptical Orbit
+    const rad = (s.tilt * Math.PI) / 180;
+    const ox = Math.cos(s.angle) * s.rx;
+    const oy = Math.sin(s.angle) * s.ry;
+    const x = s.cx + ox * Math.cos(rad) - oy * Math.sin(rad);
+    const y = s.cy + ox * Math.sin(rad) + oy * Math.cos(rad);
+    return { x, y };
+  }
+
+  function renderOrbitalStep() {
+    const positions = [];
+
+    SATS.forEach((s, i) => {
+      if (isLive) {
+        s.angle = (s.angle + s.speed) % (Math.PI * 2);
+      }
+      const pos = computeSatPosition(s, i);
+      positions.push(pos);
+
+      const mEl = $("marker-" + i);
+      if (mEl) {
+        mEl.style.left = pos.x.toFixed(2) + "%";
+        mEl.style.top = pos.y.toFixed(2) + "%";
+      }
+    });
+
+    // Draw SVG Laser Crosslinks, Ground Cones & 2D Sine Track
+    linksSvg.innerHTML = "";
+    const activePos = positions[sel];
+    const activeSat = SATS[sel];
+    const ax = (activePos.x / 100) * 390;
+    const ay = (activePos.y / 100) * 390;
+
+    // 1. In 2D Mode: Draw continuous sinusoidal orbital ground track for selected satellite
+    if (currentProj === "2D") {
+      const pathPts = [];
+      for (let step = 0; step <= 60; step++) {
+        const u = step / 60;
+        const px = (10 + u * 80) * 3.9;
+        const py = (50 + Math.sin(u * Math.PI * 2 + sel) * 24) * 3.9;
+        pathPts.push(`${step === 0 ? "M" : "L"} ${px.toFixed(1)} ${py.toFixed(1)}`);
+      }
+      const trackPath = document.createElementNS(SVG_NS, "path");
+      trackPath.setAttribute("d", pathPts.join(" "));
+      trackPath.setAttribute("fill", "none");
+      trackPath.setAttribute("stroke", "rgba(127, 232, 200, 0.35)");
+      trackPath.setAttribute("stroke-width", "1.4");
+      trackPath.setAttribute("stroke-dasharray", "4 4");
+      linksSvg.appendChild(trackPath);
+    }
+
+    // 2. In Relay Mode: Draw Optical Laser Crosslinks from Selected Satellite to Neighbors
+    if (currentMissionMode === "Relay") {
+      positions.forEach((p, idx) => {
+        if (idx === sel) return;
+        const bx = (p.x / 100) * 390;
+        const by = (p.y / 100) * 390;
+        const ln = document.createElementNS(SVG_NS, "line");
+        ln.setAttribute("x1", ax.toFixed(1));
+        ln.setAttribute("y1", ay.toFixed(1));
+        ln.setAttribute("x2", bx.toFixed(1));
+        ln.setAttribute("y2", by.toFixed(1));
+        ln.setAttribute("stroke", "rgba(127, 232, 200, 0.42)");
+        ln.setAttribute("stroke-width", "1.2");
+        ln.setAttribute("stroke-dasharray", "3 3");
+        linksSvg.appendChild(ln);
+      });
+    }
+
+    // 3. Draw Ground Station Downlink Cone for Selected Satellite
+    const gsx = (activeSat.gsX / 100) * 390;
+    const gsy = (activeSat.gsY / 100) * 390;
+
+    const gsLine = document.createElementNS(SVG_NS, "line");
+    gsLine.setAttribute("x1", ax.toFixed(1));
+    gsLine.setAttribute("y1", ay.toFixed(1));
+    gsLine.setAttribute("x2", gsx.toFixed(1));
+    gsLine.setAttribute("y2", gsy.toFixed(1));
+    gsLine.setAttribute("stroke", activeSat.cls === "warn" ? "#f5a623" : "#5ce092");
+    gsLine.setAttribute("stroke-width", "1.5");
+    linksSvg.appendChild(gsLine);
+
+    // Target Footprint Ring around Selected Satellite in Inspection or Ground Mode
+    if (currentMissionMode === "Inspection" || currentProj === "Ground") {
+      const footRing = document.createElementNS(SVG_NS, "circle");
+      footRing.setAttribute("cx", ax.toFixed(1));
+      footRing.setAttribute("cy", ay.toFixed(1));
+      footRing.setAttribute("r", "34");
+      footRing.setAttribute("fill", "rgba(127, 232, 200, 0.08)");
+      footRing.setAttribute("stroke", "rgba(127, 232, 200, 0.55)");
+      footRing.setAttribute("stroke-width", "1.2");
+      footRing.setAttribute("stroke-dasharray", "4 2");
+      linksSvg.appendChild(footRing);
+    }
+
+    requestAnimationFrame(renderOrbitalStep);
+  }
+
+  // Subtle Live RF Fluctuations every 900ms
+  setInterval(() => {
+    if (!isLive) return;
+    document.querySelectorAll(".bars i").forEach((b) => {
+      const curH = parseFloat(b.style.getPropertyValue("--h") || 50);
+      const jitter = (Math.random() - 0.5) * 14;
+      b.style.setProperty("--h", Math.max(12, Math.min(100, curH + jitter)));
+    });
+  }, 900);
+
+  // ==========================================================================
+  // 5. MISSION MODES, PROJECTION VIEWS & ANOMALY THRUSTER BURN RESOLUTION
+  // ==========================================================================
+  $("mode").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    $("mode").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    currentMissionMode = b.dataset.mode;
+    const modeLabels = {
+      Tracking: "KA-BAND TRACKING",
+      Inspection: "PAYLOAD INSPECTION",
+      Relay: "OPTICAL RELAY"
+    };
+    $("activeModeChip").textContent = modeLabels[currentMissionMode];
   });
-  group("mode"); group("view");
-  $("dismiss").onclick = $("respond").onclick = (e) => { e.target.closest(".alert").style.opacity = ".45"; };
 
-  const tick = () => { const d = new Date(), p = (n) => String(n).padStart(2, "0"); $("utc").textContent = `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`; };
-  tick(); setInterval(tick, 1000); paint();
+  $("view").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+
+    if (b.id === "liveBtn") {
+      isLive = !isLive;
+      b.classList.toggle("paused", !isLive);
+      b.textContent = isLive ? "● Live" : "⏸ Paused";
+      return;
+    }
+
+    $("view").querySelectorAll("button:not(.live)").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    currentProj = b.dataset.proj;
+    $("globeWrap").dataset.proj = currentProj;
+  });
+
+  // Button 1: Inspect Helios-A (Selects Helios-A on Globe & Diagnostics)
+  $("dismiss").onclick = () => {
+    sel = 2; // Helios-A index
+    paint();
+  };
+
+  // Button 2: Respond (Executes RCS Thruster Burn to Resolve Helios-A Anomaly!)
+  $("respond").onclick = () => {
+    sel = 2; // Focus Helios-A
+    const helios = SATS[2];
+
+    if (!anomalyResolved) {
+      anomalyResolved = true;
+      $("respond").textContent = "Burning RCS...";
+
+      setTimeout(() => {
+        helios.status = "Normal";
+        helios.cls = "";
+        helios.sig = 84;
+        helios.bat = 89;
+        helios.temp = "48.2°C";
+        helios.tx = "24.4 dBm";
+        helios.rate = "2.18 Gbps";
+        helios.snr = "15.9 dB";
+        helios.roll = "+0.01°";
+        helios.pitch = "-0.03°";
+        helios.yaw = "0.00°";
+
+        const markerEl = $("marker-2");
+        if (markerEl) markerEl.classList.remove("warn");
+
+        $("alertCard").classList.add("resolved");
+        $("alertTitle").innerHTML = `<span>✓ Orbit &amp; Thermal Nominal</span><span style="font-size:9.5px;">Helios-A</span>`;
+        $("mDev").style.setProperty("--v", "8%");
+        $("valDev").textContent = "0.4%";
+        $("mTherm").style.setProperty("--v", "42%");
+        $("valTherm").textContent = "48.2%";
+        $("mPwr").style.setProperty("--v", "89%");
+        $("valPwr").textContent = "89.0%";
+
+        $("fleetStatusBadge").textContent = "5 OK · 0 WARN";
+        $("respond").textContent = "Burn Complete ✓";
+
+        renderFleetList();
+        paint();
+      }, 450);
+    }
+  };
+
+  // Live UTC Clock
+  const tick = () => {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    $("utc").textContent = `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`;
+  };
+  tick();
+  setInterval(tick, 1000);
+
+  // Initialize
+  paint();
+  requestAnimationFrame(renderOrbitalStep);
 </script>
 </body>
 </html>
