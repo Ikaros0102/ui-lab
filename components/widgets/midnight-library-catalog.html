@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Midnight Library - Archival Research & Knowledge Console</title>
+<title>Midnight Library — Mahogany & Parchment Archival Console</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap](https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -21,27 +21,29 @@
     "library",
     "midnight",
     "bankers-lamp",
+    "mahogany",
+    "parchment",
+    "woodgrain",
     "books",
     "catalog",
     "brass",
     "emerald",
     "archive",
-    "search",
-    "academic"
+    "skeuomorphic"
   ],
-  "description": "Scholarly midnight library research workstation featuring an interactive emerald banker's lamp with pull chain, dark oak bookstacks, manuscript cataloging, and reading notes.",
+  "description": "Richly textured mahogany and walnut midnight library workstation featuring procedural SVG woodgrain and laid rag-paper filters, an articulated emerald banker's lamp with beaded pull-chain, brass card-catalog drawer with guide rod, illuminated manuscript drop-caps, interactive magnifying glass revealing hidden marginalia, and wax-seal stamping.",
   "techniques": [
-    "interactive banker's lamp light cone with toggleable pull chain",
-    "emerald glass diffuse radial lighting",
-    "polished brass metallic bevels and trim",
-    "gothic rain window ambience backdrop",
-    "academic catalog search and manuscript inspector"
+    "Procedural SVG feTurbulence woodgrain filter (#mahoganyGrain) and rag-paper fiber filter (#parchmentFiber)",
+    "Multi-layered laid paper texture with chain/laid wire lines, deckled edge shadows, book gutter spine, and page-fan thickness",
+    "Interactive brass magnifying lens tracking pointer coordinates to reveal hidden medieval interlinear glosses",
+    "Card catalog drawer with brass label frame, steel locking rod, punch-holes, and live search filtering",
+    "Articulated emerald glass banker's lamp with physical beaded pull-chain physics and warm pool lighting"
   ],
-  "recipe": "The atmospheric research desk pairs dark mahogany woodgrain with an iconic green-glass banker's lamp that casts a directional warm pool of light. Clicking the brass pull-chain toggles the lamp's luminescent state via CSS variables, updating the ambient lighting across the desk and reading parchment.",
+  "recipe": "Combines procedural SVG noise filters with layered CSS gradients to achieve authentic material depth. The outer desk uses stretched fractalNoise for dark varnished mahogany grain with brass corner brackets and a gold-tooled green leather blotter. The open manuscript folio layers fine laid-paper lines, warm edge foxing, a deep spine gutter shadow, and an illuminated gold-leaf drop cap.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 760
   }
 }
 </script>
@@ -50,50 +52,73 @@
   * { box-sizing: border-box; }
 
   :root {
-    --desk-dark: #120d09;
-    --desk-wood: #20150e;
-    --brass-trim: #c4984f;
-    --brass-glow: rgba(196, 152, 79, 0.3);
-    --lamp-emerald: #0b6848;
-    --lamp-emerald-bright: #10b981;
-    --lamp-amber-light: rgba(255, 235, 170, 0.22);
-    --paper-folio: #f6efe1;
-    --ink-charcoal: #211913;
-    --ink-faded: #6d5f53;
+    --wood-deep: #120a06;
+    --wood-mahogany: #2b160c;
+    --wood-walnut: #3d2012;
+    --wood-highlight: #5c321c;
+
+    --brass-light: #ffe7a8;
+    --brass-mid: #cfa154;
+    --brass-dark: #6b4c1b;
+    --brass-patina: #3a280d;
+
+    --emerald-glass: #0c7a53;
+    --emerald-bright: #10b981;
+    --emerald-deep: #043826;
+
+    --lamp-light-opacity: 1;
+    --paper-base: #f3e9d2;
+    --paper-aged: #e5d4b3;
+    --paper-edge: #ccb386;
+    --ink-iron: #231811;
+    --ink-rubric: #8c1d13;
+    --ink-faded: #695644;
+  }
+
+  body.lamp-off {
+    --lamp-light-opacity: 0.12;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
     background:
-      /* Ambient library pool of light */
-      radial-gradient(ellipse 60% 45% at 50% 30%, var(--lamp-amber-light) 0%, transparent 70%),
-      radial-gradient(circle at 10% 20%, rgba(11, 104, 72, 0.15) 0%, transparent 40%),
-      /* Gothic dark bookshelf shadows */
-      linear-gradient(180deg, #090705 0%, #130d09 60%, #060504 100%);
-    color: #e8ded1;
+      radial-gradient(
+        ellipse 65% 50% at 55% 26%,
+        rgba(255, 222, 145, calc(0.22 * var(--lamp-light-opacity))) 0%,
+        rgba(16, 145, 98, calc(0.09 * var(--lamp-light-opacity))) 42%,
+        transparent 72%
+      ),
+      linear-gradient(180deg, #070504 0%, #110b08 55%, #050403 100%);
+    color: #ede2d0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 20px 16px;
     overflow-x: hidden;
     position: relative;
+    user-select: none;
     transition: background 0.4s ease;
   }
 
-  body.lamp-off {
-    --lamp-amber-light: rgba(0, 0, 0, 0);
-  }
-
-  /* Rain on Gothic Window Layer */
+  /* ==========================================================================
+     GOTHIC LIBRARY BOOKSTACKS & RAINY ARCH WINDOW BACKDROP
+  ========================================================================== */
   .window-rain {
-    position: absolute;
+    position: fixed;
     inset: 0;
     pointer-events: none;
-    background: repeating-linear-gradient(100deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 45px);
-    opacity: 0.6;
-    animation: rainDown 1.3s linear infinite;
+    background: repeating-linear-gradient(
+      102deg,
+      rgba(255, 255, 255, 0.018) 0px,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 2px,
+      transparent 44px
+    );
+    opacity: 0.65;
+    animation: rainDown 1.2s linear infinite;
+    z-index: 1;
   }
 
   @keyframes rainDown {
@@ -101,30 +126,98 @@
     100% { transform: translateY(40px); }
   }
 
-  /* Main Workstation Container */
+  /* ==========================================================================
+     MAIN CARVED MAHOGANY & WALNUT DESK CHASSIS
+  ========================================================================== */
   .library-desk {
     width: 100%;
-    max-width: 960px;
-    background: linear-gradient(180deg, #22160f 0%, #150d09 100%);
-    border: 3px solid #4a3020;
-    border-radius: 16px;
-    padding: 22px 28px;
-    box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.95),
-      0 0 40px rgba(11, 104, 72, 0.12),
-      inset 0 1px 1px rgba(255, 230, 180, 0.2);
+    max-width: 1040px;
     position: relative;
     z-index: 5;
+    border-radius: 18px;
+    padding: 22px 26px 24px;
+    /* Layered Mahogany & Burl Wood Base */
+    background:
+      radial-gradient(
+        ellipse 70% 50% at 62% 20%,
+        rgba(255, 210, 125, calc(0.18 * var(--lamp-light-opacity))) 0%,
+        transparent 68%
+      ),
+      repeating-linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.14) 0px 2px,
+        rgba(92, 50, 28, 0.12) 2px 5px,
+        rgba(24, 12, 6, 0.18) 5px 9px
+      ),
+      linear-gradient(165deg, #3a1e11 0%, #26130a 38%, #180c06 78%, #100804 100%);
+    /* Stepped Carved Timber Molding Border */
+    border: 4px solid #4d2917;
+    box-shadow:
+      0 35px 85px rgba(0, 0, 0, 0.96),
+      0 0 0 2px #1a0c05,
+      0 0 0 6px #2d170c,
+      0 0 0 7px #0d0603,
+      inset 0 2px 2px rgba(255, 205, 145, 0.25),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.9),
+      inset 0 0 40px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
   }
 
-  /* Header & Banker's Lamp Bar */
+  /* Procedural SVG Woodgrain Texture Overlay Across the Entire Mahogany Desk */
+  .woodgrain-texture-layer {
+    position: absolute;
+    inset: 0;
+    filter: url(#mahoganyGrain);
+    opacity: 0.34;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Carved Inner Chamfer Groove on Desk Surface */
+  .library-desk::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1.5px solid rgba(196, 152, 79, 0.22);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.75),
+      0 1px 0 rgba(255, 220, 165, 0.08);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Ornate Brass Corner Desk Brackets with Screw Heads */
+  .brass-corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    z-index: 8;
+    pointer-events: none;
+    background: linear-gradient(135deg, var(--brass-light) 0%, var(--brass-mid) 48%, var(--brass-dark) 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+  }
+  .bc-tl { top: 0; left: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .bc-tr { top: 0; right: 0; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+  .bc-bl { bottom: 0; left: 0; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+  .bc-br { bottom: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+  /* ==========================================================================
+     HEADER BAR: ARCHIVE CREST + ARTICULATED EMERALD BANKER'S LAMP
+  ========================================================================== */
   .desk-top-bar {
+    position: relative;
+    z-index: 6;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #382315;
-    padding-bottom: 16px;
-    margin-bottom: 20px;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #160b05;
+    box-shadow: 0 1px 0 rgba(255, 200, 130, 0.12);
   }
 
   .archive-brand {
@@ -133,435 +226,1169 @@
     gap: 14px;
   }
 
+  /* Carved Walnut & Brass Seal Medallion */
   .crest-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    background: radial-gradient(circle at 40% 30%, #3e2616 0%, #180f0a 100%);
-    border: 1.5px solid var(--brass-trim);
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background:
+      radial-gradient(circle at 35% 30%, #4d2916 0%, #1d0e07 85%);
+    border: 2px solid var(--brass-mid);
+    box-shadow:
+      0 5px 12px rgba(0, 0, 0, 0.75),
+      inset 0 1px 1px rgba(255, 230, 175, 0.4),
+      inset 0 0 10px rgba(0, 0, 0, 0.8);
     display: grid;
     place-items: center;
-    font-size: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .crest-box svg {
+    width: 26px;
+    height: 26px;
+    color: var(--brass-light);
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.8));
   }
 
   .archive-titles h1 {
     margin: 0;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 700;
-    letter-spacing: 0.8px;
-    color: #f7ead5;
+    letter-spacing: 0.04em;
+    color: #fff3de;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
   }
 
   .archive-titles p {
     margin: 2px 0 0;
     font-size: 11.5px;
-    color: #a89482;
+    color: #bda68e;
+    letter-spacing: 0.03em;
   }
 
-  /* The Banker's Lamp Control */
-  .lamp-fixture {
+  /* Realistic 3D Emerald Glass Banker's Lamp Hood & Beaded Pull Chain */
+  .lamp-assembly {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: #170e09;
-    border: 1px solid #3d2617;
-    padding: 6px 14px;
-    border-radius: 24px;
+    gap: 16px;
+    background: linear-gradient(180deg, #1b0e07 0%, #110804 100%);
+    border: 1.5px solid #4a2a18;
+    padding: 7px 16px 7px 14px;
+    border-radius: 14px;
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.9),
+      0 1px 0 rgba(255, 210, 145, 0.14);
+    position: relative;
   }
 
+  .banker-hood-wrap {
+    position: relative;
+    width: 78px;
+    height: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  /* Brass Yoke Bracket on Top of Green Shade */
+  .brass-yoke {
+    width: 30px;
+    height: 5px;
+    background: linear-gradient(90deg, var(--brass-dark), var(--brass-light), var(--brass-dark));
+    border-radius: 3px 3px 0 0;
+    border: 1px solid #4a320d;
+  }
+
+  /* Cased Emerald Glass Shade */
   .banker-glass {
-    width: 32px;
-    height: 14px;
-    background: linear-gradient(180deg, #10b981 0%, #064e3b 100%);
-    border-radius: 6px 6px 2px 2px;
-    border: 1px solid #34d399;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    transition: all 0.3s ease;
+    width: 74px;
+    height: 24px;
+    background:
+      radial-gradient(ellipse 65% 55% at 50% 85%, rgba(255, 250, 200, 0.65) 0%, transparent 65%),
+      linear-gradient(180deg, #064e3b 0%, #0d9468 42%, #10b981 78%, #a7f3d0 100%);
+    border-radius: 12px 12px 3px 3px;
+    border: 1.5px solid var(--brass-mid);
+    box-shadow:
+      0 6px 22px rgba(16, 185, 129, 0.65),
+      0 12px 35px rgba(255, 225, 140, 0.45),
+      inset 0 2px 4px rgba(255, 255, 255, 0.45);
+    position: relative;
+    transition: all 0.35s ease;
   }
 
-  .lamp-off .banker-glass {
-    background: #092c21;
-    border-color: #124d3b;
-    box-shadow: none;
-    filter: brightness(0.6);
+  body.lamp-off .banker-glass {
+    background: linear-gradient(180deg, #042219 0%, #083829 65%, #0c4a37 100%);
+    border-color: #5c431c;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.12);
+    filter: brightness(0.65);
+  }
+
+  /* Beaded Brass Pull-Chain Hanging Down from Lamp */
+  .beaded-chain-cord {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5px;
+    cursor: pointer;
+    padding: 2px 6px;
+    transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .beaded-chain-cord:active,
+  .beaded-chain-cord.pulled {
+    transform: translateY(7px);
+  }
+  .chain-bead {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff5c0, #b8862d 75%, #4a3208);
+  }
+  .chain-acorn {
+    width: 7px;
+    height: 10px;
+    border-radius: 3px 3px 50% 50%;
+    background: radial-gradient(circle at 35% 35%, #fff5c0, #cfa154 55%, #5c3e0d);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   }
 
   .pull-chain-btn {
-    background: linear-gradient(180deg, #c4984f 0%, #7e5c22 100%);
-    border: 1px solid #ffe1a0;
-    border-radius: 12px;
-    padding: 4px 10px;
+    background: linear-gradient(180deg, var(--brass-light) 0%, var(--brass-mid) 45%, var(--brass-dark) 100%);
+    border: 1px solid #fff0b8;
+    border-radius: 8px;
+    padding: 6px 12px;
     font-size: 11px;
-    font-weight: 600;
-    color: #1e1208;
+    font-weight: 700;
+    color: #1c1006;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    transition: transform 0.1s ease;
+    box-shadow:
+      0 3px 7px rgba(0, 0, 0, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transition: transform 0.12s ease, filter 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-
+  .pull-chain-btn:hover {
+    filter: brightness(1.08);
+  }
   .pull-chain-btn:active {
-    transform: translateY(3px);
+    transform: translateY(2px);
   }
 
-  /* Layout Columns */
+  /* ==========================================================================
+     INSET GREEN LEATHER DESK BLOTTER MAT (WITH GOLD-TOOLED BORDER)
+  ========================================================================== */
+  .leather-blotter {
+    position: relative;
+    z-index: 6;
+    background:
+      radial-gradient(
+        circle at 62% 28%,
+        rgba(255, 232, 168, calc(0.14 * var(--lamp-light-opacity))) 0%,
+        transparent 65%
+      ),
+      radial-gradient(circle at 50% 50%, #0e261d 0%, #081812 72%, #050f0b 100%);
+    border: 2px solid #120904;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow:
+      inset 0 3px 10px rgba(0, 0, 0, 0.92),
+      0 1px 0 rgba(255, 210, 145, 0.16);
+  }
+
+  /* Gold-Tooled Line inside Green Leather Blotter */
+  .leather-blotter::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(207, 161, 84, 0.32);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
   .desk-grid {
     display: grid;
-    grid-template-columns: 1.1fr 1.35fr;
-    gap: 24px;
+    grid-template-columns: 1.05fr 1.45fr;
+    gap: 22px;
+    align-items: stretch;
+    position: relative;
+    z-index: 2;
   }
 
-  /* Left: Archival Catalog Search & Drawer */
+  @media (max-width: 920px) {
+    .desk-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ==========================================================================
+     LEFT: CARVED OAK CARD-CATALOG DRAWER WITH PAPER INDEX CARDS & BRASS ROD
+  ========================================================================== */
   .catalog-pane {
-    background: rgba(14, 9, 6, 0.7);
-    border: 1px solid #382416;
+    /* Recessed Dark Oak Drawer Box */
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 200, 140, 0.018) 0px 2px,
+        transparent 2px 7px
+      ),
+      linear-gradient(180deg, #211109 0%, #160b05 55%, #1c0e07 100%);
+    border: 2.5px solid #452514;
     border-radius: 10px;
-    padding: 18px;
+    padding: 15px 16px 14px;
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.8),
+      inset 0 4px 14px rgba(0, 0, 0, 0.92),
+      inset 0 1px 0 rgba(255, 210, 150, 0.18);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
   }
 
+  /* Vertical Brass Guide Rod running down the bottom of the Catalog Drawer */
+  .catalog-pane::after {
+    content: "";
+    position: absolute;
+    bottom: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 18px;
+    background: linear-gradient(90deg, #5c3e10, #ffe5a3, #6b4914);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+  }
+
+  /* Brass Drawer Label Holder Frame at Top of Catalog */
+  .brass-drawer-plate {
+    background: linear-gradient(180deg, #d8ab5c 0%, #966b24 50%, #6b4914 100%);
+    border: 1px solid #ffe6a8;
+    border-radius: 5px;
+    padding: 3px 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brass-rivet {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, #4a300a);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+  }
+
+  .drawer-plate-insert {
+    background: #f2e5c9;
+    border: 1px solid #3d270d;
+    padding: 2px 12px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #21150c;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Search Input styled as Recessed Ivory & Brass Slot */
   .search-wrapper {
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .search-input {
     width: 100%;
-    background: #1b110b;
-    border: 1px solid #4a301f;
+    background: #130a05;
+    border: 1.5px solid #4d2b18;
     border-radius: 6px;
-    padding: 10px 14px 10px 36px;
+    padding: 8px 12px 8px 34px;
     color: #f7ead5;
-    font-family: inherit;
-    font-size: 12.5px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
     outline: none;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
     transition: all 0.2s ease;
   }
-
+  .search-input::placeholder {
+    color: #826b58;
+  }
   .search-input:focus {
-    border-color: var(--brass-trim);
-    box-shadow: 0 0 10px var(--brass-glow);
-    background: #23160e;
+    border-color: var(--brass-mid);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(207, 161, 84, 0.3);
   }
 
   .search-icon {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 14px;
-    color: #a89482;
+    font-size: 13px;
+    color: var(--brass-mid);
   }
 
-  .drawer-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: var(--brass-trim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #382416;
-    padding-bottom: 4px;
-  }
-
-  /* Catalog Cards List */
+  /* Physical Textured Manila Index Cards in the Catalog Drawer */
   .manuscript-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 9px;
     margin-bottom: 14px;
   }
 
   .catalog-card {
-    background: #1c120c;
-    border: 1px solid #3d2718;
-    border-left: 3px solid #8e682e;
-    border-radius: 4px;
-    padding: 10px 12px;
+    /* Manila Cardstock with Red Top Ruling and Blue Guide Lines */
+    background:
+      linear-gradient(180deg, transparent 23px, rgba(168, 45, 35, 0.35) 24px, transparent 25px),
+      repeating-linear-gradient(180deg, transparent 0px 17px, rgba(70, 115, 150, 0.14) 17px 18px),
+      linear-gradient(135deg, #efe2c6 0%, #e2cfa8 100%);
+    border: 1px solid #b59b6d;
+    border-top: 2.5px solid #f7edd6;
+    border-left: 4px solid #8c5d20;
+    border-radius: 6px 6px 3px 3px;
+    padding: 8px 12px 10px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    position: relative;
+    color: #24180e;
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.65),
+      inset 0 0 18px rgba(135, 98, 45, 0.18);
+    transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Brass Guide-Rod Punch Hole at bottom center of each index card */
+  .catalog-card::after {
+    content: "";
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #180c06;
+    border: 1px solid #9e8254;
+    box-shadow: inset 0 1px 2px #000;
   }
 
   .catalog-card:hover {
-    background: #261810;
-    border-color: var(--brass-trim);
-    transform: translateX(3px);
+    transform: translateY(-2px) translateX(3px);
+    background:
+      linear-gradient(180deg, transparent 23px, rgba(168, 45, 35, 0.4) 24px, transparent 25px),
+      repeating-linear-gradient(180deg, transparent 0px 17px, rgba(70, 115, 150, 0.16) 17px 18px),
+      linear-gradient(135deg, #f8eed9 0%, #ead8b5 100%);
   }
 
   .catalog-card.is-active {
-    background: #2c1c13;
-    border-left-color: #10b981;
-    border-color: #5d3f29;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    border-left: 5px solid var(--emerald-glass);
+    background:
+      linear-gradient(180deg, transparent 23px, rgba(168, 45, 35, 0.45) 24px, transparent 25px),
+      repeating-linear-gradient(180deg, transparent 0px 17px, rgba(70, 115, 150, 0.18) 17px 18px),
+      linear-gradient(135deg, #fcf4e3 0%, #f0dfc0 100%);
+    transform: translateX(5px);
+    box-shadow:
+      0 6px 14px rgba(0, 0, 0, 0.8),
+      0 0 0 1.5px var(--brass-mid);
+  }
+
+  .card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
   }
 
   .card-call-no {
+    font-family: 'Courier Prime', monospace;
     font-size: 10px;
-    font-family: monospace;
-    color: #a89482;
-    margin-bottom: 2px;
+    font-weight: 700;
+    color: #7c2419;
+    letter-spacing: 0.04em;
+  }
+
+  .card-stamp {
+    font-family: 'Courier Prime', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: #0b5c3e;
+    border: 1px solid #0b5c3e;
+    padding: 0 4px;
+    border-radius: 2px;
+    transform: rotate(-3deg);
   }
 
   .card-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 14.5px;
-    font-weight: 600;
-    color: #f7ead5;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1c1209;
+    line-height: 1.15;
   }
 
   .card-author {
-    font-size: 11px;
-    color: #8f7c6e;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: #544130;
     margin-top: 2px;
   }
 
-  /* Right: Research Folio Reading Desk */
-  .reading-folio {
-    background: var(--paper-folio);
-    border: 1px solid #d5c7b3;
-    border-radius: 8px;
-    padding: 24px 26px;
-    color: var(--ink-charcoal);
+  .drawer-footer {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: #b09882;
+    text-align: center;
+    border-top: 1px solid #3a2011;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ==========================================================================
+     RIGHT: TEXTURED LAID-PAPER FOLIO BOOK WITH SPINE GUTTER & PAGE STACK
+  ========================================================================== */
+  .folio-book-binding {
+    /* Leather Book Cover & Multi-Page Stack Edges on Right & Bottom */
+    background: #2b150b;
+    border: 2px solid #4a2614;
+    border-radius: 6px 10px 10px 6px;
+    padding: 5px 11px 9px 5px;
     box-shadow:
-      0 6px 18px rgba(0, 0, 0, 0.6),
-      inset 0 0 35px rgba(160, 130, 85, 0.15);
+      0 14px 32px rgba(0, 0, 0, 0.85),
+      /* Layered Paper Fan Edges on Right & Bottom */
+      inset -5px -5px 0 #d5c19c,
+      inset -6px -6px 0 #9e865c,
+      inset -9px -8px 0 #e6d5b5,
+      inset -10px -9px 0 #8c734b;
+    position: relative;
+    display: flex;
+  }
+
+  .reading-folio {
+    flex: 1;
+    /* Authentic Laid Rag-Paper Base: Chain Lines + Laid Wire Lines + Aged Vignette */
+    background:
+      /* Lamp Pool of Warm Light on Top-Left of Page */
+      radial-gradient(
+        circle at 35% 22%,
+        rgba(255, 250, 225, calc(0.65 * var(--lamp-light-opacity))) 0%,
+        transparent 62%
+      ),
+      /* Foxing / Tea-Stained Aged Spots near Corners */
+      radial-gradient(circle at 92% 12%, rgba(160, 112, 55, 0.22) 0%, transparent 26%),
+      radial-gradient(circle at 88% 88%, rgba(145, 98, 45, 0.26) 0%, transparent 32%),
+      radial-gradient(circle at 12% 92%, rgba(155, 108, 52, 0.18) 0%, transparent 25%),
+      /* Horizontal Laid Wire Lines (every 3px) */
+      repeating-linear-gradient(
+        0deg,
+        rgba(120, 88, 48, 0.045) 0px 1px,
+        transparent 1px 3px
+      ),
+      /* Vertical Chain Lines (every 28px) */
+      repeating-linear-gradient(
+        90deg,
+        rgba(120, 88, 48, 0.05) 0px 1px,
+        transparent 1px 28px
+      ),
+      /* Left Spine Gutter Crease Shadow */
+      linear-gradient(
+        90deg,
+        rgba(55, 35, 18, 0.42) 0%,
+        rgba(95, 65, 35, 0.15) 4.5%,
+        rgba(255, 250, 238, 0.2) 8%,
+        transparent 16%
+      ),
+      var(--paper-base);
+    border: 1px solid #c9b186;
+    border-radius: 3px 6px 6px 3px;
+    padding: 22px 26px 18px 32px;
+    color: var(--ink-iron);
+    box-shadow:
+      inset 0 0 42px rgba(138, 96, 42, 0.28),
+      inset 0 0 10px rgba(95, 62, 24, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 410px;
+    min-height: 430px;
     position: relative;
-    transition: filter 0.3s ease;
+    overflow: hidden;
+    transition: filter 0.35s ease;
   }
 
-  .lamp-off .reading-folio {
-    filter: brightness(0.72) contrast(1.1);
+  /* Procedural SVG Paper Fiber Grain Overlay */
+  .paper-fiber-overlay {
+    position: absolute;
+    inset: 0;
+    filter: url(#parchmentFiber);
+    opacity: 0.26;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1;
   }
 
-  /* Bookmark Ribbon */
+  body.lamp-off .reading-folio {
+    filter: brightness(0.62) sepia(0.18) contrast(1.06);
+  }
+
+  /* Stitched Binding Threads along Left Gutter Margin */
+  .gutter-stitching {
+    position: absolute;
+    left: 7px;
+    top: 24px;
+    bottom: 24px;
+    width: 3px;
+    background: repeating-linear-gradient(
+      180deg,
+      #8c6f46 0px 10px,
+      #3d2814 10px 14px,
+      transparent 14px 36px
+    );
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Crimson Silk Bookmark Ribbon with Gold Fringe */
   .ribbon-marker {
     position: absolute;
-    top: -6px;
-    right: 28px;
-    width: 20px;
-    height: 48px;
-    background: #8b1812;
-    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+    top: -4px;
+    right: 26px;
+    width: 22px;
+    height: 54px;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.06) 0px 1px, transparent 1px 2px),
+      linear-gradient(90deg, #630d09 0%, #9e1b14 50%, #590b08 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 84%, 50% 100%, 0 84%);
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.45);
+    z-index: 4;
+    cursor: pointer;
+    transition: height 0.2s ease;
+  }
+  .ribbon-marker:hover {
+    height: 62px;
   }
 
+  .folio-content-z {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Top Rubricated Running Header & Leaf Switcher */
   .folio-head-meta {
-    border-bottom: 1px solid rgba(109, 95, 83, 0.25);
-    padding-bottom: 12px;
-    margin-bottom: 16px;
+    border-bottom: 1.5px double rgba(120, 82, 42, 0.42);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .folio-archive-tag {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10.5px;
     font-weight: 700;
-    color: #8b5324;
+    color: var(--ink-rubric);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.08em;
   }
 
   .folio-main-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 21px;
+    font-size: 24px;
     font-weight: 700;
-    color: #211913;
-    margin: 3px 0 2px;
+    color: #1c120b;
+    margin: 2px 0 2px;
+    line-height: 1.1;
   }
 
   .folio-author-line {
-    font-size: 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13.5px;
     color: var(--ink-faded);
     font-style: italic;
   }
 
-  /* Excerpt Text with Drop Cap */
+  /* Recto / Verso Leaf Page Turn Buttons */
+  .leaf-turn-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(138, 98, 48, 0.12);
+    border: 1px solid rgba(120, 82, 42, 0.35);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin-right: 26px;
+    flex-shrink: 0;
+  }
+  .leaf-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #4a3219;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background 0.15s ease;
+  }
+  .leaf-btn:hover,
+  .leaf-btn.active {
+    background: #8c1d13;
+    color: #f7eedc;
+  }
+
+  /* Illuminated Medieval Gold-Leaf & Crimson Drop Cap */
   .folio-body {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 15.5px;
-    line-height: 1.55;
-    color: #2b211a;
+    font-size: 17.5px;
+    line-height: 1.58;
+    color: #241911;
+    text-align: justify;
+    position: relative;
   }
 
   .drop-cap {
     float: left;
-    font-size: 42px;
-    line-height: 0.8;
-    padding-right: 8px;
-    padding-top: 4px;
-    color: #8b1812;
+    width: 54px;
+    height: 54px;
+    margin: 3px 12px 2px 0;
+    background:
+      radial-gradient(circle at 30% 30%, #fff2b2 0%, #cfa154 45%, #825b18 100%);
+    border: 2px solid #6e150e;
+    border-radius: 4px;
+    box-shadow:
+      inset 0 0 0 2px #f7e6b5,
+      2px 3px 6px rgba(0, 0, 0, 0.35);
+    display: grid;
+    place-items: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    line-height: 1;
+    color: #7c130c;
     font-weight: 700;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
   }
 
-  /* Locator Drawer Pill & Action */
-  .location-strip {
+  /* Marginalia Scholarly Footnote Box on Parchment */
+  .marginalia-box {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-left: 2px solid var(--ink-rubric);
+    background: rgba(140, 98, 45, 0.08);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13.5px;
+    color: #543d28;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ebe0cb;
-    border: 1px solid #d4c2a4;
-    padding: 8px 14px;
-    border-radius: 6px;
-    margin-top: 18px;
-    font-size: 11.5px;
+    gap: 10px;
+  }
+
+  /* Red Wax Seal Stamp (Appears when Folio is Borrowed/Authenticated) */
+  .wax-seal-stamp {
+    position: absolute;
+    right: 24px;
+    bottom: 62px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #d93829 0%, #991b12 60%, #570c07 100%);
+    border: 3px double #fca5a5;
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.55),
+      inset 0 2px 4px rgba(255, 180, 180, 0.4),
+      inset 0 -3px 6px rgba(40, 0, 0, 0.8);
+    display: grid;
+    place-items: center;
+    color: #ffd8cf;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8.5px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.06em;
+    transform: scale(1.8) rotate(-14deg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 6;
+    transition: transform 0.35s cubic-bezier(0.22, 1.4, 0.36, 1), opacity 0.25s ease;
+  }
+  .wax-seal-stamp.stamped {
+    transform: scale(1) rotate(-14deg);
+    opacity: 0.92;
+  }
+
+  /* Interactive Brass Magnifying Glass Lens (Reveals Hidden Latin Gloss) */
+  .brass-magnifier {
+    position: absolute;
+    width: 136px;
+    height: 136px;
+    margin: -68px 0 0 -68px;
+    border-radius: 50%;
+    border: 5px solid var(--brass-mid);
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.65),
+      inset 0 0 18px rgba(255, 240, 190, 0.55),
+      0 0 0 2px #4a320d;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 248, 225, 0.94) 70%);
+    pointer-events: none;
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    text-align: center;
+  }
+  .brass-magnifier.active {
+    display: flex;
+  }
+  .lens-latin-gloss {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 13px;
+    color: #8c1d13;
+    line-height: 1.25;
+  }
+  .lens-sub-note {
+    font-family: 'Courier Prime', monospace;
+    font-size: 8.5px;
+    color: #3d2814;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* Bottom Parchment Locator Bar & Actions */
+  .location-strip {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(180deg, #e4d2b0 0%, #d8c29b 100%);
+    border: 1px solid #b89c6f;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 14px;
+    font-size: 11px;
   }
 
   .shelf-coords {
-    color: #5a483a;
-    font-weight: 600;
+    color: #3d2814;
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+
+  .folio-actions {
+    display: flex;
+    gap: 6px;
   }
 
   .folio-btn {
-    background: #332014;
-    border: 1px solid var(--brass-trim);
+    background: linear-gradient(180deg, #3b2213 0%, #211209 100%);
+    border: 1px solid var(--brass-mid);
     color: #f7ead5;
-    padding: 5px 12px;
+    padding: 6px 11px;
     border-radius: 4px;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     transition: all 0.15s ease;
   }
-
   .folio-btn:hover {
-    background: #4a3020;
+    background: #4d2d1a;
     color: #ffffff;
+  }
+  .folio-btn.lens-on {
+    background: var(--brass-mid);
+    color: #1c1006;
+    border-color: #4a320d;
   }
 </style>
 </head>
 <body>
 
+<!-- ==========================================================================
+     PROCEDURAL SVG MATERIAL FILTERS (MAHOGANY WOODGRAIN & RAG PAPER FIBERS)
+=========================================================================== -->
+<svg width="0" height="0" style="position:absolute; pointer-events:none;">
+  <defs>
+    <!-- 1. Stretched Horizontal Woodgrain Filter for Dark Mahogany / Walnut -->
+    <filter id="mahoganyGrain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.16" numOctaves="4" seed="14" result="noise"/>
+      <feColorMatrix type="matrix" values="
+        0.35 0 0 0 0.12
+        0.18 0 0 0 0.05
+        0.08 0 0 0 0.02
+        0    0 0 0.55 0" in="noise"/>
+    </filter>
+
+    <!-- 2. Fine Organic Rag-Paper & Vellum Fiber Filter -->
+    <filter id="parchmentFiber" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" seed="8" result="fibers"/>
+      <feColorMatrix type="matrix" values="
+        0.25 0 0 0 0.35
+        0.18 0 0 0 0.25
+        0.08 0 0 0 0.12
+        0    0 0 0.35 0" in="fibers"/>
+    </filter>
+  </defs>
+</svg>
+
 <div class="window-rain"></div>
 
 <div class="library-desk">
-  <!-- Top Bar -->
-  <div class="desk-top-bar">
+  <!-- Procedural Mahogany Woodgrain Layer -->
+  <div class="woodgrain-texture-layer"></div>
+
+  <!-- Brass Corner Brackets -->
+  <div class="brass-corner bc-tl"></div>
+  <div class="brass-corner bc-tr"></div>
+  <div class="brass-corner bc-bl"></div>
+  <div class="brass-corner bc-br"></div>
+
+  <!-- ========================================================================
+       TOP BAR: CARVED CREST & EMERALD BANKER'S LAMP WITH BEADED CHAIN
+  ========================================================================= -->
+  <header class="desk-top-bar">
     <div class="archive-brand">
-      <div class="crest-box">📖</div>
+      <div class="crest-box" title="Sigillum Bibliothecae Nocturnae">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <path d="M9 7h6M9 11h6"/>
+        </svg>
+      </div>
       <div class="archive-titles">
-        <h1>The Midnight Library & Archives</h1>
-        <p>Rare Folios, Illuminated Manuscripts & Classical Philosophy</p>
+        <h1>The Midnight Library &amp; Scriptorium</h1>
+        <p>Rare Incunabula, Laid-Paper Folios &amp; Classical Philosophy • Reading Desk IV</p>
       </div>
     </div>
 
-    <!-- Banker's Lamp Switch -->
-    <div class="lamp-fixture">
-      <div class="banker-glass" id="bankerGlass"></div>
-      <span style="font-size: 11.5px; color: #ccbaa8;">Banker's Lamp</span>
-      <button class="pull-chain-btn" id="pullChainBtn">Pull Chain</button>
+    <!-- Articulated Emerald Banker's Lamp Control -->
+    <div class="lamp-assembly">
+      <div class="banker-hood-wrap" id="lampShadeClick" title="Click shade or pull chain to toggle Banker's Lamp">
+        <div class="brass-yoke"></div>
+        <div class="banker-glass" id="bankerGlass"></div>
+      </div>
+
+      <div class="beaded-chain-cord" id="beadedChain" title="Pull brass chain">
+        <span class="chain-bead"></span>
+        <span class="chain-bead"></span>
+        <span class="chain-bead"></span>
+        <span class="chain-bead"></span>
+        <span class="chain-acorn"></span>
+      </div>
+
+      <button class="pull-chain-btn" id="pullChainBtn">
+        <span>⛓️</span>
+        <span id="lampStateText">Pull Chain (ON)</span>
+      </button>
     </div>
-  </div>
+  </header>
 
-  <!-- Main Grid -->
-  <div class="desk-grid">
-    <!-- Left: Catalog Drawer -->
-    <div class="catalog-pane">
-      <div>
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder="Search author, call number, or folio...">
-        </div>
+  <!-- ========================================================================
+       GOLD-TOOLED GREEN LEATHER BLOTTER & WORKSPACE GRID
+  ========================================================================= -->
+  <div class="leather-blotter">
+    <div class="desk-grid">
 
-        <div class="drawer-heading">Catalog Drawer • Special Collections</div>
-
-        <div class="manuscript-list">
-          <div class="catalog-card is-active" data-call="MS-LAT-1473" data-title="De Rerum Natura (On the Nature of Things)" data-author="Titus Lucretius Carus (Edited by Ferrandus, Brescia 1473)" data-loc="Floor 3 • Vault Alpha • Cabinet 14 • Shelf B" data-cap="N" data-text="othing can be created out of nothing, nor can things once begotten be resolved back into void. Atoms drift through the boundless celestial void in perpetual dance, colliding and swerving in unseen harmony.">
-            <div class="card-call-no">MS-LAT-1473 • INCUNABULA</div>
-            <div class="card-title">De Rerum Natura</div>
-            <div class="card-author">Titus Lucretius Carus (1473)</div>
+      <!-- LEFT: CARVED OAK CARD-CATALOG DRAWER -->
+      <aside class="catalog-pane">
+        <div>
+          <!-- Brass Drawer Nameplate -->
+          <div class="brass-drawer-plate">
+            <span class="brass-rivet"></span>
+            <span class="drawer-plate-insert">DRAWER IV • INCUNABULA &amp; CODICES</span>
+            <span class="brass-rivet"></span>
           </div>
 
-          <div class="catalog-card" data-call="MS-GRK-0842" data-title="Timaeus & Critias Fragment" data-author="Plato (Byzantine Parchment Codex, 11th Century)" data-loc="Floor 4 • Locked Rare Annex • Case 03" data-cap="W" data-text="herefore we must declare that this universe indeed came to be through the providence of God, a living being with soul and reason, sculpted from eternal geometric archetypes.">
-            <div class="card-call-no">MS-GRK-0842 • PARCHMENT</div>
-            <div class="card-title">Timaeus & Critias Fragment</div>
-            <div class="card-author">Plato (Codex Parisinus 11th c.)</div>
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="catalogSearch" placeholder="Filter by author, call no., or title...">
           </div>
 
-          <div class="catalog-card" data-call="MS-AST-1610" data-title="Sidereus Nuncius (Starry Messenger)" data-author="Galileo Galilei (Venice: Baglioni, 1610)" data-loc="Floor 2 • West Gallery • Press 22" data-cap="G" data-text="reat indeed are the matters which in this brief treatise I propose for the inspection and contemplation of all who search after truth: the rugged face of the Moon, and the four wandering stars revolving around Jupiter.">
-            <div class="card-call-no">MS-AST-1610 • FIRST EDITION</div>
-            <div class="card-title">Sidereus Nuncius</div>
-            <div class="card-author">Galileo Galilei (1610)</div>
+          <div class="manuscript-list" id="manuscriptList">
+            <!-- Card 1 -->
+            <div class="catalog-card is-active"
+                 data-call="MS-LAT-1473 • INCUNABULA"
+                 data-title="De Rerum Natura (On the Nature of Things)"
+                 data-author="Titus Lucretius Carus (Ferrandus Press, Brescia 1473)"
+                 data-loc="Floor 3 • Vault Alpha • Case 14"
+                 data-cap="N"
+                 data-recto="othing can be created out of nothing, nor can things once begotten be resolved back into naught. Minute primordial bodies drift through the boundless celestial void in perpetual motion, colliding and swerving by an infinitesimal clinamen to weave the fabric of worlds."
+                 data-verso="or if atoms did not swerve slightly from their straight plumb-line through the void, no collision would ever have occurred, nor blow been struck upon atom; thus nature would never have brought aught into existence."
+                 data-gloss="«Ex nihilo nihil fit» — Margin note in iron-gall ink by Fra Matteo, 1492.">
+              <div class="card-top-row">
+                <span class="card-call-no">MS-LAT-1473</span>
+                <span class="card-stamp">LINEN RAG</span>
+              </div>
+              <div class="card-title">De Rerum Natura</div>
+              <div class="card-author">Titus Lucretius Carus (Brescia, 1473)</div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="catalog-card"
+                 data-call="MS-GRK-0842 • VELLUM CODEX"
+                 data-title="Timaeus &amp; Critias Cosmology"
+                 data-author="Plato (Byzantine Calfskin Parchment, 11th Century)"
+                 data-loc="Floor 4 • Rare Annex • Reliquary 03"
+                 data-cap="W"
+                 data-recto="herefore we must declare that this cosmos indeed came to be through the providence of the Demiurge, a living harmonious being endowed with soul and intellect, proportioned according to the five regular Platonic solids."
+                 data-verso="nd time, therefore, came into existence along with the heavens, as a moving image of eternity revolving according to number, while eternity itself abides in unity."
+                 data-gloss="«Χρόνος εἰκὼν κινητὴ αἰῶνος» — Byzantine scholium on the harmonic ratio 3:2.">
+              <div class="card-top-row">
+                <span class="card-call-no">MS-GRK-0842</span>
+                <span class="card-stamp">VELLUM</span>
+              </div>
+              <div class="card-title">Timaeus &amp; Critias Fragment</div>
+              <div class="card-author">Plato (Codex Parisinus, 11th c.)</div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="catalog-card"
+                 data-call="MS-AST-1610 • VENICE QUARTO"
+                 data-title="Sidereus Nuncius (Starry Messenger)"
+                 data-author="Galileo Galilei (Venice: Thomas Baglioni, 1610)"
+                 data-loc="Floor 2 • West Gallery • Press 22"
+                 data-cap="G"
+                 data-recto="reat indeed are the matters which in this brief treatise I propose for the inspection and contemplation of all who study nature: the rugged cratered face of the Moon, and four hitherto unseen Medicean stars revolving around Jupiter."
+                 data-verso="y means of a perspicillum of leaden tube fitted with one planoconvex and one planoconcave lens of Venetian crystal, objects appear thirty times nearer than when beheld by the naked eye alone."
+                 data-gloss="«Stellae Mediceae» — Hand-drawn ink diagram of Jupiter's moons on 7 Jan 1610.">
+              <div class="card-top-row">
+                <span class="card-call-no">MS-AST-1610</span>
+                <span class="card-stamp">1ST ED.</span>
+              </div>
+              <div class="card-title">Sidereus Nuncius</div>
+              <div class="card-author">Galileo Galilei (Venice, 1610)</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div style="font-size: 11px; color: #8e7b6d; text-align: center; border-top: 1px solid #331e11; padding-top: 8px;">
-        Archivist on Duty: Dr. M. Sterling • Silence Requested
-      </div>
-    </div>
-
-    <!-- Right: Reading Folio Desk -->
-    <div class="reading-folio" id="readingFolio">
-      <div class="ribbon-marker"></div>
-
-      <div>
-        <div class="folio-head-meta">
-          <div class="folio-archive-tag" id="folioCall">MS-LAT-1473 • INCUNABULA</div>
-          <div class="folio-main-title" id="folioTitle">De Rerum Natura</div>
-          <div class="folio-author-line" id="folioAuthor">Titus Lucretius Carus (Edited by Ferrandus, Brescia 1473)</div>
+        <div class="drawer-footer">
+          <span>ARCHIVIST: DR. M. STERLING</span>
+          <span id="cardCountText">3 FOLIOS INDEXED</span>
         </div>
+      </aside>
 
-        <div class="folio-body" id="folioBody">
-          <span class="drop-cap" id="dropCap">N</span>
-          <span id="folioText">othing can be created out of nothing, nor can things once begotten be resolved back into void. Atoms drift through the boundless celestial void in perpetual dance, colliding and swerving in unseen harmony.</span>
-        </div>
+      <!-- RIGHT: BOUND LAID-PAPER MANUSCRIPT FOLIO -->
+      <div class="folio-book-binding">
+        <section class="reading-folio" id="readingFolio">
+          <!-- Procedural Paper Fiber Overlay -->
+          <div class="paper-fiber-overlay"></div>
+          <!-- Left Spine Gutter Stitching -->
+          <div class="gutter-stitching"></div>
+          <!-- Silk Bookmark Ribbon -->
+          <div class="ribbon-marker" id="ribbonMarker" title="Click ribbon to flip between Recto (14r) and Verso (14v)"></div>
+
+          <!-- Interactive Brass Magnifying Glass Lens -->
+          <div class="brass-magnifier" id="brassMagnifier">
+            <div class="lens-latin-gloss" id="lensGlossText">
+              «Ex nihilo nihil fit» — Margin note in iron-gall ink by Fra Matteo, 1492.
+            </div>
+            <div class="lens-sub-note">WATERMARK: VENETIAN ANCHOR</div>
+          </div>
+
+          <!-- Crimson Wax Seal Stamp -->
+          <div class="wax-seal-stamp" id="waxSealStamp">
+            <span>SIGILLUM<br>ARCHIVI<br>★ 1473 ★</span>
+          </div>
+
+          <div class="folio-content-z">
+            <div class="folio-head-meta">
+              <div>
+                <div class="folio-archive-tag" id="folioCall">MS-LAT-1473 • INCUNABULA</div>
+                <h2 class="folio-main-title" id="folioTitle">De Rerum Natura (On the Nature of Things)</h2>
+                <div class="folio-author-line" id="folioAuthor">Titus Lucretius Carus (Ferrandus Press, Brescia 1473)</div>
+              </div>
+
+              <!-- Recto / Verso Leaf Switcher -->
+              <div class="leaf-turn-controls">
+                <button class="leaf-btn active" id="btnRecto" title="Read Recto (Front Leaf)">Fol. 14r</button>
+                <button class="leaf-btn" id="btnVerso" title="Read Verso (Back Leaf)">Fol. 14v</button>
+              </div>
+            </div>
+
+            <div class="folio-body" id="folioBody">
+              <span class="drop-cap" id="dropCap">N</span>
+              <span id="folioText">othing can be created out of nothing, nor can things once begotten be resolved back into naught. Minute primordial bodies drift through the boundless celestial void in perpetual motion, colliding and swerving by an infinitesimal clinamen to weave the fabric of worlds.</span>
+            </div>
+
+            <div class="marginalia-box">
+              <span id="marginaliaText">✒️ Scribal Note: «Ex nihilo nihil fit» — Margin note in iron-gall ink by Fra Matteo, 1492.</span>
+            </div>
+          </div>
+
+          <div class="location-strip">
+            <div class="shelf-coords" id="shelfCoords">📍 Floor 3 • Vault Alpha • Case 14</div>
+            <div class="folio-actions">
+              <button class="folio-btn" id="lensToggleBtn" title="Hover over page with Brass Magnifier to inspect watermarks & glosses">
+                🔍 Inspect Lens
+              </button>
+              <button class="folio-btn" id="requestFolioBtn">
+                💮 Stamp &amp; Borrow
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <div class="location-strip">
-        <div class="shelf-coords" id="shelfCoords">📍 Floor 3 • Vault Alpha • Cabinet 14 • Shelf B</div>
-        <button class="folio-btn" id="requestFolioBtn">Borrow for Reading Desk</button>
-      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // Banker's lamp toggle
+  // ==========================================================================
+  // 1. EMERALD BANKER'S LAMP & PHYSICAL BEADED PULL-CHAIN
+  // ==========================================================================
   const pullBtn = document.getElementById('pullChainBtn');
+  const beadedChain = document.getElementById('beadedChain');
+  const lampShadeClick = document.getElementById('lampShadeClick');
+  const lampStateText = document.getElementById('lampStateText');
   let lampOn = true;
 
-  pullBtn.addEventListener('click', () => {
+  function toggleBankersLamp() {
     lampOn = !lampOn;
     document.body.classList.toggle('lamp-off', !lampOn);
-  });
+    lampStateText.textContent = lampOn ? 'Pull Chain (ON)' : 'Pull Chain (OFF)';
 
-  // Catalog item click
-  const cards = document.querySelectorAll('.catalog-card');
+    beadedChain.classList.add('pulled');
+    setTimeout(() => beadedChain.classList.remove('pulled'), 180);
+  }
+
+  pullBtn.addEventListener('click', toggleBankersLamp);
+  beadedChain.addEventListener('click', toggleBankersLamp);
+  lampShadeClick.addEventListener('click', toggleBankersLamp);
+
+  // ==========================================================================
+  // 2. CATALOG CARD SELECTION, LIVE SEARCH & RECTO/VERSO LEAF FLIPPING
+  // ==========================================================================
+  const cards = Array.from(document.querySelectorAll('.catalog-card'));
   const folioCall = document.getElementById('folioCall');
   const folioTitle = document.getElementById('folioTitle');
   const folioAuthor = document.getElementById('folioAuthor');
   const dropCap = document.getElementById('dropCap');
   const folioText = document.getElementById('folioText');
+  const marginaliaText = document.getElementById('marginaliaText');
+  const lensGlossText = document.getElementById('lensGlossText');
   const shelfCoords = document.getElementById('shelfCoords');
   const requestBtn = document.getElementById('requestFolioBtn');
+  const waxSealStamp = document.getElementById('waxSealStamp');
+  const btnRecto = document.getElementById('btnRecto');
+  const btnVerso = document.getElementById('btnVerso');
+
+  let activeCard = cards[0];
+  let isVerso = false;
+
+  function renderFolioPage() {
+    folioCall.textContent = activeCard.dataset.call;
+    folioTitle.textContent = activeCard.dataset.title;
+    folioAuthor.textContent = activeCard.dataset.author;
+    shelfCoords.textContent = `📍 ${activeCard.dataset.loc}`;
+    marginaliaText.textContent = `✒️ Scribal Note: ${activeCard.dataset.gloss}`;
+    lensGlossText.textContent = activeCard.dataset.gloss;
+
+    if (!isVerso) {
+      dropCap.textContent = activeCard.dataset.cap;
+      folioText.textContent = activeCard.dataset.recto;
+      btnRecto.classList.add('active');
+      btnVerso.classList.remove('active');
+    } else {
+      dropCap.textContent = activeCard.dataset.call.includes('LAT') ? 'F' : (activeCard.dataset.call.includes('GRK') ? 'A' : 'B');
+      folioText.textContent = activeCard.dataset.verso;
+      btnVerso.classList.add('active');
+      btnRecto.classList.remove('active');
+    }
+  }
 
   cards.forEach(card => {
     card.addEventListener('click', () => {
       cards.forEach(c => c.classList.remove('is-active'));
       card.classList.add('is-active');
-
-      folioCall.textContent = card.dataset.call;
-      folioTitle.textContent = card.dataset.title;
-      folioAuthor.textContent = card.dataset.author;
-      dropCap.textContent = card.dataset.cap;
-      folioText.textContent = card.dataset.text;
-      shelfCoords.textContent = `📍 ${card.dataset.loc}`;
-      requestBtn.textContent = 'Borrow for Reading Desk';
+      activeCard = card;
+      isVerso = false;
+      waxSealStamp.classList.remove('stamped');
+      requestBtn.textContent = '💮 Stamp & Borrow';
+      renderFolioPage();
     });
   });
 
+  btnRecto.addEventListener('click', () => {
+    isVerso = false;
+    renderFolioPage();
+  });
+
+  btnVerso.addEventListener('click', () => {
+    isVerso = true;
+    renderFolioPage();
+  });
+
+  document.getElementById('ribbonMarker').addEventListener('click', () => {
+    isVerso = !isVerso;
+    renderFolioPage();
+  });
+
+  // Live Catalog Search Filter
+  const catalogSearch = document.getElementById('catalogSearch');
+  const cardCountText = document.getElementById('cardCountText');
+
+  catalogSearch.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+      const hay = (card.dataset.title + ' ' + card.dataset.author + ' ' + card.dataset.call).toLowerCase();
+      const match = hay.includes(q);
+      card.style.display = match ? 'block' : 'none';
+      if (match) visible++;
+    });
+    cardCountText.textContent = `${visible} FOLIO${visible === 1 ? '' : 'S'} INDEXED`;
+  });
+
+  // ==========================================================================
+  // 3. INTERACTIVE BRASS MAGNIFYING LENS & WAX SEAL STAMP
+  // ==========================================================================
+  const readingFolio = document.getElementById('readingFolio');
+  const brassMagnifier = document.getElementById('brassMagnifier');
+  const lensToggleBtn = document.getElementById('lensToggleBtn');
+  let lensMode = false;
+
+  lensToggleBtn.addEventListener('click', () => {
+    lensMode = !lensMode;
+    lensToggleBtn.classList.toggle('lens-on', lensMode);
+    lensToggleBtn.textContent = lensMode ? '🔍 Lens Active' : '🔍 Inspect Lens';
+    if (!lensMode) brassMagnifier.classList.remove('active');
+  });
+
+  readingFolio.addEventListener('pointermove', (e) => {
+    if (!lensMode) return;
+    const rect = readingFolio.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    brassMagnifier.classList.add('active');
+    brassMagnifier.style.left = `${x}px`;
+    brassMagnifier.style.top = `${y}px`;
+  });
+
+  readingFolio.addEventListener('pointerleave', () => {
+    brassMagnifier.classList.remove('active');
+  });
+
+  // Wax Seal Stamp & Borrow Action
   requestBtn.addEventListener('click', () => {
-    requestBtn.textContent = '✓ Delivered to Desk 4';
-    requestBtn.style.background = '#10b981';
-    requestBtn.style.color = '#ffffff';
+    waxSealStamp.classList.add('stamped');
+    requestBtn.textContent = '✓ Sealed & Checked Out';
   });
 </script>
 </body>

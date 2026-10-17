@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alpine Lodge & Mountain Expedition Dashboard</title>
+<title>Mont-Blanc Refuge — Alpine Expedition & Telemetry Station</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -27,21 +27,22 @@
     "expedition",
     "elevation",
     "lodge",
-    "hike"
+    "hike",
+    "altimeter"
   ],
-  "description": "High-altitude mountain chalet dashboard featuring rich walnut wood trims, summit weather telemetry, an interactive SVG elevation trail profile, and an expedition gear checklist.",
+  "description": "Swiss high-altitude mountain refuge and expedition telemetry console featuring a walnut timber frame, live snowfall & cable-car panorama window, hearth firelight ambience toggle, interactive SVG ridge ascent simulator, SLF avalanche risk matrix, and weight-calculated gear pack.",
   "techniques": [
-    "walnut wood gradient borders and bevels",
-    "cream and alpine navy high-contrast palette",
-    "interactive SVG mountain elevation trail profile",
-    "powder snow depth telemetry cards",
-    "fireplace hearth warmth accent glow"
+    "Procedural walnut woodgrain frame with toggleable Hearth Fireplace ambient amber illumination",
+    "HTML5 Canvas snowfall particle physics synchronized with 3 alpine weather states (Bluebird, Alpenglow, Storm)",
+    "Animated SVG Aiguille du Midi cable-car gondola and multi-zone elevation cross-section with live hiker ascent simulation",
+    "Interactive European SLF 1-5 Avalanche Danger scale and dynamic pack-weight calculator with permit stamp",
+    "Swiss typographic hierarchy pairing Fraunces editorial serifs with JetBrains Mono instrument readouts"
   ],
-  "recipe": "The aesthetic merges dark walnut timber frames with crisp warm-cream interior panels and deep alpine navy typography. The elevation chart uses responsive SVG with interactive waypoints that update trail distance and difficulty stats.",
+  "recipe": "Combines a warm timber-and-brass chalet interior with precision Swiss alpine instrumentation. The top panoramic viewport layers an SVG mountain range with an animated cable-car and a weather-reactive Canvas snowstorm. Below, clicking any ridge waypoint or launching the Ascent Simulator updates the barometric altimeter, slope gradient, oxygen level, and trail cross-section.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 780
   }
 }
 </script>
@@ -50,134 +51,341 @@
   * { box-sizing: border-box; }
 
   :root {
-    --walnut-dark: #22150e;
-    --walnut-border: #4d3322;
-    --cream-bg: #f9f5ed;
-    --cream-card: #f2ebd9;
-    --alpine-navy: #192a3e;
-    --alpine-blue: #2c5282;
-    --ice-cyan: #dceefb;
-    --hearth-amber: #e67e22;
-    --snow-white: #ffffff;
-    --text-muted: #6b6357;
+    --walnut-deep: #180e08;
+    --walnut-mid: #2b1910;
+    --walnut-rim: #593824;
+    --brass-gold: #cfa352;
+    --brass-light: #ffe4a8;
+
+    --cream-bg: #f8f3e8;
+    --cream-card: #efe7d4;
+    --cream-border: #d9ccb2;
+
+    --alpine-navy: #142436;
+    --alpine-blue: #234e78;
+    --glacier-cyan: #0284c7;
+    --hearth-amber: #e66c1a;
+    --pine-green: #166534;
+    --danger-red: #dc2626;
+    --text-muted: #655c4e;
+
+    --hearth-glow-alpha: 0.22;
+  }
+
+  /* Hearth Fireplace Boost Mode */
+  body.hearth-roaring {
+    --hearth-glow-alpha: 0.48;
+    --cream-bg: #fbf4e6;
+    --cream-card: #f4e8d0;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
     background:
-      radial-gradient(circle at 85% 15%, rgba(220, 238, 251, 0.25) 0%, transparent 40%),
-      radial-gradient(circle at 15% 90%, rgba(230, 126, 34, 0.12) 0%, transparent 45%),
-      linear-gradient(180deg, #16202c 0%, #0d141d 60%, #090e15 100%);
+      radial-gradient(circle at 82% 14%, rgba(186, 230, 253, 0.18) 0%, transparent 42%),
+      radial-gradient(circle at 18% 88%, rgba(230, 108, 26, var(--hearth-glow-alpha)) 0%, transparent 50%),
+      linear-gradient(180deg, #0f1824 0%, #090f17 60%, #05080d 100%);
     color: var(--alpine-navy);
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 20px 16px;
     overflow-x: hidden;
+    user-select: none;
+    transition: background 0.4s ease;
   }
 
-  /* Walnut Timber Frame Container */
+  /* ==========================================================================
+     OUTER CARVED SWISS WALNUT CHALET TIMBER FRAME
+  ========================================================================== */
   .chalet-station {
     width: 100%;
-    max-width: 960px;
-    background: linear-gradient(145deg, #2a1a11 0%, #1a100a 100%);
-    border: 3px solid #573a27;
-    border-radius: 16px;
+    max-width: 1040px;
+    background:
+      radial-gradient(
+        ellipse 60% 40% at 85% 15%,
+        rgba(255, 145, 50, var(--hearth-glow-alpha)) 0%,
+        transparent 65%
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.014) 0px 2px,
+        transparent 2px 8px
+      ),
+      linear-gradient(145deg, #331e13 0%, #1d100a 55%, #120a06 100%);
+    border: 3.5px solid var(--walnut-rim);
+    border-radius: 20px;
     padding: 16px;
     box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.85),
-      0 0 40px rgba(230, 126, 34, 0.1),
-      inset 0 1px 1px rgba(255, 230, 190, 0.15);
+      0 35px 85px rgba(0, 0, 0, 0.92),
+      0 0 50px rgba(230, 108, 26, calc(var(--hearth-glow-alpha) * 0.45)),
+      inset 0 1.5px 1px rgba(255, 230, 190, 0.25),
+      0 0 0 2px #0d0704;
+    position: relative;
+    transition: box-shadow 0.4s ease;
   }
 
-  /* Inner Cream Cream Parchment Card */
+  /* Brass Corner Rivet Plates on Walnut Frame */
+  .brass-stud {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff2c2, #b88732 70%, #4d3309);
+    border: 1px solid #2e1d04;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    z-index: 10;
+  }
+  .bs-tl { top: 8px; left: 8px; }
+  .bs-tr { top: 8px; right: 8px; }
+  .bs-bl { bottom: 8px; left: 8px; }
+  .bs-br { bottom: 8px; right: 8px; }
+
+  /* Inner Warm Parchment & Cream Panel */
   .station-inner {
-    background: var(--cream-bg);
-    border-radius: 12px;
-    padding: 22px 26px;
-    border: 1px solid #dcd3be;
+    background:
+      radial-gradient(
+        circle at 92% 8%,
+        rgba(255, 165, 75, calc(var(--hearth-glow-alpha) * 0.45)) 0%,
+        transparent 48%
+      ),
+      var(--cream-bg);
+    border-radius: 13px;
+    border: 1.5px solid #d5c7ad;
     box-shadow:
-      inset 0 2px 6px rgba(0, 0, 0, 0.05),
-      0 4px 15px rgba(0, 0, 0, 0.3);
+      inset 0 2px 8px rgba(0, 0, 0, 0.06),
+      0 6px 20px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Header */
-  .chalet-header {
+  /* ==========================================================================
+     1. PANORAMIC AIGUILLE DU MIDI WINDOW (WITH CABLE CAR & LIVE SNOW CANVAS)
+  ========================================================================== */
+  .alpine-window {
+    position: relative;
+    height: 158px;
+    background: linear-gradient(180deg, #0d2542 0%, #1d4e7a 42%, #68a4cc 78%, #d8eef9 100%);
+    border-bottom: 3px solid #3a2315;
+    overflow: hidden;
+    transition: background 0.6s ease;
+  }
+
+  /* Weather Sky Variants */
+  .alpine-window[data-weather="alpenglow"] {
+    background: linear-gradient(180deg, #1b1936 0%, #5e2c4c 34%, #c85a48 68%, #f7b279 92%, #ffe3a8 100%);
+  }
+  .alpine-window[data-weather="storm"] {
+    background: linear-gradient(180deg, #0f1722 0%, #1e2938 45%, #384759 80%, #64748b 100%);
+  }
+
+  /* Timber Window Frame Mullions */
+  .window-timber-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.45);
+    background:
+      linear-gradient(90deg,
+        transparent 28%, rgba(38, 22, 13, 0.72) 28%, rgba(62, 37, 22, 0.8) 28.5%, transparent 28.5%,
+        transparent 72%, rgba(38, 22, 13, 0.72) 72%, rgba(62, 37, 22, 0.8) 72.5%, transparent 72.5%
+      );
+  }
+
+  /* Live Snowfall Particle Canvas */
+  #snowCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Panoramic Mountain SVG */
+  .panorama-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  /* Animated Téléphérique Cable Car Gondola */
+  #gondolaGroup {
+    animation: gondolaRun 18s ease-in-out infinite alternate;
+  }
+  @keyframes gondolaRun {
+    0%   { transform: translate(0px, 0px); }
+    100% { transform: translate(230px, -49px); }
+  }
+
+  /* Top Floating Header Bar Inside Panorama Window */
+  .window-top-bar {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    right: 16px;
+    z-index: 8;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #e5dcce;
-    padding-bottom: 16px;
-    margin-bottom: 20px;
-  }
-
-  .lodge-meta h1 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    color: var(--alpine-navy);
-    display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  .lodge-meta p {
-    margin: 3px 0 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    letter-spacing: 0.3px;
+  .lodge-brand-pill {
+    background: rgba(15, 23, 36, 0.84);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 12px;
+    padding: 7px 14px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
   }
 
-  .hearth-badge {
-    background: #fdf3e7;
-    border: 1px solid #f4cba0;
-    border-radius: 30px;
-    padding: 6px 16px;
+  .swiss-cross-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: #dc2626;
+    border: 1.5px solid #fca5a5;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 16px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.5);
+  }
+
+  .lodge-brand-pill h1 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff9ed;
+  }
+
+  .lodge-brand-pill p {
+    margin: 1px 0 0;
+    font-size: 10.5px;
+    color: #cbd5e1;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .window-controls-right {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #a0490b;
-    box-shadow: 0 2px 6px rgba(230, 126, 34, 0.15);
+    flex-wrap: wrap;
   }
 
+  /* Weather Switcher Pills */
+  .weather-switcher {
+    display: flex;
+    background: rgba(15, 23, 36, 0.82);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 99px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .wx-btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #cbd5e1;
+    padding: 4px 10px;
+    border-radius: 99px;
+    transition: all 0.15s ease;
+  }
+  .wx-btn:hover {
+    color: #ffffff;
+  }
+  .wx-btn.active {
+    background: #ffffff;
+    color: var(--alpine-navy);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Interactive Hearth Fireplace Toggle Badge */
+  .hearth-badge {
+    background: rgba(38, 18, 9, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid #f59e0b;
+    border-radius: 99px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fde68a;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(230, 108, 26, 0.35);
+    transition: all 0.2s ease;
+  }
+  .hearth-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 24px rgba(230, 108, 26, 0.6);
+  }
   .hearth-flame {
     font-size: 14px;
-    animation: flameFlicker 1.5s infinite alternate ease-in-out;
+    display: inline-block;
+    animation: flameFlicker 1.2s infinite alternate ease-in-out;
   }
-
   @keyframes flameFlicker {
-    0% { transform: scale(0.9) rotate(-3deg); }
-    100% { transform: scale(1.15) rotate(3deg); filter: drop-shadow(0 0 4px #e67e22); }
+    0%   { transform: scale(0.9) rotate(-4deg); }
+    100% { transform: scale(1.18) rotate(4deg); filter: drop-shadow(0 0 6px #f59e0b); }
   }
 
-  /* Grid: 3 Metric Cards + Trail Elevation */
+  /* ==========================================================================
+     2. MAIN INTERIOR BODY (METRICS + ELEVATION PROFILE + EXPEDITION PACK)
+  ========================================================================== */
+  .chalet-body {
+    padding: 18px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* 4-Column Alpine Telemetry Instruments Row */
   .metrics-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  @media (max-width: 880px) {
+    .metrics-row { grid-template-columns: repeat(2, 1fr); }
   }
 
   .metric-card {
     background: var(--cream-card);
-    border: 1px solid #dfd4bf;
-    border-radius: 10px;
-    padding: 14px 16px;
+    border: 1px solid var(--cream-border);
+    border-radius: 11px;
+    padding: 11px 13px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    transition: transform 0.2s ease;
+    gap: 11px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(20, 36, 54, 0.04);
+    transition: transform 0.18s ease, border-color 0.18s ease;
   }
-
   .metric-card:hover {
     transform: translateY(-2px);
-    background: #ece3cf;
+    border-color: #b8a686;
   }
 
   .metric-icon-box {
@@ -185,77 +393,181 @@
     height: 44px;
     border-radius: 10px;
     background: #ffffff;
-    border: 1px solid #d6caa8;
+    border: 1px solid #d5c7ad;
     display: grid;
     place-items: center;
-    font-size: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    font-size: 19px;
+    flex-shrink: 0;
+    box-shadow:
+      0 2px 5px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 #fff;
+  }
+
+  .metric-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .metric-val-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
   }
 
   .metric-val {
     font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
     color: var(--alpine-navy);
-    line-height: 1.1;
+    line-height: 1.05;
+  }
+
+  .metric-delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--glacier-cyan);
+    background: rgba(2, 132, 199, 0.1);
+    padding: 1px 5px;
+    border-radius: 4px;
   }
 
   .metric-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
+    letter-spacing: 0.04em;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* Main Lower Section: Elevation Profile + Expedition Checklist */
+  /* Interactive SLF Avalanche Danger Scale Bar (1 to 5) */
+  .avy-scale-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
+    margin-top: 5px;
+    height: 5px;
+  }
+  .avy-seg {
+    border-radius: 2px;
+    opacity: 0.25;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .avy-seg.active {
+    opacity: 1;
+    transform: scaleY(1.3);
+  }
+
+  /* ==========================================================================
+     3. LOWER WORKSPACE: RIDGE ELEVATION SIMULATOR + EXPEDITION PACK
+  ========================================================================== */
   .expedition-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1.52fr 1fr;
+    gap: 18px;
+    align-items: stretch;
   }
 
-  /* Trail & Elevation Map */
+  @media (max-width: 900px) {
+    .expedition-grid { grid-template-columns: 1fr; }
+  }
+
+  /* LEFT: INTERACTIVE RIDGE ELEVATION & ASCENT SIMULATOR */
   .elevation-box {
     background: #ffffff;
-    border: 1px solid #dfd6c4;
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1.5px solid #dcd0b8;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 12px rgba(20, 36, 54, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .section-head {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .section-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .section-title {
     font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     color: var(--alpine-navy);
+    margin: 0;
+  }
+
+  .route-difficulty-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    background: #142436;
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .elev-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sim-ascent-btn {
+    all: unset;
+    cursor: pointer;
+    background: #f0f7ff;
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .sim-ascent-btn:hover {
+    background: #dbeafe;
+  }
+  .sim-ascent-btn.running {
+    background: #1e40af;
+    color: #ffffff;
   }
 
   .status-chip {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10.5px;
+    font-weight: 700;
     background: #e6f6ee;
-    color: #1a7442;
-    padding: 3px 8px;
-    border-radius: 12px;
-    border: 1px solid #b7e3ca;
+    color: #166534;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid #a7f3d0;
   }
 
-  /* Interactive SVG Trail Profile */
+  /* Interactive SVG Trail Profile Viewport */
   .elevation-svg-wrap {
     width: 100%;
-    height: 160px;
-    background: linear-gradient(180deg, #f5f9fc 0%, #eaf2f8 100%);
-    border-radius: 8px;
-    border: 1px solid #d7e4ed;
+    height: 188px;
+    background: linear-gradient(180deg, #e6f2fb 0%, #f4f9fd 65%, #ffffff 100%);
+    border-radius: 9px;
+    border: 1px solid #cbdceb;
     position: relative;
     overflow: hidden;
   }
@@ -263,282 +575,810 @@
   .elevation-svg {
     width: 100%;
     height: 100%;
+    display: block;
   }
 
   .trail-waypoint {
     cursor: pointer;
-    transition: all 0.2s ease;
+  }
+  .trail-waypoint .wp-circle {
+    transition: r 0.2s ease, fill 0.2s ease, stroke-width 0.2s ease;
+  }
+  .trail-waypoint:hover .wp-circle {
+    r: 7.5;
+    fill: var(--hearth-amber);
+  }
+  .trail-waypoint.active .wp-circle {
+    r: 8;
+    fill: var(--hearth-amber);
+    stroke: #142436;
+    stroke-width: 2.5;
   }
 
-  .trail-waypoint:hover circle {
-    r: 7;
-    fill: #2c5282;
-  }
-
-  /* Waypoint Details Bar */
-  .waypoint-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  /* Waypoint Telemetry Footer Strip */
+  .waypoint-telemetry-grid {
+    display: grid;
+    grid-template-columns: 1.3fr repeat(4, 1fr);
+    gap: 8px;
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px solid #eee5d3;
-    font-size: 12px;
+    border-top: 1px solid #e9e0ce;
+    align-items: center;
   }
 
+  .wp-primary-col {
+    display: flex;
+    flex-direction: column;
+  }
   .waypoint-name {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--alpine-navy);
+  }
+  .waypoint-cond {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .wp-stat-pill {
+    background: var(--cream-bg);
+    border: 1px solid #e2d7c1;
+    border-radius: 7px;
+    padding: 5px 8px;
+    text-align: center;
+  }
+  .wp-stat-pill small {
+    display: block;
+    font-size: 8.5px;
     font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .wp-stat-pill strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
     color: var(--alpine-navy);
   }
 
-  .waypoint-stats {
-    color: var(--text-muted);
-  }
-
-  /* Gear Checklist */
+  /* ==========================================================================
+     RIGHT: EXPEDITION PACK WEIGHT CALCULATOR & PERMIT STAMP
+  ========================================================================== */
   .gear-box {
     background: #ffffff;
-    border: 1px solid #dfd6c4;
-    border-radius: 10px;
-    padding: 18px 20px;
+    border: 1.5px solid #dcd0b8;
+    border-radius: 12px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(20, 36, 54, 0.05);
+  }
+
+  /* Pack Weight Progress Bar */
+  .pack-weight-bar-wrap {
+    background: var(--cream-bg);
+    border: 1px solid #e2d7c1;
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-bottom: 10px;
+  }
+
+  .pack-weight-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--alpine-navy);
+    margin-bottom: 4px;
+  }
+  .pack-weight-top span:last-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--alpine-blue);
+  }
+
+  .pack-progress-track {
+    height: 6px;
+    background: #e2d8c5;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .pack-progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--alpine-blue), var(--pine-green));
+    border-radius: 99px;
+    transition: width 0.3s ease;
   }
 
   .gear-list {
     display: flex;
     flex-direction: column;
-    gap: 9px;
-    margin-top: 10px;
+    gap: 7px;
   }
 
   .gear-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 8px;
     background: var(--cream-bg);
-    border: 1px solid #e2dac7;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12.5px;
-    font-weight: 500;
+    border: 1px solid #e2d8c5;
+    padding: 7px 11px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--alpine-navy);
     cursor: pointer;
-    transition: background 0.15s ease;
-    user-select: none;
+    transition: all 0.15s ease;
+  }
+  .gear-item:hover {
+    background: #ede3cd;
+    border-color: #cbbba0;
   }
 
-  .gear-item:hover {
-    background: #ede3cc;
+  .gear-item-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
   }
 
   .gear-item input[type="checkbox"] {
-    accent-color: var(--alpine-blue);
+    accent-color: var(--pine-green);
     width: 15px;
     height: 15px;
     cursor: pointer;
+    margin: 0;
   }
 
-  .gear-item.checked {
-    text-decoration: line-through;
-    opacity: 0.65;
+  .gear-item.packed {
+    border-left: 3.5px solid var(--pine-green);
+    background: #f4faf6;
+  }
+  .gear-item.unpacked {
+    opacity: 0.55;
+    border-left: 3.5px solid #cbd5e1;
   }
 
-  /* Expedition Action Button */
+  .gear-weight-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* Official High-Mountain Permit Rubber Stamp Overlay */
+  .permit-stamp {
+    position: absolute;
+    right: 16px;
+    bottom: 62px;
+    border: 2.5px double #166534;
+    color: #166534;
+    background: rgba(240, 253, 244, 0.94);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.08em;
+    transform: rotate(-10deg) scale(1.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.22, 1.4, 0.36, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  .permit-stamp.stamped {
+    transform: rotate(-10deg) scale(1);
+    opacity: 1;
+  }
+
   .lodge-btn {
     width: 100%;
-    margin-top: 14px;
+    margin-top: 12px;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.03em;
     padding: 11px;
     border-radius: 8px;
-    background: var(--alpine-navy);
-    border: none;
+    background: linear-gradient(180deg, #1d354d 0%, #122233 100%);
+    border: 1px solid #315478;
     color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(25, 42, 62, 0.25);
+    box-shadow: 0 4px 12px rgba(20, 36, 54, 0.25);
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
-
   .lodge-btn:hover {
-    background: #233c59;
-    box-shadow: 0 6px 14px rgba(25, 42, 62, 0.35);
+    background: linear-gradient(180deg, #254361 0%, #172b40 100%);
     transform: translateY(-1px);
+  }
+  .lodge-btn.departed {
+    background: linear-gradient(180deg, #166534 0%, #0f4624 100%);
+    border-color: #22c55e;
   }
 </style>
 </head>
-<body>
+<body class="hearth-roaring">
 
 <div class="chalet-station">
+  <!-- Brass Corner Rivets -->
+  <div class="brass-stud bs-tl"></div>
+  <div class="brass-stud bs-tr"></div>
+  <div class="brass-stud bs-bl"></div>
+  <div class="brass-stud bs-br"></div>
+
   <div class="station-inner">
-    <!-- Header -->
-    <div class="chalet-header">
-      <div class="lodge-meta">
-        <h1>
-          <span>🏔️ Mont-Blanc Summit Lodge</span>
-        </h1>
-        <p>Val de Cordon • Altitude 2,150 m • Weather & Alpine Trail Telemetry</p>
-      </div>
 
-      <div class="hearth-badge">
-        <span class="hearth-flame">🔥</span>
-        <span>Hearth Fireplace Roaring</span>
-      </div>
-    </div>
+    <!-- ======================================================================
+         1. PANORAMIC AIGUILLE DU MIDI WINDOW (SNOW CANVAS + CABLE CAR + SKY)
+    ======================================================================= -->
+    <header class="alpine-window" id="alpineWindow" data-weather="bluebird">
+      <div class="window-timber-grid"></div>
+      <canvas id="snowCanvas" width="1000" height="158"></canvas>
 
-    <!-- Weather & Snow Metrics -->
-    <div class="metrics-row">
-      <div class="metric-card">
-        <div class="metric-icon-box">❄️</div>
-        <div>
-          <div class="metric-val">-5.4°C</div>
-          <div class="metric-label">Summit Temp • Crisp</div>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-icon-box">⛷️</div>
-        <div>
-          <div class="metric-val">168 cm</div>
-          <div class="metric-label">Powder Base • +18cm 24h</div>
-        </div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-icon-box">🛡️</div>
-        <div>
-          <div class="metric-val">Level 1</div>
-          <div class="metric-label">Avalanche Risk • Low</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Section: Elevation Trail & Gear Checklist -->
-    <div class="expedition-grid">
-      <!-- Trail & Elevation Chart -->
-      <div class="elevation-box">
-        <div class="section-head">
-          <div class="section-title">Aiguille Ridge Elevation Profile</div>
-          <span class="status-chip" id="trailStatus">Path Groomed & Open</span>
-        </div>
-
-        <div class="elevation-svg-wrap">
-          <svg class="elevation-svg" viewBox="0 0 500 160" preserveAspectRatio="none">
-            <!-- Mountain Silhouette Gradient Fill -->
-            <defs>
-              <linearGradient id="mountainFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2c5282" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#2c5282" stop-opacity="0.02"/>
-              </linearGradient>
-            </defs>
-
-            <!-- Elevation Mountain Polyline -->
-            <polygon points="0,160 0,130 90,115 180,85 280,100 380,45 460,30 500,40 500,160" fill="url(#mountainFill)"/>
-            <path d="M0,130 L90,115 L180,85 L280,100 L380,45 L460,30 L500,40" fill="none" stroke="#2c5282" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-
-            <!-- Waypoints -->
-            <g class="trail-waypoint" data-name="Chalet Base" data-alt="1,850 m" data-dist="0.0 km" data-status="Base Lodge • Warm Hearth">
-              <circle cx="90" cy="115" r="5" fill="#e67e22" stroke="#fff" stroke-width="2"/>
-            </g>
-            <g class="trail-waypoint" data-name="Pine Tree Rest" data-alt="2,080 m" data-dist="2.4 km" data-status="Windbreak Shelter • Open">
-              <circle cx="180" cy="85" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
-            </g>
-            <g class="trail-waypoint" data-name="Glacier Saddle" data-alt="2,340 m" data-dist="4.8 km" data-status="Packed Snow • Crampons Suggested">
-              <circle cx="280" cy="100" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
-            </g>
-            <g class="trail-waypoint" data-name="Eagle Crest" data-alt="2,720 m" data-dist="7.1 km" data-status="Panoramic Lookout • High Wind">
-              <circle cx="380" cy="45" r="5" fill="#2c5282" stroke="#fff" stroke-width="2"/>
-            </g>
-            <g class="trail-waypoint" data-name="Summit Refuge" data-alt="2,890 m" data-dist="8.5 km" data-status="Peak Observatory • Teahouse">
-              <circle cx="460" cy="30" r="6" fill="#1a7442" stroke="#fff" stroke-width="2"/>
-            </g>
-          </svg>
-        </div>
-
-        <div class="waypoint-details">
-          <span class="waypoint-name" id="wpName">Pine Tree Rest (2,080 m)</span>
-          <span class="waypoint-stats" id="wpStats">Distance: 2.4 km • Windbreak Shelter • Open</span>
-        </div>
-      </div>
-
-      <!-- Gear Checklist -->
-      <div class="gear-box">
-        <div>
-          <div class="section-head" style="margin-bottom: 8px;">
-            <div class="section-title">Expedition Pack</div>
-            <span style="font-size: 11px; color: var(--text-muted);">4 / 4 Ready</span>
-          </div>
-
-          <div class="gear-list">
-            <label class="gear-item">
-              <input type="checkbox" checked>
-              <span>Avalanche Transceiver & Beacon</span>
-            </label>
-            <label class="gear-item">
-              <input type="checkbox" checked>
-              <span>Carbon Ice Ax & Microspikes</span>
-            </label>
-            <label class="gear-item">
-              <input type="checkbox" checked>
-              <span>Merino Wool Thermal Layer</span>
-            </label>
-            <label class="gear-item">
-              <input type="checkbox" checked>
-              <span>Thermos of Spiced Glühwein</span>
-            </label>
+      <!-- Top Floating Controls Bar -->
+      <div class="window-top-bar">
+        <div class="lodge-brand-pill">
+          <div class="swiss-cross-badge">+</div>
+          <div>
+            <h1>Mont-Blanc Refuge Cosmiques</h1>
+            <p>CHAMONIX-MONT-BLANC • ALT 2,150M → 3,613M • EXPEDITION TELEMETRY</p>
           </div>
         </div>
 
-        <button class="lodge-btn" id="planBtn">
-          <span>🧭 Log Expedition Departure</span>
-        </button>
+        <div class="window-controls-right">
+          <div class="weather-switcher" role="group" aria-label="Alpine Weather">
+            <button class="wx-btn active" data-wx="bluebird">☀️ Bluebird</button>
+            <button class="wx-btn" data-wx="alpenglow">🌅 Alpenglow</button>
+            <button class="wx-btn" data-wx="storm">🌨️ Whiteout</button>
+          </div>
+
+          <button class="hearth-badge" id="hearthBtn" title="Click to stoke or dim the Chalet Fireplace">
+            <span class="hearth-flame">🔥</span>
+            <span id="hearthText">Hearth Roaring (22°C)</span>
+          </button>
+        </div>
       </div>
+
+      <!-- Multi-Layer Alpine Mountain Range & Téléphérique Gondola SVG -->
+      <svg class="panorama-svg" viewBox="0 0 1000 158" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="snowLit" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#cbd5e1"/>
+          </linearGradient>
+          <linearGradient id="shadowSlope" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#334e68"/>
+            <stop offset="100%" stop-color="#102a43"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Distant Glacier Massif -->
+        <polygon points="0,158 0,95 95,62 195,88 310,44 435,82 560,28 690,74 820,36 930,68 1000,52 1000,158" fill="#1e3a5f" opacity="0.55"/>
+
+        <!-- Sunlit Snow Faces & Shadowed North Faces of Mont-Blanc / Aiguille du Midi -->
+        <polygon points="220,158 310,44 375,158" fill="url(#snowLit)" opacity="0.9"/>
+        <polygon points="310,44 420,158 375,158" fill="url(#shadowSlope)" opacity="0.85"/>
+
+        <polygon points="445,158 560,28 635,158" fill="url(#snowLit)"/>
+        <polygon points="560,28 710,158 635,158" fill="url(#shadowSlope)"/>
+
+        <polygon points="715,158 820,36 895,158" fill="url(#snowLit)" opacity="0.92"/>
+        <polygon points="820,36 965,158 895,158" fill="url(#shadowSlope)" opacity="0.88"/>
+
+        <!-- Téléphérique de l'Aiguille du Midi Cable & Moving Red Gondola -->
+        <line x1="290" y1="128" x2="560" y2="70" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <g id="gondolaGroup">
+          <line x1="305" y1="125" x2="305" y2="133" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="299" y="133" width="12" height="8" rx="2" fill="#dc2626" stroke="#ffffff" stroke-width="0.8"/>
+        </g>
+
+        <!-- Foreground Alpine Larch & Pine Silhouette + Warm Lit Refuge Cabin -->
+        <polygon points="0,158 0,126 55,114 115,128 180,118 255,134 340,122 430,136 520,125 615,138 710,124 810,135 905,122 1000,130 1000,158" fill="#0f1e2e"/>
+        <!-- Warm glowing chalet windows on bottom left -->
+        <rect x="132" y="132" width="7" height="5" fill="#fbbf24"/>
+        <rect x="142" y="132" width="7" height="5" fill="#fbbf24"/>
+      </svg>
+    </header>
+
+    <!-- ======================================================================
+         2. MAIN CHALET BODY
+    ======================================================================= -->
+    <div class="chalet-body">
+
+      <!-- 4 Alpine Telemetry Cards -->
+      <div class="metrics-row">
+        <!-- Card 1: Summit Temperature & Windchill -->
+        <div class="metric-card">
+          <div class="metric-icon-box">❄️</div>
+          <div class="metric-info">
+            <div class="metric-val-row">
+              <span class="metric-val" id="tempVal">-5.4°C</span>
+              <span class="metric-delta" id="windChillTag">FEELS -11°C</span>
+            </div>
+            <div class="metric-label" id="tempSubLabel">Summit Crisp • 14 km/h NW</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Powder Snowpack Base -->
+        <div class="metric-card">
+          <div class="metric-icon-box">⛷️</div>
+          <div class="metric-info">
+            <div class="metric-val-row">
+              <span class="metric-val" id="snowVal">168 cm</span>
+              <span class="metric-delta" style="color:#166534; background:#dcfce7;">+18CM 24H</span>
+            </div>
+            <div class="metric-label">Dry Cold Smoke Powder</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Barometric Altimeter & Pressure -->
+        <div class="metric-card">
+          <div class="metric-icon-box">🧭</div>
+          <div class="metric-info">
+            <div class="metric-val-row">
+              <span class="metric-val" id="baroAltVal">2,080 m</span>
+              <span class="metric-delta" id="baroHpaTag">788 hPa</span>
+            </div>
+            <div class="metric-label">QNH Barometer Steady</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Interactive SLF Avalanche Risk Matrix (Click to cycle Level 1..4) -->
+        <div class="metric-card" id="avyCard" style="cursor:pointer;" title="Click to test SLF Avalanche Danger Levels (1-5)">
+          <div class="metric-icon-box" id="avyIcon">🛡️</div>
+          <div class="metric-info">
+            <div class="metric-val-row">
+              <span class="metric-val" id="avyTitle">Level 1</span>
+              <span class="metric-delta" id="avyBadge" style="color:#166534; background:#dcfce7;">LOW RISK</span>
+            </div>
+            <div class="avy-scale-strip">
+              <div class="avy-seg active" style="background:#22c55e;"></div>
+              <div class="avy-seg" style="background:#eab308;"></div>
+              <div class="avy-seg" style="background:#f97316;"></div>
+              <div class="avy-seg" style="background:#ef4444;"></div>
+              <div class="avy-seg" style="background:#7f1d1d;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lower Section: Interactive Ridge Elevation Profile + Expedition Pack -->
+      <div class="expedition-grid">
+
+        <!-- LEFT: AIGUILLE RIDGE ELEVATION PROFILE & ASCENT SIMULATOR -->
+        <section class="elevation-box">
+          <div class="section-head">
+            <div class="section-title-group">
+              <h2 class="section-title">Aiguille Ridge Elevation Profile</h2>
+              <span class="route-difficulty-pill">PD+ // AD- ALPINE</span>
+            </div>
+
+            <div class="elev-controls">
+              <button class="sim-ascent-btn" id="simAscentBtn" title="Animate climber ascent along the 5 ridge waypoints">
+                <span>▶</span> <span id="simBtnText">Simulate Ascent</span>
+              </button>
+              <span class="status-chip" id="trailStatus">Path Groomed &amp; Open</span>
+            </div>
+          </div>
+
+          <div class="elevation-svg-wrap">
+            <svg class="elevation-svg" id="elevSvg" viewBox="0 0 540 185" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="mountainFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#234e78" stop-opacity="0.34"/>
+                  <stop offset="65%" stop-color="#0284c7" stop-opacity="0.12"/>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.01"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Altitude Zone Reference Lines (Glacier Zone 2,600m & Tree Line 2,200m) -->
+              <line x1="0" y1="58" x2="540" y2="58" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>
+              <text x="10" y="53" fill="#475569" font-family="JetBrains Mono" font-size="8.5" font-weight="600">GLACIER ZONE (2,600M) — CRAMPONS REQUIRED</text>
+
+              <line x1="0" y1="104" x2="540" y2="104" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4" opacity="0.45"/>
+              <text x="10" y="99" fill="#64748b" font-family="JetBrains Mono" font-size="8.5">ALPINE TREE LINE (2,200M)</text>
+
+              <!-- Mountain Ridge Shaded Area & Contour Line -->
+              <polygon points="0,185 0,150 75,134 175,98 285,112 395,52 485,28 540,38 540,185" fill="url(#mountainFill)"/>
+              <path d="M 0,150 L 75,134 L 175,98 L 285,112 L 395,52 L 485,28 L 540,38" fill="none" stroke="#1e3a5f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+              <!-- Highlighted Active Route Segment -->
+              <line id="activeAltDropLine" x1="175" y1="98" x2="175" y2="185" stroke="#e66c1a" stroke-width="1.6" stroke-dasharray="3 3"/>
+
+              <!-- Waypoint 0: Chalet Base -->
+              <g class="trail-waypoint" data-idx="0" data-x="75" data-y="134" data-name="Chalet Base Camp" data-alt="1,850 m" data-hpa="810 hPa" data-dist="0.0 km" data-slope="8°" data-time="0h 00m" data-o2="82%" data-status="Warm Hearth • Espresso &amp; Beacon Check">
+                <circle class="wp-circle" cx="75" cy="134" r="6" fill="#234e78" stroke="#fff" stroke-width="2"/>
+                <text x="75" y="154" text-anchor="middle" fill="#142436" font-size="9.5" font-weight="700">Base 1,850m</text>
+              </g>
+
+              <!-- Waypoint 1: Pine Tree Rest -->
+              <g class="trail-waypoint active" data-idx="1" data-x="175" data-y="98" data-name="Pine Tree Rest" data-alt="2,080 m" data-hpa="788 hPa" data-dist="2.4 km" data-slope="19°" data-time="1h 10m" data-o2="79%" data-status="Windbreak Timber Shelter • Trail Groomed">
+                <circle class="wp-circle" cx="175" cy="98" r="6" fill="#234e78" stroke="#fff" stroke-width="2"/>
+                <text x="175" y="84" text-anchor="middle" fill="#142436" font-size="9.5" font-weight="700">Pine Rest</text>
+              </g>
+
+              <!-- Waypoint 2: Glacier Saddle -->
+              <g class="trail-waypoint" data-idx="2" data-x="285" data-y="112" data-name="Glacier Saddle Col" data-alt="2,340 m" data-hpa="762 hPa" data-dist="4.8 km" data-slope="27°" data-time="2h 35m" data-o2="76%" data-status="Blue Ice Crevasse Zone • Rope &amp; Crampons">
+                <circle class="wp-circle" cx="285" cy="112" r="6" fill="#234e78" stroke="#fff" stroke-width="2"/>
+                <text x="285" y="131" text-anchor="middle" fill="#142436" font-size="9.5" font-weight="700">Glacier Col</text>
+              </g>
+
+              <!-- Waypoint 3: Eagle Crest Arête -->
+              <g class="trail-waypoint" data-idx="3" data-x="395" data-y="52" data-name="Eagle Crest Arête" data-alt="2,720 m" data-hpa="726 hPa" data-dist="7.1 km" data-slope="36°" data-time="4h 05m" data-o2="72%" data-status="Exposed Knife-Edge Ridge • Gusts 35 km/h">
+                <circle class="wp-circle" cx="395" cy="52" r="6" fill="#234e78" stroke="#fff" stroke-width="2"/>
+                <text x="395" y="38" text-anchor="middle" fill="#142436" font-size="9.5" font-weight="700">Eagle Crest</text>
+              </g>
+
+              <!-- Waypoint 4: Summit Refuge -->
+              <g class="trail-waypoint" data-idx="4" data-x="485" data-y="28" data-name="Aiguille Summit Refuge" data-alt="2,890 m" data-hpa="710 hPa" data-dist="8.5 km" data-slope="31°" data-time="5h 15m" data-o2="69%" data-status="High Observatory • Hot Tea &amp; Panorama">
+                <circle class="wp-circle" cx="485" cy="28" r="6.5" fill="#166534" stroke="#fff" stroke-width="2"/>
+                <text x="475" y="16" text-anchor="middle" fill="#166534" font-size="9.5" font-weight="800">▲ Summit 2,890m</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Waypoint 5-Column Telemetry Breakdown -->
+          <div class="waypoint-telemetry-grid">
+            <div class="wp-primary-col">
+              <span class="waypoint-name" id="wpName">Pine Tree Rest (2,080 m)</span>
+              <span class="waypoint-cond" id="wpStats">Windbreak Timber Shelter • Trail Groomed</span>
+            </div>
+            <div class="wp-stat-pill">
+              <small>DISTANCE</small>
+              <strong id="statDist">2.4 km</strong>
+            </div>
+            <div class="wp-stat-pill">
+              <small>SLOPE</small>
+              <strong id="statSlope">19°</strong>
+            </div>
+            <div class="wp-stat-pill">
+              <small>EST. TIME</small>
+              <strong id="statTime">1h 10m</strong>
+            </div>
+            <div class="wp-stat-pill">
+              <small>EFF. O₂</small>
+              <strong id="statO2">79%</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: EXPEDITION PACK WEIGHT CALCULATOR & PERMIT STAMP -->
+        <aside class="gear-box">
+          <div>
+            <div class="section-head" style="margin-bottom: 8px;">
+              <h2 class="section-title">Expedition Rucksack</h2>
+              <span style="font-size: 11px; font-weight:700; color: var(--pine-green);" id="gearCountLabel">5 / 5 Packed</span>
+            </div>
+
+            <!-- Live Pack Weight & Readiness Meter -->
+            <div class="pack-weight-bar-wrap">
+              <div class="pack-weight-top">
+                <span id="readinessLabel">ALPINE SAFETY READY (100%)</span>
+                <span id="totalWeightLabel">TOTAL: 3.12 kg</span>
+              </div>
+              <div class="pack-progress-track">
+                <div class="pack-progress-fill" id="packProgressFill"></div>
+              </div>
+            </div>
+
+            <div class="gear-list" id="gearList">
+              <label class="gear-item packed">
+                <div class="gear-item-left">
+                  <input type="checkbox" checked data-weight="310">
+                  <span>RECCO 457 kHz Avalanche Beacon</span>
+                </div>
+                <span class="gear-weight-tag">310 g</span>
+              </label>
+
+              <label class="gear-item packed">
+                <div class="gear-item-left">
+                  <input type="checkbox" checked data-weight="540">
+                  <span>Carbon Ice Axe &amp; 12-Pt Crampons</span>
+                </div>
+                <span class="gear-weight-tag">540 g</span>
+              </label>
+
+              <label class="gear-item packed">
+                <div class="gear-item-left">
+                  <input type="checkbox" checked data-weight="420">
+                  <span>Gore-Tex Pro Hardshell &amp; Merino</span>
+                </div>
+                <span class="gear-weight-tag">420 g</span>
+              </label>
+
+              <label class="gear-item packed">
+                <div class="gear-item-left">
+                  <input type="checkbox" checked data-weight="950">
+                  <span>Vacuum Thermos of Spiced Glühwein</span>
+                </div>
+                <span class="gear-weight-tag">950 g</span>
+              </label>
+
+              <label class="gear-item packed">
+                <div class="gear-item-left">
+                  <input type="checkbox" checked data-weight="900">
+                  <span>30m Glacier Rope &amp; Carabiners</span>
+                </div>
+                <span class="gear-weight-tag">900 g</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Official High-Mountain Permit Stamp -->
+          <div class="permit-stamp" id="permitStamp">
+            ★ CHAMONIX PGHM ★<br>CLEARED FOR SUMMIT<br>PERMIT #MB-2026
+          </div>
+
+          <button class="lodge-btn" id="planBtn">
+            <span>🧭 Log Expedition Departure with Ski Patrol</span>
+          </button>
+        </aside>
+
+      </div>
+
     </div>
   </div>
 </div>
 
 <script>
-  // Interactive waypoints
-  const waypoints = document.querySelectorAll('.trail-waypoint');
+  // ==========================================================================
+  // 1. LIVE SNOWFALL PARTICLE ENGINE (REACTS TO WEATHER MODE)
+  // ==========================================================================
+  const snowCanvas = document.getElementById('snowCanvas');
+  const sCtx = snowCanvas.getContext('2d');
+  let snowSpeedMult = 1;
+  let snowWind = 0.35;
+  let activeFlakeCount = 45;
+
+  const MAX_FLAKES = 140;
+  const flakes = Array.from({ length: MAX_FLAKES }, () => ({
+    x: Math.random() * snowCanvas.width,
+    y: Math.random() * snowCanvas.height,
+    r: 1 + Math.random() * 2.2,
+    vy: 0.45 + Math.random() * 0.9,
+    drift: Math.random() * Math.PI * 2
+  }));
+
+  function renderSnow() {
+    sCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+    sCtx.fillStyle = 'rgba(255, 255, 255, 0.82)';
+
+    for (let i = 0; i < activeFlakeCount; i++) {
+      const f = flakes[i];
+      f.drift += 0.03;
+      f.y += f.vy * snowSpeedMult;
+      f.x += Math.sin(f.drift) * 0.4 + snowWind * snowSpeedMult;
+
+      if (f.y > snowCanvas.height) {
+        f.y = -4;
+        f.x = Math.random() * snowCanvas.width;
+      }
+      if (f.x > snowCanvas.width) f.x = 0;
+      if (f.x < 0) f.x = snowCanvas.width;
+
+      sCtx.beginPath();
+      sCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      sCtx.fill();
+    }
+    requestAnimationFrame(renderSnow);
+  }
+  renderSnow();
+
+  // Weather Mode Switcher (Bluebird / Alpenglow / Whiteout Storm)
+  const alpineWindow = document.getElementById('alpineWindow');
+  const tempVal = document.getElementById('tempVal');
+  const windChillTag = document.getElementById('windChillTag');
+  const tempSubLabel = document.getElementById('tempSubLabel');
+
+  document.querySelectorAll('.wx-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.wx-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const wx = btn.dataset.wx;
+      alpineWindow.dataset.weather = wx;
+
+      if (wx === 'bluebird') {
+        activeFlakeCount = 38;
+        snowSpeedMult = 0.9;
+        snowWind = 0.25;
+        tempVal.textContent = '-5.4°C';
+        windChillTag.textContent = 'FEELS -11°C';
+        tempSubLabel.textContent = 'Summit Crisp • 14 km/h NW';
+      } else if (wx === 'alpenglow') {
+        activeFlakeCount = 25;
+        snowSpeedMult = 0.65;
+        snowWind = 0.15;
+        tempVal.textContent = '-8.2°C';
+        windChillTag.textContent = 'FEELS -14°C';
+        tempSubLabel.textContent = 'Golden Hour • Calm Ridge';
+      } else {
+        activeFlakeCount = 135;
+        snowSpeedMult = 2.8;
+        snowWind = 2.2;
+        tempVal.textContent = '-14.8°C';
+        windChillTag.textContent = 'FEELS -26°C';
+        tempSubLabel.textContent = 'Gale Gusts 58 km/h • Vis 30m';
+      }
+    });
+  });
+
+  // ==========================================================================
+  // 2. HEARTH FIREPLACE AMBIENCE TOGGLE
+  // ==========================================================================
+  const hearthBtn = document.getElementById('hearthBtn');
+  const hearthText = document.getElementById('hearthText');
+  let hearthOn = true;
+
+  hearthBtn.addEventListener('click', () => {
+    hearthOn = !hearthOn;
+    document.body.classList.toggle('hearth-roaring', hearthOn);
+    hearthText.textContent = hearthOn ? 'Hearth Roaring (22°C)' : 'Hearth Embers (16°C)';
+  });
+
+  // ==========================================================================
+  // 3. INTERACTIVE SLF AVALANCHE DANGER MATRIX (LEVEL 1 TO 4)
+  // ==========================================================================
+  const AVY_LEVELS = [
+    { lvl: 'Level 1', badge: 'LOW RISK',      color: '#166534', bg: '#dcfce7' },
+    { lvl: 'Level 2', badge: 'MODERATE',      color: '#854d0e', bg: '#fef9c3' },
+    { lvl: 'Level 3', badge: 'CONSIDERABLE',  color: '#9a3412', bg: '#ffedd5' },
+    { lvl: 'Level 4', badge: 'HIGH RISK !',   color: '#991b1b', bg: '#fee2e2' }
+  ];
+  let avyIdx = 0;
+  document.getElementById('avyCard').addEventListener('click', () => {
+    avyIdx = (avyIdx + 1) % AVY_LEVELS.length;
+    const a = AVY_LEVELS[avyIdx];
+    document.getElementById('avyTitle').textContent = a.lvl;
+    const badge = document.getElementById('avyBadge');
+    badge.textContent = a.badge;
+    badge.style.color = a.color;
+    badge.style.background = a.bg;
+
+    document.querySelectorAll('.avy-seg').forEach((seg, i) => {
+      seg.classList.toggle('active', i <= avyIdx);
+    });
+  });
+
+  // ==========================================================================
+  // 4. RIDGE ELEVATION WAYPOINTS & ASCENT SIMULATOR
+  // ==========================================================================
+  const waypoints = Array.from(document.querySelectorAll('.trail-waypoint'));
   const wpName = document.getElementById('wpName');
   const wpStats = document.getElementById('wpStats');
   const trailStatus = document.getElementById('trailStatus');
+  const activeAltDropLine = document.getElementById('activeAltDropLine');
+
+  function selectWaypoint(wp) {
+    waypoints.forEach(w => w.classList.remove('active'));
+    wp.classList.add('active');
+
+    const name = wp.dataset.name;
+    const alt = wp.dataset.alt;
+    const hpa = wp.dataset.hpa;
+    const dist = wp.dataset.dist;
+    const slope = wp.dataset.slope;
+    const time = wp.dataset.time;
+    const o2 = wp.dataset.o2;
+    const status = wp.dataset.status;
+    const x = wp.dataset.x;
+    const y = wp.dataset.y;
+
+    wpName.textContent = `${name} (${alt})`;
+    wpStats.textContent = status;
+    document.getElementById('statDist').textContent = dist;
+    document.getElementById('statSlope').textContent = slope;
+    document.getElementById('statTime').textContent = time;
+    document.getElementById('statO2').textContent = o2;
+
+    // Sync Barometer Card in Top Row
+    document.getElementById('baroAltVal').textContent = alt;
+    document.getElementById('baroHpaTag').textContent = hpa;
+
+    // Move Vertical Drop Line on SVG Chart
+    activeAltDropLine.setAttribute('x1', x);
+    activeAltDropLine.setAttribute('x2', x);
+    activeAltDropLine.setAttribute('y1', y);
+
+    trailStatus.textContent = `Sector: ${name}`;
+  }
 
   waypoints.forEach(wp => {
-    wp.addEventListener('click', () => {
-      const name = wp.dataset.name;
-      const alt = wp.dataset.alt;
-      const dist = wp.dataset.dist;
-      const status = wp.dataset.status;
-
-      wpName.textContent = `${name} (${alt})`;
-      wpStats.textContent = `Distance: ${dist} • ${status}`;
-      trailStatus.textContent = `Selected: ${name}`;
-    });
+    wp.addEventListener('click', () => selectWaypoint(wp));
   });
 
-  // Gear toggle style
+  // Animated Ascent Simulator across all 5 waypoints
+  const simAscentBtn = document.getElementById('simAscentBtn');
+  const simBtnText = document.getElementById('simBtnText');
+  let simTimer = null;
+
+  simAscentBtn.addEventListener('click', () => {
+    if (simTimer) {
+      clearInterval(simTimer);
+      simTimer = null;
+      simAscentBtn.classList.remove('running');
+      simBtnText.textContent = 'Simulate Ascent';
+      return;
+    }
+
+    let step = 0;
+    simAscentBtn.classList.add('running');
+    simBtnText.textContent = 'Ascending Ridge...';
+    selectWaypoint(waypoints[0]);
+
+    simTimer = setInterval(() => {
+      step++;
+      if (step < waypoints.length) {
+        selectWaypoint(waypoints[step]);
+      } else {
+        clearInterval(simTimer);
+        simTimer = null;
+        simAscentBtn.classList.remove('running');
+        simBtnText.textContent = 'Simulate Ascent';
+        trailStatus.textContent = '▲ Summit Reached (2,890 m)';
+      }
+    }, 900);
+  });
+
+  // ==========================================================================
+  // 5. EXPEDITION RUCKSACK WEIGHT CALCULATOR & PERMIT STAMP
+  // ==========================================================================
   const gearItems = document.querySelectorAll('.gear-item');
+  const gearCountLabel = document.getElementById('gearCountLabel');
+  const totalWeightLabel = document.getElementById('totalWeightLabel');
+  const readinessLabel = document.getElementById('readinessLabel');
+  const packProgressFill = document.getElementById('packProgressFill');
+  const permitStamp = document.getElementById('permitStamp');
+  const planBtn = document.getElementById('planBtn');
+
+  function updatePackWeight() {
+    let packedCount = 0;
+    let totalGrams = 0;
+
+    gearItems.forEach(item => {
+      const input = item.querySelector('input');
+      const isChecked = input.checked;
+      item.classList.toggle('packed', isChecked);
+      item.classList.toggle('unpacked', !isChecked);
+      if (isChecked) {
+        packedCount++;
+        totalGrams += Number(input.dataset.weight || 0);
+      }
+    });
+
+    const pct = Math.round((packedCount / gearItems.length) * 100);
+    gearCountLabel.textContent = `${packedCount} / ${gearItems.length} Packed`;
+    totalWeightLabel.textContent = `TOTAL: ${(totalGrams / 1000).toFixed(2)} kg`;
+    readinessLabel.textContent = pct === 100
+      ? `ALPINE SAFETY READY (100%)`
+      : `PACK INCOMPLETE (${pct}%)`;
+    packProgressFill.style.width = `${pct}%`;
+  }
+
   gearItems.forEach(item => {
     const input = item.querySelector('input');
     input.addEventListener('change', () => {
-      item.classList.toggle('checked', input.checked);
+      permitStamp.classList.remove('stamped');
+      updatePackWeight();
     });
   });
 
-  document.getElementById('planBtn').addEventListener('click', () => {
-    trailStatus.textContent = 'Departure Recorded with Ski Patrol';
-    trailStatus.style.background = '#e1effe';
-    trailStatus.style.color = '#1e429f';
-    trailStatus.style.borderColor = '#b4c6fc';
+  planBtn.addEventListener('click', () => {
+    permitStamp.classList.add('stamped');
+    planBtn.classList.add('departed');
+    planBtn.innerHTML = '<span>✓ High-Mountain Permit Stamped • Logged with PGHM Patrol</span>';
+    trailStatus.textContent = 'Departure Logged • Beacon Active';
   });
 </script>
 </body>

@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal Loaders Pack</title>
+<title>Signal Loaders Pack — 9-Module Telemetry Rack</title>
+
+<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+<link href="[https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@600;700;800&display=swap](https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@600;700;800&display=swap)" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
@@ -19,21 +23,24 @@
     "radar",
     "oscilloscope",
     "svg",
-    "animation"
+    "animation",
+    "telemetry",
+    "hud",
+    "scifi"
   ],
-  "description": "Curated collection of 6 distinctive telemetry loaders: radar sweep, oscilloscope wave, segmented LCD bar, conic ring, pulsing core, and orbiting dots.",
+  "description": "Curated 9-module laboratory rack of distinctive telemetry loaders: Polar Radar Sweep, Dual-Trace Oscilloscope, VFD Spectrum Analyzer, Triple Conic Gyro, Quantum Sonar Beacon, Keplerian Orbital Atom, 3D Geodesic Sphere, Honeycomb Hex Matrix, and DNA Helix Scanner.",
   "techniques": [
-    "SVG stroke-dasharray animations",
-    "conic-gradient() spinning mask",
-    "CSS keyframe transforms",
-    "retro telemetry styling",
-    "CSS grid tiles"
+    "SVG stroke-dasharray & phase-shifted dual-trace waveform animations",
+    "Multi-layer conic-gradient() masks with counter-rotating gyro rings",
+    "CSS 3D preserve-3d orbital & geodesic ring rotations",
+    "Staggered honeycomb hex-grid & anti-phase DNA helix keyframes",
+    "Interactive speed multiplier, monochrome phosphor themes, and 1-click snippet copy"
   ],
-  "recipe": "Each telemetry loader demonstrates a distinct CSS animation technique: from rotating radar sweep sectors (conic-gradient mask) and oscilloscope sine waves (SVG stroke-dashoffset) to segmented LCD equalizer meters with staggered discrete animation-delay offsets.",
+  "recipe": "Housed inside a 3x3 modular rack unit, each tile combines a dark CRT graticule viewport with a unique CSS/SVG animation technique. Root CSS variables (--speed-mult and phosphor color overrides) allow real-time speed scaling and instant switching between Multi-Spectrum, P1 Green Phosphor, and Amber Monochrome modes.",
   "preview": {
     "mode": "page",
-    "width": 960,
-    "height": 660
+    "width": 1060,
+    "height": 780
   }
 }
 </script>
@@ -41,214 +48,926 @@
 <style>
   * { box-sizing: border-box; }
 
+  :root {
+    --bg-rack: #05080f;
+    --tile-bg: #0b101d;
+    --tile-bezel: #151e32;
+    --tile-border: rgba(148, 163, 184, 0.14);
+    --text-main: #e2e8f0;
+    --text-muted: #64748b;
+    --speed-mult: 1;
+
+    /* Individual Module Accent Colors (Multi-Spectrum Default) */
+    --c1: #38bdf8; /* 01 Radar Cyan */
+    --c2: #10b981; /* 02 Oscilloscope Emerald */
+    --c3: #f59e0b; /* 03 VFD Spectrum Amber */
+    --c4: #ec4899; /* 04 Conic Gyro Magenta */
+    --c5: #8b5cf6; /* 05 Sonar Beacon Violet */
+    --c6: #06b6d4; /* 06 Keplerian Atom Teal */
+    --c7: #3b82f6; /* 07 3D Geodesic Royal Blue */
+    --c8: #eab308; /* 08 Honeycomb Hex Gold */
+    --c9: #f43f5e; /* 09 DNA Helix Rose */
+  }
+
+  /* P1 Green CRT Phosphor Override */
+  body[data-phosphor="green"] {
+    --c1: #22c55e; --c2: #22c55e; --c3: #4ade80;
+    --c4: #22c55e; --c5: #22c55e; --c6: #4ade80;
+    --c7: #22c55e; --c8: #4ade80; --c9: #22c55e;
+  }
+
+  /* P3 Amber CRT Phosphor Override */
+  body[data-phosphor="amber"] {
+    --c1: #f59e0b; --c2: #f59e0b; --c3: #fbbf24;
+    --c4: #f59e0b; --c5: #f59e0b; --c6: #fbbf24;
+    --c7: #f59e0b; --c8: #fbbf24; --c9: #f59e0b;
+  }
+
+  /* Pause All Animations State */
+  body.paused *,
+  body.paused *::before,
+  body.paused *::after {
+    animation-play-state: paused !important;
+  }
+
   body {
     margin: 0;
     min-height: 100vh;
-    background: #060911;
-    color: #e2e8f0;
-    font-family: ui-monospace, "Cascadia Code", monospace;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 30px 20px;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 860px;
-    width: 100%;
-  }
-
-  @media (max-width: 720px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  .tile {
-    background: #0d1322;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 24px 16px;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(30, 58, 138, 0.16) 0%, transparent 60%),
+      radial-gradient(circle at 50% 85%, rgba(15, 23, 42, 0.9) 0%, var(--bg-rack) 100%);
+    color: var(--text-main);
+    font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    height: 180px;
+    padding: 20px 18px 28px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ==========================================================================
+     OUTER TELEMETRY RACK SHELL & CONTROL HEADER
+  ========================================================================== */
+  .rack-container {
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .rack-header {
+    background: linear-gradient(180deg, #131b2e 0%, #0b101d 100%);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow:
+      0 14px 32px rgba(0, 0, 0, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .rack-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rack-badge {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+    font-family: "Orbitron", sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    padding: 4px 9px;
+    border-radius: 5px;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+  }
+
+  .rack-titles h1 {
+    margin: 0;
+    font-family: "Orbitron", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #f8fafc;
+  }
+
+  .rack-titles p {
+    margin: 2px 0 0;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .rack-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ctrl-group {
+    display: flex;
+    align-items: center;
+    background: #070a12;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 7px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .ctrl-btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 4px 9px;
+    border-radius: 5px;
+    transition: all 0.15s ease;
+  }
+  .ctrl-btn:hover {
+    color: #fff;
+  }
+  .ctrl-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ==========================================================================
+     3x3 TELEMETRY LOADER MODULES GRID
+  ========================================================================== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    width: 100%;
+  }
+
+  @media (max-width: 820px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 540px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  /* Individual Hardware Module Tile */
+  .tile {
+    background:
+      radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
+      linear-gradient(180deg, #11182b 0%, #090d18 100%);
+    border: 1px solid var(--tile-border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 206px;
     position: relative;
     overflow: hidden;
+    box-shadow:
+      0 16px 35px rgba(0, 0, 0, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Subtle CRT Graticule Grid Inside Each Tile */
+  .tile::before {
+    content: "";
+    position: absolute;
+    inset: 34px 12px 34px 12px;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 16px 16px,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 16px 16px,
+      #050811;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .tile:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-2px);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  /* Tile Top Telemetry Header */
+  .tile-head {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .ch-id {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: #cbd5e1;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mod-color, #38bdf8);
+    box-shadow: 0 0 8px var(--mod-color, #38bdf8);
+  }
+
+  .copy-btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 9px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 7px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+  .copy-btn:hover {
+    color: #fff;
+    border-color: var(--mod-color, #38bdf8);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Center Loader Stage */
+  .loader-stage {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Tile Bottom Footer */
+  .tile-foot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   }
 
   .tile-label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: #64748b;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: #e2e8f0;
     text-transform: uppercase;
   }
 
-  /* 1. Radar Sweep */
+  .tile-metric {
+    font-size: 9.5px;
+    color: var(--mod-color, #38bdf8);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
+  }
+
+  /* ==========================================================================
+     01. POLAR RADAR SWEEP (WITH TARGET BLIPS & CROSSHAIR)
+  ========================================================================== */
   .radar {
-    width: 60px;
-    height: 60px;
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
-    border: 1px solid #0284c7;
+    border: 1.5px solid var(--c1);
     position: relative;
-    background: radial-gradient(circle, rgba(2, 132, 199, 0.1) 40%, transparent 41%);
-    background-size: 20px 20px;
+    background:
+      radial-gradient(circle, transparent 32%, rgba(56, 189, 248, 0.2) 33%, transparent 34%),
+      radial-gradient(circle, transparent 64%, rgba(56, 189, 248, 0.2) 65%, transparent 66%),
+      linear-gradient(rgba(56, 189, 248, 0.18) 1px, transparent 1px) 0 50% / 100% 1px no-repeat,
+      linear-gradient(90deg, rgba(56, 189, 248, 0.18) 1px, transparent 1px) 50% 0 / 1px 100% no-repeat;
+    box-shadow:
+      0 0 18px rgba(56, 189, 248, 0.18),
+      inset 0 0 16px rgba(56, 189, 248, 0.15);
   }
   .radar::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 70%, rgba(56, 189, 248, 0.7) 100%);
-    animation: rotate 2s linear infinite;
+    background: conic-gradient(from 0deg, transparent 62%, color-mix(in srgb, var(--c1) 75%, transparent) 100%);
+    animation: rotate calc(2.2s / var(--speed-mult)) linear infinite;
+  }
+  .radar-blip {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px var(--c1), 0 0 12px #fff;
+    animation: blipBlink calc(2.2s / var(--speed-mult)) ease-out infinite;
+  }
+  .radar-blip.b1 { top: 22%; right: 26%; animation-delay: 0.35s; }
+  .radar-blip.b2 { bottom: 26%; left: 24%; animation-delay: 1.4s; }
+
+  @keyframes blipBlink {
+    0%, 15% { opacity: 1; transform: scale(1.25); }
+    65%, 100% { opacity: 0.12; transform: scale(0.75); }
   }
 
-  /* 2. Oscilloscope Wave */
+  /* ==========================================================================
+     02. DUAL-TRACE OSCILLOSCOPE WAVE
+  ========================================================================== */
+  .scope-wrap {
+    width: 128px;
+    height: 66px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .wave-svg {
-    width: 80px;
-    height: 40px;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .wave-path-ghost {
+    fill: none;
+    stroke: var(--c2);
+    stroke-width: 1.4;
+    opacity: 0.28;
+    stroke-dasharray: 4 4;
   }
   .wave-path {
     fill: none;
-    stroke: #10b981;
+    stroke: var(--c2);
     stroke-width: 2.5;
-    stroke-dasharray: 200;
-    stroke-dashoffset: 200;
-    animation: wave-dash 2s linear infinite;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px var(--c2));
+    stroke-dasharray: 220;
+    stroke-dashoffset: 220;
+    animation: wave-dash calc(1.8s / var(--speed-mult)) linear infinite;
   }
 
-  /* 3. Segmented LCD Bar */
+  /* ==========================================================================
+     03. SEGMENTED VFD SPECTRUM ANALYZER
+  ========================================================================== */
   .lcd-bars {
     display: flex;
-    gap: 4px;
+    gap: 5px;
     align-items: flex-end;
-    height: 36px;
+    height: 56px;
+    padding: 4px 6px;
   }
   .bar {
-    width: 6px;
+    width: 8px;
     height: 100%;
-    background: #f59e0b;
-    border-radius: 2px;
-    animation: jump 1.2s ease-in-out infinite alternate;
+    border-radius: 1.5px;
+    /* Segmented horizontal LCD/VFD cells mask */
+    background:
+      repeating-linear-gradient(
+        0deg,
+        var(--c3) 0px 4px,
+        transparent 4px 6px
+      );
+    box-shadow: 0 0 10px color-mix(in srgb, var(--c3) 45%, transparent);
+    animation: jump calc(0.95s / var(--speed-mult)) ease-in-out infinite alternate;
   }
-  .bar:nth-child(1) { animation-delay: 0.1s; }
-  .bar:nth-child(2) { animation-delay: 0.25s; }
-  .bar:nth-child(3) { animation-delay: 0.4s; }
-  .bar:nth-child(4) { animation-delay: 0.55s; }
-  .bar:nth-child(5) { animation-delay: 0.7s; }
+  .bar:nth-child(1) { animation-delay: 0.05s; }
+  .bar:nth-child(2) { animation-delay: 0.22s; }
+  .bar:nth-child(3) { animation-delay: 0.38s; }
+  .bar:nth-child(4) { animation-delay: 0.12s; }
+  .bar:nth-child(5) { animation-delay: 0.48s; }
+  .bar:nth-child(6) { animation-delay: 0.29s; }
+  .bar:nth-child(7) { animation-delay: 0.61s; }
 
-  /* 4. Conic Ring */
+  /* ==========================================================================
+     04. TRIPLE COUNTER-ROTATING CONIC GYRO
+  ========================================================================== */
+  .conic-gyro {
+    width: 74px;
+    height: 74px;
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
   .conic-ring {
-    width: 50px;
-    height: 50px;
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
-    padding: 3px;
-    background: conic-gradient(from 0deg, transparent, #ec4899);
+    padding: 3.5px;
+    background: conic-gradient(from 0deg, transparent 15%, var(--c4) 95%, #fff 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 6px var(--c4));
+    animation: rotate calc(1.2s / var(--speed-mult)) linear infinite;
   }
-
-  /* 5. Pulsing Core */
-  .pulsing-core {
-    width: 24px;
-    height: 24px;
-    background: #8b5cf6;
-    border-radius: 50%;
-    position: relative;
-    box-shadow: 0 0 16px #8b5cf6;
+  .conic-ring.inner {
+    inset: 12px;
+    padding: 2.5px;
+    background: conic-gradient(from 180deg, transparent 25%, var(--c4) 100%);
+    animation: rotateRev calc(1.8s / var(--speed-mult)) linear infinite;
+    opacity: 0.85;
   }
-  .pulsing-core::before, .pulsing-core::after {
-    content: "";
-    position: absolute;
-    inset: -12px;
-    border: 1px solid #8b5cf6;
-    border-radius: 50%;
-    animation: ripple 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-  }
-  .pulsing-core::after {
-    animation-delay: 0.9s;
-  }
-
-  /* 6. Orbiting Dots */
-  .orbit-wrap {
-    width: 48px;
-    height: 48px;
-    position: relative;
-    animation: rotate 2.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
-  }
-  .orbit-dot {
-    position: absolute;
+  .conic-core-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #06b6d4;
-    box-shadow: 0 0 8px #06b6d4;
+    background: var(--c4);
+    box-shadow: 0 0 10px var(--c4);
   }
-  .orbit-dot:nth-child(1) { top: 0; left: 20px; }
-  .orbit-dot:nth-child(2) { bottom: 0; left: 20px; }
-  .orbit-dot:nth-child(3) { top: 20px; left: 0; }
-  .orbit-dot:nth-child(4) { top: 20px; right: 0; }
 
-  @keyframes rotate { to { transform: rotate(360deg); } }
+  /* ==========================================================================
+     05. QUANTUM SONAR BEACON
+  ========================================================================== */
+  .pulsing-core {
+    width: 22px;
+    height: 22px;
+    background: radial-gradient(circle at 35% 35%, #fff, var(--c5) 65%);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 18px var(--c5);
+  }
+  .pulsing-core::before,
+  .pulsing-core::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border: 1.5px solid var(--c5);
+    border-radius: 50%;
+    animation: ripple calc(1.9s / var(--speed-mult)) cubic-bezier(0.1, 0.4, 0.7, 1) infinite;
+  }
+  .pulsing-core::after {
+    border-style: dashed;
+    animation-delay: calc(0.95s / var(--speed-mult));
+  }
+
+  /* ==========================================================================
+     06. KEPLERIAN ORBITAL ATOM
+  ========================================================================== */
+  .orbit-atom {
+    width: 74px;
+    height: 74px;
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .atom-nucleus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c6);
+    box-shadow: 0 0 12px var(--c6);
+  }
+  .atom-track {
+    position: absolute;
+    width: 72px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--c6) 42%, transparent);
+  }
+  .atom-track.t1 { transform: rotate(0deg); }
+  .atom-track.t2 { transform: rotate(60deg); }
+  .atom-track.t3 { transform: rotate(120deg); }
+
+  .orbit-wrap {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    animation: rotate calc(2.1s / var(--speed-mult)) cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .orbit-dot {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px var(--c6), 0 0 14px var(--c6);
+  }
+  .orbit-dot:nth-child(1) { top: -3px; left: 24px; }
+  .orbit-dot:nth-child(2) { bottom: -3px; left: 24px; }
+  .orbit-dot:nth-child(3) { top: 24px; left: -3px; }
+  .orbit-dot:nth-child(4) { top: 24px; right: -3px; }
+
+  /* ==========================================================================
+     07. NEW: 3D GEODESIC GIMBAL SPHERE
+  ========================================================================== */
+  .geo-sphere-stage {
+    width: 74px;
+    height: 74px;
+    perspective: 260px;
+    display: grid;
+    place-items: center;
+  }
+  .geo-sphere {
+    width: 64px;
+    height: 64px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: spin3d calc(4.2s / var(--speed-mult)) linear infinite;
+  }
+  .geo-meridian {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--c7);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--c7) 45%, transparent);
+  }
+  .geo-meridian.m1 { transform: rotateY(0deg); }
+  .geo-meridian.m2 { transform: rotateY(60deg); }
+  .geo-meridian.m3 { transform: rotateY(120deg); }
+  .geo-meridian.m4 { transform: rotateX(90deg); border-style: dashed; }
+
+  @keyframes spin3d {
+    0%   { transform: rotateX(22deg) rotateY(0deg) rotateZ(0deg); }
+    100% { transform: rotateX(22deg) rotateY(360deg) rotateZ(180deg); }
+  }
+
+  /* ==========================================================================
+     08. NEW: HONEYCOMB HEX PHASE MATRIX
+  ========================================================================== */
+  .hex-matrix {
+    position: relative;
+    width: 76px;
+    height: 72px;
+  }
+  .hex-cell {
+    position: absolute;
+    width: 20px;
+    height: 22px;
+    background: var(--c8);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    animation: hexPulse calc(1.5s / var(--speed-mult)) ease-in-out infinite;
+  }
+  /* Center Hex + 6 Surrounding Ring Hexes */
+  .hex-cell.hc0 { left: 28px; top: 25px; animation-delay: 0s; }
+  .hex-cell.hc1 { left: 28px; top: 3px;  animation-delay: 0.18s; }
+  .hex-cell.hc2 { left: 48px; top: 14px; animation-delay: 0.36s; }
+  .hex-cell.hc3 { left: 48px; top: 36px; animation-delay: 0.54s; }
+  .hex-cell.hc4 { left: 28px; top: 47px; animation-delay: 0.72s; }
+  .hex-cell.hc5 { left: 8px;  top: 36px; animation-delay: 0.90s; }
+  .hex-cell.hc6 { left: 8px;  top: 14px; animation-delay: 1.08s; }
+
+  @keyframes hexPulse {
+    0%, 100% { transform: scale(0.62); opacity: 0.18; }
+    45%      { transform: scale(1.02); opacity: 1; filter: drop-shadow(0 0 8px var(--c8)); }
+  }
+
+  /* ==========================================================================
+     09. NEW: BIOMETRIC DNA HELIX SCANNER
+  ========================================================================== */
+  .helix-scanner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 58px;
+    padding: 0 6px;
+  }
+  .helix-rung {
+    width: 7px;
+    height: 46px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .helix-rung::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: color-mix(in srgb, var(--c9) 35%, transparent);
+  }
+  .helix-node {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c9);
+    box-shadow: 0 0 8px var(--c9);
+  }
+  .helix-node.top-n {
+    animation: dnaTop calc(1.4s / var(--speed-mult)) ease-in-out infinite;
+  }
+  .helix-node.bot-n {
+    background: #fff;
+    animation: dnaBot calc(1.4s / var(--speed-mult)) ease-in-out infinite;
+  }
+
+  .helix-rung:nth-child(1) .helix-node { animation-delay: 0.0s; }
+  .helix-rung:nth-child(2) .helix-node { animation-delay: 0.16s; }
+  .helix-rung:nth-child(3) .helix-node { animation-delay: 0.32s; }
+  .helix-rung:nth-child(4) .helix-node { animation-delay: 0.48s; }
+  .helix-rung:nth-child(5) .helix-node { animation-delay: 0.64s; }
+  .helix-rung:nth-child(6) .helix-node { animation-delay: 0.80s; }
+
+  @keyframes dnaTop {
+    0%, 100% { transform: translateY(0px) scale(1.1); opacity: 1; }
+    50%      { transform: translateY(38px) scale(0.65); opacity: 0.35; }
+  }
+  @keyframes dnaBot {
+    0%, 100% { transform: translateY(0px) scale(0.65); opacity: 0.35; }
+    50%      { transform: translateY(-38px) scale(1.1); opacity: 1; }
+  }
+
+  /* Shared Keyframes */
+  @keyframes rotate    { to { transform: rotate(360deg); } }
+  @keyframes rotateRev { to { transform: rotate(-360deg); } }
   @keyframes wave-dash { to { stroke-dashoffset: 0; } }
-  @keyframes jump { 0% { height: 20%; } 100% { height: 100%; } }
+  @keyframes jump      { 0% { height: 18%; } 100% { height: 100%; } }
   @keyframes ripple {
-    0% { transform: scale(0.6); opacity: 1; }
-    100% { transform: scale(2.2); opacity: 0; }
+    0%   { transform: scale(0.55); opacity: 1; }
+    100% { transform: scale(2.35); opacity: 0; }
   }
 </style>
 </head>
-<body>
+<body data-phosphor="multi">
 
-<div class="grid">
-  <div class="tile">
-    <div class="radar"></div>
-    <span class="tile-label">01. Radar Sweep</span>
-  </div>
+<div class="rack-container">
 
-  <div class="tile">
-    <svg class="wave-svg" viewBox="0 0 100 50">
-      <path class="wave-path" d="M 0 25 Q 12 5, 25 25 T 50 25 T 75 25 T 100 25" />
-    </svg>
-    <span class="tile-label">02. Oscilloscope</span>
-  </div>
-
-  <div class="tile">
-    <div class="lcd-bars">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
+  <!-- ========================================================================
+       TOP TELEMETRY RACK CONTROLLER BAR
+  ========================================================================= -->
+  <header class="rack-header">
+    <div class="rack-brand">
+      <span class="rack-badge">UI-LAB // RACK-09</span>
+      <div class="rack-titles">
+        <h1>SIGNAL TELEMETRY LOADERS PACK</h1>
+        <p>9 Hardware-Accelerated CSS &amp; SVG Diagnostic Indicators • Click [COPY] on any bay</p>
+      </div>
     </div>
-    <span class="tile-label">03. Telemetry LCD</span>
-  </div>
 
-  <div class="tile">
-    <div class="conic-ring"></div>
-    <span class="tile-label">04. Conic Mask</span>
-  </div>
+    <div class="rack-controls">
+      <!-- Phosphor Palette Switcher -->
+      <div class="ctrl-group" role="group" aria-label="Phosphor Mode">
+        <button class="ctrl-btn active" data-phos="multi">Multi-Spectrum</button>
+        <button class="ctrl-btn" data-phos="green">P1 Green CRT</button>
+        <button class="ctrl-btn" data-phos="amber">P3 Amber CRT</button>
+      </div>
 
-  <div class="tile">
-    <div class="pulsing-core"></div>
-    <span class="tile-label">05. Pulse Core</span>
-  </div>
-
-  <div class="tile">
-    <div class="orbit-wrap">
-      <div class="orbit-dot"></div>
-      <div class="orbit-dot"></div>
-      <div class="orbit-dot"></div>
-      <div class="orbit-dot"></div>
+      <!-- Global Speed Multiplier -->
+      <div class="ctrl-group" role="group" aria-label="Clock Speed">
+        <button class="ctrl-btn" data-spd="0.5">0.5x</button>
+        <button class="ctrl-btn active" data-spd="1">1.0x</button>
+        <button class="ctrl-btn" data-spd="2">2.0x</button>
+        <button class="ctrl-btn" id="pauseBtn">⏸ Freeze</button>
+      </div>
     </div>
-    <span class="tile-label">06. Orbit Ring</span>
-  </div>
+  </header>
+
+  <!-- ========================================================================
+       3x3 TELEMETRY LOADER MODULES GRID (9 MODULES)
+  ========================================================================= -->
+  <main class="grid">
+
+    <!-- 01. POLAR RADAR SWEEP -->
+    <article class="tile" style="--mod-color: var(--c1);" data-name="01. Polar Radar Sweep">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-01 // AZIMUTH</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="radar">
+          <span class="radar-blip b1"></span>
+          <span class="radar-blip b2"></span>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">01. Radar Sweep</span>
+        <span class="tile-metric" data-base="34.7">34.7 GHz</span>
+      </div>
+    </article>
+
+    <!-- 02. DUAL-TRACE OSCILLOSCOPE -->
+    <article class="tile" style="--mod-color: var(--c2);" data-name="02. Oscilloscope Wave">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-02 // WAVEFORM</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="scope-wrap">
+          <svg class="wave-svg" viewBox="0 0 110 50">
+            <path class="wave-path-ghost" d="M 0 25 Q 13.75 45, 27.5 25 T 55 25 T 82.5 25 T 110 25" />
+            <path class="wave-path" d="M 0 25 Q 13.75 4, 27.5 25 T 55 25 T 82.5 25 T 110 25" />
+          </svg>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">02. Oscilloscope</span>
+        <span class="tile-metric" data-base="440">440.0 Hz</span>
+      </div>
+    </article>
+
+    <!-- 03. SEGMENTED VFD SPECTRUM -->
+    <article class="tile" style="--mod-color: var(--c3);" data-name="03. Telemetry VFD">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-03 // EQUALIZER</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="lcd-bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">03. Telemetry LCD</span>
+        <span class="tile-metric" data-base="-12.4">-12.4 dBm</span>
+      </div>
+    </article>
+
+    <!-- 04. COUNTER-ROTATING CONIC GYRO -->
+    <article class="tile" style="--mod-color: var(--c4);" data-name="04. Conic Gyro Mask">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-04 // GYRO LOCK</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="conic-gyro">
+          <div class="conic-ring"></div>
+          <div class="conic-ring inner"></div>
+          <div class="conic-core-dot"></div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">04. Conic Mask</span>
+        <span class="tile-metric" data-base="1800">1800 RPM</span>
+      </div>
+    </article>
+
+    <!-- 05. QUANTUM SONAR BEACON -->
+    <article class="tile" style="--mod-color: var(--c5);" data-name="05. Pulse Core">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-05 // TRANSPONDER</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="pulsing-core"></div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">05. Pulse Core</span>
+        <span class="tile-metric" data-base="99.4">99.4% SYNC</span>
+      </div>
+    </article>
+
+    <!-- 06. KEPLERIAN ORBITAL ATOM -->
+    <article class="tile" style="--mod-color: var(--c6);" data-name="06. Orbit Ring">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-06 // EPHEMERIS</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="orbit-atom">
+          <div class="atom-track t1"></div>
+          <div class="atom-track t2"></div>
+          <div class="atom-track t3"></div>
+          <div class="atom-nucleus"></div>
+          <div class="orbit-wrap">
+            <div class="orbit-dot"></div>
+            <div class="orbit-dot"></div>
+            <div class="orbit-dot"></div>
+            <div class="orbit-dot"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">06. Orbit Ring</span>
+        <span class="tile-metric" data-base="7.66">7.66 km/s</span>
+      </div>
+    </article>
+
+    <!-- 07. NEW: 3D GEODESIC GIMBAL SPHERE -->
+    <article class="tile" style="--mod-color: var(--c7);" data-name="07. 3D Geodesic Gimbal">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-07 // 3D GIMBAL</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="geo-sphere-stage">
+          <div class="geo-sphere">
+            <div class="geo-meridian m1"></div>
+            <div class="geo-meridian m2"></div>
+            <div class="geo-meridian m3"></div>
+            <div class="geo-meridian m4"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">07. 3D Geodesic</span>
+        <span class="tile-metric" data-base="60.0">60.0 FPS</span>
+      </div>
+    </article>
+
+    <!-- 08. NEW: HONEYCOMB HEX PHASE MATRIX -->
+    <article class="tile" style="--mod-color: var(--c8);" data-name="08. Hex Phase Matrix">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-08 // PHASE ARRAY</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="hex-matrix">
+          <div class="hex-cell hc0"></div>
+          <div class="hex-cell hc1"></div>
+          <div class="hex-cell hc2"></div>
+          <div class="hex-cell hc3"></div>
+          <div class="hex-cell hc4"></div>
+          <div class="hex-cell hc5"></div>
+          <div class="hex-cell hc6"></div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">08. Hex Matrix</span>
+        <span class="tile-metric" data-base="7">7 NODES OK</span>
+      </div>
+    </article>
+
+    <!-- 09. NEW: BIOMETRIC DNA HELIX SCANNER -->
+    <article class="tile" style="--mod-color: var(--c9);" data-name="09. Helix Wave Scanner">
+      <div class="tile-head">
+        <span class="ch-id"><span class="status-dot"></span> CH-09 // HELIX SYNC</span>
+        <button class="copy-btn">COPY</button>
+      </div>
+      <div class="loader-stage">
+        <div class="helix-scanner">
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+          <div class="helix-rung"><span class="helix-node top-n"></span><span class="helix-node bot-n"></span></div>
+        </div>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-label">09. Helix Scanner</span>
+        <span class="tile-metric" data-base="1.04">1.04 Gbps</span>
+      </div>
+    </article>
+
+  </main>
 </div>
+
+<script>
+  // 1. Phosphor Mode Switcher (Multi-Spectrum / Green / Amber)
+  document.querySelectorAll('[data-phos]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-phos]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.dataset.phosphor = btn.dataset.phos;
+    });
+  });
+
+  // 2. Speed Multiplier Switcher (0.5x / 1.0x / 2.0x)
+  document.querySelectorAll('[data-spd]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-spd]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.documentElement.style.setProperty('--speed-mult', btn.dataset.spd);
+    });
+  });
+
+  // 3. Freeze / Resume Animations Toggle
+  const pauseBtn = document.getElementById('pauseBtn');
+  pauseBtn.addEventListener('click', () => {
+    const isPaused = document.body.classList.toggle('paused');
+    pauseBtn.classList.toggle('active', isPaused);
+    pauseBtn.textContent = isPaused ? '▶ Resume' : '⏸ Freeze';
+  });
+
+  // 4. 1-Click Copy Loader HTML Snippet per Module
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tile = btn.closest('.tile');
+      const stageHtml = tile.querySelector('.loader-stage').innerHTML.trim();
+      navigator.clipboard?.writeText(stageHtml);
+      const prev = btn.textContent;
+      btn.textContent = 'COPIED ✓';
+      btn.style.color = '#4ade80';
+      setTimeout(() => {
+        btn.textContent = prev;
+        btn.style.color = '';
+      }, 1200);
+    });
+  });
+</script>
 
 </body>
 </html>
