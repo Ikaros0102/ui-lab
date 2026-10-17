@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-17T09:55:59.957Z",
+ "generated": "2026-10-17T20:44:16.487Z",
  "count": 51,
  "items": [
   {
@@ -117,21 +117,22 @@
     "expedition",
     "elevation",
     "lodge",
-    "hike"
+    "hike",
+    "altimeter"
    ],
-   "description": "High-altitude mountain chalet dashboard featuring rich walnut wood trims, summit weather telemetry, an interactive SVG elevation trail profile, and an expedition gear checklist.",
+   "description": "Swiss high-altitude mountain refuge and expedition telemetry console featuring a walnut timber frame, live snowfall & cable-car panorama window, hearth firelight ambience toggle, interactive SVG ridge ascent simulator, SLF avalanche risk matrix, and weight-calculated gear pack.",
    "techniques": [
-    "walnut wood gradient borders and bevels",
-    "cream and alpine navy high-contrast palette",
-    "interactive SVG mountain elevation trail profile",
-    "powder snow depth telemetry cards",
-    "fireplace hearth warmth accent glow"
+    "Procedural walnut woodgrain frame with toggleable Hearth Fireplace ambient amber illumination",
+    "HTML5 Canvas snowfall particle physics synchronized with 3 alpine weather states (Bluebird, Alpenglow, Storm)",
+    "Animated SVG Aiguille du Midi cable-car gondola and multi-zone elevation cross-section with live hiker ascent simulation",
+    "Interactive European SLF 1-5 Avalanche Danger scale and dynamic pack-weight calculator with permit stamp",
+    "Swiss typographic hierarchy pairing Fraunces editorial serifs with JetBrains Mono instrument readouts"
    ],
-   "recipe": "The aesthetic merges dark walnut timber frames with crisp warm-cream interior panels and deep alpine navy typography. The elevation chart uses responsive SVG with interactive waypoints that update trail distance and difficulty stats.",
+   "recipe": "Combines a warm timber-and-brass chalet interior with precision Swiss alpine instrumentation. The top panoramic viewport layers an SVG mountain range with an animated cable-car and a weather-reactive Canvas snowstorm. Below, clicking any ridge waypoint or launching the Ascent Simulator updates the barometric altimeter, slope gradient, oxygen level, and trail cross-section.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 780
    },
    "hasJs": true
   },
@@ -145,30 +146,29 @@
     "retro"
    ],
    "tags": [
-    "dark-fantasy",
-    "forge",
+    "blacksmith",
     "weapon-card",
-    "armor-card",
-    "mmorpg",
-    "tooltip",
-    "tier-selector",
-    "enchanting",
-    "attributes",
-    "runes"
-  ],
-   "description": "Dual-panel MMORPG equipment forge and vertical inspect dossier featuring original Grade Tiers [III to Ω], dynamic enchantment glow scaling (+16), Aether Catalyst Surge system, and Astral Core socketing.",
+    "rpg",
+    "iron",
+    "fire",
+    "runes",
+    "durability",
+    "stats",
+    "tempering"
+   ],
+   "description": "Heavy forged cast-iron weapon inspect card with glowing molten durability segments, socketed fire runes, and tactile metallic action buttons.",
    "techniques": [
-    "procedural SVG noise texture with engraved geometric background patterns",
-    "chamfered double-bevel metallic borders and ornamental corner filigree",
-    "original MMORPG stat breakdown formula: Total (Base +Enchant +Runes)",
-    "multi-category item switcher (Weapon / Armor / Ammunition) with custom SVG art",
-    "reactive enchant aura shifting dynamically from celestial blue to crimson prismatic"
-  ],
-   "recipe": "Combines a modular Arcane Forge on the left with an authentic high-fantasy inspect card on the right, free of copyright lore.",
+    "soot-blackened iron texture with chamfered metallic borders",
+    "segmented molten heat durability bar",
+    "glowing ember socketed rune indicators",
+    "dynamic stat diff comparisons with badges",
+    "tactile forged steel button states"
+   ],
+   "recipe": "The card silhouette utilizes dark slate and cast-iron linear gradients accented with molten amber borders. The durability indicator uses individual segments with glowing box-shadows, and the interactive rune sockets dynamically toggle elemental attack damage bonuses.",
    "preview": {
     "mode": "page",
-    "width": 1260,
-    "height": 740
+    "width": 900,
+    "height": 620
    },
    "hasJs": true
   },
@@ -324,9 +324,8 @@
    "themes": [
     "dark",
     "glass",
-    "retro",
-    "tactile"
-  ],
+    "retro"
+   ],
    "tags": [
     "cafe",
     "coffee",
@@ -335,9 +334,9 @@
     "journal",
     "notes",
     "soundscape",
-    "acoustic",
-    "warmth",
-    "amber"
+    "vinyl",
+    "theme-switcher",
+    "textures"
    ],
    "description": "Tactile window-table cafe workspace featuring a 4-mode color palette switcher, spinning vinyl turntable with tonearm, interactive ambient mixer sliders, steaming porcelain cup, and ruled notebook with coffee ring stain toggle.",
    "techniques": [
@@ -350,8 +349,8 @@
    "recipe": "Combines procedural noise and repeating linear gradients to simulate walnut wood grain, woven acoustic mesh, and ruled stationery paper. Interactive controls adjust CSS variables in real time for lighting intensity, rain speed, and theme palettes.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1060,
+    "height": 740
    },
    "hasJs": true
   },
@@ -395,37 +394,37 @@
    "path": "components/cards/spotlight-card-grid.html",
    "title": "Spotlight Multi-FX Matrix (3x3 & 9x9)",
    "category": "cards",
-    "themes": [
-        "dark",
-        "cyber",
-        "glass"
-    ],
-    "tags": [
-        "cards",
-        "spotlight",
-        "hover",
-        "border",
-        "cursor-follow",
-        "css-variables",
-        "matrix",
-        "9x9-grid",
-        "holographic",
-        "vector-field"
-    ],
-    "description": "Advanced optical spotlight laboratory featuring a dual-mode grid (3x3 Detailed 9-FX Showcase & 9x9 81-Node Dense Matrix) where every cell executes a unique cursor-reactive shader/CSS effect synchronized to a unified light beam.",
-    "techniques": [
-        "synchronized per-card --mouse-x, --mouse-y, and normalized --proximity variables",
-        "mask-composite: exclude perimeter border illumination across 9 or 81 cells",
-        "9 distinct cell shaders: Dot Reveal, 3D Tilt, Blueprint Crosshair, Holographic Foil, Cipher Decrypt, Sonar Rings, Vector Compass, Thermal Core, Hex Lattice",
-        "interactive radial shockwave propagation on cell click",
-        "4 spectral beam themes with adjustable spotlight radius"
-    ],
-    "recipe": "A single requestAnimationFrame pointermove loop computes local coordinates and Euclidean distance for every cell in the grid. Each cell uses CSS radial masks and custom properties to drive unique internal textures, while a shared perimeter mask lights adjacent borders seamlessly.",
-    "preview": {
-        "mode": "page",
-        "width": 1120,
-        "height": 820
-    },
+   "themes": [
+    "dark",
+    "retro",
+    "glass"
+   ],
+   "tags": [
+    "cards",
+    "spotlight",
+    "hover",
+    "border",
+    "cursor-follow",
+    "css-variables",
+    "matrix",
+    "9x9-grid",
+    "holographic",
+    "vector-field"
+   ],
+   "description": "Advanced optical spotlight laboratory featuring a dual-mode grid (3x3 Detailed 9-FX Showcase & 9x9 81-Node Dense Matrix) where every cell executes a unique cursor-reactive shader/CSS effect synchronized to a unified light beam.",
+   "techniques": [
+    "synchronized per-card --mouse-x, --mouse-y, and normalized --proximity variables",
+    "mask-composite: exclude perimeter border illumination across 9 or 81 cells",
+    "9 distinct cell shaders: Dot Reveal, 3D Tilt, Blueprint Crosshair, Holographic Foil, Cipher Decrypt, Sonar Rings, Vector Compass, Thermal Core, Hex Lattice",
+    "interactive radial shockwave propagation on cell click",
+    "4 spectral beam themes with adjustable spotlight radius"
+   ],
+   "recipe": "A single requestAnimationFrame pointermove loop computes local coordinates and Euclidean distance for every cell in the grid. Each cell uses CSS radial masks and custom properties to drive unique internal textures, while a shared perimeter mask lights adjacent borders seamlessly.",
+   "preview": {
+    "mode": "page",
+    "width": 1120,
+    "height": 820
+   },
    "hasJs": true
   },
   {
@@ -513,23 +512,26 @@
     "radar",
     "oscilloscope",
     "svg",
-    "animation"
+    "animation",
+    "telemetry",
+    "hud",
+    "scifi"
    ],
-   "description": "Curated collection of 6 distinctive telemetry loaders: radar sweep, oscilloscope wave, segmented LCD bar, conic ring, pulsing core, and orbiting dots.",
+   "description": "Curated 9-module laboratory rack of distinctive telemetry loaders: Polar Radar Sweep, Dual-Trace Oscilloscope, VFD Spectrum Analyzer, Triple Conic Gyro, Quantum Sonar Beacon, Keplerian Orbital Atom, 3D Geodesic Sphere, Honeycomb Hex Matrix, and DNA Helix Scanner.",
    "techniques": [
-    "SVG stroke-dasharray animations",
-    "conic-gradient() spinning mask",
-    "CSS keyframe transforms",
-    "retro telemetry styling",
-    "CSS grid tiles"
+    "SVG stroke-dasharray & phase-shifted dual-trace waveform animations",
+    "Multi-layer conic-gradient() masks with counter-rotating gyro rings",
+    "CSS 3D preserve-3d orbital & geodesic ring rotations",
+    "Staggered honeycomb hex-grid & anti-phase DNA helix keyframes",
+    "Interactive speed multiplier, monochrome phosphor themes, and 1-click snippet copy"
    ],
-   "recipe": "Each telemetry loader demonstrates a distinct CSS animation technique: from rotating radar sweep sectors (conic-gradient mask) and oscilloscope sine waves (SVG stroke-dashoffset) to segmented LCD equalizer meters with staggered discrete animation-delay offsets.",
+   "recipe": "Housed inside a 3x3 modular rack unit, each tile combines a dark CRT graticule viewport with a unique CSS/SVG animation technique. Root CSS variables (--speed-mult and phosphor color overrides) allow real-time speed scaling and instant switching between Multi-Spectrum, P1 Green Phosphor, and Amber Monochrome modes.",
    "preview": {
     "mode": "page",
-    "width": 960,
-    "height": 660
+    "width": 1060,
+    "height": 780
    },
-   "hasJs": false
+   "hasJs": true
   },
   {
    "id": "scroll-reveal-feed",
@@ -1047,37 +1049,37 @@
   {
    "id": "blacksmith-forge-station",
    "path": "components/widgets/blacksmith-forge-station.html",
-   "title": "Blacksmith Forge & Tempering Station",
+   "title": "Aethelgard Relic Forge & Item Dossier",
    "category": "widgets",
    "themes": [
     "dark",
     "retro"
    ],
    "tags": [
-    "blacksmith",
+    "dark-fantasy",
     "forge",
-    "anvil",
-    "sparks",
-    "embers",
-    "molten-metal",
-    "crafting",
-    "weapon-upgrade",
-    "rpg",
-    "fire"
+    "weapon-card",
+    "armor-card",
+    "mmorpg",
+    "tooltip",
+    "tier-selector",
+    "enchanting",
+    "attributes",
+    "runes"
    ],
-   "description": "Heavy-duty forge crafting interface with glowing charcoal coals, molten metal temperature segments, interactive hammer strikes with flying sparks, and tempering runes.",
+   "description": "Dual-panel MMORPG equipment forge and vertical inspect dossier featuring original Grade Tiers [III to Ω], dynamic enchantment glow scaling (+16), Aether Catalyst Surge system, and Astral Core socketing.",
    "techniques": [
-    "glowing molten heat gradients with box-shadow bloom",
-    "dynamic flying ember spark particles on strike",
-    "cast-iron soot texture via multi-stop linear-gradients",
-    "segmented molten heat gauge with threshold alerts",
-    "tactile metallic button press feedback"
+    "procedural SVG noise texture with engraved geometric background patterns",
+    "chamfered double-bevel metallic borders and ornamental corner filigree",
+    "original MMORPG stat breakdown formula: Total (Base +Enchant +Runes)",
+    "multi-category item switcher (Weapon / Armor / Ammunition) with custom SVG art",
+    "reactive enchant aura shifting dynamically from celestial blue to crimson prismatic"
    ],
-   "recipe": "The forge atmosphere pairs charcoal-black stone textures with fiery amber and incandescent yellow glow. The heat gauge uses segmented blocks whose border and shadow bloom shift from dull red to intense molten yellow as temperature rises. Clicking the strike button animates an array of flying ember sparks with randomized trajectories.",
+   "recipe": "Combines a modular Arcane Forge on the left with an authentic high-fantasy inspect card on the right, free of copyright lore.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1260,
+    "height": 740
    },
    "hasJs": true
   },
@@ -1317,27 +1319,29 @@
     "library",
     "midnight",
     "bankers-lamp",
+    "mahogany",
+    "parchment",
+    "woodgrain",
     "books",
     "catalog",
     "brass",
     "emerald",
     "archive",
-    "search",
-    "academic"
+    "skeuomorphic"
    ],
-   "description": "Scholarly midnight library research workstation featuring an interactive emerald banker's lamp with pull chain, dark oak bookstacks, manuscript cataloging, and reading notes.",
+   "description": "Richly textured mahogany and walnut midnight library workstation featuring procedural SVG woodgrain and laid rag-paper filters, an articulated emerald banker's lamp with beaded pull-chain, brass card-catalog drawer with guide rod, illuminated manuscript drop-caps, interactive magnifying glass revealing hidden marginalia, and wax-seal stamping.",
    "techniques": [
-    "interactive banker's lamp light cone with toggleable pull chain",
-    "emerald glass diffuse radial lighting",
-    "polished brass metallic bevels and trim",
-    "gothic rain window ambience backdrop",
-    "academic catalog search and manuscript inspector"
+    "Procedural SVG feTurbulence woodgrain filter (#mahoganyGrain) and rag-paper fiber filter (#parchmentFiber)",
+    "Multi-layered laid paper texture with chain/laid wire lines, deckled edge shadows, book gutter spine, and page-fan thickness",
+    "Interactive brass magnifying lens tracking pointer coordinates to reveal hidden medieval interlinear glosses",
+    "Card catalog drawer with brass label frame, steel locking rod, punch-holes, and live search filtering",
+    "Articulated emerald glass banker's lamp with physical beaded pull-chain physics and warm pool lighting"
    ],
-   "recipe": "The atmospheric research desk pairs dark mahogany woodgrain with an iconic green-glass banker's lamp that casts a directional warm pool of light. Clicking the brass pull-chain toggles the lamp's luminescent state via CSS variables, updating the ambient lighting across the desk and reading parchment.",
+   "recipe": "Combines procedural SVG noise filters with layered CSS gradients to achieve authentic material depth. The outer desk uses stretched fractalNoise for dark varnished mahogany grain with brass corner brackets and a gold-tooled green leather blotter. The open manuscript folio layers fine laid-paper lines, warm edge foxing, a deep spine gutter shadow, and an illuminated gold-leaf drop cap.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 760
    },
    "hasJs": true
   },
@@ -1531,6 +1535,7 @@
    ],
    "tags": [
     "ranger-station",
+    "firewatch",
     "maps",
     "topography",
     "compass",
@@ -1541,19 +1546,19 @@
     "wilderness",
     "dispatch"
    ],
-   "description": "High-altitude forest ranger station desk overlooking sunset mountain ridges, featuring an interactive topographic trail map, rotating brass compass, and trail status telemetry.",
+   "description": "High-altitude forestry lookout station desk featuring a multi-time-of-day panoramic mountain window with smoke plume spotting, a detailed USGS-style parchment topographic map with an Osborne Fire Finder azimuth ray, elevation profile chart, 360-degree brass surveyor compass, and VHF dispatch log.",
    "techniques": [
-    "sunset mountain silhouette SVG layered backdrop",
-    "SVG topographic contour line map with interactive trail waypoints",
-    "rotating brass compass needle synced to selected waypoints",
-    "tactile brass map corner weights and forest-green palette",
-    "real-time park trail dispatch and fire danger telemetry"
+    "Multi-layer SVG mountain lookout panorama with Day / Sunset / Night sky transitions and animated smoke plume",
+    "USGS parchment topographic map with nested elevation contours, hydrography, and rotating Osborne azimuth sighting line",
+    "Synchronized SVG elevation cross-section profile highlighting the selected trail waypoint",
+    "360-degree engraved brass surveyor compass with glass specular dome and damped magnetic needle",
+    "Interactive USFS Fire Danger Rating semicircular gauge and live VHF radio dispatch log"
    ],
-   "recipe": "The ranger station aesthetic combines weathered forest map parchment with pine-green trims and a panoramic sunset mountain silhouette. An interactive SVG contour map features trail waypoints that dynamically rotate a physical-styled brass compass needle to the waypoint's azimuth angle.",
+   "recipe": "Combines a warm timber-and-brass forestry desk with an interactive USGS parchment map. Clicking any waypoint or smoke sighting computes the exact bearing and distance from Lookout Tower 07, rotates the Osborne sighting rule across the map, aligns the brass surveyor compass needle, highlights the elevation profile, and updates the panoramic window's target reticle.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1080,
+    "height": 760
    },
    "hasJs": true
   },
