@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-18T10:35:54.623Z",
+ "generated": "2026-10-18T16:52:26.365Z",
  "count": 60,
  "items": [
   {
@@ -111,10 +111,9 @@
    "category": "backgrounds",
    "themes": [
     "dark",
-    "glass",
-    "cyber"
-  ],
-  "tags": [
+    "glass"
+   ],
+   "tags": [
     "background",
     "network",
     "constellation",
@@ -125,15 +124,15 @@
     "interactive",
     "synapse",
     "triangulation"
-  ],
-  "description": "High-performance interactive neural constellation background featuring live synaptic data packets traveling along edges, dynamic triangle mesh faces, 3 cursor gravity modes (Attract, Repel, Vortex), shockwave spawning on click, and 4 spectral themes.",
-  "techniques": [
+   ],
+   "description": "High-performance interactive neural constellation background featuring live synaptic data packets traveling along edges, dynamic triangle mesh faces, 3 cursor gravity modes (Attract, Repel, Vortex), shockwave spawning on click, and 4 spectral themes.",
+   "techniques": [
     "HTML5 Canvas spatial graph with dynamic edge alpha and simplex triangle fills",
     "autonomous synaptic photon packets traversing active node edges",
     "3 pointer physics fields: Repulsion Shield, Gravitational Singularity, and Orbital Vortex",
     "click-triggered radial shockwave ring with dynamic node injection",
     "collapsible glassmorphic telemetry HUD with real-time edge & FPS counters"
-  ],
+   ],
    "recipe": "Maintains a velocity-verlet particle array with hub and relay tiers. Edges within threshold distance render proportional alpha strokes, spawn traveling data pulses, and shade closed 3-node cliques near the cursor.",
    "preview": {
     "mode": "page",
@@ -146,13 +145,12 @@
    "id": "fluid-jelly-buttons",
    "path": "components/buttons/fluid-jelly-buttons.html",
    "title": "Jelly Rubber Squish Buttons (9-FX Soft-Body Lab)",
-  "category": "buttons",
-  "themes": [
+   "category": "buttons",
+   "themes": [
     "mesh",
-    "dark",
-    "playful"
-  ],
-  "tags": [
+    "dark"
+   ],
+   "tags": [
     "buttons",
     "jelly",
     "gooey",
@@ -163,18 +161,20 @@
     "spring",
     "ferrofluid",
     "interactive"
-  ],
-  "description": "3x3 Soft-Body & Hydro-Gel Button Laboratory showcasing 9 distinct liquid-rubber physics interactions: Volume Squish, Magnetic Slingshot, SVG Gooey Metaball Split, Carbonated Fizz, Ferrofluid Morph, Bubblegum Hold-Inflate, Lava Core, Shear Jello, and Membrane Toggle.",
-  "techniques": [
+   ],
+   "description": "3x3 Soft-Body & Hydro-Gel Button Laboratory showcasing 9 distinct liquid-rubber physics interactions: Volume Squish, Magnetic Slingshot, SVG Gooey Metaball Split, Carbonated Fizz, Ferrofluid Morph, Bubblegum Hold-Inflate, Lava Core, Shear Jello, and Membrane Toggle.",
+   "techniques": [
     "true SVG feGaussianBlur + feColorMatrix alpha-threshold gooey metaball filter",
     "pointer-tracked magnetic slingshot stretch with elastic spring recoil",
     "hold-to-inflate pressure accumulation loop with particle burst release",
     "volume-conserving scale3d(x, y, z) and anisotropic skewX/skewY deformation",
     "global viscosity & surface finish controller (High-Gloss, Frosted Gummy, Liquid Chrome)"
-  ],
+   ],
    "recipe": "Combines a real SVG #gooey-filter for liquid droplet fusion with per-button pointer tracking (--dx, --dy) and custom keyframe physics. Users can test 9 unique soft-body behaviors individually or trigger a synchronized hydro-shockwave across the entire 3x3 matrix.",
    "preview": {
-    "mode": "center"
+    "mode": "page",
+    "width": 1080,
+    "height": 780
    },
    "hasJs": true
   },
@@ -214,14 +214,14 @@
   {
    "id": "orbit-border-button",
    "path": "components/buttons/orbit-border-button.html",
-   "title": "Orbit Border Button",
+   "title": "Orbit Border Button (9-FX Conic Matrix)",
    "category": "buttons",
    "themes": [
     "mesh",
     "dark",
-    "cyber"
-  ],
-  "tags": [
+    "retro"
+   ],
+   "tags": [
     "button",
     "border",
     "conic-gradient",
@@ -230,20 +230,22 @@
     "orbit",
     "laser",
     "mask-composite"
-  ],
-  "description": "3x3 Photon-Orbit Button Laboratory showcasing 9 distinct rotating conic-gradient border architectures powered by CSS @property: Comet Trail, Bipolar Twin-Beam, Counter-Rotating Dual Rings, Chamfered Octagon, Strobe Segmented Dash, Cursor-Tracked Radar, Full-Spectrum Prism, Satellite Core, and Hold-to-Overdrive.",
-  "techniques": [
+   ],
+   "description": "3x3 Photon-Orbit Button Laboratory showcasing 9 distinct rotating conic-gradient border architectures powered by CSS @property: Comet Trail, Bipolar Twin-Beam, Counter-Rotating Dual Rings, Chamfered Octagon, Strobe Segmented Dash, Cursor-Tracked Radar, Full-Spectrum Prism, Satellite Core, and Hold-to-Overdrive.",
+   "techniques": [
     "registered CSS @property --angle and --angle-rev for hardware-smooth conic interpolation",
     "mask-composite: exclude for razor-sharp perimeter stroke isolation",
     "dual counter-rotating concentric rings with phase interference",
     "clip-path polygon chamfered geometry with angular conic illumination",
     "interactive atan2() pointer-locked orbital aiming and hold-to-accelerate warp"
-  ],
+   ],
    "recipe": "Registers @property --angle (<angle>) to animate conic-gradient() rotations natively on the compositor thread. Each of the 9 modules pairs a masked ::before border stroke with a blurred ::after bloom duplicate, controlled globally via CSS custom properties for speed, stroke width, and glow radius.",
    "preview": {
-    "mode": "center"
+    "mode": "page",
+    "width": 1080,
+    "height": 790
    },
-   "hasJs": false
+   "hasJs": true
   },
   {
    "id": "specular-magnetic-button",
@@ -280,14 +282,13 @@
   {
    "id": "tactile-push-buttons",
    "path": "components/buttons/tactile-push-buttons.html",
-   "title": "Tactile Mechanical Switches",
+   "title": "Tactile Mechanical Switches (9-Module Hardware Rack)",
    "category": "buttons",
    "themes": [
     "dark",
-    "retro",
-    "industrial"
-  ],
-  "tags": [
+    "retro"
+   ],
+   "tags": [
     "buttons",
     "tactile",
     "mechanical",
@@ -298,16 +299,16 @@
     "flip-cover",
     "keycap",
     "hardware"
-  ],
-  "description": "3x3 Industrial Hardware Switch Rack featuring 9 distinct physical actuation mechanisms: Sculpted MX Keycap, Safety Flip-Cover Launch Button, Latching Push-Lock, 3D Rocker Paddle, Arcade Plunger, Detent Rotary Knob, Chrome Toggle Lever, Pressure Hold Relay, and Split-Flap Stepper.",
-  "techniques": [
+   ],
+   "description": "3x3 Industrial Hardware Switch Rack featuring 9 distinct physical actuation mechanisms: Sculpted MX Keycap, Safety Flip-Cover Launch Button, Latching Push-Lock, 3D Rocker Paddle, Arcade Plunger, Detent Rotary Knob, Chrome Toggle Lever, Pressure Hold Relay, and Split-Flap Stepper.",
+   "techniques": [
     "multi-layered 3D extrusion box-shadows with active depth compression",
     "interactive hinged safety flip-cover with hazard striping and arming interlock",
     "latching push-lock state machine with persistent depressed geometry",
     "3-mode chassis material themes (Stealth Carbon, Retro 1984 Beige, Brushed Titanium)",
     "synthesized Web Audio micro-switch acoustic profiles (Clicky, Tactile, Thocky, Mute)"
-  ],
-   "recipe": "The physical keycap depth is simulated using multi-tiered box-shadows. On :active, the keycap translates 6px downwards while compressing its shadows and inset bevels, returning with a slight spring overshoot. Embedded LEDs illuminate the key bezel through radial blend modes.",
+   ],
+   "recipe": "Each module sits inside a recessed rack bay with hex screws and dual LED telemetry beacons. Physical travel is rendered via stepped vertical shadows and perspective tilts, paired with optional procedural Web Audio switch transients.",
    "preview": {
     "mode": "page",
     "width": 1100,
