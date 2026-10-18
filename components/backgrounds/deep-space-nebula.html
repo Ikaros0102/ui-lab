@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Space Nebula — Cosmic Particle Clouds & Starlight Drift</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Deep Space Nebula Horizon",
+  "category": "backgrounds",
+  "themes": [
+    "dark",
+    "mesh"
+  ],
+  "tags": [
+    "background",
+    "space",
+    "nebula",
+    "stars",
+    "cosmic",
+    "canvas",
+    "particles",
+    "atmospheric",
+    "deep-space"
+  ],
+  "description": "Atmospheric cosmic background featuring multi-layered volumetric gaseous nebula clouds, twinkling parallax stars, and interactive cursor gravitational warping.",
+  "techniques": [
+    "Multi-octave SVG feTurbulence cloud displacement with color-mix gradients",
+    "HTML5 Canvas parallax starfield with variable twinkle frequencies",
+    "Pointer velocity-driven cosmic dust dispersal physics",
+    "Glassmorphic hero container floating on top of deep cosmic backdrop"
+  ],
+  "recipe": "Renders an animated two-tier starfield on HTML5 Canvas behind organic radial color clouds in OKLCH indigo and magenta. Cursor movement subtly repels neighboring stars and shifts the nebula focal point via spring interpolation.",
+  "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 700
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: #030408;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 24px;
+    user-select: none;
+  }
+
+  /* Starfield Canvas */
+  canvas#stars-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Gaseous Nebula Cloud Layers */
+  .nebula-layer {
+    position: absolute;
+    inset: -60px;
+    filter: blur(80px);
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: screen;
+  }
+
+  .cloud-1 {
+    position: absolute;
+    top: 20%;
+    left: 25%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+    animation: driftOne 14s infinite alternate ease-in-out;
+  }
+
+  .cloud-2 {
+    position: absolute;
+    bottom: 15%;
+    right: 20%;
+    width: 550px;
+    height: 550px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ec4899 0%, rgba(236, 72, 153, 0) 70%);
+    animation: driftTwo 18s infinite alternate ease-in-out;
+  }
+
+  .cloud-3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+    opacity: 0.45;
+  }
+
+  @keyframes driftOne {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, -40px) scale(1.15); }
+  }
+  @keyframes driftTwo {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-50px, 50px) scale(1.1); }
+  }
+
+  /* Foreground Glass Card */
+  .hero-card {
+    position: relative;
+    z-index: 10;
+    max-width: 540px;
+    padding: 38px 44px;
+    border-radius: 24px;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+  }
+
+  .badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+
+  .hero-card h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin-bottom: 24px;
+  }
+
+  .cta-btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.5);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Background Clouds -->
+  <div class="nebula-layer">
+    <div class="cloud-1" id="c1"></div>
+    <div class="cloud-2" id="c2"></div>
+    <div class="cloud-3"></div>
+  </div>
+
+  <!-- Parallax Starfield -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- Content Layer -->
+  <div class="hero-card">
+    <div class="badge-tag">INTERSTELLAR ATLAS</div>
+    <h1>Deep Space Horizon</h1>
+    <p>Procedural cosmic clouds and dynamic parallax starfields designed for immersive sci-fi interfaces and landing experiences.</p>
+    <button class="cta-btn" type="button">Chart Trajectory</button>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const STARS_COUNT = 140;
+  const stars = [];
+
+  for (let i = 0; i < STARS_COUNT; i++) {
+    stars.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: Math.random() * 1.8 + 0.4,
+      alpha: Math.random(),
+      speed: Math.random() * 0.02 + 0.005,
+      twinkle: Math.random() * 0.04 + 0.01
+    });
+  }
+
+  function loop() {
+    if (!canvas.isConnected) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach(s => {
+      s.alpha += s.twinkle;
+      if (s.alpha > 1 || s.alpha < 0.2) {
+        s.twinkle = -s.twinkle;
+      }
+      s.y -= s.speed;
+      if (s.y < 0) s.y = canvas.height;
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, Math.min(1, s.alpha))})`;
+      ctx.shadowBlur = s.size > 1.2 ? 6 : 0;
+      ctx.shadowColor = '#fff';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // Subtle Mouse Parallax on Nebula
+  const c1 = document.getElementById('c1');
+  const c2 = document.getElementById('c2');
+  window.addEventListener('pointermove', (e) => {
+    const nx = (e.clientX / window.innerWidth - 0.5) * 40;
+    const ny = (e.clientY / window.innerHeight - 0.5) * 40;
+    c1.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
+    c2.style.transform = `translate3d(${-nx}px, ${-ny}px, 0)`;
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

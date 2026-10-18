@@ -1,7 +1,77 @@
 {
- "generated": "2026-10-17T20:44:16.487Z",
- "count": 51,
+ "generated": "2026-10-18T10:35:54.623Z",
+ "count": 60,
  "items": [
+  {
+   "id": "deep-space-nebula",
+   "path": "components/backgrounds/deep-space-nebula.html",
+   "title": "Deep Space Nebula Horizon",
+   "category": "backgrounds",
+   "themes": [
+    "dark",
+    "mesh"
+   ],
+   "tags": [
+    "background",
+    "space",
+    "nebula",
+    "stars",
+    "cosmic",
+    "canvas",
+    "particles",
+    "atmospheric",
+    "deep-space"
+   ],
+   "description": "Atmospheric cosmic background featuring multi-layered volumetric gaseous nebula clouds, twinkling parallax stars, and interactive cursor gravitational warping.",
+   "techniques": [
+    "Multi-octave SVG feTurbulence cloud displacement with color-mix gradients",
+    "HTML5 Canvas parallax starfield with variable twinkle frequencies",
+    "Pointer velocity-driven cosmic dust dispersal physics",
+    "Glassmorphic hero container floating on top of deep cosmic backdrop"
+   ],
+   "recipe": "Renders an animated two-tier starfield on HTML5 Canvas behind organic radial color clouds in OKLCH indigo and magenta. Cursor movement subtly repels neighboring stars and shifts the nebula focal point via spring interpolation.",
+   "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 700
+   },
+   "hasJs": true
+  },
+  {
+   "id": "isometric-tron-grid",
+   "path": "components/backgrounds/isometric-tron-grid.html",
+   "title": "Isometric Tron Grid Horizon",
+   "category": "backgrounds",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "background",
+    "grid",
+    "tron",
+    "synthwave",
+    "perspective",
+    "3d",
+    "horizon",
+    "neon",
+    "retro"
+   ],
+   "description": "Infinite 3D perspective cyber grid with rolling infinite ground motion, glowing neon horizon haze, and reactive cursor-targeted grid pulse.",
+   "techniques": [
+    "CSS 3D perspective + rotateX(60deg) infinite ground plane",
+    "Repeating linear gradients generating seamless vector grid lines",
+    "Vignetted mask-image depth fading with linear-gradient alpha dropoff",
+    "Specular horizon sunrise with neon magenta/cyan color blending"
+   ],
+   "recipe": "Transforms an oversized background plane into deep 3D perspective using transform: perspective(300px) rotateX(60deg). A keyframe loop animates background-position-y to simulate high-speed forward ground travel towards a glowing neon sun horizon.",
+   "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 700
+   },
+   "hasJs": false
+  },
   {
    "id": "mesh-hero",
    "path": "components/backgrounds/mesh-hero.html",
@@ -33,6 +103,80 @@
     "height": 680
    },
    "hasJs": false
+  },
+  {
+   "id": "neural-mesh-constellation",
+   "path": "components/backgrounds/neural-mesh-constellation.html",
+   "title": "Neural Mesh Constellation",
+   "category": "backgrounds",
+   "themes": [
+    "dark",
+    "glass",
+    "cyber"
+  ],
+  "tags": [
+    "background",
+    "network",
+    "constellation",
+    "nodes",
+    "canvas",
+    "neural",
+    "physics",
+    "interactive",
+    "synapse",
+    "triangulation"
+  ],
+  "description": "High-performance interactive neural constellation background featuring live synaptic data packets traveling along edges, dynamic triangle mesh faces, 3 cursor gravity modes (Attract, Repel, Vortex), shockwave spawning on click, and 4 spectral themes.",
+  "techniques": [
+    "HTML5 Canvas spatial graph with dynamic edge alpha and simplex triangle fills",
+    "autonomous synaptic photon packets traversing active node edges",
+    "3 pointer physics fields: Repulsion Shield, Gravitational Singularity, and Orbital Vortex",
+    "click-triggered radial shockwave ring with dynamic node injection",
+    "collapsible glassmorphic telemetry HUD with real-time edge & FPS counters"
+  ],
+   "recipe": "Maintains a velocity-verlet particle array with hub and relay tiers. Edges within threshold distance render proportional alpha strokes, spawn traveling data pulses, and shade closed 3-node cliques near the cursor.",
+   "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "fluid-jelly-buttons",
+   "path": "components/buttons/fluid-jelly-buttons.html",
+   "title": "Jelly Rubber Squish Buttons (9-FX Soft-Body Lab)",
+  "category": "buttons",
+  "themes": [
+    "mesh",
+    "dark",
+    "playful"
+  ],
+  "tags": [
+    "buttons",
+    "jelly",
+    "gooey",
+    "physics",
+    "squish",
+    "rubber",
+    "metaballs",
+    "spring",
+    "ferrofluid",
+    "interactive"
+  ],
+  "description": "3x3 Soft-Body & Hydro-Gel Button Laboratory showcasing 9 distinct liquid-rubber physics interactions: Volume Squish, Magnetic Slingshot, SVG Gooey Metaball Split, Carbonated Fizz, Ferrofluid Morph, Bubblegum Hold-Inflate, Lava Core, Shear Jello, and Membrane Toggle.",
+  "techniques": [
+    "true SVG feGaussianBlur + feColorMatrix alpha-threshold gooey metaball filter",
+    "pointer-tracked magnetic slingshot stretch with elastic spring recoil",
+    "hold-to-inflate pressure accumulation loop with particle burst release",
+    "volume-conserving scale3d(x, y, z) and anisotropic skewX/skewY deformation",
+    "global viscosity & surface finish controller (High-Gloss, Frosted Gummy, Liquid Chrome)"
+  ],
+   "recipe": "Combines a real SVG #gooey-filter for liquid droplet fusion with per-button pointer tracking (--dx, --dy) and custom keyframe physics. Users can test 9 unique soft-body behaviors individually or trigger a synchronized hydro-shockwave across the entire 3x3 matrix.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
   },
   {
    "id": "glitch-cyber-button",
@@ -74,29 +218,102 @@
    "category": "buttons",
    "themes": [
     "mesh",
-    "dark"
-   ],
-   "tags": [
+    "dark",
+    "cyber"
+  ],
+  "tags": [
     "button",
     "border",
     "conic-gradient",
     "@property",
     "glow",
-    "orbit"
-   ],
-   "description": "Call-to-action button with rotating conic-gradient border powered by CSS @property and an outer glowing duplicate blur.",
-   "techniques": [
-    "@property --angle",
-    "conic-gradient()",
-    "blur() glow layer",
-    "smooth hover transition",
-    "color-mix()"
-   ],
-   "recipe": "The core mechanism relies on registering the custom CSS property @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }. This allows smooth keyframe animation of the conic gradient rotation angle. A blurred duplicate pseudoelement placed behind generates the dynamic glowing aura.",
+    "orbit",
+    "laser",
+    "mask-composite"
+  ],
+  "description": "3x3 Photon-Orbit Button Laboratory showcasing 9 distinct rotating conic-gradient border architectures powered by CSS @property: Comet Trail, Bipolar Twin-Beam, Counter-Rotating Dual Rings, Chamfered Octagon, Strobe Segmented Dash, Cursor-Tracked Radar, Full-Spectrum Prism, Satellite Core, and Hold-to-Overdrive.",
+  "techniques": [
+    "registered CSS @property --angle and --angle-rev for hardware-smooth conic interpolation",
+    "mask-composite: exclude for razor-sharp perimeter stroke isolation",
+    "dual counter-rotating concentric rings with phase interference",
+    "clip-path polygon chamfered geometry with angular conic illumination",
+    "interactive atan2() pointer-locked orbital aiming and hold-to-accelerate warp"
+  ],
+   "recipe": "Registers @property --angle (<angle>) to animate conic-gradient() rotations natively on the compositor thread. Each of the 9 modules pairs a masked ::before border stroke with a blurred ::after bloom duplicate, controlled globally via CSS custom properties for speed, stroke width, and glow radius.",
    "preview": {
     "mode": "center"
    },
    "hasJs": false
+  },
+  {
+   "id": "specular-magnetic-button",
+   "path": "components/buttons/specular-magnetic-button.html",
+   "title": "Specular Magnetic Pill",
+   "category": "buttons",
+   "themes": [
+    "glass",
+    "dark"
+   ],
+   "tags": [
+    "button",
+    "magnetic",
+    "specular",
+    "cursor-follow",
+    "glassmorphism",
+    "radial-gradient",
+    "physics",
+    "spotlight"
+   ],
+   "description": "Elastic magnetic button with real-time cursor proximity pull, specular radial surface glare, and responsive SVG directional arrow rotation.",
+   "techniques": [
+    "Magnetic spring physics via requestAnimationFrame tracking",
+    "CSS variables --spot-x, --spot-y driving specular radial-gradient",
+    "mask-composite: exclude perimeter border shine",
+    "Subtle 3D perspective tilt on pointer hover"
+   ],
+   "recipe": "Calculates normalized pointer offset within an expanded magnetic perimeter. The button gently translates towards the cursor using spring interpolation, while dynamically steering an internal specular hotspot across a frosted glass backdrop.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "tactile-push-buttons",
+   "path": "components/buttons/tactile-push-buttons.html",
+   "title": "Tactile Mechanical Switches",
+   "category": "buttons",
+   "themes": [
+    "dark",
+    "retro",
+    "industrial"
+  ],
+  "tags": [
+    "buttons",
+    "tactile",
+    "mechanical",
+    "switch",
+    "3d",
+    "toggle",
+    "rotary",
+    "flip-cover",
+    "keycap",
+    "hardware"
+  ],
+  "description": "3x3 Industrial Hardware Switch Rack featuring 9 distinct physical actuation mechanisms: Sculpted MX Keycap, Safety Flip-Cover Launch Button, Latching Push-Lock, 3D Rocker Paddle, Arcade Plunger, Detent Rotary Knob, Chrome Toggle Lever, Pressure Hold Relay, and Split-Flap Stepper.",
+  "techniques": [
+    "multi-layered 3D extrusion box-shadows with active depth compression",
+    "interactive hinged safety flip-cover with hazard striping and arming interlock",
+    "latching push-lock state machine with persistent depressed geometry",
+    "3-mode chassis material themes (Stealth Carbon, Retro 1984 Beige, Brushed Titanium)",
+    "synthesized Web Audio micro-switch acoustic profiles (Clicky, Tactile, Thocky, Mute)"
+  ],
+   "recipe": "The physical keycap depth is simulated using multi-tiered box-shadows. On :active, the keycap translates 6px downwards while compressing its shadows and inset bevels, returning with a slight spring overshoot. Embedded LEDs illuminate the key bezel through radial blend modes.",
+   "preview": {
+    "mode": "page",
+    "width": 1100,
+    "height": 820
+   },
+   "hasJs": true
   },
   {
    "id": "alpine-chalet-dashboard",
@@ -133,42 +350,6 @@
     "mode": "page",
     "width": 1080,
     "height": 780
-   },
-   "hasJs": true
-  },
-  {
-   "id": "blacksmith-weapon-card",
-   "path": "components/cards/blacksmith-weapon-card.html",
-   "title": "Blacksmith Weapon Dossier",
-   "category": "cards",
-   "themes": [
-    "dark",
-    "retro"
-   ],
-   "tags": [
-    "blacksmith",
-    "weapon-card",
-    "rpg",
-    "iron",
-    "fire",
-    "runes",
-    "durability",
-    "stats",
-    "tempering"
-   ],
-   "description": "Heavy forged cast-iron weapon inspect card with glowing molten durability segments, socketed fire runes, and tactile metallic action buttons.",
-   "techniques": [
-    "soot-blackened iron texture with chamfered metallic borders",
-    "segmented molten heat durability bar",
-    "glowing ember socketed rune indicators",
-    "dynamic stat diff comparisons with badges",
-    "tactile forged steel button states"
-   ],
-   "recipe": "The card silhouette utilizes dark slate and cast-iron linear gradients accented with molten amber borders. The durability indicator uses individual segments with glowing box-shadows, and the interactive rune sockets dynamically toggle elemental attack damage bonuses.",
-   "preview": {
-    "mode": "page",
-    "width": 900,
-    "height": 620
    },
    "hasJs": true
   },
@@ -315,6 +496,44 @@
     "height": 480
    },
    "hasJs": false
+  },
+  {
+   "id": "pipboy-terminal",
+   "path": "components/cards/pipboy-terminal.html",
+   "title": "Pip-Boy 3000 Wasteland OS",
+   "category": "cards",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "fallout",
+    "pip-boy",
+    "crt",
+    "phosphor",
+    "post-apocalyptic",
+    "terminal",
+    "scanlines",
+    "vats",
+    "geiger",
+    "monochrome",
+    "retrofuturism"
+   ],
+   "description": "Retro-futuristic post-nuclear Pip-Boy terminal featuring authentic phosphor CRT curvature, animated Vault Boy diagnostic holograms, interactive STAT / INV / DATA modules, working Geiger counter with audible audio clicks, and CRT phosphor color tuner.",
+   "techniques": [
+    "CRT barrel curvature vignette with scanline raster overlay",
+    "Custom phosphor bloom via multi-stage text-shadow and drop-shadow filters",
+    "Interactive phosphor color switch (Amber, Phosphor Green, Classic White, Institute Cyan)",
+    "Animated SVG Vault Boy limb condition paper-doll with anatomical damage readouts",
+    "Live Web Audio API synthesized Geiger counter clicks and mechanical relay beeps"
+   ],
+   "recipe": "Layers a spherical CRT screen curvature gradient over high-contrast phosphor monochrome graphics. Sub-pixel scanlines and phosphor jitter are rendered through repeating CSS gradients and subtle hardware flicker animations. Web Audio API synthesizes white-noise particle impulses for authentic Geiger audio feedback.",
+   "preview": {
+    "mode": "page",
+    "width": 1100,
+    "height": 720
+   },
+   "hasJs": true
   },
   {
    "id": "rainy-cafe-notes",
@@ -494,6 +713,104 @@
     "mode": "center",
     "width": 540,
     "height": 520
+   },
+   "hasJs": true
+  },
+  {
+   "id": "liquid-flask-loader",
+   "path": "components/loaders/liquid-flask-loader.html",
+   "title": "Liquid Glass Flask Loader",
+   "category": "loaders",
+   "themes": [
+    "glass",
+    "mesh"
+   ],
+   "tags": [
+    "loader",
+    "liquid",
+    "wave",
+    "glass",
+    "flask",
+    "bubbles",
+    "organic",
+    "gradient"
+   ],
+   "description": "Tactile cylindrical laboratory glass vial filled with buoyant fluid waves, rising effervescent bubbles, and real-time fill volume percentages.",
+   "techniques": [
+    "Dual sinusoidal SVG path waves moving at offset phase frequencies",
+    "SVG clipPath bounding the liquid inside a chamfered glass cylinder",
+    "Dynamic CSS keyframe bubble generation with randomized delays",
+    "Specular glass reflections with backdrop-filter frost"
+   ],
+   "recipe": "Layers two opposing horizontal wave paths inside an SVG clipPath matching the vial silhouette. Rising micro-bubble spans translate vertically with scale shifts, evoking effervescence beneath frosted glass highlights.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "matrix-decrypt-loader",
+   "path": "components/loaders/matrix-decrypt-loader.html",
+   "title": "Matrix Decrypt Loader",
+   "category": "loaders",
+   "themes": [
+    "retro",
+    "dark"
+   ],
+   "tags": [
+    "loader",
+    "cyberpunk",
+    "matrix",
+    "terminal",
+    "hex",
+    "decrypt",
+    "glitch",
+    "scanlines",
+    "crt"
+   ],
+   "description": "Nerve-wracking cyberpunk cryptographic buffer decrypt loader with cascading hexadecimal memory dump, ASCII progress bar, and CRT scanlines.",
+   "techniques": [
+    "Hexadecimal character scramble cycle with step-based glyph convergence",
+    "Repeating-linear-gradient CRT scanline raster and phosphor text bloom",
+    "Segmented ASCII progress rail filled via monospace block characters (█)",
+    "Glitch jitter keyframes on milestone decrypt intervals"
+   ],
+   "recipe": "Runs a fast interval swapping random hexadecimal pairs across memory offset lines. Characters lock into their decoded plain-text target one by one, synchronized with an advancing block-character progress gauge.",
+   "preview": {
+    "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "quantum-orbit-loader",
+   "path": "components/loaders/quantum-orbit-loader.html",
+   "title": "Quantum Orbit Particle Core",
+   "category": "loaders",
+   "themes": [
+    "dark",
+    "mesh"
+   ],
+   "tags": [
+    "loader",
+    "spinner",
+    "quantum",
+    "particles",
+    "orbit",
+    "glow",
+    "canvas",
+    "physics",
+    "rings"
+   ],
+   "description": "Mesmerizing multi-axis orbital quantum loader with high-speed particle accretion, event horizon distortion ring, and dynamic telemetry status readouts.",
+   "techniques": [
+    "Rotational 3D SVG orbital rings with counter-rotating phase shifts",
+    "HTML5 Canvas particle fountain with trail blending (globalCompositeOperation: lighter)",
+    "Conic-gradient relativistic beam sweep with @property rotation",
+    "Live percentage progress simulation with procedural state updates"
+   ],
+   "recipe": "Combines concentric SVG orbital ellipses tilted in 3D perspective with an HTML5 Canvas particle emission loop. A synchronized conic gradient creates a sweeping beam that lights up particles as they traverse periapsis.",
+   "preview": {
+    "mode": "center"
    },
    "hasJs": true
   },
@@ -1011,7 +1328,7 @@
   {
    "id": "apothecary-shelf-shop",
    "path": "components/widgets/apothecary-shelf-shop.html",
-   "title": "Apothecary Reagents & Tinctures",
+   "title": "Alchemical Athanor & Pharmacopoeia Folio",
    "category": "widgets",
    "themes": [
     "dark",
@@ -1020,29 +1337,27 @@
    "tags": [
     "apothecary",
     "alchemy",
-    "bottles",
-    "tinctures",
+    "grimoire",
+    "manometer",
     "potions",
-    "vials",
-    "labels",
-    "emerald",
-    "amber",
-    "violet",
-    "shop"
+    "pharmacopoeia",
+    "distillation",
+    "toxicity",
+    "svg-tubes"
    ],
-   "description": "Old-world apothecary workshop shelf with glowing potion vials, aged parchment bottle labels, fluid level indicators, and an interactive cauldron brewing ledger.",
+   "description": "Esoteric alchemical distillation apparatus paired with an illuminated dark-vellum Pharmacopoeia prescription folio. Features animated capillary reagent tubes, a rotary brass pressure manometer, Magnum Opus stages, and a live SVG pharmacokinetic absorption curve.",
    "techniques": [
-    "glass vial reflections with SVG liquid gradients",
-    "aged apothecary paper label borders with serif typography",
-    "cauldron bubbling vapor particle animation",
-    "tactile copper shelf hardware accents",
-    "interactive cart mixing drawer with gold calculation"
+    "arched brass alembic chamber with animated SVG capillary infusion tubes",
+    "rotary analog pressure manometer needle driven by Athanor heat slider",
+    "dynamic SVG pharmacokinetic spline curve (Onset, Peak Potency, Half-Life)",
+    "dark-vellum apothecary prescription ledger with interactive embossed wax seal",
+    "authentic alchemical Opus stages (Nigredo, Albedo, Citrinitas, Rubedo)"
    ],
-   "recipe": "The apothecary shop atmosphere uses dark oak shelving frames accented with glowing fluid vials in emerald, amber, and violet. Each potion bottle is built using layered SVG silhouettes with animated liquid levels, accompanied by paper labels that depress when added to the cauldron mixing tray.",
+   "recipe": "Contrasts a steampunk/esoteric brass instrument console on the left with an aged parchment pharmacopoeia manuscript on the right.",
    "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1120,
+    "height": 780
    },
    "hasJs": true
   },

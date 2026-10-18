@@ -3,15 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orbit Border Button</title>
+<title>UI LAB — Conic Orbit Border Matrix (9 @property Shader Buttons)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
-  "title": "Orbit Border Button",
+  "title": "Orbit Border Button (9-FX Conic Matrix)",
   "category": "buttons",
   "themes": [
     "mesh",
-    "dark"
+    "dark",
+    "cyber"
   ],
   "tags": [
     "button",
@@ -19,169 +24,859 @@
     "conic-gradient",
     "@property",
     "glow",
-    "orbit"
+    "orbit",
+    "laser",
+    "mask-composite"
   ],
-  "description": "Call-to-action button with rotating conic-gradient border powered by CSS @property and an outer glowing duplicate blur.",
+  "description": "3x3 Photon-Orbit Button Laboratory showcasing 9 distinct rotating conic-gradient border architectures powered by CSS @property: Comet Trail, Bipolar Twin-Beam, Counter-Rotating Dual Rings, Chamfered Octagon, Strobe Segmented Dash, Cursor-Tracked Radar, Full-Spectrum Prism, Satellite Core, and Hold-to-Overdrive.",
   "techniques": [
-    "@property --angle",
-    "conic-gradient()",
-    "blur() glow layer",
-    "smooth hover transition",
-    "color-mix()"
+    "registered CSS @property --angle and --angle-rev for hardware-smooth conic interpolation",
+    "mask-composite: exclude for razor-sharp perimeter stroke isolation",
+    "dual counter-rotating concentric rings with phase interference",
+    "clip-path polygon chamfered geometry with angular conic illumination",
+    "interactive atan2() pointer-locked orbital aiming and hold-to-accelerate warp"
   ],
-  "recipe": "The core mechanism relies on registering the custom CSS property @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }. This allows smooth keyframe animation of the conic gradient rotation angle. A blurred duplicate pseudoelement placed behind generates the dynamic glowing aura.",
+  "recipe": "Registers @property --angle (<angle>) to animate conic-gradient() rotations natively on the compositor thread. Each of the 9 modules pairs a masked ::before border stroke with a blurred ::after bloom duplicate, controlled globally via CSS custom properties for speed, stroke width, and glow radius.",
   "preview": {
-    "mode": "center"
+    "mode": "page",
+    "width": 1080,
+    "height": 790
   }
 }
 </script>
 
 <style>
+  /* Register custom angle properties for smooth GPU conic-gradient rotation */
   @property --angle {
     syntax: "<angle>";
-    inherits: false;
+    inherits: true;
     initial-value: 0deg;
   }
 
-  * { box-sizing: border-box; }
+  @property --angle-rev {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 360deg;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --orbit-speed: 3.4s;
+    --border-thickness: 2px;
+    --aura-blur: 15px;
+    --aura-opacity: 0.65;
+  }
 
   body {
-    margin: 0;
     min-height: 100vh;
+    background:
+      radial-gradient(circle at 18% 15%, rgba(121, 40, 202, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 82% 85%, rgba(0, 223, 216, 0.10) 0%, transparent 45%),
+      #060911;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 18px 34px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  .orbit-lab-shell {
+    width: 100%;
+    max-width: 1050px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* ==========================================================================
+     TOP PHOTON CONTROL HUD
+     ========================================================================== */
+  .orbit-hud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    background: rgba(12, 17, 29, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 12px 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.6);
+  }
+
+  .hud-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hud-ring-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: conic-gradient(from var(--angle), #ff0077, #7928ca, #00dfd8, #ff0077);
+    animation: spinAngle 2.5s linear infinite;
+    padding: 3px;
+  }
+  .hud-ring-icon::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0c111d;
+  }
+
+  .hud-titles h1 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+  }
+
+  .hud-titles p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #64748b;
+  }
+
+  .hud-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hud-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(6, 9, 17, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 3px;
+  }
+
+  .hud-pill {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .hud-pill:hover { color: #ffffff; }
+  .hud-pill.active {
+    background: rgba(0, 223, 216, 0.16);
+    color: #2dd4bf;
+    box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.45);
+  }
+
+  .surge-btn {
+    background: linear-gradient(135deg, #ff0077 0%, #7928ca 55%, #00dfd8 100%);
+    border: none;
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(255, 0, 119, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .surge-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(0, 223, 216, 0.5);
+  }
+
+  /* ==========================================================================
+     3x3 ORBIT SHOWCASE GRID
+     ========================================================================== */
+  .orbit-matrix {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .orbit-cell {
+    background: rgba(11, 15, 25, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: 18px;
+    padding: 16px 18px 18px;
+    min-height: 196px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+    transition: border-color 0.25s ease;
+  }
+
+  .orbit-cell:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Subtle radial dot backdrop inside each cell */
+  .orbit-cell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 18px 18px;
+    pointer-events: none;
+  }
+
+  .cell-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .cell-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 7px;
+    border-radius: 5px;
+  }
+
+  .cell-spec {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  .cell-stage {
+    flex: 1;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #090d16;
-    font-family: system-ui, -apple-system, sans-serif;
-    gap: 20px;
-    padding: 20px;
+    position: relative;
+    z-index: 2;
+    padding: 12px 0;
   }
 
-  .button-group {
+  .cell-bottom {
+    width: 100%;
     display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: baseline;
+    z-index: 2;
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  .cell-bottom strong {
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  /* ==========================================================================
+     SHARED ORBIT BUTTON CORE ARCHITECTURE
+     ========================================================================== */
+  @keyframes spinAngle {
+    to { --angle: 360deg; }
+  }
+
+  @keyframes spinAngleRev {
+    to { --angle-rev: 0deg; }
   }
 
   .btn-orbit-wrap {
     position: relative;
     border-radius: 999px;
-    padding: 2px;
+    padding: var(--border-thickness);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+    animation: spinAngle var(--orbit-speed) linear infinite;
   }
 
-  /* Rotating border */
+  /* Sharp Perimeter Conic Border (::before) */
   .btn-orbit-wrap::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--angle),
-      transparent 0%,
-      #ff0077 15%,
-      #7928ca 40%,
-      #00dfd8 60%,
-      transparent 75%
-    );
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box, 
+    padding: var(--border-thickness);
+    background: var(--conic-stream);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    animation: rotate-orbit 3.5s linear infinite;
+    pointer-events: none;
+    z-index: 2;
   }
 
-  /* Glow blur behind */
+  /* Blurred Outer Glow Duplicate (::after) */
   .btn-orbit-wrap::after {
     content: "";
     position: absolute;
-    inset: -4px;
+    inset: -5px;
     border-radius: inherit;
-    background: conic-gradient(
-      from var(--angle),
-      transparent 0%,
-      #ff0077 15%,
-      #7928ca 40%,
-      #00dfd8 60%,
-      transparent 75%
-    );
-    filter: blur(14px);
-    opacity: 0.6;
+    background: var(--conic-stream);
+    filter: blur(var(--aura-blur));
+    opacity: var(--aura-opacity);
     z-index: -1;
-    animation: rotate-orbit 3.5s linear infinite;
-    transition: opacity 0.3s;
+    pointer-events: none;
+    transition: opacity 0.25s ease, filter 0.25s ease, inset 0.25s ease;
   }
 
-  .btn-orbit-wrap:hover::after {
+  .btn-orbit-wrap:hover::after,
+  .orbit-matrix.surge-active .btn-orbit-wrap::after {
     opacity: 1;
-    filter: blur(18px);
+    filter: blur(calc(var(--aura-blur) * 1.35));
+    inset: -8px;
   }
 
   .btn-orbit {
     position: relative;
-    z-index: 1;
-    background: #0e1422;
-    color: #f3f6fc;
+    z-index: 3;
+    background: #0b101d;
+    color: #f8fafc;
     border: 0;
-    padding: 14px 32px;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 999px;
+    padding: 13px 26px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    border-radius: inherit;
     cursor: pointer;
     letter-spacing: -0.01em;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    transition: background 0.25s, transform 0.2s;
+    gap: 9px;
+    transition: background 0.22s ease, transform 0.18s ease, box-shadow 0.22s ease;
   }
 
   .btn-orbit:hover {
-    background: #141d33;
+    background: #11192e;
     transform: scale(1.02);
   }
 
   .btn-orbit:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
   }
 
-  @keyframes rotate-orbit {
-    to {
-      --angle: 360deg;
-    }
-  }
+  /* ==========================================================================
+     9 UNIQUE CONIC-GRADIENT & @PROPERTY BUTTON VARIATIONS
+     ========================================================================== */
 
-  .btn-orbit-secondary::before,
-  .btn-orbit-secondary::after {
-    background: conic-gradient(
+  /* 01: Classic Single Comet Trail (Magenta -> Violet -> Cyan) */
+  .orb-01 {
+    --conic-stream: conic-gradient(
       from var(--angle),
       transparent 0%,
-      #38ef7d 20%,
-      #11998e 50%,
-      #00b4db 70%,
-      transparent 85%
+      #ff0077 18%,
+      #7928ca 42%,
+      #00dfd8 62%,
+      transparent 78%
     );
+  }
+
+  /* 02: Dual Bipolar Twin-Beam (2 Opposite Synchronized Beams) */
+  .orb-02 {
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      transparent 0deg,
+      #10b981 35deg,
+      #38bdf8 70deg,
+      transparent 95deg,
+      transparent 180deg,
+      #10b981 215deg,
+      #38bdf8 250deg,
+      transparent 275deg
+    );
+  }
+
+  /* 03: Counter-Rotating Concentric Dual Rings */
+  .orb-03 {
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      transparent 0%,
+      #f59e0b 25%,
+      #ef4444 45%,
+      transparent 60%
+    );
+    padding: 5px;
+  }
+  .orb-03-inner-ring {
+    position: absolute;
+    inset: 4px;
+    border-radius: inherit;
+    padding: var(--border-thickness);
+    background: conic-gradient(
+      from var(--angle-rev),
+      transparent 0%,
+      #38bdf8 25%,
+      #818cf8 45%,
+      transparent 60%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spinAngleRev calc(var(--orbit-speed) * 0.75) linear infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* 04: Cyber Chamfered Octagon (Clip-Path Polygon Border) */
+  .orb-04 {
+    border-radius: 0;
+    clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      transparent 10%,
+      #facc15 35%,
+      #f97316 55%,
+      transparent 75%
+    );
+  }
+  .orb-04 .btn-orbit {
+    border-radius: 0;
+    clip-path: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px);
+  }
+
+  /* 05: Strobe Segmented Dash Array (Repeating Conic Interference) */
+  .orb-05 {
+    --conic-stream:
+      conic-gradient(
+        from var(--angle),
+        transparent 0%,
+        #a855f7 30%,
+        #ec4899 55%,
+        transparent 75%
+      );
+  }
+  .orb-05 .dash-mask-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: var(--border-thickness);
+    background: repeating-conic-gradient(
+      from 0deg,
+      #0b101d 0deg 6deg,
+      transparent 6deg 12deg
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* 06: Cursor-Locked Radar Aiming Orbit */
+  .orb-06 {
+    animation: none;
+    --conic-stream: conic-gradient(
+      from var(--radar-angle, 45deg),
+      transparent 0deg,
+      rgba(56, 189, 248, 0.15) 40deg,
+      #38bdf8 85deg,
+      #ffffff 90deg,
+      transparent 96deg
+    );
+  }
+
+  /* 07: Full-Spectrum Prismatic Holo Ring */
+  .orb-07 {
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      #ff0055,
+      #ff9900,
+      #ffee00,
+      #00ff88,
+      #00ccff,
+      #7700ff,
+      #ff0055
+    );
+  }
+
+  /* 08: Pulsing Supernova Spark Head */
+  .orb-08 {
+    border-radius: 14px;
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      transparent 0deg,
+      rgba(99, 102, 241, 0.1) 180deg,
+      #6366f1 290deg,
+      #38bdf8 342deg,
+      #ffffff 356deg,
+      transparent 360deg
+    );
+  }
+
+  /* 09: Hold-to-Overdrive Warp Accelerator */
+  .orb-09 {
+    --conic-stream: conic-gradient(
+      from var(--angle),
+      transparent 0%,
+      #f43f5e 20%,
+      #fb923c 45%,
+      #fef08a 60%,
+      transparent 72%
+    );
+  }
+  .orb-09.warp-active::after {
+    opacity: 1;
+    inset: -12px;
+    filter: blur(24px);
+  }
+
+  /* Badge inside button */
+  .btn-kbd-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+  }
+
+  @media (max-width: 880px) {
+    .orbit-matrix {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 560px) {
+    .orbit-matrix {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="button-group">
-  <div class="btn-orbit-wrap">
-    <button class="btn-orbit">
-      <span>Get Started</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
-  </div>
+<div class="orbit-lab-shell">
 
-  <div class="btn-orbit-wrap btn-orbit-secondary">
-    <button class="btn-orbit">
-      <span>Explore Docs</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/></svg>
-    </button>
-  </div>
+  <!-- ====================================================================
+       TOP PHOTON ORBIT CONTROL HUD
+       ==================================================================== -->
+  <header class="orbit-hud">
+    <div class="hud-brand">
+      <div class="hud-ring-icon"></div>
+      <div class="hud-titles">
+        <h1>CONIC-GRADIENT &amp; @PROPERTY ORBIT MATRIX</h1>
+        <p>9 PERIMETER LIGHT-BEAM &amp; PHASE INTERFERENCE ARCHETYPES</p>
+      </div>
+    </div>
+
+    <div class="hud-controls">
+      <!-- Orbit Angular Velocity -->
+      <div class="hud-group" id="speedGroup">
+        <button class="hud-pill" data-speed="6s">Slow</button>
+        <button class="hud-pill active" data-speed="3.4s">Nominal</button>
+        <button class="hud-pill" data-speed="1.2s">Hyper</button>
+      </div>
+
+      <!-- Perimeter Stroke Width -->
+      <div class="hud-group" id="strokeGroup">
+        <button class="hud-pill" data-stroke="1.5px">1.5px</button>
+        <button class="hud-pill active" data-stroke="2px">2.0px</button>
+        <button class="hud-pill" data-stroke="3.5px">3.5px</button>
+      </div>
+
+      <!-- Synchronized Surge Trigger -->
+      <button class="surge-btn" id="surgeAllBtn">⚡ Photon Surge</button>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       3x3 ORBIT BORDER BUTTON MATRIX (9 UNIQUE EFFECTS)
+       ==================================================================== -->
+  <main class="orbit-matrix" id="orbitMatrix">
+
+    <!-- 01: Classic Comet Trail -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">01 // COMET TRAIL</span>
+        <span class="cell-spec">1× STREAM</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-01">
+          <button class="btn-orbit" type="button">
+            <span>Get Started</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Tri-Stop Spectral Tail</strong>
+        <span>360° Continuous</span>
+      </div>
+    </div>
+
+    <!-- 02: Dual Bipolar Twin-Beam -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">02 // TWIN DIPOLE</span>
+        <span class="cell-spec">0° &amp; 180°</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-02">
+          <button class="btn-orbit" type="button">
+            <span>Explore Docs</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Bipolar Dual Chasers</strong>
+        <span>Symmetric Orbit</span>
+      </div>
+    </div>
+
+    <!-- 03: Counter-Rotating Concentric Dual Rings -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">03 // DUAL CONTRA-ORBIT</span>
+        <span class="cell-spec">+ω / −ω</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-03">
+          <div class="orb-03-inner-ring"></div>
+          <button class="btn-orbit" type="button">
+            <span>Phase Collider</span>
+            <span class="btn-kbd-badge">2R</span>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Opposing Concentric Rings</strong>
+        <span>Cross-Interference</span>
+      </div>
+    </div>
+
+    <!-- 04: Cyber Chamfered Octagon -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">04 // CHAMFERED BEVEL</span>
+        <span class="cell-spec">CLIP-POLYGON</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-04">
+          <button class="btn-orbit" type="button">
+            <span>Deploy Protocol</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Angular Faceted Perimeter</strong>
+        <span>8-Vertex Path</span>
+      </div>
+    </div>
+
+    <!-- 05: Segmented Strobe Dash Array -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">05 // STROBE SEGMENTS</span>
+        <span class="cell-spec">6° PITCH</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-05">
+          <div class="dash-mask-overlay"></div>
+          <button class="btn-orbit" type="button">
+            <span>Pulse Telemetry</span>
+            <span class="btn-kbd-badge">SYNC</span>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Segmented Fiber Optic Ring</strong>
+        <span>Quantized Grating</span>
+      </div>
+    </div>
+
+    <!-- 06: Cursor-Locked Radar Orbit -->
+    <div class="orbit-cell" id="radarCell">
+      <div class="cell-top">
+        <span class="cell-tag">06 // CURSOR RADAR</span>
+        <span class="cell-spec" id="radarReadout">θ: 45°</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-06" id="radarWrap">
+          <button class="btn-orbit" type="button">
+            <span>Vector Lock</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Pointer-Steered Azimuth</strong>
+        <span>Move Cursor Here</span>
+      </div>
+    </div>
+
+    <!-- 07: Full-Spectrum Prismatic Halo -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">07 // PRISM SPECTRUM</span>
+        <span class="cell-spec">360° HUE</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-07">
+          <button class="btn-orbit" type="button">
+            <span>Chromatic AI</span>
+            <span class="btn-kbd-badge">PRO</span>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Continuous Iridescent Loop</strong>
+        <span>Zero-Gap Conic</span>
+      </div>
+    </div>
+
+    <!-- 08: Supernova Rectilinear Spark -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">08 // PHOTON SPARK</span>
+        <span class="cell-spec">CORNER FLASH</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-08">
+          <button class="btn-orbit" type="button">
+            <span>Compile Kernel</span>
+            <span class="btn-kbd-badge">⌘K</span>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Sharp Leading-Edge Head</strong>
+        <span>300° Long Decay</span>
+      </div>
+    </div>
+
+    <!-- 09: Hold-to-Overdrive Warp -->
+    <div class="orbit-cell">
+      <div class="cell-top">
+        <span class="cell-tag">09 // WARP OVERDRIVE</span>
+        <span class="cell-spec" id="warpRpmText">RPM: 1.0x</span>
+      </div>
+      <div class="cell-stage">
+        <div class="btn-orbit-wrap orb-09" id="warpWrap">
+          <button class="btn-orbit" id="warpBtn" type="button">
+            <span id="warpBtnLabel">Hold to Overdrive</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cell-bottom">
+        <strong>Hold-Triggered Acceleration</strong>
+        <span>Press &amp; Hold</span>
+      </div>
+    </div>
+
+  </main>
+
 </div>
 
+<script>
+(() => {
+  // =========================================================================
+  // 1. MODULE 06: CURSOR-LOCKED RADAR ORBIT (ATAN2 TRACKING)
+  // =========================================================================
+  const radarCell = document.getElementById('radarCell');
+  const radarWrap = document.getElementById('radarWrap');
+  const radarReadout = document.getElementById('radarReadout');
+
+  radarCell.addEventListener('pointermove', (e) => {
+    const rect = radarWrap.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rad = Math.atan2(e.clientY - cy, e.clientX - cx);
+    let deg = Math.round((rad * 180) / Math.PI);
+    const conicDeg = (deg + 360) % 360;
+    radarWrap.style.setProperty('--radar-angle', `${conicDeg}deg`);
+    radarReadout.textContent = `θ: ${conicDeg}°`;
+  });
+
+  // =========================================================================
+  // 2. MODULE 09: HOLD-TO-OVERDRIVE WARP ACCELERATOR
+  // =========================================================================
+  const warpWrap = document.getElementById('warpWrap');
+  const warpBtn = document.getElementById('warpBtn');
+  const warpBtnLabel = document.getElementById('warpBtnLabel');
+  const warpRpmText = document.getElementById('warpRpmText');
+
+  function startWarp() {
+    warpWrap.style.animationDuration = '0.38s';
+    warpWrap.classList.add('warp-active');
+    warpBtnLabel.textContent = 'WARP ENGAGED!';
+    warpRpmText.textContent = 'RPM: 9.2x MAX';
+  }
+
+  function stopWarp() {
+    warpWrap.style.animationDuration = '';
+    warpWrap.classList.remove('warp-active');
+    warpBtnLabel.textContent = 'Hold to Overdrive';
+    warpRpmText.textContent = 'RPM: 1.0x';
+  }
+
+  warpBtn.addEventListener('pointerdown', startWarp);
+  window.addEventListener('pointerup', stopWarp);
+
+  // =========================================================================
+  // 3. TOP HUD CONTROLS (ORBIT SPEED, STROKE THICKNESS, PHOTON SURGE)
+  // =========================================================================
+  document.querySelectorAll('#speedGroup .hud-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#speedGroup .hud-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.documentElement.style.setProperty('--orbit-speed', btn.dataset.speed);
+    });
+  });
+
+  document.querySelectorAll('#strokeGroup .hud-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#strokeGroup .hud-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.documentElement.style.setProperty('--border-thickness', btn.dataset.stroke);
+    });
+  });
+
+  const orbitMatrix = document.getElementById('orbitMatrix');
+  document.getElementById('surgeAllBtn').addEventListener('click', () => {
+    orbitMatrix.classList.add('surge-active');
+    const prevSpeed = getComputedStyle(document.documentElement).getPropertyValue('--orbit-speed');
+    document.documentElement.style.setProperty('--orbit-speed', '0.55s');
+    setTimeout(() => {
+      orbitMatrix.classList.remove('surge-active');
+      document.documentElement.style.setProperty('--orbit-speed', prevSpeed);
+    }, 1100);
+  });
+})();
+</script>
 </body>
 </html>

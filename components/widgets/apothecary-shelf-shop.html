@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Apothecary - Reagents Shelf & Tincture Emporium</title>
+<title>UI LAB — Royal Apothecary Athanor & Pharmacopoeia Folio</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script type="application/json" data-uilab-meta>
 {
-  "title": "Apothecary Reagents & Tinctures",
+  "title": "Alchemical Athanor & Pharmacopoeia Folio",
   "category": "widgets",
   "themes": [
     "dark",
@@ -20,62 +20,59 @@
   "tags": [
     "apothecary",
     "alchemy",
-    "bottles",
-    "tinctures",
+    "grimoire",
+    "manometer",
     "potions",
-    "vials",
-    "labels",
-    "emerald",
-    "amber",
-    "violet",
-    "shop"
+    "pharmacopoeia",
+    "distillation",
+    "toxicity",
+    "svg-tubes"
   ],
-  "description": "Old-world apothecary workshop shelf with glowing potion vials, aged parchment bottle labels, fluid level indicators, and an interactive cauldron brewing ledger.",
+  "description": "Esoteric alchemical distillation apparatus paired with an illuminated dark-vellum Pharmacopoeia prescription folio. Features animated capillary reagent tubes, a rotary brass pressure manometer, Magnum Opus stages, and a live SVG pharmacokinetic absorption curve.",
   "techniques": [
-    "glass vial reflections with SVG liquid gradients",
-    "aged apothecary paper label borders with serif typography",
-    "cauldron bubbling vapor particle animation",
-    "tactile copper shelf hardware accents",
-    "interactive cart mixing drawer with gold calculation"
+    "arched brass alembic chamber with animated SVG capillary infusion tubes",
+    "rotary analog pressure manometer needle driven by Athanor heat slider",
+    "dynamic SVG pharmacokinetic spline curve (Onset, Peak Potency, Half-Life)",
+    "dark-vellum apothecary prescription ledger with interactive embossed wax seal",
+    "authentic alchemical Opus stages (Nigredo, Albedo, Citrinitas, Rubedo)"
   ],
-  "recipe": "The apothecary shop atmosphere uses dark oak shelving frames accented with glowing fluid vials in emerald, amber, and violet. Each potion bottle is built using layered SVG silhouettes with animated liquid levels, accompanied by paper labels that depress when added to the cauldron mixing tray.",
+  "recipe": "Contrasts a steampunk/esoteric brass instrument console on the left with an aged parchment pharmacopoeia manuscript on the right.",
   "preview": {
     "mode": "page",
-    "width": 1000,
-    "height": 660
+    "width": 1120,
+    "height": 780
   }
 }
 </script>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --wood-shelf: #21150e;
-    --wood-edge: #432a1b;
-    --copper-warm: #c87d4a;
-    --copper-glow: rgba(200, 125, 74, 0.25);
-    --emerald-fluid: #10b981;
-    --emerald-glow: rgba(16, 185, 129, 0.4);
-    --amber-fluid: #f59e0b;
-    --amber-glow: rgba(245, 158, 11, 0.4);
-    --violet-fluid: #a855f7;
-    --violet-glow: rgba(168, 85, 247, 0.4);
-    --cyan-fluid: #06b6d4;
-    --parchment-label: #f4ecda;
-    --label-border: #7d654a;
-    --ink-label: #2e1d11;
+    --bg-laboratory: #07090a;
+    --brass-dark: #3d301e;
+    --brass-mid: #8c6f43;
+    --brass-light: #d8b578;
+    --copper-warm: #c96f3b;
+    --vellum-dark: #171411;
+    --vellum-mid: #211c17;
+    --vellum-border: #4a3d2e;
+    --ink-gold: #e6c687;
+    --ink-parchment: #efe6d5;
+    --ink-muted: #9c8f7a;
+    --fluid-main: #f43f5e;
+    --fluid-glow: rgba(244, 63, 94, 0.32);
+    --tox-color: #10b981;
   }
 
   body {
-    margin: 0;
     min-height: 100vh;
-    background:
-      /* Warm candlelight and bubbling cauldron glow */
-      radial-gradient(circle at 50% 90%, rgba(245, 158, 11, 0.25) 0%, rgba(168, 85, 247, 0.15) 30%, transparent 60%),
-      radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 45%),
-      linear-gradient(180deg, #0e0a07 0%, #17100b 50%, #090604 100%);
-    color: #f7ead2;
+    background-color: var(--bg-laboratory);
+    background-image:
+      radial-gradient(circle at 28% 35%, var(--fluid-glow) 0%, transparent 45%),
+      radial-gradient(circle at 75% 70%, rgba(216, 181, 120, 0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #050607 0%, #0b0e10 50%, #050607 100%);
+    color: var(--ink-parchment);
     font-family: 'Plus Jakarta Sans', sans-serif;
     display: flex;
     align-items: center;
@@ -84,632 +81,1381 @@
     overflow-x: hidden;
   }
 
-  /* Apothecary Shelf Container */
-  .apothecary-cabinet {
-    width: 100%;
-    max-width: 960px;
-    background: linear-gradient(180deg, #2a1a11 0%, #150d08 100%);
-    border: 3px solid #573922;
-    border-radius: 14px;
-    padding: 22px 26px;
-    box-shadow:
-      0 25px 60px rgba(0, 0, 0, 0.95),
-      0 0 40px rgba(245, 158, 11, 0.12),
-      inset 0 1px 1px rgba(255, 220, 150, 0.2),
-      inset 0 0 30px rgba(0, 0, 0, 0.8);
+  /* Subtle Parchment & Soot Grain */
+  .alchemy-grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Main Asymmetric Laboratory Layout */
+  .alchemical-sanctum {
     position: relative;
-    z-index: 5;
-  }
-
-  /* Header */
-  .cabinet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #3c2415;
-    padding-bottom: 14px;
-    margin-bottom: 18px;
-  }
-
-  .brand-apothecary {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .mortar-badge {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: radial-gradient(circle at 40% 30%, #54361e 0%, #201309 100%);
-    border: 1.5px solid var(--copper-warm);
+    z-index: 1;
+    width: 100%;
+    max-width: 1140px;
     display: grid;
-    place-items: center;
-    font-size: 22px;
-    box-shadow: 0 0 15px var(--copper-glow);
+    grid-template-columns: 1.18fr 1fr;
+    gap: 28px;
+    align-items: stretch;
   }
 
-  .shop-title h1 {
-    margin: 0;
-    font-family: 'Cinzel', serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #ffffff 0%, #ffde9e 50%, #c87d4a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .shop-title p {
-    margin: 2px 0 0;
-    font-size: 11.5px;
-    color: #a88a6d;
-  }
-
-  .herbal-steam-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid #4a301d;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11.5px;
-    color: #ffd899;
-  }
-
-  .steam-dot {
-    width: 8px;
-    height: 8px;
-    background: #10b981;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #10b981;
-    animation: steamGlow 2s infinite alternate;
-  }
-
-  @keyframes steamGlow {
-    from { opacity: 0.5; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1.2); }
-  }
-
-  /* Two-column Layout: Bottles Grid + Cauldron Tray */
-  .apothecary-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 24px;
-  }
-
-  /* Left: Shelves with Bottles */
-  .shelves-panel {
-    background: rgba(13, 8, 5, 0.65);
-    border: 1px solid #3c2415;
-    border-radius: 10px;
-    padding: 18px;
+  /* =========================================================
+     LEFT INSTRUMENT: BRASS ATHANOR & ALEMBIC APPARATUS
+     ========================================================= */
+  .athanor-apparatus {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(140, 111, 67, 0.12) 0%, transparent 60%),
+      linear-gradient(180deg, #111618 0%, #090c0e 100%);
+    border: 2px solid var(--brass-dark);
+    border-radius: 24px 24px 12px 12px;
+    padding: 20px 22px;
+    box-shadow:
+      0 30px 70px rgba(0, 0, 0, 0.95),
+      inset 0 1px 0 rgba(216, 181, 120, 0.25),
+      inset 0 0 40px rgba(0, 0, 0, 0.85);
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 16px;
+    position: relative;
   }
 
-  .shelf-bar {
-    border-bottom: 4px solid #4a2f1b;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.6);
-    padding-bottom: 12px;
+  /* Riveted Brass Rim Decoration */
+  .athanor-apparatus::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(216, 181, 120, 0.2);
+    border-radius: 18px 18px 8px 8px;
+    pointer-events: none;
   }
 
-  .vials-row {
+  /* Top Specimen Selector (Concoction Vials) */
+  .specimen-rack {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
+    z-index: 2;
   }
 
-  /* Apothecary Bottle Card */
-  .bottle-card {
-    background: #1a100a;
-    border: 1px solid #3d2616;
-    border-radius: 8px;
-    padding: 12px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .specimen-card {
+    background: rgba(7, 10, 12, 0.85);
+    border: 1px solid #263034;
+    border-radius: 10px;
+    padding: 9px 12px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  }
-
-  .bottle-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--copper-warm);
-    background: #24160e;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.6), 0 0 15px rgba(200, 125, 74, 0.25);
-  }
-
-  .bottle-card.is-selected {
-    border-color: #ffd899;
-    box-shadow: 0 0 16px rgba(255, 216, 153, 0.35);
-  }
-
-  /* Glass Bottle Illustration */
-  .vial-vessel {
-    width: 50px;
-    height: 75px;
-    position: relative;
     display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.22s ease;
+    text-align: left;
+  }
+
+  .specimen-card:hover {
+    border-color: var(--brass-mid);
+    transform: translateY(-1px);
+  }
+
+  .specimen-card.active {
+    background: linear-gradient(135deg, rgba(48, 36, 22, 0.65) 0%, rgba(12, 16, 19, 0.95) 100%);
+    border-color: var(--brass-light);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 12px var(--fluid-glow);
+  }
+
+  .specimen-orb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #060809;
+    border: 1px solid var(--brass-mid);
+    display: flex;
+    align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    font-size: 15px;
+    flex-shrink: 0;
   }
 
-  .cork-top {
-    position: absolute;
-    top: 0;
-    width: 14px;
-    height: 8px;
-    background: #9d683a;
-    border-radius: 2px 2px 0 0;
-    border: 1px solid #5d3a1a;
+  .specimen-card.active .specimen-orb {
+    border-color: var(--fluid-main);
+    box-shadow: 0 0 10px var(--fluid-glow);
   }
 
-  .bottle-glass {
-    position: absolute;
-    bottom: 0;
-    width: 44px;
-    height: 62px;
-    border: 1.5px solid rgba(255, 255, 255, 0.25);
-    border-radius: 6px 6px 12px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-  }
-
-  .fluid-wash {
-    width: 100%;
-    transition: height 0.4s ease;
-  }
-
-  .fluid-wash.emerald {
-    height: 68%;
-    background: linear-gradient(180deg, #34d399 0%, #059669 100%);
-    box-shadow: 0 0 12px var(--emerald-glow);
-  }
-
-  .fluid-wash.amber {
-    height: 82%;
-    background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
-    box-shadow: 0 0 12px var(--amber-glow);
-  }
-
-  .fluid-wash.violet {
-    height: 60%;
-    background: linear-gradient(180deg, #c084fc 0%, #7e22ce 100%);
-    box-shadow: 0 0 12px var(--violet-glow);
-  }
-
-  .fluid-wash.cyan {
-    height: 75%;
-    background: linear-gradient(180deg, #67e8f9 0%, #0891b2 100%);
-    box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
-  }
-
-  /* Aged Paper Label on Vial */
-  .vial-label {
-    background: var(--parchment-label);
-    border: 1px solid var(--label-border);
-    border-radius: 3px;
-    padding: 3px 6px;
-    text-align: center;
-    width: 100%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .label-title {
-    font-family: 'MedievalSharp', serif;
+  .specimen-label h4 {
+    font-family: 'Cinzel', serif;
     font-size: 11px;
     font-weight: 700;
-    color: var(--ink-label);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--ink-parchment);
+    letter-spacing: 0.4px;
   }
 
-  .label-price {
-    font-family: 'Cinzel', serif;
+  .specimen-label span {
     font-size: 9.5px;
-    color: #7b4b1a;
-    font-weight: 700;
-    margin-top: 1px;
+    color: var(--ink-muted);
+    display: block;
   }
 
-  /* Right: Cauldron Crucible & Mixing Tray */
-  .cauldron-panel {
-    background: rgba(13, 8, 5, 0.65);
-    border: 1px solid #3c2415;
-    border-radius: 10px;
-    padding: 18px 20px;
+  /* Magnum Opus Stage Selector Bar (Nigredo -> Rubedo) */
+  .opus-transmutation-bar {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .section-subhead {
-    font-family: 'Cinzel', serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #ffd899;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .cauldron-stage {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 12px 0;
+    justify-content: space-between;
+    background: #07090b;
+    border: 1px solid #222a2e;
+    border-radius: 30px;
+    padding: 5px 8px;
+    z-index: 2;
   }
 
-  /* Cast Iron Cauldron SVG */
-  .cauldron-pot {
-    width: 90px;
-    height: 70px;
-    position: relative;
+  .opus-step {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #7d898e;
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 6px 6px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    gap: 5px;
   }
 
-  .cauldron-svg {
+  .opus-step:hover {
+    color: var(--ink-parchment);
+  }
+
+  .opus-step.active {
+    background: linear-gradient(180deg, #2d2316 0%, #17120b 100%);
+    color: var(--brass-light);
+    border: 1px solid var(--brass-mid);
+    box-shadow: 0 0 12px rgba(216, 181, 120, 0.25);
+  }
+
+  .opus-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* Central Arched Alembic Dome + Capillary Tubes */
+  .alembic-chamber-wrap {
+    position: relative;
+    height: 255px;
+    display: grid;
+    grid-template-columns: 1fr 220px 1fr;
+    align-items: center;
+    background:
+      radial-gradient(circle at 50% 50%, var(--fluid-glow) 0%, rgba(7, 9, 11, 0.95) 68%);
+    border: 1px solid #273136;
+    border-radius: 18px;
+    padding: 14px;
+    overflow: hidden;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.95);
+  }
+
+  /* Animated SVG Capillary Pipes Connecting Mortars to Vessel */
+  .capillary-network-svg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.8));
+    pointer-events: none;
+    z-index: 1;
   }
 
-  .vapor-cloud {
-    position: absolute;
-    top: -12px;
-    width: 50px;
-    height: 14px;
-    background: radial-gradient(ellipse, rgba(16, 185, 129, 0.6) 0%, transparent 70%);
+  .pipe-flow {
+    stroke-dasharray: 6 6;
+    animation: flowPulse 1.4s linear infinite;
+  }
+
+  @keyframes flowPulse {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Left Telemetry Column Inside Chamber: Rotary Pressure Manometer */
+  .chamber- wing-left {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brass-manometer {
+    width: 112px;
+    height: 112px;
     border-radius: 50%;
-    filter: blur(4px);
-    animation: vaporFloat 2.5s infinite alternate ease-in-out;
+    background: radial-gradient(circle at 50% 50%, #181d20 0%, #090b0d 100%);
+    border: 3px solid var(--brass-mid);
+    box-shadow:
+      0 6px 16px rgba(0,0,0,0.8),
+      inset 0 0 15px rgba(0,0,0,0.9);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
-  @keyframes vaporFloat {
-    0% { transform: scale(0.9) translateY(0); opacity: 0.6; }
-    100% { transform: scale(1.3) translateY(-8px); opacity: 0.95; }
+  .manometer-svg {
+    width: 96px;
+    height: 96px;
   }
 
-  /* Active Recipe Info */
-  .recipe-dossier {
-    background: #170e08;
-    border: 1px solid #3d2616;
-    border-radius: 6px;
-    padding: 10px 12px;
-    width: 100%;
-    margin-bottom: 14px;
+  .manometer-needle {
+    transform-origin: 50px 54px;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .recipe-name {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
+  .manometer-readout {
+    position: absolute;
+    bottom: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
     font-weight: 700;
-    color: #ffd899;
-    margin-bottom: 3px;
+    color: var(--brass-light);
+    background: #060809;
+    padding: 1px 6px;
+    border: 1px solid #3c3122;
+    border-radius: 4px;
   }
 
-  .recipe-notes {
-    font-size: 11px;
-    color: #9f8369;
-    line-height: 1.4;
+  .manometer-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-align: center;
   }
 
-  /* Reagent Basket List */
-  .reagent-tray {
+  /* Center Arched Brass Bell Jar Holding the Potion */
+  .alembic-bell-jar {
+    position: relative;
+    z-index: 2;
+    height: 225px;
+    border: 2px solid var(--brass-mid);
+    border-radius: 110px 110px 16px 16px;
+    background:
+      radial-gradient(circle at 50% 60%, var(--fluid-glow) 0%, rgba(10, 14, 17, 0.4) 70%);
+    box-shadow:
+      inset 0 0 25px rgba(0, 0, 0, 0.9),
+      0 0 25px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Graduation Ticks on Glass Bell Jar */
+  .jar-graduations {
+    position: absolute;
+    right: 10px;
+    top: 55px;
+    bottom: 25px;
+    width: 10px;
+    border-right: 1px solid rgba(216, 181, 120, 0.35);
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(216, 181, 120, 0.4) 0px,
+      rgba(216, 181, 120, 0.4) 1px,
+      transparent 1px,
+      transparent 12px
+    );
+    pointer-events: none;
+  }
+
+  .vessel-svg-main {
+    width: 195px;
+    height: 175px;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 16px var(--fluid-glow));
+    transition: transform 0.3s ease;
+  }
+
+  .alembic-bell-jar:hover .vessel-svg-main {
+    transform: scale(1.06) translateY(-3px);
+  }
+
+  .alch-bubble {
+    animation: bubbleRise 2.5s infinite ease-in;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .alch-bubble.b2 { animation-delay: 0.8s; animation-duration: 2.1s; }
+  .alch-bubble.b3 { animation-delay: 1.5s; animation-duration: 2.9s; }
+
+  @keyframes bubbleRise {
+    0% { transform: translateY(8px) scale(0.6); opacity: 0; }
+    40% { opacity: 0.9; }
+    100% { transform: translateY(-26px) scale(1.2); opacity: 0; }
+  }
+
+  /* Right Wing Inside Chamber: Solvent Suspension Selector */
+  .chamber-wing-right {
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-bottom: 16px;
+    padding-left: 10px;
   }
 
-  .tray-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #201309;
-    border: 1px solid #432918;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 11.5px;
-  }
-
-  .tray-item span:first-child {
-    color: #e8d7be;
-  }
-
-  .tray-item span:last-child {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    color: #ffd899;
-  }
-
-  /* Total & Purchase Button */
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: #ffd899;
-    margin-bottom: 12px;
-    padding-top: 8px;
-    border-top: 1px dashed #432918;
-  }
-
-  .brew-btn {
-    width: 100%;
-    font-family: 'Cinzel', serif;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+  .wing-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
     text-transform: uppercase;
-    padding: 12px;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
+    margin-bottom: 2px;
+  }
+
+  .solvent-pill {
+    background: rgba(9, 13, 15, 0.9);
+    border: 1px solid #283338;
     border-radius: 6px;
-    background: linear-gradient(180deg, #c87d4a 0%, #894b23 100%);
-    border: 1px solid #f6b586;
-    border-bottom: 3px solid #48230b;
-    color: #ffffff;
+    padding: 6px 10px;
+    color: #9ba8ae;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.7), 0 0 15px rgba(200, 125, 74, 0.3);
-    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.16s ease;
+  }
+
+  .solvent-pill:hover {
+    border-color: var(--brass-mid);
+    color: #fff;
+  }
+
+  .solvent-pill.active {
+    background: rgba(61, 48, 30, 0.45);
+    border-color: var(--brass-light);
+    color: var(--ink-gold);
+    box-shadow: inset 0 0 8px rgba(216, 181, 120, 0.2);
+  }
+
+  /* Athanor Heat Burner Slider Control */
+  .burner-control-strip {
+    background: #080b0d;
+    border: 1px solid #232c30;
+    border-radius: 10px;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 2;
+  }
+
+  .burner-label {
+    min-width: 145px;
+  }
+
+  .burner-label span {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
+    display: block;
+  }
+
+  .burner-label strong {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--copper-warm);
+  }
+
+  .burner-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: linear-gradient(90deg, #0ea5e9 0%, #10b981 40%, #f59e0b 75%, #ef4444 100%);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .burner-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #181410;
+    border: 2px solid var(--brass-light);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    cursor: grab;
+  }
+
+  .burner-regime-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(201, 111, 59, 0.14);
+    border: 1px solid var(--copper-warm);
+    color: #fdba74;
+    white-space: nowrap;
+  }
+
+  /* Bottom Circular Reagent Mortars (Feed into Capillary Tubes) */
+  .mortars-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    z-index: 2;
+  }
+
+  .mortar-bowl {
+    background: radial-gradient(circle at 50% 0%, #1b2226 0%, #0b0e10 100%);
+    border: 1px solid #283236;
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .mortar-bowl:hover {
+    border-color: var(--brass-mid);
+  }
+
+  .mortar-bowl.active {
+    border-color: var(--brass-light);
+    background: radial-gradient(circle at 50% 0%, rgba(78, 60, 34, 0.45) 0%, #0b0e10 100%);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 230, 175, 0.25);
+  }
+
+  /* Top Valve Nozzle Connecting to Capillary Pipe */
+  .mortar-valve {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #1e2629;
+    border: 2px solid #47565c;
+    margin-top: -15px;
+    margin-bottom: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .mortar-bowl.active .mortar-valve {
+    background: var(--fluid-main);
+    border-color: #fff;
+    box-shadow: 0 0 10px var(--fluid-main);
+  }
+
+  .mortar-icon-ring {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #07090a;
+    border: 1px dashed var(--brass-mid);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 17px;
+  }
+
+  .mortar-bowl h5 {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-parchment);
+  }
+
+  .mortar-bowl p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--ink-gold);
+  }
+
+  /* =========================================================
+     RIGHT PANEL: APOTHECARY PHARMACOPOEIA FOLIO (GRIMOIRE)
+     ========================================================= */
+  .pharmacopoeia-folio {
+    background:
+      radial-gradient(circle at 85% 15%, rgba(197, 160, 99, 0.08) 0%, transparent 45%),
+      linear-gradient(165deg, #1d1915 0%, #13100d 55%, #0e0c0a 100%);
+    border: 1px solid #574734;
+    /* Clipped Manuscript Corners */
+    clip-path: polygon(
+      0 14px, 14px 0,
+      calc(100% - 14px) 0, 100% 14px,
+      100% calc(100% - 14px), calc(100% - 14px) 100%,
+      14px 100%, 0 calc(100% - 14px)
+    );
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: 0 28px 65px rgba(0, 0, 0, 0.95);
+  }
+
+  /* Double Ruled Manuscript Inner Border */
+  .pharmacopoeia-folio::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(216, 181, 120, 0.22);
+    outline: 1px solid rgba(216, 181, 120, 0.08);
+    outline-offset: -4px;
+    pointer-events: none;
+  }
+
+  /* Top Manuscript Archival Header */
+  .folio-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #382e23;
+    padding-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
+
+  .planetary-symbols {
+    letter-spacing: 4px;
+    color: var(--brass-light);
+    font-size: 12px;
+  }
+
+  /* Grimoire Title & Classification */
+  .folio-title-section {
+    padding: 12px 0;
+    border-bottom: 2px double #3e3225;
+    position: relative;
+  }
+
+  .folio-category-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #c5ab86;
+  }
+
+  .folio-main-title {
+    font-family: 'Cinzel', serif;
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--ink-parchment);
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+    margin-top: 2px;
+    text-shadow: 0 0 18px var(--fluid-glow);
+  }
+
+  .folio-formula-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .alch-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: rgba(216, 181, 120, 0.08);
+    border: 1px solid #52422f;
+    color: var(--ink-gold);
+  }
+
+  /* Rx Prescription Table (Two-Column Apothecary Readout) */
+  .rx-prescription-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #33291e;
+  }
+
+  .rx-stat-card {
+    background: rgba(9, 8, 6, 0.55);
+    border-left: 3px solid var(--fluid-main);
+    padding: 8px 12px;
+  }
+
+  .rx-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
+  }
+
+  .rx-stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink-parchment);
+    margin: 2px 0;
+  }
+
+  .rx-stat-breakdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--brass-light);
+  }
+
+  /* Live SVG Pharmacokinetic Absorption Curve (Unique to Alchemy!) */
+  .kinetics-graph-box {
+    padding: 10px 0;
+    border-bottom: 1px solid #33291e;
+  }
+
+  .kinetics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #c2b097;
+    margin-bottom: 6px;
+  }
+
+  .kinetics-svg-wrap {
+    background: rgba(8, 7, 6, 0.7);
+    border: 1px solid #2e251c;
+    height: 76px;
+    position: relative;
+    padding: 4px;
+  }
+
+  .kinetics-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .kinetics-axis-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #7d705f;
+    margin-top: 4px;
+  }
+
+  /* Macerated Formula Notes & Botanical Ledger */
+  .folio-ledger-notes {
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
-  .brew-btn:hover {
-    background: linear-gradient(180deg, #dd8f5a 0%, #9e592c 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.8), 0 0 25px rgba(200, 125, 74, 0.5);
+  .ledger-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.38;
+    color: #dcd0bc;
   }
 
-  .brew-btn:active {
-    transform: translateY(2px);
-    border-bottom-width: 1px;
+  .steeped-list-box {
+    background: rgba(10, 9, 7, 0.5);
+    border: 1px dashed #46392b;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--ink-gold);
+    line-height: 1.45;
+  }
+
+  /* Segmented Bio-Toxicity Meter */
+  .bio-toxicity-section {
+    padding: 8px 0;
+    border-top: 1px solid #33291e;
+  }
+
+  .tox-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .tox-segments {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    height: 9px;
+  }
+
+  .tox-seg {
+    background: #14110e;
+    border: 1px solid #332a20;
+    transition: all 0.2s ease;
+  }
+
+  .tox-seg.filled {
+    background: var(--tox-color);
+    border-color: #fff;
+    box-shadow: 0 0 6px var(--tox-color);
+  }
+
+  /* Bottom Footer: Guild Valuation + Interactive Wax Stamp Seal */
+  .folio-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 2px double #3e3225;
+  }
+
+  .apothecary-tariff span {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
+    display: block;
+  }
+
+  .apothecary-tariff strong {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    color: var(--ink-gold);
+  }
+
+  /* Embossed Circular Wax Seal Button */
+  .wax-seal-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+    border: 2px solid #d97736;
+    border-radius: 40px;
+    padding: 6px 16px 6px 8px;
+    color: #fecdd3;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.8),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .wax-seal-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.5);
+  }
+
+  .wax-emblem {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #991b1b;
+    border: 1px dashed #fca5a5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  @media (max-width: 960px) {
+    .alchemical-sanctum {
+      grid-template-columns: 1fr;
+      max-width: 580px;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="apothecary-cabinet">
-  <!-- Header -->
-  <div class="cabinet-header">
-    <div class="brand-apothecary">
-      <div class="mortar-badge">🌿</div>
-      <div class="shop-title">
-        <h1>Belladonna & Copper Apothecary</h1>
-        <p>Master Herbalist Karen • Wild-Harvested Mountain Tinctures</p>
-      </div>
+<div class="alchemy-grain"></div>
+
+<div class="alchemical-sanctum">
+
+  <!-- =====================================================
+       LEFT CONSOLE: BRASS ATHANOR & CAPILLARY APPARATUS
+       ===================================================== -->
+  <section class="athanor-apparatus">
+
+    <!-- 1. Specimen Selection Shelf -->
+    <div class="specimen-rack" id="specimenRack">
+      <button class="specimen-card active" data-school="elixir">
+        <div class="specimen-orb">🩸</div>
+        <div class="specimen-label">
+          <h4>Sanguine Panacea</h4>
+          <span>Restorative Draught</span>
+        </div>
+      </button>
+
+      <button class="specimen-card" data-school="mutagen">
+        <div class="specimen-orb">🧪</div>
+        <div class="specimen-label">
+          <h4>Wyrm-Bile Vitriol</h4>
+          <span>Corrosive Venom</span>
+        </div>
+      </button>
+
+      <button class="specimen-card" data-school="astral">
+        <div class="specimen-orb">🌌</div>
+        <div class="specimen-label">
+          <h4>Nocturne Tincture</h4>
+          <span>Astral Mind Phial</span>
+        </div>
+      </button>
     </div>
 
-    <div class="herbal-steam-pill">
-      <div class="steam-dot"></div>
-      <span id="shopNotice">Cauldron Simmering (94°C)</span>
-    </div>
-  </div>
-
-  <!-- Main Grid -->
-  <div class="apothecary-grid">
-    <!-- Left: Bottle Shelves -->
-    <div class="shelves-panel">
-      <!-- Top Shelf -->
-      <div class="shelf-bar">
-        <div class="vials-row">
-          <div class="bottle-card is-selected" data-title="Basilisk Venom" data-price="24" data-type="emerald" data-desc="Potent emerald alkaloid extracted from desert drakes. Dissolves organic armor.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash emerald"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Basilisk Venom</div>
-              <div class="label-price">24 Silver</div>
-            </div>
-          </div>
-
-          <div class="bottle-card" data-title="Solar Honey" data-price="18" data-type="amber" data-desc="Fermented golden comb infused with mountain marigolds. Heals fatigue and burns.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash amber"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Solar Honey</div>
-              <div class="label-price">18 Silver</div>
-            </div>
-          </div>
-
-          <div class="bottle-card" data-title="Moonshade Oil" data-price="32" data-type="violet" data-desc="Nocturnal distilling of shadow lilies. Quiets footsteps and clouds perception.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash violet"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Moonshade Oil</div>
-              <div class="label-price">32 Silver</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Shelf -->
-      <div class="shelf-bar" style="border-bottom: none; padding-bottom: 0;">
-        <div class="vials-row">
-          <div class="bottle-card" data-title="Starlight Dew" data-price="28" data-type="cyan" data-desc="Glacial meltwater collected under clear midnight skies. Restores arcane focus.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash cyan"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Starlight Dew</div>
-              <div class="label-price">28 Silver</div>
-            </div>
-          </div>
-
-          <div class="bottle-card" data-title="Elder Bark Ash" data-price="14" data-type="amber" data-desc="Ground sacred cedar charcoal. Purifies toxins and stabilizes unstable brews.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash amber" style="height: 50%;"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Elder Bark Ash</div>
-              <div class="label-price">14 Silver</div>
-            </div>
-          </div>
-
-          <div class="bottle-card" data-title="Ghost Mandrake" data-price="45" data-type="violet" data-desc="Rare root harvested during moonless eclipse. Highly volatile catalyst.">
-            <div class="vial-vessel">
-              <div class="cork-top"></div>
-              <div class="bottle-glass">
-                <div class="fluid-wash violet" style="height: 85%;"></div>
-              </div>
-            </div>
-            <div class="vial-label">
-              <div class="label-title">Ghost Mandrake</div>
-              <div class="label-price">45 Silver</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- 2. Authentic Alchemical Opus Stages (Nigredo -> Magnum Opus) -->
+    <div class="opus-transmutation-bar" id="opusBar">
+      <button class="opus-step" data-opus="NIGREDO">
+        <span class="opus-dot" style="background:#52525b;"></span> Nigredo
+      </button>
+      <button class="opus-step" data-opus="ALBEDO">
+        <span class="opus-dot" style="background:#e2e8f0;"></span> Albedo
+      </button>
+      <button class="opus-step" data-opus="CITRINITAS">
+        <span class="opus-dot" style="background:#facc15;"></span> Citrinitas
+      </button>
+      <button class="opus-step active" data-opus="RUBEDO">
+        <span class="opus-dot" style="background:#f43f5e;"></span> Rubedo
+      </button>
+      <button class="opus-step" data-opus="MAGNUM">
+        <span class="opus-dot" style="background:#c084fc;"></span> Opus ★
+      </button>
     </div>
 
-    <!-- Right: Cauldron & Mixing Ledger -->
-    <div class="cauldron-panel">
-      <div>
-        <div class="section-subhead">⚗️ Cauldron Crucible</div>
+    <!-- 3. Central Arched Alembic Chamber + Capillary Tubes + Manometer -->
+    <div class="alembic-chamber-wrap">
+      <!-- Dynamic SVG Capillary Tubes Connecting Bottom Mortars to Center Vessel -->
+      <svg class="capillary-network-svg" viewBox="0 0 600 255" preserveAspectRatio="none">
+        <!-- Left Mortar Pipe -->
+        <path d="M 100 250 L 100 190 Q 100 165 130 165 L 220 165" fill="none" stroke="#263136" stroke-width="5"/>
+        <path id="pipeLeft" class="pipe-flow" d="M 100 250 L 100 190 Q 100 165 130 165 L 220 165" fill="none" stroke="var(--fluid-main)" stroke-width="2.5"/>
+        <!-- Center Mortar Pipe -->
+        <path d="M 300 250 L 300 205" fill="none" stroke="#263136" stroke-width="5"/>
+        <path id="pipeCenter" class="pipe-flow" d="M 300 250 L 300 205" fill="none" stroke="var(--fluid-main)" stroke-width="2.5"/>
+        <!-- Right Mortar Pipe -->
+        <path d="M 500 250 L 500 190 Q 500 165 470 165 L 380 165" fill="none" stroke="#263136" stroke-width="5"/>
+        <path id="pipeRight" class="pipe-flow" d="M 500 250 L 500 190 Q 500 165 470 165 L 380 165" fill="none" stroke="var(--fluid-main)" stroke-width="2.5"/>
+      </svg>
 
-        <div class="cauldron-stage">
-          <div class="cauldron-pot">
-            <div class="vapor-cloud" id="vaporCloud"></div>
-            <svg class="cauldron-svg" viewBox="0 0 100 80">
-              <!-- Iron Cauldron Shape -->
-              <ellipse cx="50" cy="22" rx="42" ry="10" fill="#1b120c" stroke="#482e1b" stroke-width="2"/>
-              <!-- Cauldron Liquid -->
-              <ellipse cx="50" cy="23" rx="36" ry="7" fill="#10b981" id="cauldronLiquid"/>
-              <path d="M10 24 Q 8 68 50 68 Q 92 68 90 24" fill="#1f150e" stroke="#482e1b" stroke-width="2"/>
-              <!-- Feet -->
-              <line x1="25" y1="65" x2="18" y2="76" stroke="#482e1b" stroke-width="3"/>
-              <line x1="75" y1="65" x2="82" y2="76" stroke="#482e1b" stroke-width="3"/>
-            </svg>
-          </div>
+      <!-- Left Wing: Analog Brass Pressure & Volatility Manometer -->
+      <div class="chamber-wing-left">
+        <div class="brass-manometer">
+          <svg class="manometer-svg" viewBox="0 0 100 100">
+            <!-- Gauge Arc -->
+            <path d="M 20 72 A 38 38 0 1 1 80 72" fill="none" stroke="#3f3424" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 20 72 A 38 38 0 0 1 50 16" fill="none" stroke="#10b981" stroke-width="3"/>
+            <path d="M 50 16 A 38 38 0 0 1 80 72" fill="none" stroke="#ef4444" stroke-width="3"/>
+            <!-- Rotating Needle -->
+            <g id="manometerNeedle" class="manometer-needle" style="transform: rotate(-15deg);">
+              <polygon points="48,54 50,18 52,54" fill="#f59e0b"/>
+              <circle cx="50" cy="54" r="5" fill="#d8b578" stroke="#111"/>
+            </g>
+          </svg>
+          <span class="manometer-readout" id="manometerTemp">108°C</span>
         </div>
-
-        <div class="recipe-dossier">
-          <div class="recipe-name" id="inspectName">Basilisk Venom</div>
-          <div class="recipe-notes" id="inspectNotes">Potent emerald alkaloid extracted from desert drakes. Dissolves organic armor.</div>
-        </div>
-
-        <!-- Mixing Tray Reagents -->
-        <div class="reagent-tray" id="reagentTray">
-          <div class="tray-item">
-            <span>Basilisk Venom (x1)</span>
-            <span>24 Silver</span>
-          </div>
-        </div>
+        <span class="manometer-caption" id="vaporPressureText">2.4 ATM VAPOR</span>
       </div>
 
-      <div>
-        <div class="total-row">
-          <span>Total Apothecary Due:</span>
-          <span id="totalCost">24 Silver</span>
-        </div>
+      <!-- Center Bell Jar with Potion SVG -->
+      <div class="alembic-bell-jar">
+        <div class="jar-graduations"></div>
+        <div id="mainVesselContainer"></div>
+      </div>
 
-        <button class="brew-btn" id="brewBtn">
-          <span>✨ Brew & Bottle Tincture</span>
+      <!-- Right Wing: Carrier Solvent Selector -->
+      <div class="chamber-wing-right" id="solventTabs">
+        <span class="wing-title">Carrier Menstruum</span>
+        <button class="solvent-pill active" data-solvent="dew">
+          <span>💧 Celestial Dew</span>
+          <small>Aq.</small>
+        </button>
+        <button class="solvent-pill" data-solvent="mercury">
+          <span>☿ Quicksilver</span>
+          <small>Hg</small>
+        </button>
+        <button class="solvent-pill" data-solvent="ichor">
+          <span>🩸 Drake Ichor</span>
+          <small>Sg.</small>
+        </button>
+        <button class="solvent-pill" data-solvent="ether">
+          <span>✨ Astral Ether</span>
+          <small>Ae.</small>
         </button>
       </div>
     </div>
-  </div>
+
+    <!-- 4. Athanor Thermal Slider -->
+    <div class="burner-control-strip">
+      <div class="burner-label">
+        <span>Athanor Reflux Heat</span>
+        <strong id="distillStageLabel">Distillation IV</strong>
+      </div>
+      <input type="range" min="1" max="10" value="4" class="burner-slider" id="heatSlider">
+      <span class="burner-regime-tag" id="heatRegimeTag">Simmer Reflux</span>
+    </div>
+
+    <!-- 5. Three Mortar Bowls (Steeped Catalysts) -->
+    <div class="mortars-row" id="mortarsGrid"></div>
+
+  </section>
+
+  <!-- =====================================================
+       RIGHT FOLIO: ROYAL PHARMACOPOEIA MANUSCRIPT
+       ===================================================== -->
+  <aside class="pharmacopoeia-folio">
+
+    <!-- Top Archival Ledger Header -->
+    <div>
+      <div class="folio-top-bar">
+        <span id="folioSerialNumber">CODEX // FOLIO № IV-892</span>
+        <span class="planetary-symbols">☉ ☽ ☿ 🜂 🜄</span>
+      </div>
+
+      <!-- Concoction Title & Opus Classification -->
+      <div class="folio-title-section">
+        <div class="folio-category-tag" id="folioSubClass">Restorative Decoction — Internal Draught</div>
+        <h2 class="folio-main-title" id="folioElixirName">Crimson Sovereign Panacea</h2>
+        <div class="folio-formula-badges">
+          <span class="alch-badge" id="badgeOpus">OPUS // RUBEDO (98.4%)</span>
+          <span class="alch-badge" id="badgeSolvent">MENSTRUUM // CELESTIAL DEW</span>
+          <span class="alch-badge" id="badgeDosage">3 DRAUGHTS</span>
+        </div>
+      </div>
+
+      <!-- Rx Prescription Potency Cards -->
+      <div class="rx-prescription-grid">
+        <div class="rx-stat-card">
+          <div class="rx-stat-label" id="stat1Label">Rx // Vitality Surge</div>
+          <div class="rx-stat-value" id="stat1Total">840</div>
+          <div class="rx-stat-breakdown">
+            Base <span id="stat1Base">620</span> <b id="stat1Bonus">+220</b>
+          </div>
+        </div>
+
+        <div class="rx-stat-card">
+          <div class="rx-stat-label" id="stat2Label">Rx // Cellular Mend</div>
+          <div class="rx-stat-value" id="stat2Total">48/s</div>
+          <div class="rx-stat-breakdown">
+            Base <span id="stat2Base">32/s</span> <b id="stat2Bonus">+16/s</b>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live SVG Pharmacokinetic Absorption Curve -->
+      <div class="kinetics-graph-box">
+        <div class="kinetics-header">
+          <span>Pharmacokinetic Bio-Absorption Curve</span>
+          <span id="halfLifeLabel" style="color:var(--ink-gold);font-family:'JetBrains Mono',monospace;">Peak: 14s | Half-Life: 45s</span>
+        </div>
+        <div class="kinetics-svg-wrap">
+          <svg class="kinetics-svg" viewBox="0 0 360 64" preserveAspectRatio="none">
+            <!-- Grid Reference Lines -->
+            <line x1="0" y1="16" x2="360" y2="16" stroke="#292119" stroke-dasharray="3 3" stroke-width="1"/>
+            <line x1="0" y1="36" x2="360" y2="36" stroke="#292119" stroke-dasharray="3 3" stroke-width="1"/>
+            <line x1="0" y1="56" x2="360" y2="56" stroke="#382d22" stroke-width="1"/>
+            <!-- Dynamic Area & Curve -->
+            <path id="kineticsArea" d="M 0 56 Q 65 4 130 22 T 360 56 Z" fill="var(--fluid-glow)"/>
+            <path id="kineticsCurve" d="M 0 56 Q 65 4 130 22 T 360 56" fill="none" stroke="var(--fluid-main)" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <div class="kinetics-axis-labels">
+          <span>0s (Ingestion)</span>
+          <span>Arterial Peak</span>
+          <span>Metabolic Clearance</span>
+        </div>
+      </div>
+
+      <!-- Apothecary Manuscript Notes & Active Catalysts -->
+      <div class="folio-ledger-notes">
+        <p class="ledger-quote" id="folioLoreQuote">
+          “Distilled through a ruby-glass pelikan vessel; purges necrotic stagnation and knits ruptured tissue upon contact with warm blood.”
+        </p>
+
+        <div class="steeped-list-box" id="steepedCatalystsList"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Bio-Toxicity Segmented Bar & Wax Seal Stamp -->
+    <div>
+      <div class="bio-toxicity-section">
+        <div class="tox-header">
+          <span id="toxStatusLabel" style="color:#c2b097;">Metabolic Saturation: Safe Tolerance</span>
+          <span id="toxValueLabel" style="font-family:'JetBrains Mono',monospace;color:var(--ink-gold);">42 / 100 TOX</span>
+        </div>
+        <div class="tox-segments" id="toxSegmentsBar"></div>
+      </div>
+
+      <div class="folio-footer">
+        <div class="apothecary-tariff">
+          <span>Guild Appraisal</span>
+          <strong id="guildGoldValue">145 Gold Crowns</strong>
+        </div>
+
+        <button class="wax-seal-btn" id="waxStampBtn">
+          <span class="wax-emblem">⚜</span>
+          <span id="waxBtnText">Stamp Royal Seal</span>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
 </div>
 
 <script>
-  const bottleCards = document.querySelectorAll('.bottle-card');
-  const inspectName = document.getElementById('inspectName');
-  const inspectNotes = document.getElementById('inspectNotes');
-  const reagentTray = document.getElementById('reagentTray');
-  const totalCost = document.getElementById('totalCost');
-  const cauldronLiquid = document.getElementById('cauldronLiquid');
-  const vaporCloud = document.getElementById('vaporCloud');
-  const shopNotice = document.getElementById('shopNotice');
-
-  const selectedItems = [{ name: 'Basilisk Venom', price: 24, type: 'emerald' }];
-
-  const colors = {
-    emerald: '#10b981',
-    amber: '#f59e0b',
-    violet: '#a855f7',
-    cyan: '#06b6d4'
+  // =========================================================================
+  // 1. FOUR+1 ALCHEMICAL OPUS STAGES (AUTHENTIC HERMETIC PROGRESSION)
+  // =========================================================================
+  const OPUS_STAGES = {
+    NIGREDO:    { title: 'NIGREDO (48% CRUDE)', mult: 0.58, baseGold: 30 },
+    ALBEDO:     { title: 'ALBEDO (76% WASHED)', mult: 0.80, baseGold: 65 },
+    CITRINITAS: { title: 'CITRINITAS (91% SOLAR)', mult: 0.96, baseGold: 105 },
+    RUBEDO:     { title: 'RUBEDO (98.4% SOVEREIGN)', mult: 1.18, baseGold: 155 },
+    MAGNUM:     { title: 'MAGNUM OPUS (99.9% PURE)', mult: 1.50, baseGold: 280 }
   };
 
-  bottleCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const title = card.dataset.title;
-      const price = parseInt(card.dataset.price, 10);
-      const desc = card.dataset.desc;
-      const type = card.dataset.type;
+  // =========================================================================
+  // 2. CARRIER SOLVENTS (MENSTRUUM)
+  // =========================================================================
+  const SOLVENTS = {
+    dew:     { name: 'Celestial Dew', toxMod: -6, potMod: 1.0, peakX: 70, halfLife: '45s' },
+    mercury: { name: 'Quicksilver', toxMod: 18, potMod: 1.18, peakX: 110, halfLife: '78s' },
+    ichor:   { name: 'Drake Ichor', toxMod: 10, potMod: 1.12, peakX: 85, halfLife: '60s' },
+    ether:   { name: 'Astral Ether', toxMod: 4, potMod: 1.24, peakX: 42, halfLife: '28s' }
+  };
 
-      inspectName.textContent = title;
-      inspectNotes.textContent = desc;
+  const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
-      // Update liquid color in cauldron
-      cauldronLiquid.setAttribute('fill', colors[type]);
-      vaporCloud.style.background = `radial-gradient(ellipse, ${colors[type]} 0%, transparent 70%)`;
+  // =========================================================================
+  // 3. SPECIMEN CONCOCTIONS & CUSTOM GLASSWARE SVGS
+  // =========================================================================
+  const CONCOCTIONS = {
+    elixir: {
+      name: 'Crimson Sovereign Panacea',
+      subClass: 'Restorative Decoction — Internal Draught',
+      dosage: '3 DRAUGHTS',
+      colorMain: '#f43f5e',
+      colorGlow: 'rgba(244, 63, 94, 0.28)',
+      stat1Label: 'Rx // Vitality Surge',
+      stat1Base: 540,
+      stat1PerStage: 42,
+      stat1Unit: '',
+      stat2Label: 'Rx // Cellular Mend',
+      stat2Base: 30,
+      stat2PerStage: 4,
+      stat2Unit: '/s',
+      lore: '“Distilled through a ruby-glass pelikan vessel; purges necrotic stagnation and knits ruptured arterial tissue upon contact with warm blood.”',
+      catalysts: [
+        { icon: '🌺', name: 'Sun-Cured Mandrake', desc: '+110 Vitality / +8/s Mend', s1: 110, s2: 8, tox: 8, cost: 25, active: true },
+        { icon: '🐝', name: 'Royal Golden Jelly', desc: '+75 Vitality / Detox -5%', s1: 75, s2: 5, tox: -5, cost: 18, active: true },
+        { icon: '🔥', name: 'Cinder-Phoenix Ash', desc: '+190 Vitality / +12/s Mend', s1: 190, s2: 12, tox: 15, cost: 45, active: false }
+      ],
+      svg: (c) => `
+        <svg class="vessel-svg-main" viewBox="0 0 220 185" fill="none">
+          <defs>
+            <linearGradient id="liqElixir" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fda4af"/>
+              <stop offset="30%" stop-color="${c}"/>
+              <stop offset="100%" stop-color="#881337"/>
+            </linearGradient>
+          </defs>
+          <polygon points="102,14 118,14 114,32 106,32" fill="#d97736" stroke="#fde68a" stroke-width="1.2"/>
+          <rect x="96" y="30" width="28" height="8" rx="2" fill="#9f1239" stroke="#fda4af" stroke-width="1"/>
+          <path d="M100 38 L100 62 L72 95 L82 156 L138 156 L148 95 L120 62 L120 38 Z"
+                fill="rgba(255,255,255,0.04)" stroke="#e2e8f0" stroke-width="2"/>
+          <path d="M76 102 Q110 96 144 102 L136 153 L84 153 Z" fill="url(#liqElixir)"/>
+          <ellipse cx="110" cy="102" rx="33" ry="4" fill="#fecdd3" opacity="0.65"/>
+          <circle class="alch-bubble" cx="98" cy="138" r="3" fill="#ffe4e6"/>
+          <circle class="alch-bubble b2" cx="118" cy="142" r="2.2" fill="#ffe4e6"/>
+          <circle class="alch-bubble b3" cx="108" cy="128" r="3.5" fill="#ffe4e6"/>
+          <path d="M72 95 L110 112 L148 95 M82 156 L110 140 L138 156" stroke="#c5a063" stroke-width="1.5"/>
+          <circle cx="110" cy="112" r="5" fill="${c}" stroke="#fde68a" stroke-width="1.5"/>
+        </svg>
+      `
+    },
 
-      // Add to tray if not already added
-      const existing = selectedItems.find(i => i.name === title);
-      if (existing) {
-        existing.count = (existing.count || 1) + 1;
-      } else {
-        selectedItems.push({ name: title, price, type, count: 1 });
+    mutagen: {
+      name: 'Wyrm-Bile Corrosive Vitriol',
+      subClass: 'Volatile Blade Coating — Alchemical Acid',
+      dosage: '60 STRIKES',
+      colorMain: '#10b981',
+      colorGlow: 'rgba(16, 185, 129, 0.28)',
+      stat1Label: 'Rx // Acidic Decay',
+      stat1Base: 390,
+      stat1PerStage: 34,
+      stat1Unit: '',
+      stat2Label: 'Rx // Armor Melt',
+      stat2Base: 18,
+      stat2PerStage: 3,
+      stat2Unit: '%',
+      lore: '“Synthesized from subterranean drake gallbladders. Vapors hiss against tempered steel, dissolving heavy plate links on contact.”',
+      catalysts: [
+        { icon: '🦂', name: 'Scorpion Venom Sac', desc: '+85 Decay / +4% Melt', s1: 85, s2: 4, tox: 12, cost: 30, active: true },
+        { icon: '🍄', name: 'Abyssal Spore Cap', desc: '+65 Decay / +3% Melt', s1: 65, s2: 3, tox: 9, cost: 22, active: true },
+        { icon: '🧪', name: 'Vitriol of Green Lion', desc: '+140 Decay / +8% Melt', s1: 140, s2: 8, tox: 18, cost: 50, active: false }
+      ],
+      svg: (c) => `
+        <svg class="vessel-svg-main" viewBox="0 0 220 185" fill="none">
+          <defs>
+            <linearGradient id="liqMutagen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6ee7b7"/>
+              <stop offset="35%" stop-color="${c}"/>
+              <stop offset="100%" stop-color="#064e3b"/>
+            </linearGradient>
+          </defs>
+          <rect x="101" y="16" width="18" height="10" rx="2" fill="#78350f" stroke="#f59e0b" stroke-width="1.2"/>
+          <path d="M102 26 L102 58 C65 68, 58 118, 80 152 L140 152 C162 118, 155 68, 118 58 L118 26 Z"
+                fill="rgba(255,255,255,0.04)" stroke="#cbd5e1" stroke-width="2"/>
+          <path d="M68 106 Q110 100 152 106 C154 128, 146 144, 138 150 L82 150 C74 144, 66 128, 68 106 Z"
+                fill="url(#liqMutagen)"/>
+          <ellipse cx="110" cy="106" rx="41" ry="4.5" fill="#a7f3d0" opacity="0.7"/>
+          <circle class="alch-bubble" cx="95" cy="136" r="3.2" fill="#d1fae5"/>
+          <circle class="alch-bubble b2" cx="122" cy="140" r="2.5" fill="#d1fae5"/>
+          <circle class="alch-bubble b3" cx="110" cy="124" r="3.8" fill="#d1fae5"/>
+          <ellipse cx="110" cy="112" rx="43" ry="9" fill="none" stroke="#c5a063" stroke-width="1.8"/>
+        </svg>
+      `
+    },
+
+    astral: {
+      name: 'Nocturne Starlight Quintessence',
+      subClass: 'Arcane Lucid Infusion — Mind Draught',
+      dosage: '20 MIN RESONANCE',
+      colorMain: '#a855f7',
+      colorGlow: 'rgba(168, 85, 247, 0.30)',
+      stat1Label: 'Rx // Aether Flux',
+      stat1Base: 610,
+      stat1PerStage: 48,
+      stat1Unit: '',
+      stat2Label: 'Rx // Spell Clarity',
+      stat2Base: 24,
+      stat2PerStage: 3,
+      stat2Unit: '%',
+      lore: '“Condensed from meteoric frost and night-blooming belladonna. Opens the third eye to perceive unseen leyline currents.”',
+      catalysts: [
+        { icon: '💎', name: 'Void-Salt Prism', desc: '+125 Flux / +5% Clarity', s1: 125, s2: 5, tox: 10, cost: 35, active: true },
+        { icon: '🌙', name: 'Silver-Lotus Petal', desc: '+80 Flux / Calm (-4 Tox)', s1: 80, s2: 4, tox: -4, cost: 24, active: true },
+        { icon: '👁️', name: 'Nebula Ocular Core', desc: '+210 Flux / +9% Clarity', s1: 210, s2: 9, tox: 16, cost: 60, active: false }
+      ],
+      svg: (c) => `
+        <svg class="vessel-svg-main" viewBox="0 0 220 185" fill="none">
+          <defs>
+            <linearGradient id="liqAstral" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#e9d5ff"/>
+              <stop offset="40%" stop-color="${c}"/>
+              <stop offset="100%" stop-color="#3b0764"/>
+            </linearGradient>
+          </defs>
+          <polygon points="110,8 122,24 110,34 98,24" fill="#e9d5ff" stroke="#c5a063" stroke-width="1.3"/>
+          <path d="M98 46 C72 46, 62 78, 76 96" fill="none" stroke="#c5a063" stroke-width="2"/>
+          <path d="M122 46 C148 46, 158 78, 144 96" fill="none" stroke="#c5a063" stroke-width="2"/>
+          <polygon points="102,34 118,34 120,60 154,104 110,162 66,104 100,60"
+                   fill="rgba(255,255,255,0.04)" stroke="#e2e8f0" stroke-width="2"/>
+          <polygon points="73,104 147,104 110,157" fill="url(#liqAstral)"/>
+          <ellipse cx="110" cy="104" rx="36" ry="4" fill="#f3e8ff" opacity="0.75"/>
+          <circle class="alch-bubble" cx="102" cy="132" r="2.8" fill="#ffffff"/>
+          <circle class="alch-bubble b2" cx="118" cy="126" r="2.2" fill="#ffffff"/>
+          <circle class="alch-bubble b3" cx="110" cy="142" r="3.2" fill="#ffffff"/>
+        </svg>
+      `
+    }
+  };
+
+  // =========================================================================
+  // 4. STATE & DYNAMIC RENDERING
+  // =========================================================================
+  let state = {
+    school: 'elixir',
+    opus: 'RUBEDO',
+    stage: 4,
+    solvent: 'dew'
+  };
+
+  function renderSanctum() {
+    const conc = CONCOCTIONS[state.school];
+    const opusObj = OPUS_STAGES[state.opus];
+    const solventObj = SOLVENTS[state.solvent];
+
+    // Theme Variables
+    document.documentElement.style.setProperty('--fluid-main', conc.colorMain);
+    document.documentElement.style.setProperty('--fluid-glow', conc.colorGlow);
+
+    // Center Vessel SVG
+    document.getElementById('mainVesselContainer').innerHTML = conc.svg(conc.colorMain);
+
+    // Rotary Manometer Needle & Temperature
+    const tempC = 88 + state.stage * 6;
+    const atm = (1.1 + state.stage * 0.32).toFixed(1);
+    const needleAngle = -110 + (state.stage / 10) * 220;
+    document.getElementById('manometerNeedle').style.transform = `rotate(${needleAngle}deg)`;
+    document.getElementById('manometerTemp').textContent = `${tempC}°C`;
+    document.getElementById('vaporPressureText').textContent = `${atm} ATM VAPOR`;
+
+    // Burner Slider Readout
+    document.getElementById('distillStageLabel').textContent = `Distillation ${ROMAN[state.stage]}`;
+    document.getElementById('heatRegimeTag').textContent =
+      state.stage <= 3 ? 'Gentle Digestion' : state.stage <= 7 ? 'Simmer Reflux' : 'Fierce Calcination';
+
+    // Update Capillary Tube Glows based on Active Mortars
+    const pipeIds = ['pipeLeft', 'pipeCenter', 'pipeRight'];
+    conc.catalysts.forEach((cat, i) => {
+      const pipeEl = document.getElementById(pipeIds[i]);
+      if (pipeEl) {
+        pipeEl.style.opacity = cat.active ? '1' : '0.08';
       }
+    });
 
-      // Re-render tray
-      reagentTray.innerHTML = '';
-      let sum = 0;
-      selectedItems.forEach(item => {
-        const itemSum = item.price * (item.count || 1);
-        sum += itemSum;
-        const div = document.createElement('div');
-        div.className = 'tray-item';
-        div.innerHTML = `<span>${item.name} (${item.count || 1}x)</span><span>${itemSum} Silver</span>`;
-        reagentTray.appendChild(div);
+    // Render 3 Mortar Bowls
+    const mortarsGrid = document.getElementById('mortarsGrid');
+    mortarsGrid.innerHTML = conc.catalysts
+      .map((cat, idx) => `
+        <div class="mortar-bowl ${cat.active ? 'active' : ''}" data-idx="${idx}">
+          <div class="mortar-valve"></div>
+          <div class="mortar-icon-ring">${cat.icon}</div>
+          <h5>${cat.name}</h5>
+          <p>${cat.active ? cat.desc : 'Click to Steep'}</p>
+        </div>
+      `)
+      .join('');
+
+    mortarsGrid.querySelectorAll('.mortar-bowl').forEach(bowl => {
+      bowl.addEventListener('click', () => {
+        const idx = Number(bowl.dataset.idx);
+        conc.catalysts[idx].active = !conc.catalysts[idx].active;
+        renderSanctum();
       });
+    });
 
-      totalCost.textContent = `${sum} Silver`;
+    // Right Folio Header & Badges
+    document.getElementById('folioSubClass').textContent = conc.subClass;
+    document.getElementById('folioElixirName').textContent = `[${ROMAN[state.stage]}] ${conc.name}`;
+    document.getElementById('badgeOpus').textContent = `OPUS // ${opusObj.title}`;
+    document.getElementById('badgeSolvent').textContent = `MENSTRUUM // ${solventObj.name.toUpperCase()}`;
+    document.getElementById('badgeDosage').textContent = conc.dosage;
+
+    // Calculate Potency Math
+    const activeCats = conc.catalysts.filter(c => c.active);
+    const catBonus1 = activeCats.reduce((acc, c) => acc + c.s1, 0);
+    const catBonus2 = activeCats.reduce((acc, c) => acc + c.s2, 0);
+    const catTox = activeCats.reduce((acc, c) => acc + c.tox, 0);
+    const catGold = activeCats.reduce((acc, c) => acc + c.cost, 0);
+
+    const mult = opusObj.mult * solventObj.potMod;
+    const base1 = Math.round(conc.stat1Base * mult);
+    const bonus1 = Math.round(state.stage * conc.stat1PerStage * mult) + catBonus1;
+    const total1 = base1 + bonus1;
+
+    const base2 = Math.round(conc.stat2Base * mult);
+    const bonus2 = Math.round(state.stage * conc.stat2PerStage * mult) + catBonus2;
+    const total2 = base2 + bonus2;
+
+    document.getElementById('stat1Label').textContent = conc.stat1Label;
+    document.getElementById('stat1Base').textContent = `${base1}${conc.stat1Unit}`;
+    document.getElementById('stat1Bonus').textContent = `+${bonus1}${conc.stat1Unit}`;
+    document.getElementById('stat1Total').textContent = `${total1}${conc.stat1Unit}`;
+
+    document.getElementById('stat2Label').textContent = conc.stat2Label;
+    document.getElementById('stat2Base').textContent = `${base2}${conc.stat2Unit}`;
+    document.getElementById('stat2Bonus').textContent = `+${bonus2}${conc.stat2Unit}`;
+    document.getElementById('stat2Total').textContent = `${total2}${conc.stat2Unit}`;
+
+    // Dynamic SVG Pharmacokinetic Curve
+    const peakHeight = Math.max(4, 48 - state.stage * 3.8);
+    const px = solventObj.peakX;
+    const curvePath = `M 0 56 Q ${px} ${peakHeight} ${px + 75} ${peakHeight + 18} T 360 56`;
+    document.getElementById('kineticsCurve').setAttribute('d', curvePath);
+    document.getElementById('kineticsArea').setAttribute('d', `${curvePath} Z`);
+    document.getElementById('halfLifeLabel').textContent =
+      `Onset: ${Math.round(px / 6)}s | Half-Life: ${solventObj.halfLife}`;
+
+    // Lore & Steeped List
+    document.getElementById('folioLoreQuote').textContent = conc.lore;
+    document.getElementById('steepedCatalystsList').innerHTML = activeCats.length
+      ? activeCats.map(c => `✦ <b>${c.name}</b> — ${c.desc}`).join('<br>')
+      : '✦ Uninfused pure menstruum (Click mortar bowls on the left to steep catalysts).';
+
+    // Segmented Metabolic Toxicity Bar (10 Segments)
+    const rawTox = 15 + state.stage * 5 + solventObj.toxMod + catTox;
+    const clampedTox = Math.max(5, Math.min(100, rawTox));
+    const filledCount = Math.round(clampedTox / 10);
+    const toxColor = clampedTox < 45 ? '#10b981' : clampedTox < 75 ? '#f59e0b' : '#ef4444';
+    const toxStatus = clampedTox < 45 ? 'Safe Tolerance' : clampedTox < 75 ? 'Elevated Burden' : 'Lethal Saturation';
+
+    document.documentElement.style.setProperty('--tox-color', toxColor);
+    document.getElementById('toxStatusLabel').textContent = `Metabolic Saturation: ${toxStatus}`;
+    document.getElementById('toxValueLabel').textContent = `${clampedTox} / 100 TOX`;
+
+    const segContainer = document.getElementById('toxSegmentsBar');
+    segContainer.innerHTML = Array.from({ length: 10 }, (_, i) =>
+      `<div class="tox-seg ${i < filledCount ? 'filled' : ''}"></div>`
+    ).join('');
+
+    // Guild Tariff
+    const totalGold = Math.round(opusObj.baseGold + state.stage * 18 + catGold);
+    document.getElementById('guildGoldValue').textContent = `${totalGold} Gold Crowns`;
+  }
+
+  // Specimen Rack Listeners
+  document.querySelectorAll('#specimenRack .specimen-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#specimenRack .specimen-card').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.school = btn.dataset.school;
+      renderSanctum();
     });
   });
 
-  document.getElementById('brewBtn').addEventListener('click', () => {
-    shopNotice.textContent = 'Decanting into crystal phial...';
-    cauldronLiquid.style.filter = 'brightness(1.8)';
-    setTimeout(() => {
-      cauldronLiquid.style.filter = 'none';
-      shopNotice.textContent = 'Tincture bottled & sealed with beeswax!';
-      setTimeout(() => {
-        shopNotice.textContent = 'Cauldron Simmering (94°C)';
-      }, 2500);
-    }, 600);
+  // Opus Stage Listeners
+  document.querySelectorAll('#opusBar .opus-step').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#opusBar .opus-step').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.opus = btn.dataset.opus;
+      renderSanctum();
+    });
   });
+
+  // Solvent Listeners
+  document.querySelectorAll('#solventTabs .solvent-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#solventTabs .solvent-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.solvent = btn.dataset.solvent;
+      renderSanctum();
+    });
+  });
+
+  // Heat Slider Listener
+  document.getElementById('heatSlider').addEventListener('input', (e) => {
+    state.stage = Number(e.target.value);
+    renderSanctum();
+  });
+
+  // Wax Seal Stamp Interactive Ritual
+  const waxBtn = document.getElementById('waxStampBtn');
+  waxBtn.addEventListener('click', () => {
+    const batch = Math.floor(100 + Math.random() * 899);
+    document.getElementById('folioSerialNumber').textContent = `CODEX // SEALED BATCH № ${ROMAN[state.stage]}-${batch}`;
+    const txt = document.getElementById('waxBtnText');
+    txt.textContent = '✓ Sealed in Wax';
+    setTimeout(() => { txt.textContent = 'Stamp Royal Seal'; }, 1800);
+  });
+
+  // Initial Render
+  renderSanctum();
 </script>
 </body>
 </html>

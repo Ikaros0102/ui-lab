@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specular Magnetic Buttons — Dynamic Cursor Tracking</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Specular Magnetic Pill",
+  "category": "buttons",
+  "themes": [
+    "glass",
+    "dark"
+  ],
+  "tags": [
+    "button",
+    "magnetic",
+    "specular",
+    "cursor-follow",
+    "glassmorphism",
+    "radial-gradient",
+    "physics",
+    "spotlight"
+  ],
+  "description": "Elastic magnetic button with real-time cursor proximity pull, specular radial surface glare, and responsive SVG directional arrow rotation.",
+  "techniques": [
+    "Magnetic spring physics via requestAnimationFrame tracking",
+    "CSS variables --spot-x, --spot-y driving specular radial-gradient",
+    "mask-composite: exclude perimeter border shine",
+    "Subtle 3D perspective tilt on pointer hover"
+  ],
+  "recipe": "Calculates normalized pointer offset within an expanded magnetic perimeter. The button gently translates towards the cursor using spring interpolation, while dynamically steering an internal specular hotspot across a frosted glass backdrop.",
+  "preview": {
+    "mode": "center"
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: #090a10 radial-gradient(circle at 50% 50%, #151824 0%, #08090e 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 30px;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .intro-text {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .magnetic-zone {
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mag-btn {
+    --spot-x: 50%;
+    --spot-y: 50%;
+    --glow-opacity: 0;
+
+    position: relative;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 2px;
+    transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+    will-change: transform;
+  }
+
+  /* Glowing ambient halo behind button */
+  .mag-btn::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 999px;
+    background: radial-gradient(
+      circle at var(--spot-x) var(--spot-y),
+      rgba(99, 102, 241, 0.45) 0%,
+      rgba(168, 85, 247, 0.2) 40%,
+      transparent 70%
+    );
+    opacity: var(--glow-opacity);
+    transition: opacity 0.3s ease;
+    filter: blur(14px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Specular Border Ring */
+  .mag-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    padding: 1.5px;
+    background: radial-gradient(
+      140px circle at var(--spot-x) var(--spot-y),
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(168, 85, 247, 0.6) 30%,
+      rgba(255, 255, 255, 0.1) 70%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Main Inner Glass Body */
+  .mag-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 36px;
+    border-radius: 999px;
+    background:
+      radial-gradient(
+        160px circle at var(--spot-x) var(--spot-y),
+        rgba(255, 255, 255, 0.12) 0%,
+        transparent 100%
+      ),
+      rgba(15, 17, 26, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .arrow-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .arrow-icon svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mag-btn:hover .arrow-icon {
+    background: #6366f1;
+    transform: translateX(4px);
+  }
+</style>
+</head>
+<body>
+
+  <div class="intro-text">Hover near the pill to engage magnetic field</div>
+
+  <div class="magnetic-zone" id="mag-zone">
+    <button class="mag-btn" id="mag-btn" type="button">
+      <div class="mag-border"></div>
+      <div class="mag-body">
+        <span>Explore Laboratory</span>
+        <div class="arrow-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </button>
+  </div>
+
+<script>
+(() => {
+  const zone = document.getElementById('mag-zone');
+  const btn = document.getElementById('mag-btn');
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let isHovered = false;
+
+  zone.addEventListener('pointermove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const btnCenterX = rect.left + rect.width / 2;
+    const btnCenterY = rect.top + rect.height / 2;
+
+    const deltaX = e.clientX - btnCenterX;
+    const deltaY = e.clientY - btnCenterY;
+
+    // Pull intensity
+    targetX = deltaX * 0.35;
+    targetY = deltaY * 0.35;
+
+    // Compute spotlight coordinates relative to button
+    const spotX = ((e.clientX - rect.left) / rect.width) * 100;
+    const spotY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    btn.style.setProperty('--spot-x', `${spotX}%`);
+    btn.style.setProperty('--spot-y', `${spotY}%`);
+    btn.style.setProperty('--glow-opacity', '1');
+    isHovered = true;
+  });
+
+  zone.addEventListener('pointerleave', () => {
+    targetX = 0;
+    targetY = 0;
+    btn.style.setProperty('--glow-opacity', '0');
+    isHovered = false;
+  });
+
+  function animate() {
+    currentX += (targetX - currentX) * 0.18;
+    currentY += (targetY - currentY) * 0.18;
+
+    btn.style.transform = `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px, 0)`;
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

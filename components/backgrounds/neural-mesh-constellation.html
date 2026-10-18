@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Dynamic Neural Constellation & Synapse Topology</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Neural Mesh Constellation",
+  "category": "backgrounds",
+  "themes": [
+    "dark",
+    "glass",
+    "cyber"
+  ],
+  "tags": [
+    "background",
+    "network",
+    "constellation",
+    "nodes",
+    "canvas",
+    "neural",
+    "physics",
+    "interactive",
+    "synapse",
+    "triangulation"
+  ],
+  "description": "High-performance interactive neural constellation background featuring live synaptic data packets traveling along edges, dynamic triangle mesh faces, 3 cursor gravity modes (Attract, Repel, Vortex), shockwave spawning on click, and 4 spectral themes.",
+  "techniques": [
+    "HTML5 Canvas spatial graph with dynamic edge alpha and simplex triangle fills",
+    "autonomous synaptic photon packets traversing active node edges",
+    "3 pointer physics fields: Repulsion Shield, Gravitational Singularity, and Orbital Vortex",
+    "click-triggered radial shockwave ring with dynamic node injection",
+    "collapsible glassmorphic telemetry HUD with real-time edge & FPS counters"
+  ],
+  "recipe": "Maintains a velocity-verlet particle array with hub and relay tiers. Edges within threshold distance render proportional alpha strokes, spawn traveling data pulses, and shade closed 3-node cliques near the cursor.",
+  "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 720
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --accent-main: #38bdf8;
+    --accent-rgb: 56, 189, 248;
+    --secondary-rgb: 129, 140, 248;
+    --bg-center: #0c1326;
+    --bg-edge: #04060c;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 50%, var(--bg-center) 0%, var(--bg-edge) 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    transition: background 0.5s ease;
+  }
+
+  /* Subtle blueprint vignette grid behind canvas */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8) 20%, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8) 20%, transparent 85%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  canvas#network-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    cursor: crosshair;
+  }
+
+  /* ==========================================================================
+     TOP TELEMETRY & SPECTRUM BAR
+     ========================================================================== */
+  .top-telemetry-bar {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    right: 24px;
+    z-index: 15;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    pointer-events: none;
+  }
+
+  .telemetry-pill {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(9, 13, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .telemetry-pill b {
+    color: var(--accent-main);
+    font-weight: 700;
+  }
+
+  .spectrum-dock {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(9, 13, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .spec-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .spec-swatch:hover { transform: scale(1.15); }
+  .spec-swatch.active { border-color: #ffffff; transform: scale(1.18); }
+
+  .sw-cyan    { background: linear-gradient(135deg, #38bdf8, #6366f1); }
+  .sw-emerald { background: linear-gradient(135deg, #34d399, #059669); }
+  .sw-solar   { background: linear-gradient(135deg, #fb923c, #e11d48); }
+  .sw-violet  { background: linear-gradient(135deg, #e879f9, #7e22ce); }
+
+  .hud-toggle-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-left: 4px;
+    transition: all 0.18s ease;
+  }
+  .hud-toggle-btn:hover {
+    background: rgba(var(--accent-rgb), 0.2);
+    border-color: var(--accent-main);
+  }
+
+  /* ==========================================================================
+     CENTRAL GLASSMORPHIC COMMAND DIALOG
+     ========================================================================== */
+  .center-dialog {
+    position: relative;
+    z-index: 10;
+    max-width: 510px;
+    width: calc(100% - 32px);
+    padding: 32px 36px 28px;
+    border-radius: 26px;
+    background: rgba(11, 15, 28, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 30px 70px rgba(0, 0, 0, 0.82),
+      0 0 50px rgba(var(--accent-rgb), 0.12),
+      inset 0 1px 1px rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .center-dialog.minimized {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+    pointer-events: none;
+  }
+
+  .tag-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    color: var(--accent-main);
+    background: rgba(var(--accent-rgb), 0.12);
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    padding: 5px 13px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-main);
+    box-shadow: 0 0 10px var(--accent-main);
+    animation: dotPulse 1.8s infinite alternate ease-in-out;
+  }
+
+  @keyframes dotPulse {
+    from { opacity: 0.45; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1.25); }
+  }
+
+  .center-dialog h2 {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+
+  .center-dialog p {
+    font-size: 13.5px;
+    line-height: 1.58;
+    color: #94a3b8;
+    margin-bottom: 20px;
+  }
+
+  /* Interactive Physics Mode Switcher inside Dialog */
+  .dialog-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 16px;
+  }
+
+  .mode-btn-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    background: rgba(5, 7, 14, 0.65);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .mode-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .mode-btn:hover {
+    color: #ffffff;
+  }
+
+  .mode-btn.active {
+    background: rgba(var(--accent-rgb), 0.18);
+    color: var(--accent-main);
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.45);
+  }
+
+  .sub-toggles-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #64748b;
+    padding: 2px 4px 0;
+  }
+
+  .mini-action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mini-action-btn:hover,
+  .mini-action-btn.active {
+    border-color: var(--accent-main);
+    color: var(--accent-main);
+    background: rgba(var(--accent-rgb), 0.12);
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="network-canvas"></canvas>
+
+  <!-- Top Telemetry & Theme Bar -->
+  <header class="top-telemetry-bar">
+    <div class="telemetry-pill">
+      <span>NODES: <b id="nodeCountLabel">85</b></span>
+      <span>SYNAPSES: <b id="edgeCountLabel">0</b></span>
+      <span>PACKETS: <b id="pulseCountLabel">0</b></span>
+    </div>
+
+    <div class="spectrum-dock">
+      <button class="spec-swatch sw-cyan active" data-theme="cyan" title="Cyber Synapse (Cyan/Indigo)"></button>
+      <button class="spec-swatch sw-emerald" data-theme="emerald" title="Bio-Cortex (Emerald/Mint)"></button>
+      <button class="spec-swatch sw-solar" data-theme="solar" title="Solar Flare (Amber/Rose)"></button>
+      <button class="spec-swatch sw-violet" data-theme="violet" title="Quantum Nebula (Violet/Magenta)"></button>
+      <button class="hud-toggle-btn" id="toggleHudBtn">Hide HUD</button>
+    </div>
+  </header>
+
+  <!-- Central Glassmorphic Callout & Physics Controller -->
+  <div class="center-dialog" id="centerDialog">
+    <div class="tag-node">
+      <span class="pulse-dot"></span>
+      <span>ACTIVE SYNAPSE TOPOLOGY</span>
+    </div>
+    <h2>Neural Mesh Constellation</h2>
+    <p>Move your cursor to warp floating neural filaments, illuminate triangulated mesh faces, or click anywhere on the canvas to trigger a synaptic shockwave.</p>
+
+    <div class="dialog-controls">
+      <div class="mode-btn-row" id="gravityModeGroup">
+        <button class="mode-btn active" data-mode="attract">🧲 Attract</button>
+        <button class="mode-btn" data-mode="repel">🛡️ Repel</button>
+        <button class="mode-btn" data-mode="vortex">🌀 Vortex</button>
+      </div>
+
+      <div class="sub-toggles-row">
+        <button class="mini-action-btn active" id="toggleMeshBtn">△ Mesh Faces: ON</button>
+        <button class="mini-action-btn active" id="togglePulsesBtn">⚡ Data Packets: ON</button>
+        <button class="mini-action-btn" id="burstWaveBtn">💥 Emit Shockwave</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('network-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let width = 0;
+  let height = 0;
+
+  // Spectral Palettes
+  const THEMES = {
+    cyan: {
+      accentHex: '#38bdf8',
+      accentRgb: '56, 189, 248',
+      secondaryRgb: '129, 140, 248',
+      bgCenter: '#0c1326',
+      bgEdge: '#04060c',
+      hues: [195, 215, 245]
+    },
+    emerald: {
+      accentHex: '#34d399',
+      accentRgb: '52, 211, 153',
+      secondaryRgb: '20, 184, 166',
+      bgCenter: '#071c15',
+      bgEdge: '#030906',
+      hues: [150, 165, 178]
+    },
+    solar: {
+      accentHex: '#fb923c',
+      accentRgb: '251, 146, 60',
+      secondaryRgb: '244, 63, 94',
+      bgCenter: '#23100b',
+      bgEdge: '#090403',
+      hues: [24, 38, 348]
+    },
+    violet: {
+      accentHex: '#e879f9',
+      accentRgb: '232, 121, 249',
+      secondaryRgb: '139, 92, 246',
+      bgCenter: '#1b0c28',
+      bgEdge: '#07030c',
+      hues: [275, 295, 320]
+    }
+  };
+
+  let activeTheme = THEMES.cyan;
+  let gravityMode = 'attract'; // 'attract' | 'repel' | 'vortex'
+  let showMeshFaces = true;
+  let showDataPulses = true;
+
+  const MAX_DIST = 135;
+  const CURSOR_RADIUS = 210;
+  const nodes = [];
+  const pulses = [];     // Synaptic packets traveling along edges
+  const shockwaves = []; // Expanding rings on click
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createNode(x, y, isHub = false) {
+    const speed = isHub ? 0.35 : 0.65;
+    const hueList = activeTheme.hues;
+    return {
+      x: x ?? Math.random() * width,
+      y: y ?? Math.random() * height,
+      vx: (Math.random() - 0.5) * speed * 2,
+      vy: (Math.random() - 0.5) * speed * 2,
+      radius: isHub ? Math.random() * 2.2 + 3.2 : Math.random() * 1.5 + 1.3,
+      isHub,
+      hueIndex: Math.floor(Math.random() * hueList.length),
+      phase: Math.random() * Math.PI * 2,
+      energy: 0
+    };
+  }
+
+  // Initialize 85 nodes (14 major hubs + 71 relay nodes)
+  for (let i = 0; i < 85; i++) {
+    nodes.push(createNode(undefined, undefined, i < 14));
+  }
+
+  let mouse = { x: -9999, y: -9999, active: false };
+
+  window.addEventListener('pointermove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+  }, { passive: true });
+
+  window.addEventListener('pointerleave', () => {
+    mouse.x = -9999;
+    mouse.y = -9999;
+    mouse.active = false;
+  });
+
+  // Spawn Shockwave & Inject Node on Canvas Click
+  canvas.addEventListener('pointerdown', (e) => {
+    emitShockwave(e.clientX, e.clientY);
+    if (nodes.length < 115) {
+      nodes.push(createNode(e.clientX, e.clientY, Math.random() > 0.65));
+      document.getElementById('nodeCountLabel').textContent = nodes.length;
+    }
+  });
+
+  function emitShockwave(x, y) {
+    shockwaves.push({ x, y, radius: 8, maxRadius: 360, alpha: 0.9 });
+    // Energize nearby nodes and spawn synaptic pulses
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const d = Math.hypot(n.x - x, n.y - y);
+      if (d < 240 && d > 1) {
+        const push = ((240 - d) / 240) * 3.2;
+        n.vx += ((n.x - x) / d) * push;
+        n.vy += ((n.y - y) / d) * push;
+        n.energy = 1;
+      }
+    }
+  }
+
+  // UI Telemetry Elements
+  const edgeCountLabel = document.getElementById('edgeCountLabel');
+  const pulseCountLabel = document.getElementById('pulseCountLabel');
+  let frameTick = 0;
+
+  // =========================================================================
+  // MAIN RENDER & PHYSICS LOOP
+  // =========================================================================
+  function render() {
+    if (!canvas.isConnected) return;
+    frameTick++;
+    ctx.clearRect(0, 0, width, height);
+
+    // 1. Draw Soft Cursor Field Halo
+    if (mouse.active) {
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 2, mouse.x, mouse.y, CURSOR_RADIUS);
+      grad.addColorStop(0, `rgba(${activeTheme.accentRgb}, 0.14)`);
+      grad.addColorStop(0.5, `rgba(${activeTheme.secondaryRgb}, 0.05)`);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, CURSOR_RADIUS, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. Update & Draw Shockwave Rings
+    for (let s = shockwaves.length - 1; s >= 0; s--) {
+      const sw = shockwaves[s];
+      sw.radius += 7.5;
+      sw.alpha = Math.max(0, 1 - sw.radius / sw.maxRadius);
+
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${activeTheme.accentRgb}, ${sw.alpha * 0.65})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      if (sw.radius >= sw.maxRadius) shockwaves.splice(s, 1);
+    }
+
+    // 3. Update Node Positions & Cursor Gravity
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      n.phase += 0.035;
+      n.energy = Math.max(0, n.energy - 0.02);
+
+      if (mouse.active) {
+        const dx = mouse.x - n.x;
+        const dy = mouse.y - n.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < CURSOR_RADIUS && dist > 1) {
+          const factor = (CURSOR_RADIUS - dist) / CURSOR_RADIUS;
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          if (gravityMode === 'attract') {
+            // Pull gently toward cursor orbit
+            const pull = dist > 45 ? 0.55 : -0.8;
+            n.x += nx * factor * pull * 2.1;
+            n.y += ny * factor * pull * 2.1;
+          } else if (gravityMode === 'repel') {
+            // Forcefield repulsion
+            n.x -= nx * factor * 2.8;
+            n.y -= ny * factor * 2.8;
+          } else if (gravityMode === 'vortex') {
+            // Tangential swirl + slight pull
+            n.x += (-ny * 2.4 + nx * 0.45) * factor;
+            n.y += (nx * 2.4 + ny * 0.45) * factor;
+          }
+          n.energy = Math.max(n.energy, factor * 0.85);
+        }
+      }
+
+      // Dampen excessive velocity back to nominal drift
+      const speed = Math.hypot(n.vx, n.vy);
+      if (speed > 1.8) {
+        n.vx *= 0.96;
+        n.vy *= 0.96;
+      }
+
+      n.x += n.vx;
+      n.y += n.vy;
+
+      // Soft wrap/bounce at screen edges
+      if (n.x < 10) { n.x = 10; n.vx *= -1; }
+      if (n.x > width - 10) { n.x = width - 10; n.vx *= -1; }
+      if (n.y < 10) { n.y = 10; n.vy *= -1; }
+      if (n.y > height - 10) { n.y = height - 10; n.vy *= -1; }
+    }
+
+    // 4. Compute Connections, Triangulated Mesh Faces & Spawn Data Pulses
+    let activeEdgesCount = 0;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const n1 = nodes[i];
+
+      // Draw tether line directly to cursor if close
+      if (mouse.active) {
+        const mDist = Math.hypot(mouse.x - n1.x, mouse.y - n1.y);
+        if (mDist < 155) {
+          const mAlpha = (1 - mDist / 155) * 0.55;
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(${activeTheme.accentRgb}, ${mAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      for (let j = i + 1; j < nodes.length; j++) {
+        const n2 = nodes[j];
+        const dx = n1.x - n2.x;
+        const dy = n1.y - n2.y;
+
+        // Early bounding-box exit for performance
+        if (Math.abs(dx) > MAX_DIST || Math.abs(dy) > MAX_DIST) continue;
+
+        const dist = Math.hypot(dx, dy);
+        if (dist < MAX_DIST) {
+          activeEdgesCount++;
+          const alpha = 1 - dist / MAX_DIST;
+          const boost = Math.max(n1.energy, n2.energy);
+
+          // Draw Filament Stroke
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(n2.x, n2.y);
+          ctx.strokeStyle = `rgba(${activeTheme.accentRgb}, ${alpha * (0.32 + boost * 0.45)})`;
+          ctx.lineWidth = n1.isHub && n2.isHub ? 1.5 : 0.95;
+          ctx.stroke();
+
+          // Randomly spawn a synaptic data packet along this edge
+          if (showDataPulses && pulses.length < 38 && Math.random() < 0.0018) {
+            pulses.push({
+              from: n1,
+              to: n2,
+              t: 0,
+              speed: 0.018 + Math.random() * 0.022
+            });
+          }
+
+          // Optional Simplex Triangle Shading for tight 3-node cliques
+          if (showMeshFaces && dist < MAX_DIST * 0.78) {
+            for (let k = j + 1; k < nodes.length; k++) {
+              const n3 = nodes[k];
+              if (Math.abs(n1.x - n3.x) > MAX_DIST * 0.78 || Math.abs(n1.y - n3.y) > MAX_DIST * 0.78) continue;
+              const d23 = Math.hypot(n2.x - n3.x, n2.y - n3.y);
+              const d13 = Math.hypot(n1.x - n3.x, n1.y - n3.y);
+              if (d23 < MAX_DIST * 0.78 && d13 < MAX_DIST * 0.78) {
+                const triAlpha = Math.min(alpha, 1 - d23 / MAX_DIST, 1 - d13 / MAX_DIST) * (0.055 + boost * 0.09);
+                ctx.beginPath();
+                ctx.moveTo(n1.x, n1.y);
+                ctx.lineTo(n2.x, n2.y);
+                ctx.lineTo(n3.x, n3.y);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${activeTheme.secondaryRgb}, ${triAlpha})`;
+                ctx.fill();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 5. Update & Render Traveling Synaptic Data Packets
+    if (showDataPulses) {
+      for (let p = pulses.length - 1; p >= 0; p--) {
+        const pkt = pulses[p];
+        pkt.t += pkt.speed;
+        if (pkt.t >= 1) {
+          pkt.to.energy = Math.min(1, pkt.to.energy + 0.45);
+          pulses.splice(p, 1);
+          continue;
+        }
+        const px = pkt.from.x + (pkt.to.x - pkt.from.x) * pkt.t;
+        const py = pkt.from.y + (pkt.to.y - pkt.from.y) * pkt.t;
+
+        ctx.beginPath();
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = activeTheme.accentHex;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    // 6. Render Nodes (Relay Vertices + Pulsing Core Hubs)
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const hue = activeTheme.hues[n.hueIndex];
+      const pulseR = n.radius + Math.sin(n.phase) * 0.45 + n.energy * 1.4;
+
+      // Outer Hub Ring
+      if (n.isHub || n.energy > 0.35) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, pulseR + 4.2, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${activeTheme.accentRgb}, ${0.22 + n.energy * 0.45})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Core Node Dot
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, pulseR, 0, Math.PI * 2);
+      ctx.fillStyle = n.energy > 0.5 ? '#ffffff' : `hsl(${hue}, 90%, 68%)`;
+      ctx.shadowColor = `hsl(${hue}, 95%, 60%)`;
+      ctx.shadowBlur = n.isHub ? 12 : 6;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Update Telemetry Readouts every 12 frames
+    if (frameTick % 12 === 0) {
+      edgeCountLabel.textContent = activeEdgesCount;
+      pulseCountLabel.textContent = pulses.length;
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+
+  // =========================================================================
+  // UI CONTROLS & THEME SWITCHING
+  // =========================================================================
+  document.querySelectorAll('.spec-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.spec-swatch').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTheme = THEMES[btn.dataset.theme];
+      document.documentElement.style.setProperty('--accent-main', activeTheme.accentHex);
+      document.documentElement.style.setProperty('--accent-rgb', activeTheme.accentRgb);
+      document.documentElement.style.setProperty('--secondary-rgb', activeTheme.secondaryRgb);
+      document.documentElement.style.setProperty('--bg-center', activeTheme.bgCenter);
+      document.documentElement.style.setProperty('--bg-edge', activeTheme.bgEdge);
+    });
+  });
+
+  document.querySelectorAll('#gravityModeGroup .mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#gravityModeGroup .mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      gravityMode = btn.dataset.mode;
+    });
+  });
+
+  const toggleMeshBtn = document.getElementById('toggleMeshBtn');
+  toggleMeshBtn.addEventListener('click', () => {
+    showMeshFaces = !showMeshFaces;
+    toggleMeshBtn.classList.toggle('active', showMeshFaces);
+    toggleMeshBtn.textContent = `△ Mesh Faces: ${showMeshFaces ? 'ON' : 'OFF'}`;
+  });
+
+  const togglePulsesBtn = document.getElementById('togglePulsesBtn');
+  togglePulsesBtn.addEventListener('click', () => {
+    showDataPulses = !showDataPulses;
+    togglePulsesBtn.classList.toggle('active', showDataPulses);
+    togglePulsesBtn.textContent = `⚡ Data Packets: ${showDataPulses ? 'ON' : 'OFF'}`;
+  });
+
+  document.getElementById('burstWaveBtn').addEventListener('click', () => {
+    emitShockwave(width / 2, height / 2);
+  });
+
+  const centerDialog = document.getElementById('centerDialog');
+  const toggleHudBtn = document.getElementById('toggleHudBtn');
+  let hudVisible = true;
+
+  toggleHudBtn.addEventListener('click', () => {
+    hudVisible = !hudVisible;
+    centerDialog.classList.toggle('minimized', !hudVisible);
+    toggleHudBtn.textContent = hudVisible ? 'Hide HUD' : 'Show HUD';
+  });
+})();
+</script>
+</body>
+</html>

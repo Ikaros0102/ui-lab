@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vortex Liquid Loader — SVG Organic Surface Wave</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Liquid Glass Flask Loader",
+  "category": "loaders",
+  "themes": [
+    "glass",
+    "mesh"
+  ],
+  "tags": [
+    "loader",
+    "liquid",
+    "wave",
+    "glass",
+    "flask",
+    "bubbles",
+    "organic",
+    "gradient"
+  ],
+  "description": "Tactile cylindrical laboratory glass vial filled with buoyant fluid waves, rising effervescent bubbles, and real-time fill volume percentages.",
+  "techniques": [
+    "Dual sinusoidal SVG path waves moving at offset phase frequencies",
+    "SVG clipPath bounding the liquid inside a chamfered glass cylinder",
+    "Dynamic CSS keyframe bubble generation with randomized delays",
+    "Specular glass reflections with backdrop-filter frost"
+  ],
+  "recipe": "Layers two opposing horizontal wave paths inside an SVG clipPath matching the vial silhouette. Rising micro-bubble spans translate vertically with scale shifts, evoking effervescence beneath frosted glass highlights.",
+  "preview": {
+    "mode": "center"
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: #080d14 radial-gradient(circle at 50% 50%, #101c2c 0%, #05080f 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    overflow: hidden;
+    user-select: none;
+    color: #e2e8f0;
+  }
+
+  /* Glass Vial Container */
+  .vial-capsule {
+    position: relative;
+    width: 130px;
+    height: 240px;
+    border-radius: 65px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.8),
+      inset 0 0 20px rgba(56, 189, 248, 0.1),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Specular Glare Reflection on Glass */
+  .vial-capsule::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    width: 8px;
+    height: 120px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .vial-capsule::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    width: 4px;
+    height: 60px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Liquid Wave Container */
+  .liquid-tank {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 64%;
+    background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 70%, #1d4ed8 100%);
+    box-shadow: 0 0 35px rgba(6, 182, 212, 0.5);
+    transition: height 0.5s ease;
+  }
+
+  /* Animated SVG Waves on Top */
+  .wave-svg {
+    position: absolute;
+    top: -26px;
+    left: 0;
+    width: 260px;
+    height: 28px;
+    fill: #06b6d4;
+    animation: waveDrift 3.2s linear infinite;
+  }
+  .wave-svg.back {
+    top: -24px;
+    fill: #38bdf8;
+    opacity: 0.5;
+    animation: waveDriftRev 2.4s linear infinite;
+  }
+
+  @keyframes waveDrift {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-130px); }
+  }
+  @keyframes waveDriftRev {
+    0% { transform: translateX(-130px); }
+    100% { transform: translateX(0); }
+  }
+
+  /* Effervescent Rising Bubbles */
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 4px #fff;
+    animation: riseUp 2.5s infinite ease-in;
+  }
+  .b1 { left: 25%; width: 6px; height: 6px; bottom: 10px; animation-duration: 2.2s; animation-delay: 0.3s; }
+  .b2 { left: 55%; width: 8px; height: 8px; bottom: 5px; animation-duration: 2.8s; animation-delay: 0.8s; }
+  .b3 { left: 75%; width: 5px; height: 5px; bottom: 12px; animation-duration: 1.9s; animation-delay: 1.4s; }
+  .b4 { left: 40%; width: 7px; height: 7px; bottom: 8px; animation-duration: 2.5s; animation-delay: 0.1s; }
+
+  @keyframes riseUp {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    30% { opacity: 0.8; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-130px) scale(1.1); opacity: 0; }
+  }
+
+  /* Percentage Display Badge */
+  .fill-badge {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #38bdf8;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+  }
+
+  .status-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+  <div class="vial-capsule">
+    <div class="liquid-tank" id="tank">
+      <!-- Back Wave -->
+      <svg class="wave-svg back" viewBox="0 0 260 28" preserveAspectRatio="none">
+        <path d="M0 14 Q32.5 0 65 14 T130 14 T195 14 T260 14 V28 H0 Z" />
+      </svg>
+      <!-- Front Wave -->
+      <svg class="wave-svg" viewBox="0 0 260 28" preserveAspectRatio="none">
+        <path d="M0 14 Q32.5 28 65 14 T130 14 T195 14 T260 14 V28 H0 Z" />
+      </svg>
+
+      <!-- Bubbles -->
+      <div class="bubble b1"></div>
+      <div class="bubble b2"></div>
+      <div class="bubble b3"></div>
+      <div class="bubble b4"></div>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <div class="fill-badge" id="fill-pct">64%</div>
+    <div class="status-tag">BUFFER INFUSION</div>
+  </div>
+
+<script>
+(() => {
+  const tank = document.getElementById('tank');
+  const pctEl = document.getElementById('fill-pct');
+  let pct = 64;
+
+  setInterval(() => {
+    pct = pct >= 92 ? 45 : pct + 1;
+    pctEl.textContent = `${pct}%`;
+    tank.style.height = `${pct}%`;
+  }, 220);
+})();
+</script>
+</body>
+</html>

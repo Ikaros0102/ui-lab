@@ -127,6 +127,7 @@ async function createPlaywrightDriver(baseUrl) {
     "--disable-background-timer-throttling",
     "--disable-renderer-backgrounding",
     "--hide-scrollbars",
+    "--allow-file-access-from-files",
   ];
 
   let browser = null;
@@ -158,9 +159,18 @@ async function createPlaywrightDriver(baseUrl) {
   return {
     name: "playwright-chromium",
     async captureItem(item, { width, height, scale }) {
-      const compUrl = `${baseUrl}/${item.path}`;
+      const fileUrl = pathToFileURL(join(ROOT, item.path)).href;
+      const compUrl = baseUrl ? `${baseUrl}/${item.path}` : fileUrl;
       await page.setViewportSize({ width, height });
-      await page.goto(compUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+      try {
+        await page.goto(compUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+      } catch (navErr) {
+        if (compUrl !== fileUrl) {
+          await page.goto(fileUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+        } else {
+          throw navErr;
+        }
+      }
       await page.addStyleTag({ content: HIDE_SCROLLBAR_CSS });
       await page.waitForTimeout(RENDER_SETTLE_MS);
 
@@ -388,9 +398,9 @@ async function createNativePipeDriver() {
 
 async function createBrowserDriver(baseUrl) {
   try {
-    return await createPlaywrightDriver(baseUrl);
-  } catch {
     return await createNativePipeDriver();
+  } catch {
+    return await createPlaywrightDriver(baseUrl);
   }
 }
 

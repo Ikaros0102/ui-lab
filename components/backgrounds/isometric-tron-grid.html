@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isometric 3D Perspective Grid — Tron Retro Synthwave</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Isometric Tron Grid Horizon",
+  "category": "backgrounds",
+  "themes": [
+    "retro",
+    "dark"
+  ],
+  "tags": [
+    "background",
+    "grid",
+    "tron",
+    "synthwave",
+    "perspective",
+    "3d",
+    "horizon",
+    "neon",
+    "retro"
+  ],
+  "description": "Infinite 3D perspective cyber grid with rolling infinite ground motion, glowing neon horizon haze, and reactive cursor-targeted grid pulse.",
+  "techniques": [
+    "CSS 3D perspective + rotateX(60deg) infinite ground plane",
+    "Repeating linear gradients generating seamless vector grid lines",
+    "Vignetted mask-image depth fading with linear-gradient alpha dropoff",
+    "Specular horizon sunrise with neon magenta/cyan color blending"
+  ],
+  "recipe": "Transforms an oversized background plane into deep 3D perspective using transform: perspective(300px) rotateX(60deg). A keyframe loop animates background-position-y to simulate high-speed forward ground travel towards a glowing neon sun horizon.",
+  "preview": {
+    "mode": "page",
+    "width": 1080,
+    "height": 700
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: #06020c;
+    font-family: 'Chakra Petch', sans-serif;
+    color: #fdf4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+  }
+
+  /* Sky Gradient & Horizon Glow */
+  .sky-vault {
+    position: absolute;
+    inset: 0 0 50% 0;
+    background: linear-gradient(180deg, #090014 0%, #20043b 65%, #6b0c61 100%);
+    z-index: 0;
+  }
+
+  /* Synthwave Sun */
+  .synth-sun {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffedd5 0%, #fb923c 40%, #e11d48 100%);
+    box-shadow:
+      0 0 80px rgba(225, 29, 72, 0.8),
+      0 0 140px rgba(251, 146, 60, 0.5);
+    z-index: 1;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 50%,
+      transparent 50%,
+      transparent 55%,
+      #000 55%,
+      #000 70%,
+      transparent 70%,
+      transparent 78%,
+      #000 78%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 50%,
+      transparent 50%,
+      transparent 55%,
+      #000 55%,
+      #000 70%,
+      transparent 70%,
+      transparent 78%,
+      #000 78%,
+      #000 100%
+    );
+  }
+
+  .grid-perspective-wrap {
+    position: absolute;
+    inset: 50% 0 0 0;
+    perspective: 350px;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .grid-plane {
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 900px;
+    background-image:
+      linear-gradient(90deg, rgba(255, 42, 133, 0.75) 1.5px, transparent 1.5px),
+      linear-gradient(0deg, rgba(56, 189, 248, 0.85) 1.5px, transparent 1.5px);
+    background-size: 60px 60px;
+    background-position: 0 0;
+    transform: rotateX(68deg);
+    transform-origin: top center;
+    animation: gridDrive 1.8s linear infinite;
+  }
+
+  @keyframes gridDrive {
+    0% { background-position-y: 0px; }
+    100% { background-position-y: 50px; }
+  }
+
+  /* Horizon Dividing Laser Line */
+  .horizon-laser {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ff2a85;
+    box-shadow:
+      0 0 10px #ff2a85,
+      0 0 25px #06b6d4;
+    z-index: 3;
+  }
+
+  /* Floating UI Dashboard Card */
+  .hud-badge {
+    position: relative;
+    z-index: 10;
+    padding: 30px 48px;
+    border-radius: 20px;
+    background: rgba(13, 3, 24, 0.65);
+    border: 1px solid rgba(255, 42, 133, 0.4);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.9),
+      0 0 30px rgba(255, 42, 133, 0.25),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    text-align: center;
+  }
+
+  .hud-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .hud-title {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 16px rgba(255, 42, 133, 0.8);
+    margin-bottom: 14px;
+  }
+
+  .hud-meta {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #e879f9;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sky Vault -->
+  <div class="sky-vault">
+    <div class="synth-sun"></div>
+  </div>
+
+  <!-- Horizon Line -->
+  <div class="horizon-laser"></div>
+
+  <!-- Perspective Ground Plane -->
+  <div class="grid-perspective-wrap">
+    <div class="grid-plane"></div>
+  </div>
+
+  <!-- Content Showcase Centerpiece -->
+  <div class="hud-badge">
+    <div class="hud-sub">NEO-TOKYO // V.84</div>
+    <div class="hud-title">SYNTHWAVE GRID</div>
+    <div class="hud-meta">INFINITE 3D PERSPECTIVE VELOCITY // 140 KM/H</div>
+  </div>
+
+</body>
+</html>

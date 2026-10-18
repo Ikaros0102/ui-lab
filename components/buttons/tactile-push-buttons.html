@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Tactile Mechanical Switch & Hardware Control Rack (9 Archetypes)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Tactile Mechanical Switches (9-Module Hardware Rack)",
+  "category": "buttons",
+  "themes": [
+    "dark",
+    "retro",
+    "industrial"
+  ],
+  "tags": [
+    "buttons",
+    "tactile",
+    "mechanical",
+    "switch",
+    "3d",
+    "toggle",
+    "rotary",
+    "flip-cover",
+    "keycap",
+    "hardware"
+  ],
+  "description": "3x3 Industrial Hardware Switch Rack featuring 9 distinct physical actuation mechanisms: Sculpted MX Keycap, Safety Flip-Cover Launch Button, Latching Push-Lock, 3D Rocker Paddle, Arcade Plunger, Detent Rotary Knob, Chrome Toggle Lever, Pressure Hold Relay, and Split-Flap Stepper.",
+  "techniques": [
+    "multi-layered 3D extrusion box-shadows with active depth compression",
+    "interactive hinged safety flip-cover with hazard striping and arming interlock",
+    "latching push-lock state machine with persistent depressed geometry",
+    "3-mode chassis material themes (Stealth Carbon, Retro 1984 Beige, Brushed Titanium)",
+    "synthesized Web Audio micro-switch acoustic profiles (Clicky, Tactile, Thocky, Mute)"
+  ],
+  "recipe": "Each module sits inside a recessed rack bay with hex screws and dual LED telemetry beacons. Physical travel is rendered via stepped vertical shadows and perspective tilts, paired with optional procedural Web Audio switch transients.",
+  "preview": {
+    "mode": "page",
+    "width": 1100,
+    "height": 820
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ==========================================================================
+     CHASSIS MATERIAL THEMES
+     ========================================================================== */
+  :root,
+  [data-chassis="obsidian"] {
+    --bg-room: #090a0e;
+    --rack-surface: linear-gradient(180deg, #1a1c24 0%, #111319 100%);
+    --rack-border: #2e3240;
+    --bay-bg: #0d0f14;
+    --bay-border: #232733;
+    --text-main: #f1f5f9;
+    --text-muted: #64748b;
+    --screw-bg: #1e222d;
+    --travel-dist: 6px;
+  }
+
+  [data-chassis="retro"] {
+    --bg-room: #1c1917;
+    --rack-surface: linear-gradient(180deg, #d6cfc2 0%, #b8b0a2 100%);
+    --rack-border: #8c8273;
+    --bay-bg: #a39b8b;
+    --bay-border: #787062;
+    --text-main: #1c1917;
+    --text-muted: #44403c;
+    --screw-bg: #78716c;
+    --travel-dist: 6px;
+  }
+
+  [data-chassis="titanium"] {
+    --bg-room: #0b0f17;
+    --rack-surface: linear-gradient(180deg, #27303f 0%, #18202c 100%);
+    --rack-border: #475569;
+    --bay-bg: #111722;
+    --bay-border: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --screw-bg: #334155;
+    --travel-dist: 6px;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 55%),
+      var(--bg-room);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 18px 34px;
+    user-select: none;
+    overflow-x: hidden;
+    transition: background 0.35s ease;
+  }
+
+  .rack-wrapper {
+    width: 100%;
+    max-width: 1050px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ==========================================================================
+     TOP ENGINEERING CONTROL BAR
+     ========================================================================== */
+  .rack-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 17, 23, 0.9);
+    border: 1px solid #2a2e3d;
+    border-radius: 14px;
+    padding: 12px 18px;
+    color: #f8fafc;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .power-pilot-lamp {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 12px #10b981;
+  }
+
+  .topbar-titles h1 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .topbar-titles p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #94a3b8;
+  }
+
+  .topbar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ctrl-group {
+    display: flex;
+    align-items: center;
+    background: #090b10;
+    border: 1px solid #252936;
+    border-radius: 9px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .ctrl-pill-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .ctrl-pill-btn:hover { color: #ffffff; }
+  .ctrl-pill-btn.active {
+    background: #1e293b;
+    color: #38bdf8;
+    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.4);
+  }
+
+  .diag-btn {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    border: 1px solid #fbbf24;
+    color: #090a0f;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 7px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transition: transform 0.15s ease;
+  }
+
+  .diag-btn:hover { transform: translateY(-1px); }
+
+  /* ==========================================================================
+     MAIN 3x3 HARDWARE RACK ENCLOSURE
+     ========================================================================== */
+  .hardware-chassis {
+    background: var(--rack-surface);
+    border: 2px solid var(--rack-border);
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow:
+      0 32px 65px rgba(0, 0, 0, 0.78),
+      inset 0 1px 1px rgba(255, 255, 255, 0.18),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+
+  /* Recessed Module Bay */
+  .switch-bay {
+    background: var(--bay-bg);
+    border: 1px solid var(--bay-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    min-height: 206px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    box-shadow:
+      inset 0 4px 14px rgba(0, 0, 0, 0.65),
+      0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Corner Hex Screws */
+  .hex-screw {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--screw-bg);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1);
+    pointer-events: none;
+  }
+  .hs-tl { top: 7px; left: 7px; }
+  .hs-tr { top: 7px; right: 7px; }
+  .hs-bl { bottom: 7px; left: 7px; }
+  .hs-br { bottom: 7px; right: 7px; }
+
+  .bay-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 6px;
+    z-index: 2;
+  }
+
+  .bay-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+  }
+
+  /* Status LED Beacon */
+  .led-cluster {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-led {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #1e232e;
+    border: 1px solid #090b10;
+    transition: all 0.18s ease;
+  }
+
+  .status-led.on-cyan {
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8, 0 0 20px rgba(56, 189, 248, 0.7);
+  }
+  .status-led.on-red {
+    background: #f43f5e;
+    box-shadow: 0 0 10px #f43f5e, 0 0 22px rgba(244, 63, 94, 0.8);
+  }
+  .status-led.on-green {
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981, 0 0 20px rgba(16, 185, 129, 0.7);
+  }
+  .status-led.on-amber {
+    background: #fbbf24;
+    box-shadow: 0 0 10px #fbbf24, 0 0 20px rgba(251, 191, 36, 0.75);
+  }
+  .status-led.on-violet {
+    background: #a855f7;
+    box-shadow: 0 0 10px #a855f7, 0 0 20px rgba(168, 85, 247, 0.75);
+  }
+
+  .bay-stage {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 8px 0;
+  }
+
+  .bay-footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .bay-readout {
+    color: #94a3b8;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* ==========================================================================
+     MODULE 01: SCULPTED MECHANICAL KEYCAP (CYBER INDIGO)
+     ========================================================================== */
+  .tactile-btn {
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .keycap-3d {
+    width: 144px;
+    height: 70px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #3730a3 0%, #1e1b4b 100%);
+    border-top: 1px solid #818cf8;
+    box-shadow:
+      0 1px 0 #4338ca,
+      0 3px 0 #312e81,
+      0 5px 0 #1e1b4b,
+      0 8px 0 #110e2e,
+      0 14px 20px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #e0e7ff;
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+    position: relative;
+  }
+
+  /* Concave finger dish */
+  .keycap-dish {
+    width: 120px;
+    height: 50px;
+    border-radius: 9px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, rgba(255,255,255,0.05) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .keycap-dish strong {
+    font-size: 13px;
+    letter-spacing: 0.8px;
+  }
+
+  .keycap-dish span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: #a5b4fc;
+  }
+
+  .btn-mx:active .keycap-3d,
+  .btn-mx.sim-press .keycap-3d {
+    transform: translateY(var(--travel-dist));
+    box-shadow:
+      0 1px 0 #4338ca,
+      0 2px 0 #110e2e,
+      0 4px 8px rgba(0, 0, 0, 0.75);
+  }
+
+  /* ==========================================================================
+     MODULE 02: SAFETY FLIP-COVER GUARDED LAUNCH BUTTON
+     ========================================================================== */
+  .guarded-assembly {
+    position: relative;
+    width: 150px;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .launch-core-btn {
+    width: 126px;
+    height: 62px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #e11d48 0%, #881337 100%);
+    border: 1px solid #fda4af;
+    box-shadow:
+      0 2px 0 #9f1239,
+      0 6px 0 #4c0519,
+      0 12px 18px rgba(0,0,0,0.75);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.08s ease;
+  }
+
+  .launch-core-btn:active:not(:disabled) {
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 #4c0519, 0 4px 8px rgba(225, 29, 72, 0.6);
+  }
+
+  .launch-core-btn:disabled {
+    filter: brightness(0.55) grayscale(0.3);
+    cursor: not-allowed;
+  }
+
+  /* Hinged Flip Cover */
+  .safety-flip-cover {
+    position: absolute;
+    inset: 4px 6px;
+    border-radius: 12px;
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        rgba(245, 158, 11, 0.28) 0px,
+        rgba(245, 158, 11, 0.28) 10px,
+        rgba(15, 23, 42, 0.82) 10px,
+        rgba(15, 23, 42, 0.82) 20px
+      );
+    border: 2px solid #f59e0b;
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform-origin: top center;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.65);
+    z-index: 4;
+  }
+
+  .safety-flip-cover span {
+    background: #090a0f;
+    color: #fbbf24;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #f59e0b;
+  }
+
+  .safety-flip-cover.open {
+    transform: perspective(400px) rotateX(105deg) translateY(-12px);
+    height: 24px;
+  }
+
+  /* ==========================================================================
+     MODULE 03: LATCHING PUSH-LOCK SWITCH (PERSISTENT DEPTH)
+     ========================================================================== */
+  .latch-btn .latch-cap {
+    width: 140px;
+    height: 68px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border-top: 1px solid #475569;
+    box-shadow:
+      0 2px 0 #1e293b,
+      0 5px 0 #0f172a,
+      0 8px 0 #060911,
+      0 14px 20px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: #cbd5e1;
+    font-weight: 800;
+    font-size: 13px;
+    transition: all 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .latch-window {
+    width: 42px;
+    height: 6px;
+    border-radius: 3px;
+    background: #090d16;
+    border: 1px solid #334155;
+    transition: all 0.2s ease;
+  }
+
+  .latch-btn.latched .latch-cap {
+    transform: translateY(5px);
+    border-top-color: #10b981;
+    color: #ecfdf5;
+    box-shadow:
+      0 1px 0 #0f172a,
+      0 3px 0 #060911,
+      0 0 18px rgba(16, 185, 129, 0.35);
+  }
+
+  .latch-btn.latched .latch-window {
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    border-color: #6ee7b7;
+  }
+
+  /* ==========================================================================
+     MODULE 04: 3D DUAL-STAGE ROCKER PADDLE
+     ========================================================================== */
+  .rocker-housing {
+    width: 136px;
+    height: 76px;
+    background: #07080c;
+    border: 2px solid #262b38;
+    border-radius: 12px;
+    padding: 5px;
+    perspective: 500px;
+  }
+
+  .rocker-paddle {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #334155 0%, #1e293b 50%, #0f172a 100%);
+    border: 1px solid #475569;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    cursor: pointer;
+    transform: rotateX(-14deg);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.7), inset 0 2px 1px rgba(255,255,255,0.18);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  }
+
+  .rocker-paddle.rocker-on {
+    transform: rotateX(14deg);
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.7), 0 4px 14px rgba(56, 189, 248, 0.35);
+    border-color: #38bdf8;
+  }
+
+  .rocker-paddle.rocker-on .r-lbl-on { color: #ffffff; text-shadow: 0 0 8px #38bdf8; }
+  .rocker-paddle:not(.rocker-on) .r-lbl-off { color: #f8fafc; }
+
+  /* ==========================================================================
+     MODULE 05: ARCADE SANWA CONVEX PLUNGER (ILLUMINATED RING)
+     ========================================================================== */
+  .arcade-bezel {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #27272a 0%, #09090b 100%);
+    border: 2px solid #3f3f46;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.75);
+  }
+
+  .arcade-plunger {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 35% 30%, #f472b6 0%, #db2777 55%, #831843 100%);
+    box-shadow:
+      0 5px 0 #500724,
+      0 8px 14px rgba(0,0,0,0.8),
+      inset 0 2px 4px rgba(255,255,255,0.55);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.05s ease;
+  }
+
+  .arcade-plunger:active,
+  .arcade-plunger.sim-press {
+    transform: translateY(4px);
+    filter: brightness(1.3);
+    box-shadow:
+      0 1px 0 #500724,
+      0 0 22px #f472b6,
+      inset 0 2px 4px rgba(255,255,255,0.7);
+  }
+
+  /* ==========================================================================
+     MODULE 06: ROTARY DETENT SELECTOR KNOB
+     ========================================================================== */
+  .rotary-assembly {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rotary-knob {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 70%),
+      repeating-conic-gradient(#334155 0deg 6deg, #0f172a 6deg 12deg);
+    border: 2px solid #475569;
+    box-shadow:
+      0 8px 16px rgba(0,0,0,0.8),
+      inset 0 1px 2px rgba(255,255,255,0.2);
+    cursor: pointer;
+    position: relative;
+    transform: rotate(var(--knob-deg, -60deg));
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .knob-notch {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+    background: #fbbf24;
+    box-shadow: 0 0 8px #fbbf24;
+  }
+
+  .detent-tick {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #262b38;
+    transition: all 0.2s ease;
+  }
+  .dt-0 { top: 18px; left: 10px; }
+  .dt-1 { top: 4px; left: 45px; }
+  .dt-2 { top: 18px; right: 10px; }
+  .dt-3 { bottom: 18px; right: 10px; }
+
+  .detent-tick.lit {
+    background: #fbbf24;
+    box-shadow: 0 0 8px #fbbf24;
+  }
+
+  /* ==========================================================================
+     MODULE 07: HEAVY AVIATION CHROME TOGGLE LEVER
+     ========================================================================== */
+  .toggle-socket {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #090b10 0%, #1e293b 65%, #0f172a 100%);
+    border: 2px solid #475569;
+    box-shadow: inset 0 4px 8px rgba(0,0,0,0.9), 0 6px 14px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .toggle-baton {
+    width: 18px;
+    height: 46px;
+    border-radius: 9px;
+    background: linear-gradient(90deg, #94a3b8 0%, #f8fafc 45%, #475569 100%);
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 8px 14px rgba(0,0,0,0.85);
+    transform-origin: center center;
+    transform: translateY(10px) scaleY(0.92);
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  }
+
+  .toggle-socket.up .toggle-baton {
+    transform: translateY(-12px) scaleY(1.04);
+    box-shadow: 0 14px 18px rgba(0,0,0,0.75), 0 0 12px rgba(56, 189, 248, 0.4);
+  }
+
+  /* ==========================================================================
+     MODULE 08: CAPACITIVE HOLD-TO-CHARGE RELAY
+     ========================================================================== */
+  .charge-module {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .charge-btn {
+    width: 144px;
+    height: 54px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+    border-top: 1px solid #fbbf24;
+    box-shadow:
+      0 2px 0 #92400e,
+      0 5px 0 #451a03,
+      0 10px 16px rgba(0,0,0,0.7);
+    color: #fef3c7;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+
+  .charge-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #451a03, 0 0 16px rgba(251, 191, 36, 0.5);
+  }
+
+  .charge-meter {
+    width: 144px;
+    height: 8px;
+    background: #07090e;
+    border: 1px solid #262b38;
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 1px;
+  }
+
+  .charge-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    box-shadow: 0 0 8px #f59e0b;
+    transition: width 0.06s linear;
+  }
+
+  /* ==========================================================================
+     MODULE 09: RETRO SPLIT-FLAP MECHANICAL COUNTER + STEP KEY
+     ========================================================================== */
+  .splitflap-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .flap-drum {
+    width: 68px;
+    height: 66px;
+    background: #090a0f;
+    border: 2px solid #2e3446;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 800;
+    color: #f8fafc;
+    position: relative;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.9);
+  }
+
+  /* Split-flap horizontal seam */
+  .flap-drum::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: #000000;
+  }
+
+  .step-trigger-btn {
+    width: 68px;
+    height: 66px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ea580c 0%, #9a3412 100%);
+    border-top: 1px solid #fdba74;
+    box-shadow:
+      0 2px 0 #9a3412,
+      0 6px 0 #431407,
+      0 10px 16px rgba(0,0,0,0.7);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+
+  .step-trigger-btn:active,
+  .step-trigger-btn.sim-press {
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 #431407, 0 4px 8px rgba(0,0,0,0.7);
+  }
+
+  @media (max-width: 880px) {
+    .hardware-chassis {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 580px) {
+    .hardware-chassis {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body data-chassis="obsidian">
+
+<div class="rack-wrapper">
+
+  <!-- ====================================================================
+       TOP ENGINEERING CONTROL BAR
+       ==================================================================== -->
+  <header class="rack-topbar">
+    <div class="topbar-brand">
+      <div class="power-pilot-lamp"></div>
+      <div class="topbar-titles">
+        <h1>TACTILE MICRO-SWITCH &amp; HARDWARE RACK</h1>
+        <p>9 PHYSICAL ACTUATION &amp; MECHANICAL INTERLOCK MODULES</p>
+      </div>
+    </div>
+
+    <div class="topbar-controls">
+      <!-- Chassis Material Switcher -->
+      <div class="ctrl-group" id="chassisGroup">
+        <button class="ctrl-pill-btn active" data-chassis="obsidian">Obsidian</button>
+        <button class="ctrl-pill-btn" data-chassis="retro">1984 Beige</button>
+        <button class="ctrl-pill-btn" data-chassis="titanium">Titanium</button>
+      </div>
+
+      <!-- Acoustic Switch Profile -->
+      <div class="ctrl-group" id="switchSoundGroup">
+        <button class="ctrl-pill-btn active" data-sound="clicky">Blue Clicky</button>
+        <button class="ctrl-pill-btn" data-sound="thock">Thock Linear</button>
+        <button class="ctrl-pill-btn" data-sound="mute">🔇 Mute</button>
+      </div>
+
+      <!-- Sequential Relay Diagnostic Test -->
+      <button class="diag-btn" id="runDiagBtn">⚡ Run Relay Test</button>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       3x3 MECHANICAL SWITCH RACK (9 UNIQUE ARCHETYPES)
+       ==================================================================== -->
+  <main class="hardware-chassis">
+
+    <!-- BAY 01: SCULPTED KEYCAP (MOMENTARY MX) -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-01 // MX KEYCAP</span>
+        <div class="led-cluster">
+          <div class="status-led on-cyan" id="led-01"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <button class="tactile-btn btn-mx" id="btnMx" type="button" data-freq="880">
+          <div class="keycap-3d">
+            <div class="keycap-dish">
+              <strong>ENGAGE</strong>
+              <span>65g TACTILE</span>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="bay-footer">
+        <span>MOMENTARY</span>
+        <span class="bay-readout" id="readout-01">CYCLES: 004</span>
+      </div>
+    </div>
+
+    <!-- BAY 02: GUARDED SAFETY FLIP-COVER LAUNCH BUTTON -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-02 // SAFETY GUARD</span>
+        <div class="led-cluster">
+          <div class="status-led" id="led-02"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="guarded-assembly">
+          <button class="launch-core-btn" id="launchBtn" type="button" disabled data-freq="420">
+            🔥 IGNITE
+          </button>
+          <div class="safety-flip-cover" id="flipCover" title="Click to flip safety cover open/closed">
+            <span>LIFT COVER</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>INTERLOCK</span>
+        <span class="bay-readout" id="readout-02">SAFE // LOCKED</span>
+      </div>
+    </div>
+
+    <!-- BAY 03: LATCHING PUSH-LOCK BUTTON -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-03 // PUSH-LOCK</span>
+        <div class="led-cluster">
+          <div class="status-led on-green" id="led-03"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <button class="tactile-btn latch-btn latched" id="latchBtn" type="button" data-freq="620">
+          <div class="latch-cap">
+            <div class="latch-window"></div>
+            <span id="latchLabel">PHANTOM +48V</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="bay-footer">
+        <span>LATCHING DEPTH</span>
+        <span class="bay-readout" id="readout-03">LATCHED (-5mm)</span>
+      </div>
+    </div>
+
+    <!-- BAY 04: 3D DUAL-STAGE ROCKER PADDLE -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-04 // ROCKER PADDLE</span>
+        <div class="led-cluster">
+          <div class="status-led on-cyan" id="led-04"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="rocker-housing">
+          <button class="rocker-paddle rocker-on" id="rockerBtn" type="button" data-freq="540">
+            <span class="r-lbl-off">O // STBY</span>
+            <span class="r-lbl-on">I // MAIN BUS</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>3D PIVOT</span>
+        <span class="bay-readout" id="readout-04">BUS: ONLINE</span>
+      </div>
+    </div>
+
+    <!-- BAY 05: ARCADE SANWA CONVEX PLUNGER -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-05 // ARCADE 30MM</span>
+        <div class="led-cluster">
+          <div class="status-led on-violet" id="led-05"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="arcade-bezel">
+          <button class="arcade-plunger" id="arcadeBtn" type="button" data-freq="980">
+            1P FIRE
+          </button>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>MICRO-PLUNGER</span>
+        <span class="bay-readout" id="readout-05">COMBO: 12x</span>
+      </div>
+    </div>
+
+    <!-- BAY 06: ROTARY DETENT SELECTOR KNOB -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-06 // ROTARY DETENT</span>
+        <div class="led-cluster">
+          <div class="status-led on-amber" id="led-06"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="rotary-assembly">
+          <div class="detent-tick dt-0 lit"></div>
+          <div class="detent-tick dt-1 lit"></div>
+          <div class="detent-tick dt-2"></div>
+          <div class="detent-tick dt-3"></div>
+          <button class="rotary-knob" id="rotaryKnob" type="button" data-freq="740" style="--knob-deg: -15deg;">
+            <div class="knob-notch"></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>STEPPED KNOB</span>
+        <span class="bay-readout" id="readout-06">GAIN: +6 dB</span>
+      </div>
+    </div>
+
+    <!-- BAY 07: AVIATION CHROME TOGGLE LEVER -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-07 // CHROME TOGGLE</span>
+        <div class="led-cluster">
+          <div class="status-led on-cyan" id="led-07"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <button class="toggle-socket up" id="chromeToggle" type="button" data-freq="1050">
+          <div class="toggle-baton"></div>
+        </button>
+      </div>
+
+      <div class="bay-footer">
+        <span>HEAVY THROW</span>
+        <span class="bay-readout" id="readout-07">AVIONICS: ON</span>
+      </div>
+    </div>
+
+    <!-- BAY 08: CAPACITIVE HOLD-TO-CHARGE RELAY -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-08 // COIL CHARGE</span>
+        <div class="led-cluster">
+          <div class="status-led on-amber" id="led-08"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="charge-module">
+          <button class="charge-btn" id="chargeBtn" type="button" data-freq="500">
+            HOLD TO CHARGE
+          </button>
+          <div class="charge-meter">
+            <div class="charge-fill" id="chargeFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>HOLD PRESSURE</span>
+        <span class="bay-readout" id="readout-08">CAP: 0%</span>
+      </div>
+    </div>
+
+    <!-- BAY 09: SPLIT-FLAP MECHANICAL COUNTER -->
+    <div class="switch-bay">
+      <div class="hex-screw hs-tl"></div><div class="hex-screw hs-tr"></div>
+      <div class="hex-screw hs-bl"></div><div class="hex-screw hs-br"></div>
+
+      <div class="bay-header">
+        <span class="bay-code">SW-09 // SPLIT-FLAP</span>
+        <div class="led-cluster">
+          <div class="status-led on-amber" id="led-09"></div>
+        </div>
+      </div>
+
+      <div class="bay-stage">
+        <div class="splitflap-group">
+          <div class="flap-drum" id="flapDrum">07</div>
+          <button class="step-trigger-btn" id="flapStepBtn" type="button" data-freq="790">
+            + STEP
+          </button>
+        </div>
+      </div>
+
+      <div class="bay-footer">
+        <span>DRUM INDEX</span>
+        <span class="bay-readout" id="readout-09">CH: 07 ACTIVE</span>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. SYNTHESIZED WEB AUDIO SWITCH ENGINE (CLICKY / THOCK / MUTE)
+  // =========================================================================
+  let audioCtx = null;
+  let soundProfile = 'clicky';
+
+  function initAudio() {
+    if (soundProfile === 'mute') return;
+    if (!audioCtx) {
+      const AudioClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioClass) audioCtx = new AudioClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playMechanicalSound(baseFreq = 800) {
+    if (soundProfile === 'mute') return;
+    initAudio();
+    if (!audioCtx) return;
+
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      if (soundProfile === 'clicky') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.042);
+        gain.gain.setValueAtTime(0.13, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.042);
+        osc.start(now);
+        osc.stop(now + 0.042);
+      } else if (soundProfile === 'thock') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * 0.45, now);
+        osc.frequency.exponentialRampToValueAtTime(65, now + 0.065);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      }
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+    } catch (e) {}
+  }
+
+  // =========================================================================
+  // 2. INDIVIDUAL MODULE LOGIC (01 - 09)
+  // =========================================================================
+
+  // SW-01: MX Keycap Counter
+  let mxCycles = 4;
+  document.getElementById('btnMx').addEventListener('pointerdown', () => {
+    playMechanicalSound(880);
+    mxCycles++;
+    document.getElementById('readout-01').textContent = `CYCLES: ${String(mxCycles).padStart(3, '0')}`;
+  });
+
+  // SW-02: Safety Flip-Cover & Launch Button
+  const flipCover = document.getElementById('flipCover');
+  const launchBtn = document.getElementById('launchBtn');
+  const led02 = document.getElementById('led-02');
+  const readout02 = document.getElementById('readout-02');
+  let coverOpen = false;
+
+  flipCover.addEventListener('click', () => {
+    coverOpen = !coverOpen;
+    playMechanicalSound(coverOpen ? 620 : 480);
+    flipCover.classList.toggle('open', coverOpen);
+    launchBtn.disabled = !coverOpen;
+    led02.className = coverOpen ? 'status-led on-red' : 'status-led';
+    readout02.textContent = coverOpen ? 'ARMED // READY' : 'SAFE // LOCKED';
+  });
+
+  launchBtn.addEventListener('pointerdown', () => {
+    if (!coverOpen) return;
+    playMechanicalSound(340);
+    readout02.textContent = '🚀 PAYLOAD FIRED!';
+    setTimeout(() => {
+      if (coverOpen) readout02.textContent = 'ARMED // READY';
+    }, 1400);
+  });
+
+  // SW-03: Latching Push-Lock
+  const latchBtn = document.getElementById('latchBtn');
+  const led03 = document.getElementById('led-03');
+  const readout03 = document.getElementById('readout-03');
+  let isLatched = true;
+
+  latchBtn.addEventListener('pointerdown', () => {
+    isLatched = !isLatched;
+    playMechanicalSound(isLatched ? 580 : 760);
+    latchBtn.classList.toggle('latched', isLatched);
+    led03.className = isLatched ? 'status-led on-green' : 'status-led';
+    readout03.textContent = isLatched ? 'LATCHED (-5mm)' : 'UNLATCHED (0mm)';
+  });
+
+  // SW-04: 3D Rocker Paddle
+  const rockerBtn = document.getElementById('rockerBtn');
+  const led04 = document.getElementById('led-04');
+  const readout04 = document.getElementById('readout-04');
+  let rockerOn = true;
+
+  rockerBtn.addEventListener('pointerdown', () => {
+    rockerOn = !rockerOn;
+    playMechanicalSound(rockerOn ? 680 : 510);
+    rockerBtn.classList.toggle('rocker-on', rockerOn);
+    led04.className = rockerOn ? 'status-led on-cyan' : 'status-led';
+    readout04.textContent = rockerOn ? 'BUS: ONLINE' : 'BUS: STANDBY';
+  });
+
+  // SW-05: Arcade Plunger Combo Counter
+  let comboCount = 12;
+  document.getElementById('arcadeBtn').addEventListener('pointerdown', () => {
+    playMechanicalSound(980);
+    comboCount++;
+    document.getElementById('readout-05').textContent = `COMBO: ${comboCount}x`;
+  });
+
+  // SW-06: Rotary Detent Knob (4 Positions)
+  const rotaryKnob = document.getElementById('rotaryKnob');
+  const ticks = document.querySelectorAll('.detent-tick');
+  const rotaryAngles = [-60, -15, 35, 80];
+  const rotaryLabels = ['GAIN: 0 dB', 'GAIN: +6 dB', 'GAIN: +12 dB', 'GAIN: MAX CLIP'];
+  let rotaryIdx = 1;
+
+  rotaryKnob.addEventListener('pointerdown', () => {
+    rotaryIdx = (rotaryIdx + 1) % 4;
+    playMechanicalSound(650 + rotaryIdx * 90);
+    rotaryKnob.style.setProperty('--knob-deg', `${rotaryAngles[rotaryIdx]}deg`);
+    document.getElementById('readout-06').textContent = rotaryLabels[rotaryIdx];
+    ticks.forEach((t, i) => t.classList.toggle('lit', i <= rotaryIdx));
+  });
+
+  // SW-07: Heavy Chrome Toggle Lever
+  const chromeToggle = document.getElementById('chromeToggle');
+  const led07 = document.getElementById('led-07');
+  const readout07 = document.getElementById('readout-07');
+  let toggleUp = true;
+
+  chromeToggle.addEventListener('pointerdown', () => {
+    toggleUp = !toggleUp;
+    playMechanicalSound(toggleUp ? 1120 : 840);
+    chromeToggle.classList.toggle('up', toggleUp);
+    led07.className = toggleUp ? 'status-led on-cyan' : 'status-led';
+    readout07.textContent = toggleUp ? 'AVIONICS: ON' : 'AVIONICS: OFF';
+  });
+
+  // SW-08: Capacitive Hold-to-Charge Relay
+  const chargeBtn = document.getElementById('chargeBtn');
+  const chargeFill = document.getElementById('chargeFill');
+  const readout08 = document.getElementById('readout-08');
+  const led08 = document.getElementById('led-08');
+  let chargePct = 0;
+  let chargeRaf = null;
+
+  function stepCharge() {
+    chargePct = Math.min(100, chargePct + 2.2);
+    chargeFill.style.width = `${chargePct}%`;
+    readout08.textContent = chargePct >= 100 ? 'OVERLOAD READY!' : `CAP: ${Math.round(chargePct)}%`;
+    if (chargePct >= 100) {
+      led08.className = 'status-led on-red';
+      playMechanicalSound(1200);
+      return;
+    }
+    chargeRaf = requestAnimationFrame(stepCharge);
+  }
+
+  function stopCharge() {
+    if (chargeRaf) cancelAnimationFrame(chargeRaf);
+    chargeRaf = null;
+    chargePct = 0;
+    chargeFill.style.width = '0%';
+    led08.className = 'status-led on-amber';
+    readout08.textContent = 'CAP: 0%';
+  }
+
+  chargeBtn.addEventListener('pointerdown', () => {
+    playMechanicalSound(500);
+    if (!chargeRaf) chargeRaf = requestAnimationFrame(stepCharge);
+  });
+  window.addEventListener('pointerup', () => {
+    if (chargeRaf || chargePct > 0) stopCharge();
+  });
+
+  // SW-09: Split-Flap Mechanical Counter
+  let flapVal = 7;
+  const flapDrum = document.getElementById('flapDrum');
+  document.getElementById('flapStepBtn').addEventListener('pointerdown', () => {
+    playMechanicalSound(790);
+    flapVal = (flapVal + 1) % 100;
+    const formatted = String(flapVal).padStart(2, '0');
+    flapDrum.textContent = formatted;
+    document.getElementById('readout-09').textContent = `CH: ${formatted} ACTIVE`;
+  });
+
+  // =========================================================================
+  // 3. TOP BAR CONTROLS (CHASSIS THEME, SOUND PROFILE, RELAY TEST)
+  // =========================================================================
+  document.querySelectorAll('#chassisGroup .ctrl-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#chassisGroup .ctrl-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-chassis', btn.dataset.chassis);
+      playMechanicalSound(700);
+    });
+  });
+
+  document.querySelectorAll('#switchSoundGroup .ctrl-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#switchSoundGroup .ctrl-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      soundProfile = btn.dataset.sound;
+      playMechanicalSound(850);
+    });
+  });
+
+  // Sequential Diagnostic Relay Sweep
+  document.getElementById('runDiagBtn').addEventListener('click', () => {
+    const leds = document.querySelectorAll('.status-led');
+    leds.forEach((led, idx) => {
+      setTimeout(() => {
+        playMechanicalSound(600 + idx * 70);
+        const prevClass = led.className;
+        led.className = 'status-led on-red';
+        setTimeout(() => {
+          led.className = prevClass;
+        }, 260);
+      }, idx * 85);
+    });
+  });
+})();
+</script>
+</body>
+</html>
