@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-18T16:52:26.365Z",
- "count": 60,
+ "generated": "2026-10-20T10:19:14.963Z",
+ "count": 65,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -1363,6 +1363,43 @@
    "hasJs": true
   },
   {
+   "id": "benchtop-crt-oscilloscope",
+   "path": "components/widgets/benchtop-crt-oscilloscope.html",
+   "title": "Benchtop Digital & CRT Oscilloscope",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "oscilloscope",
+    "hardware",
+    "knobs",
+    "crt",
+    "waveform",
+    "lissajous",
+    "telemetry",
+    "bnc",
+    "synth",
+    "engineering"
+   ],
+   "description": "Authentic dual-channel benchtop oscilloscope featuring a phosphor graticule CRT/DSO screen, interactive drag-and-wheel rotary encoders (Volts/Div, Sec/Div, Position, Trigger), X-Y Lissajous phase mode, measurement cursors, and realistic BNC bayonet input jacks.",
+   "techniques": [
+    "interactive rotary encoder knobs supporting vertical pointer drag, mouse wheel, and double-click reset",
+    "real-time HTML5 Canvas dual-channel waveform synthesizer with phosphor persistence and trigger stabilization",
+    "X-Y Lissajous phase plotting mode and toggleable ΔV/ΔT measurement cursors",
+    "realistic metallic BNC bayonet connectors and backlit silicone instrument buttons",
+    "3 hardware chassis themes: Modern Dark DSO, 1978 Tektronix Blue CRT, and Amber Military Phosphor"
+   ],
+   "recipe": "Combines a precision 10x8 division graticule Canvas with a structured hardware control panel grouped into Vertical, Horizontal, and Trigger sections. Rotary knobs track pointer delta-Y and wheel events to update waveform gain, timebase, offset, and trigger thresholds in real time.",
+   "preview": {
+    "mode": "page",
+    "width": 1140,
+    "height": 780
+   },
+   "hasJs": true
+  },
+  {
    "id": "blacksmith-forge-station",
    "path": "components/widgets/blacksmith-forge-station.html",
    "title": "Aethelgard Relic Forge & Item Dossier",
@@ -1400,6 +1437,43 @@
    "hasJs": true
   },
   {
+   "id": "blackthorn-lighthouse-console",
+   "path": "components/widgets/blackthorn-lighthouse-console.html",
+   "title": "Blackthorn Rock — Liminal Lighthouse Horror Console",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "horror",
+    "lighthouse",
+    "hydrophone",
+    "ocean",
+    "liminal",
+    "isolation",
+    "dread",
+    "radio",
+    "canvas",
+    "web-audio"
+   ],
+   "description": "Psychological horror lighthouse watchroom console featuring a rain-streaked storm viewport where sweeping the Fresnel beam reveals approaching silhouettes in the surf, a vertical tower acoustic cross-section with bulkhead locks, a phosphor hydrophone radar, and procedural Web Audio foghorn synthesis.",
+   "techniques": [
+    "beam-revealed horror silhouettes that advance closer each time the lamp is extinguished",
+    "rain-streaked storm viewport with lightning-rod corona discharge and multi-layer waves",
+    "vertical lighthouse schematic tracking acoustic footsteps ascending from the sea door",
+    "360-degree phosphor hydrophone radar sweep with anomalous morse contacts",
+    "zero-dependency Web Audio API procedural storm drone and distant foghorn echo"
+   ],
+   "recipe": "Constructed as a corroded cast-iron maritime watch console with analog voltmeter needles, phosphor CRT scopes, and rule-based horror log entries.",
+   "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 800
+   },
+   "hasJs": true
+  },
+  {
    "id": "blaupunkt-retro-radio",
    "path": "components/widgets/blaupunkt-retro-radio.html",
    "title": "Blaupunkt Hamburg SQM 23 Head Unit",
@@ -1432,6 +1506,43 @@
     "mode": "page",
     "width": 1040,
     "height": 520
+   },
+   "hasJs": true
+  },
+  {
+   "id": "boutique-panoramic-storefront",
+   "path": "components/widgets/boutique-panoramic-storefront.html",
+   "title": "Boutique Storefront & Panoramic Window Display",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass"
+   ],
+   "tags": [
+    "storefront",
+    "boutique",
+    "fashion",
+    "window-display",
+    "wood-interior",
+    "awning",
+    "open-sign",
+    "warm-light",
+    "parallax",
+    "ecommerce"
+   ],
+   "description": "Architectural fashion boutique storefront interface featuring a striped fabric awning, panoramic divided wood-mullion windows with cursor-reactive glass reflections, a hanging reversible OPEN/CLOSED sign, and a richly detailed walnut-slat interior bathed in warm 2700K spotlighting.",
+   "techniques": [
+    "multi-pane panoramic window architecture with cursor-tracked diagonal glass glare",
+    "3D striped canvas awning with animated scalloped valance and dynamic cast shadow",
+    "walnut wood-slat interior backdrop with volumetric 2700K track-light cones",
+    "interactive window-shopping mannequin & garment inspection with tailored fabric tag drawer",
+    "reversible hanging OPEN/CLOSED door sign that dims interior store lighting to night mode"
+   ],
+   "recipe": "Layers an exterior mahogany/walnut facade frame and striped awning over a recessed interior stage. Moving the pointer across the facade shifts the specular window reflection layer independently from the interior mannequins, creating genuine depth behind glass.",
+   "preview": {
+    "mode": "page",
+    "width": 1120,
+    "height": 840
    },
    "hasJs": true
   },
@@ -1504,6 +1615,43 @@
     "mode": "page",
     "width": 1000,
     "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "halloween-witch-cauldron",
+   "path": "components/widgets/halloween-witch-cauldron.html",
+   "title": "Halloween Witch's Sanctuary & Pumpkin UI",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "halloween",
+    "pumpkin",
+    "jack-o-lantern",
+    "witch-hat",
+    "spiderweb",
+    "spider",
+    "black-cat",
+    "cauldron",
+    "broomstick",
+    "buttons"
+   ],
+   "description": "Atmospheric Halloween interface featuring a corner-perched Witch's Hat, intricate SVG spiderwebs with a reactive dangling spider, aleaning broomstick, an interactive blinking Black Cat familiar, a bubbling Hex Cauldron, flickering Jack-o'-Lanterns, and tactile carved Pumpkin CTA buttons.",
+   "techniques": [
+    "ornamental overlapping SVG corner props (perched Witch Hat, leaning Broomstick, radial Cobwebs)",
+    "spring-physics dangling spider on silk thread triggered by hover or click",
+    "carved Jack-o'-Lantern ribbed button morphology with inner candle glow",
+    "animated SVG Black Cat familiar with blinking eyes, swaying tail, and purr particles",
+    "interactive bubbling cauldron reagent mixer with 3 Halloween color palettes"
+   ],
+   "recipe": "Wraps a dark wrought-iron gothic frame with overlapping SVG corner silhouettes so the witch hat and broomstick break out of the bounding box naturally. Combines ribbed orange gradients and carved glowing SVG mouths to turn buttons into tactile Jack-o'-Lanterns.",
+   "preview": {
+    "mode": "page",
+    "width": 1100,
+    "height": 800
    },
    "hasJs": true
   },
@@ -1762,6 +1910,47 @@
    "recipe": "Tactile stacked paper cards are created using progressive transform: translateY() scale() offsets paired with subtle multi-layer box-shadows. Hovering over the stack fans out the cards smoothly, while clicking dismisses the active top card with an exit swipe transition.",
    "preview": {
     "mode": "center"
+   },
+   "hasJs": true
+  },
+  {
+   "id": "pioneer-nexus-console",
+   "path": "components/widgets/pioneer-nexus-console.html",
+   "title": "Pioneer Nexus Pro DJ Console (2x CDJ + DJM Mixer)",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "pioneer",
+    "cdj-2000nxs",
+    "djm-900nxs",
+    "dj-controller",
+    "mixer",
+    "jog-wheel",
+    "knobs",
+    "faders",
+    "vu-meter",
+    "waveform",
+    "performance-pads",
+    "hardware",
+    "audio"
+   ],
+   "description": "Photorealistic flagship club DJ workstation featuring two Pioneer CDJ multi-players and a central DJM 4-channel club mixer. Features brushed anodized aluminum faceplates, authentic Rekordbox 3-band waveform rendering at studio playback speed, studio-grade VU meter ballistics with peak-hold decay, dual On-Jog displays with rotating needles, 8 backlit silicone performance pads, 24 tactile knurled rotary knobs, and smooth faders.",
+   "techniques": [
+    "studio-grade audio VU meter ballistics engine with instantaneous attack, exponential release, and peak-hold decay",
+    "pro Rekordbox 3-band waveform visualizer scrolling at realistic 128 BPM playback velocity (0.65 px/frame)",
+    "tactile knurled rotary potentiometers with vertical drag tracking and colored indicator resin inlays",
+    "dimpled aluminum jog wheels with central On-Jog circular LCD needle displays and interactive vinyl scratching",
+    "8 backlit RGB silicone performance pads per deck with tactile pressed feedback",
+    "brushed gunmetal and black anodized chassis textures with corner hex bolts and specular chamfer highlights"
+   ],
+   "recipe": "Создает 3-модульный клубный сетап Pioneer с фотореалистичными текстурами брашированного алюминия и винтами на лицевых панелях. Движок VU-метров моделирует аналоговую баллистику студийных приборов (мгновенная атака на бочку, экспоненциальный спад ~350мс и пик-холд верхнего сегмента), а канвас волны движется с естественной скоростью трека 128 BPM.",
+   "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 840
    },
    "hasJs": true
   },

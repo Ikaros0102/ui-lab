@@ -1,0 +1,1339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — TEK-LAB DSO-9000A Benchtop Oscilloscope</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Benchtop Digital & CRT Oscilloscope",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "oscilloscope",
+    "hardware",
+    "knobs",
+    "crt",
+    "waveform",
+    "lissajous",
+    "telemetry",
+    "bnc",
+    "synth",
+    "engineering"
+  ],
+  "description": "Authentic dual-channel benchtop oscilloscope featuring a phosphor graticule CRT/DSO screen, interactive drag-and-wheel rotary encoders (Volts/Div, Sec/Div, Position, Trigger), X-Y Lissajous phase mode, measurement cursors, and realistic BNC bayonet input jacks.",
+  "techniques": [
+    "interactive rotary encoder knobs supporting vertical pointer drag, mouse wheel, and double-click reset",
+    "real-time HTML5 Canvas dual-channel waveform synthesizer with phosphor persistence and trigger stabilization",
+    "X-Y Lissajous phase plotting mode and toggleable ΔV/ΔT measurement cursors",
+    "realistic metallic BNC bayonet connectors and backlit silicone instrument buttons",
+    "3 hardware chassis themes: Modern Dark DSO, 1978 Tektronix Blue CRT, and Amber Military Phosphor"
+  ],
+  "recipe": "Combines a precision 10x8 division graticule Canvas with a structured hardware control panel grouped into Vertical, Horizontal, and Trigger sections. Rotary knobs track pointer delta-Y and wheel events to update waveform gain, timebase, offset, and trigger thresholds in real time.",
+  "preview": {
+    "mode": "page",
+    "width": 1140,
+    "height": 780
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ==========================================================================
+     HARDWARE CHASSIS & PHOSPHOR THEMES
+     ========================================================================== */
+  :root,
+  [data-scope-theme="dso"] {
+    --room-bg: #080a0f;
+    --chassis-bg: linear-gradient(180deg, #222631 0%, #161922 100%);
+    --chassis-border: #383e4e;
+    --panel-surface: #181b24;
+    --panel-groove: #2b3040;
+    --panel-text: #cbd5e1;
+    --panel-muted: #64748b;
+    --crt-bg: #04070a;
+    --grid-color: rgba(100, 130, 155, 0.24);
+    --ch1-color: #facc15;
+    --ch1-glow: rgba(250, 204, 21, 0.55);
+    --ch2-color: #38bdf8;
+    --ch2-glow: rgba(56, 189, 248, 0.55);
+    --trig-color: #fb923c;
+  }
+
+  [data-scope-theme="tek1978"] {
+    --room-bg: #0c1014;
+    --chassis-bg: linear-gradient(180deg, #3b6978 0%, #204051 100%);
+    --chassis-border: #5c8d9c;
+    --panel-surface: #cad3c8;
+    --panel-groove: #95a396;
+    --panel-text: #1b262c;
+    --panel-muted: #4b5d67;
+    --crt-bg: #021a12;
+    --grid-color: rgba(16, 185, 129, 0.28);
+    --ch1-color: #34d399;
+    --ch1-glow: rgba(52, 211, 153, 0.75);
+    --ch2-color: #a7f3d0;
+    --ch2-glow: rgba(167, 243, 208, 0.65);
+    --trig-color: #fde047;
+  }
+
+  [data-scope-theme="amber"] {
+    --room-bg: #0c0906;
+    --chassis-bg: linear-gradient(180deg, #29231e 0%, #1a1512 100%);
+    --chassis-border: #4a3f35;
+    --panel-surface: #1f1a16;
+    --panel-groove: #382f27;
+    --panel-text: #e7d8c9;
+    --panel-muted: #8c7a6b;
+    --crt-bg: #120902;
+    --grid-color: rgba(245, 158, 11, 0.24);
+    --ch1-color: #fbbf24;
+    --ch1-glow: rgba(251, 191, 36, 0.7);
+    --ch2-color: #f97316;
+    --ch2-glow: rgba(249, 115, 22, 0.65);
+    --trig-color: #ef4444;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 25%, #161b26 0%, var(--room-bg) 85%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--panel-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    user-select: none;
+    overflow-x: hidden;
+  }
+
+  /* ==========================================================================
+     MAIN BENCHTOP INSTRUMENT CHASSIS
+     ========================================================================== */
+  .scope-chassis {
+    width: 100%;
+    max-width: 1120px;
+    background: var(--chassis-bg);
+    border: 3px solid var(--chassis-border);
+    border-radius: 20px;
+    padding: 18px 22px 20px;
+    box-shadow:
+      0 35px 80px rgba(0, 0, 0, 0.92),
+      inset 0 2px 2px rgba(255, 255, 255, 0.2),
+      inset 0 -4px 8px rgba(0, 0, 0, 0.7);
+    position: relative;
+    transition: all 0.35s ease;
+  }
+
+  /* Top Bezel: Model Badging, Soft Action Buttons & Chassis Theme Switcher */
+  .scope-top-bezel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(10, 12, 16, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+    padding: 9px 16px;
+    margin-bottom: 16px;
+    color: #f8fafc;
+  }
+
+  .brand-plate {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    color: #060911;
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+
+  .model-serial {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .model-serial strong {
+    color: #ffffff;
+  }
+
+  .top-utility-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Illuminated Silicone Push Buttons (RUN/STOP, SINGLE, AUTOSET) */
+  .silicone-btn {
+    background: linear-gradient(180deg, #282d3a 0%, #181b24 100%);
+    border: 1px solid #454d61;
+    border-bottom: 3px solid #0e1016;
+    color: #cbd5e1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .silicone-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+
+  .silicone-btn.run-active {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    border-color: #6ee7b7;
+    border-bottom-color: #064e3b;
+    color: #04130e;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
+  }
+
+  .silicone-btn.stop-active {
+    background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+    border-color: #fca5a5;
+    border-bottom-color: #450a0a;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+  }
+
+  .silicone-btn.lit-amber {
+    background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
+    border-color: #fde68a;
+    color: #090a0f;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
+  }
+
+  /* Theme Switcher Pills */
+  .chassis-theme-pills {
+    display: flex;
+    background: #07090d;
+    border: 1px solid #2e3444;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .theme-sw-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .theme-sw-btn.active {
+    background: #1e293b;
+    color: #38bdf8;
+  }
+
+  /* ==========================================================================
+     MAIN INSTRUMENT BODY: CRT SCREEN (LEFT) + KNOB MATRIX (RIGHT)
+     ========================================================================== */
+  .scope-body-grid {
+    display: grid;
+    grid-template-columns: 1.32fr 1fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  /* ==========================================================================
+     LEFT: RECESSED CRT / DSO DISPLAY BEZEL & SOFTKEYS
+     ========================================================================== */
+  .display-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .crt-recessed-bezel {
+    position: relative;
+    background: #0b0e14;
+    border: 4px solid #2c3242;
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow:
+      inset 0 8px 25px rgba(0, 0, 0, 0.95),
+      0 2px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .crt-screen-frame {
+    position: relative;
+    height: 390px;
+    background: var(--crt-bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.85);
+  }
+
+  canvas#scope-screen {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+  }
+
+  /* CRT Scanline & Curved Glass Reflection Overlay */
+  .crt-glass-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
+      repeating-linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.16) 0px,
+        rgba(0, 0, 0, 0.16) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    z-index: 4;
+  }
+
+  /* On-Screen Digital Telemetry Overlay (Top & Bottom Bars inside CRT) */
+  .osd-top-bar {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .osd-pill {
+    background: rgba(4, 8, 12, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .osd-bottom-measurements {
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    right: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .meas-box {
+    background: rgba(3, 6, 10, 0.86);
+    border-left: 2px solid var(--ch1-color);
+    padding: 4px 7px;
+  }
+
+  .meas-box.ch2-meas {
+    border-left-color: var(--ch2-color);
+  }
+
+  .meas-lbl {
+    font-size: 9px;
+    color: #94a3b8;
+    display: block;
+  }
+
+  .meas-val {
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  /* Bottom Softkeys & BNC Input Bay Row under CRT */
+  .bnc-bay-bar {
+    background: var(--panel-surface);
+    border: 1px solid var(--panel-groove);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  .bnc-inputs-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .bnc-socket-unit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Realistic Metallic BNC Connector SVG / CSS */
+  .bnc-jack {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #090b10 22%, #94a3b8 24%, #cbd5e1 42%, #475569 58%, #1e293b 72%);
+    border: 2px solid #64748b;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.65);
+    display: grid;
+    place-items: center;
+  }
+
+  /* BNC Bayonet Ears */
+  .bnc-jack::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    z-index: -1;
+  }
+
+  /* Gold Center Pin */
+  .bnc-jack::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fbbf24;
+    box-shadow: 0 0 4px #fbbf24;
+  }
+
+  .bnc-ring-ch1 { box-shadow: 0 0 0 2px var(--ch1-color), 0 4px 8px rgba(0,0,0,0.65); }
+  .bnc-ring-ch2 { box-shadow: 0 0 0 2px var(--ch2-color), 0 4px 8px rgba(0,0,0,0.65); }
+
+  .bnc-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    line-height: 1.25;
+  }
+
+  .bnc-meta strong {
+    display: block;
+    font-size: 10.5px;
+  }
+
+  /* ==========================================================================
+     RIGHT: PHYSICAL HARDWARE KNOB & SWITCH CONTROL PANEL
+     ========================================================================== */
+  .controls-panel {
+    background: var(--panel-surface);
+    border: 1px solid var(--panel-groove);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .panel-section {
+    border: 1px solid var(--panel-groove);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.14);
+    position: relative;
+  }
+
+  .section-header-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--panel-muted);
+    border-bottom: 1px solid var(--panel-groove);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+
+  /* Vertical CH1 & CH2 Dual-Column Strip */
+  .vertical-channels-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .channel-strip {
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--panel-groove);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ch-header-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ch-toggle-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: #11131a;
+    color: #64748b;
+  }
+
+  .ch-toggle-btn.ch1-on {
+    background: rgba(250, 204, 21, 0.18);
+    border-color: var(--ch1-color);
+    color: var(--ch1-color);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.25);
+  }
+
+  .ch-toggle-btn.ch2-on {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: var(--ch2-color);
+    color: var(--ch2-color);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+  }
+
+  .wave-cycle-btn {
+    background: #141720;
+    border: 1px solid #33394b;
+    color: #cbd5e1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .wave-cycle-btn:hover {
+    border-color: #94a3b8;
+  }
+
+  /* ==========================================================================
+     TACTILE ROTARY ENCODER KNOB COMPONENT
+     ========================================================================== */
+  .knobs-pair-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .knob-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .rotary-dial {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, #2a303d 0%, #14171f 66%),
+      repeating-conic-gradient(#3f475a 0deg 6deg, #161922 6deg 12deg);
+    border: 2px solid #495268;
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.75),
+      inset 0 1px 2px rgba(255, 255, 255, 0.22);
+    position: relative;
+    cursor: ns-resize;
+    transform: rotate(var(--deg, 0deg));
+    transition: box-shadow 0.15s ease;
+  }
+
+  .rotary-dial.small-dial {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rotary-dial:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.85), 0 0 10px rgba(56, 189, 248, 0.25);
+  }
+
+  /* Glowing Indicator Line on Knob Cap */
+  .dial-pointer {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 12px;
+    border-radius: 2px;
+    background: #f8fafc;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+  }
+
+  .small-dial .dial-pointer {
+    height: 9px;
+    top: 3px;
+  }
+
+  .knob-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--panel-muted);
+    letter-spacing: 0.4px;
+  }
+
+  .knob-val-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--panel-text);
+    background: rgba(0, 0, 0, 0.28);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* Horizontal & Trigger 4-Knob Row */
+  .four-knobs-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    justify-items: center;
+  }
+
+  .hint-bar {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--panel-muted);
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  @media (max-width: 960px) {
+    .scope-body-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body data-scope-theme="dso">
+
+<div class="scope-chassis">
+
+  <!-- ====================================================================
+       TOP INSTRUMENT BEZEL: MODEL + RUN/STOP/SINGLE + THEME SWITCHER
+       ==================================================================== -->
+  <header class="scope-top-bezel">
+    <div class="brand-plate">
+      <span class="brand-logo">TEK-LAB</span>
+      <span class="model-serial"><strong>DSO-9000A</strong> • 500 MHz • 5 GS/s MIXED DOMAIN OSCILLOSCOPE</span>
+    </div>
+
+    <div class="top-utility-group">
+      <button class="silicone-btn run-active" id="runStopBtn" type="button">● RUN / STOP</button>
+      <button class="silicone-btn" id="xyModeBtn" type="button">◎ X-Y LISSAJOUS</button>
+      <button class="silicone-btn" id="cursorsBtn" type="button">┼ CURSORS</button>
+      <button class="silicone-btn" id="autoSetBtn" type="button">⚡ AUTOSET</button>
+
+      <div class="chassis-theme-pills" id="scopeThemeGroup">
+        <button class="theme-sw-btn active" data-theme="dso">DSO Dark</button>
+        <button class="theme-sw-btn" data-theme="tek1978">1978 CRT</button>
+        <button class="theme-sw-btn" data-theme="amber">Amber</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       MAIN OSCILLOSCOPE WORKSPACE: CRT SCREEN (LEFT) + KNOBS PANEL (RIGHT)
+       ==================================================================== -->
+  <main class="scope-body-grid">
+
+    <!-- LEFT COLUMN: GRATICULE SCREEN & BNC INPUT JACKS -->
+    <section class="display-column">
+      <div class="crt-recessed-bezel">
+        <div class="crt-screen-frame">
+          <canvas id="scope-screen"></canvas>
+          <div class="crt-glass-glare"></div>
+
+          <!-- Top OSD Status Bar -->
+          <div class="osd-top-bar">
+            <div style="display:flex;gap:6px;">
+              <span class="osd-pill" id="osdStatusPill" style="color:#34d399;border-color:rgba(52,211,153,0.4);">● TRIG'D</span>
+              <span class="osd-pill" id="osdTimebasePill">H: 1.00 ms/div</span>
+            </div>
+            <span class="osd-pill" id="osdTrigLevelPill" style="color:var(--trig-color);">T: +0.00 V (CH1  rising)</span>
+          </div>
+
+          <!-- Bottom OSD Live Telemetry Readouts -->
+          <div class="osd-bottom-measurements">
+            <div class="meas-box">
+              <span class="meas-lbl">CH1 SCALE / Vpp</span>
+              <span class="meas-val" id="measCh1Vpp">1.00V / 4.20Vpp</span>
+            </div>
+            <div class="meas-box">
+              <span class="meas-lbl">CH1 FREQ</span>
+              <span class="meas-val" id="measCh1Freq">1.00 kHz</span>
+            </div>
+            <div class="meas-box ch2-meas">
+              <span class="meas-lbl">CH2 SCALE / Vpp</span>
+              <span class="meas-val" id="measCh2Vpp">1.00V / 3.60Vpp</span>
+            </div>
+            <div class="meas-box ch2-meas">
+              <span class="meas-lbl">PHASE / ΔT</span>
+              <span class="meas-val" id="measPhaseText">90.0° // +250µs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Hardware Bay: Realistic BNC Input Connectors -->
+      <div class="bnc-bay-bar">
+        <div class="bnc-inputs-group">
+          <div class="bnc-socket-unit">
+            <div class="bnc-jack bnc-ring-ch1"></div>
+            <div class="bnc-meta">
+              <strong style="color:var(--ch1-color);">CH 1 INPUT</strong>
+              <span>1MΩ // 15pF ≤300V</span>
+            </div>
+          </div>
+
+          <div class="bnc-socket-unit">
+            <div class="bnc-jack bnc-ring-ch2"></div>
+            <div class="bnc-meta">
+              <strong style="color:var(--ch2-color);">CH 2 INPUT</strong>
+              <span>1MΩ // 15pF ≤300V</span>
+            </div>
+          </div>
+
+          <div class="bnc-socket-unit">
+            <div class="bnc-jack"></div>
+            <div class="bnc-meta">
+              <strong>EXT TRIG</strong>
+              <span>TTL / CMOS</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="silicone-btn" id="noiseInjectBtn" type="button">〰️ INJECT RF NOISE: OFF</button>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: VERTICAL, HORIZONTAL & TRIGGER ROTARY KNOBS -->
+    <aside class="controls-panel">
+
+      <!-- SECTION 1: VERTICAL CHANNELS (CH1 & CH2) -->
+      <div class="panel-section">
+        <div class="section-header-strip">
+          <span>VERTICAL SECTION</span>
+          <span>VOLTS/DIV &amp; OFFSET</span>
+        </div>
+
+        <div class="vertical-channels-grid">
+          <!-- CH 1 Strip -->
+          <div class="channel-strip">
+            <div class="ch-header-row">
+              <button class="ch-toggle-btn ch1-on" id="ch1EnableBtn" type="button">CH 1</button>
+              <button class="wave-cycle-btn" id="ch1WaveBtn" type="button">∿ SINE</button>
+            </div>
+
+            <div class="knobs-pair-row">
+              <div class="knob-unit">
+                <div class="rotary-dial" data-param="ch1Scale" data-min="0.3" data-max="2.5" data-step="0.05" data-val="1.0">
+                  <div class="dial-pointer" style="background:var(--ch1-color);"></div>
+                </div>
+                <span class="knob-caption">VOLTS/DIV</span>
+                <span class="knob-val-badge" id="val-ch1Scale">1.00 V</span>
+              </div>
+
+              <div class="knob-unit">
+                <div class="rotary-dial small-dial" data-param="ch1Pos" data-min="-120" data-max="120" data-step="2" data-val="-35">
+                  <div class="dial-pointer" style="background:var(--ch1-color);"></div>
+                </div>
+                <span class="knob-caption">POSITION</span>
+                <span class="knob-val-badge" id="val-ch1Pos">-0.7 div</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CH 2 Strip -->
+          <div class="channel-strip">
+            <div class="ch-header-row">
+              <button class="ch-toggle-btn ch2-on" id="ch2EnableBtn" type="button">CH 2</button>
+              <button class="wave-cycle-btn" id="ch2WaveBtn" type="button">⊓ SQUARE</button>
+            </div>
+
+            <div class="knobs-pair-row">
+              <div class="knob-unit">
+                <div class="rotary-dial" data-param="ch2Scale" data-min="0.3" data-max="2.5" data-step="0.05" data-val="0.9">
+                  <div class="dial-pointer" style="background:var(--ch2-color);"></div>
+                </div>
+                <span class="knob-caption">VOLTS/DIV</span>
+                <span class="knob-val-badge" id="val-ch2Scale">0.90 V</span>
+              </div>
+
+              <div class="knob-unit">
+                <div class="rotary-dial small-dial" data-param="ch2Pos" data-min="-120" data-max="120" data-step="2" data-val="45">
+                  <div class="dial-pointer" style="background:var(--ch2-color);"></div>
+                </div>
+                <span class="knob-caption">POSITION</span>
+                <span class="knob-val-badge" id="val-ch2Pos">+0.9 div</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: HORIZONTAL TIMEBASE & FREQUENCY SYNTH -->
+      <div class="panel-section">
+        <div class="section-header-strip">
+          <span>HORIZONTAL &amp; GENERATOR</span>
+          <span>TIMEBASE</span>
+        </div>
+
+        <div class="four-knobs-row">
+          <div class="knob-unit">
+            <div class="rotary-dial" data-param="timebase" data-min="0.4" data-max="4.0" data-step="0.05" data-val="1.4">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">SEC/DIV</span>
+            <span class="knob-val-badge" id="val-timebase">1.00 ms</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial small-dial" data-param="horizPos" data-min="-150" data-max="150" data-step="3" data-val="0">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">H-POS</span>
+            <span class="knob-val-badge" id="val-horizPos">0.00 s</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial" data-param="ch2Ratio" data-min="0.5" data-max="4.0" data-step="0.05" data-val="1.5">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">FREQ RATIO</span>
+            <span class="knob-val-badge" id="val-ch2Ratio">1.50×</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial small-dial" data-param="phaseShift" data-min="0" data-max="360" data-step="5" data-val="90">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">PHASE θ</span>
+            <span class="knob-val-badge" id="val-phaseShift">90°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: TRIGGER & CRT PHOSPHOR PERSISTENCE -->
+      <div class="panel-section">
+        <div class="section-header-strip">
+          <span>TRIGGER &amp; CRT BEAM</span>
+          <span>EDGE LOCK</span>
+        </div>
+
+        <div class="four-knobs-row">
+          <div class="knob-unit">
+            <div class="rotary-dial" data-param="trigLevel" data-min="-100" data-max="100" data-step="2" data-val="0">
+              <div class="dial-pointer" style="background:var(--trig-color);"></div>
+            </div>
+            <span class="knob-caption">TRIG LEVEL</span>
+            <span class="knob-val-badge" id="val-trigLevel">0.00 V</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial small-dial" data-param="persistence" data-min="0.08" data-max="0.85" data-step="0.03" data-val="0.25">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">PERSIST</span>
+            <span class="knob-val-badge" id="val-persistence">25%</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial small-dial" data-param="intensity" data-min="4" data-max="22" data-step="1" data-val="12">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">BEAM GLOW</span>
+            <span class="knob-val-badge" id="val-intensity">75%</span>
+          </div>
+
+          <div class="knob-unit">
+            <div class="rotary-dial small-dial" data-param="cursorDelta" data-min="20" data-max="160" data-step="2" data-val="70">
+              <div class="dial-pointer"></div>
+            </div>
+            <span class="knob-caption">CURSOR Δ</span>
+            <span class="knob-val-badge" id="val-cursorDelta">±70px</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint-bar">
+        💡 DRAG ANY KNOB UP/DOWN • USE MOUSE WHEEL • DOUBLE-CLICK KNOB TO CENTER
+      </div>
+
+    </aside>
+
+  </main>
+
+</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. OSCILLOSCOPE STATE & WAVEFORM DEFINITIONS
+  // =========================================================================
+  const WAVE_TYPES = ['sine', 'square', 'triangle', 'sawtooth', 'am_mod'];
+  const WAVE_LABELS = {
+    sine: '∿ SINE',
+    square: '⊓ SQUARE',
+    triangle: '∧ TRIANGLE',
+    sawtooth: '/| SAW',
+    am_mod: '◈ AM CARRIER'
+  };
+
+  const state = {
+    running: true,
+    xyMode: false,
+    showCursors: false,
+    injectNoise: false,
+    ch1Enabled: true,
+    ch2Enabled: true,
+    ch1Wave: 'sine',
+    ch2Wave: 'square',
+    // Rotary knob parameters
+    ch1Scale: 1.0,
+    ch1Pos: -35,
+    ch2Scale: 0.9,
+    ch2Pos: 45,
+    timebase: 1.4,
+    horizPos: 0,
+    ch2Ratio: 1.5,
+    phaseShift: 90,
+    trigLevel: 0,
+    persistence: 0.25,
+    intensity: 12,
+    cursorDelta: 70
+  };
+
+  function evalWave(type, t) {
+    const s = Math.sin(t);
+    switch (type) {
+      case 'sine': return s;
+      case 'square': return s >= 0 ? 0.85 : -0.85;
+      case 'triangle': return (2 / Math.PI) * Math.asin(s);
+      case 'sawtooth': return 2 * ((t / (2 * Math.PI)) - Math.floor(0.5 + t / (2 * Math.PI)));
+      case 'am_mod': return Math.sin(t * 5) * (0.55 + 0.45 * Math.sin(t * 0.5));
+      default: return s;
+    }
+  }
+
+  // =========================================================================
+  // 2. CRT / DSO GRATICULE & WAVEFORM RENDER ENGINE
+  // =========================================================================
+  const canvas = document.getElementById('scope-screen');
+  const ctx = canvas.getContext('2d');
+  let phaseClock = 0;
+
+  function resizeScreen() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }
+  resizeScreen();
+  window.addEventListener('resize', resizeScreen);
+
+  function drawGraticule(w, h) {
+    const cols = 10;
+    const rows = 8;
+    const cellW = w / cols;
+    const cellH = h / rows;
+
+    const styles = getComputedStyle(document.body);
+    const gridColor = styles.getPropertyValue('--grid-color').trim() || 'rgba(100,130,155,0.24)';
+
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+
+    for (let c = 1; c < cols; c++) {
+      const x = c * cellW;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+    }
+    for (let r = 1; r < rows; r++) {
+      const y = r * cellH;
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+    }
+    ctx.stroke();
+
+    // Center Crosshair Sub-divisions (Ticks)
+    const cx = w / 2;
+    const cy = h / 2;
+    ctx.beginPath();
+    for (let x = 0; x <= w; x += cellW / 5) {
+      ctx.moveTo(x, cy - 3);
+      ctx.lineTo(x, cy + 3);
+    }
+    for (let y = 0; y <= h; y += cellH / 5) {
+      ctx.moveTo(cx - 3, y);
+      ctx.lineTo(cx + 3, y);
+    }
+    ctx.stroke();
+  }
+
+  function renderScope() {
+    const w = canvas.width;
+    const h = canvas.height;
+    const cy = h / 2;
+    const cx = w / 2;
+
+    const styles = getComputedStyle(document.body);
+    const crtBg = styles.getPropertyValue('--crt-bg').trim() || '#04070a';
+    const ch1Color = styles.getPropertyValue('--ch1-color').trim() || '#facc15';
+    const ch2Color = styles.getPropertyValue('--ch2-color').trim() || '#38bdf8';
+    const trigColor = styles.getPropertyValue('--trig-color').trim() || '#fb923c';
+
+    // Phosphor Persistence Fade
+    ctx.fillStyle = crtBg;
+    ctx.globalAlpha = 1 - state.persistence * 0.82;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalAlpha = 1;
+
+    drawGraticule(w, h);
+
+    if (state.running) {
+      // Check if trigger level locks the waveform or lets it free-run drift
+      const trigNormalized = Math.abs(state.trigLevel) / 75;
+      const driftSpeed = trigNormalized > 1.05 ? 0.14 : 0.025;
+      phaseClock += driftSpeed;
+    }
+
+    const baseAmp = h * 0.16;
+    const phaseRad = (state.phaseShift * Math.PI) / 180;
+
+    if (state.xyMode) {
+      // =====================================================================
+      // X-Y LISSAJOUS PHASE MODE
+      // =====================================================================
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = ch1Color;
+      ctx.shadowColor = ch1Color;
+      ctx.shadowBlur = state.intensity;
+      ctx.lineWidth = 2.2;
+
+      const steps = 480;
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * Math.PI * 4 + phaseClock;
+        const n1 = state.injectNoise ? (Math.random() - 0.5) * 0.14 : 0;
+        const n2 = state.injectNoise ? (Math.random() - 0.5) * 0.14 : 0;
+
+        const vx = (evalWave(state.ch1Wave, t) + n1) * baseAmp * state.ch1Scale * 1.3;
+        const vy = (evalWave(state.ch2Wave, t * state.ch2Ratio + phaseRad) + n2) * baseAmp * state.ch2Scale * 1.3;
+
+        const px = cx + vx + state.horizPos * 0.5;
+        const py = cy + vy;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      // =====================================================================
+      // Y-T STANDARD DUAL-CHANNEL TIMEBASE MODE
+      // =====================================================================
+      // Draw Trigger Level Dashed Line
+      const trigY = cy + state.ch1Pos - state.trigLevel;
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = trigColor;
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.moveTo(0, trigY);
+      ctx.lineTo(w, trigY);
+      ctx.stroke();
+      ctx.restore();
+
+      // Render Channel 1
+      if (state.ch1Enabled) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = ch1Color;
+        ctx.shadowColor = ch1Color;
+        ctx.shadowBlur = state.intensity;
+        ctx.lineWidth = 2.2;
+
+        for (let x = 0; x <= w; x += 2) {
+          const t = ((x - cx - state.horizPos) / (w / (Math.PI * 2 * state.timebase))) + phaseClock;
+          const noise = state.injectNoise ? (Math.random() - 0.5) * 0.22 : 0;
+          const y = cy + state.ch1Pos - (evalWave(state.ch1Wave, t) + noise) * baseAmp * state.ch1Scale;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Render Channel 2
+      if (state.ch2Enabled) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = ch2Color;
+        ctx.shadowColor = ch2Color;
+        ctx.shadowBlur = state.intensity;
+        ctx.lineWidth = 2.0;
+
+        for (let x = 0; x <= w; x += 2) {
+          const t = ((x - cx - state.horizPos) / (w / (Math.PI * 2 * state.timebase))) * state.ch2Ratio + phaseRad + phaseClock;
+          const noise = state.injectNoise ? (Math.random() - 0.5) * 0.22 : 0;
+          const y = cy + state.ch2Pos - (evalWave(state.ch2Wave, t) + noise) * baseAmp * state.ch2Scale;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Measurement Cursors Overlay
+    if (state.showCursors) {
+      const d = state.cursorDelta;
+      ctx.save();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cx - d, 0); ctx.lineTo(cx - d, h);
+      ctx.moveTo(cx + d, 0); ctx.lineTo(cx + d, h);
+      ctx.moveTo(0, cy - d * 0.6); ctx.lineTo(w, cy - d * 0.6);
+      ctx.moveTo(0, cy + d * 0.6); ctx.lineTo(w, cy + d * 0.6);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    requestAnimationFrame(renderScope);
+  }
+
+  requestAnimationFrame(renderScope);
+
+  // =========================================================================
+  // 3. INTERACTIVE ROTARY ENCODER KNOBS (DRAG + WHEEL + DBLCLICK RESET)
+  // =========================================================================
+  const dials = document.querySelectorAll('.rotary-dial');
+
+  function updateKnobVisualAndTelemetry(dial, newVal) {
+    const param = dial.dataset.param;
+    const min = parseFloat(dial.dataset.min);
+    const max = parseFloat(dial.dataset.max);
+    const clamped = Math.max(min, Math.min(max, newVal));
+    state[param] = clamped;
+    dial.dataset.val = clamped;
+
+    // Map value to -135deg ... +135deg rotation
+    const norm = (clamped - min) / (max - min);
+    const deg = -135 + norm * 270;
+    dial.style.setProperty('--deg', `${deg.toFixed(1)}deg`);
+
+    // Update badge text & OSD readouts
+    const badge = document.getElementById(`val-${param}`);
+    if (badge) {
+      if (param === 'ch1Scale' || param === 'ch2Scale') badge.textContent = `${clamped.toFixed(2)} V`;
+      else if (param === 'ch1Pos' || param === 'ch2Pos') badge.textContent = `${(clamped / 50).toFixed(1)} div`;
+      else if (param === 'timebase') badge.textContent = `${(1.4 / clamped).toFixed(2)} ms`;
+      else if (param === 'horizPos') badge.textContent = `${(clamped * 2).toFixed(0)} µs`;
+      else if (param === 'ch2Ratio') badge.textContent = `${clamped.toFixed(2)}×`;
+      else if (param === 'phaseShift') badge.textContent = `${Math.round(clamped)}°`;
+      else if (param === 'trigLevel') badge.textContent = `${(clamped / 25).toFixed(2)} V`;
+      else if (param === 'persistence') badge.textContent = `${Math.round(clamped * 100)}%`;
+      else if (param === 'intensity') badge.textContent = `${Math.round((clamped / 22) * 100)}%`;
+      else if (param === 'cursorDelta') badge.textContent = `±${Math.round(clamped)}px`;
+    }
+
+    // Update CRT OSD Labels
+    document.getElementById('osdTimebasePill').textContent = `H: ${(1.4 / state.timebase).toFixed(2)} ms/div`;
+    document.getElementById('osdTrigLevelPill').textContent = `T: ${(state.trigLevel / 25).toFixed(2)} V (CH1 rising)`;
+    document.getElementById('measCh1Vpp').textContent = `${state.ch1Scale.toFixed(2)}V / ${(state.ch1Scale * 4.2).toFixed(2)}Vpp`;
+    document.getElementById('measCh2Vpp').textContent = `${state.ch2Scale.toFixed(2)}V / ${(state.ch2Scale * 3.8).toFixed(2)}Vpp`;
+    document.getElementById('measCh1Freq').textContent = `${(state.timebase * 0.72).toFixed(2)} kHz`;
+    document.getElementById('measPhaseText').textContent = `${Math.round(state.phaseShift)}° // ${state.ch2Ratio.toFixed(2)}×`;
+  }
+
+  let activeDial = null;
+  let startY = 0;
+  let startVal = 0;
+
+  dials.forEach(dial => {
+    const initialVal = parseFloat(dial.dataset.val);
+    dial.dataset.defaultVal = initialVal;
+    updateKnobVisualAndTelemetry(dial, initialVal);
+
+    dial.addEventListener('pointerdown', (e) => {
+      activeDial = dial;
+      startY = e.clientY;
+      startVal = parseFloat(dial.dataset.val);
+      dial.setPointerCapture(e.pointerId);
+    });
+
+    dial.addEventListener('pointermove', (e) => {
+      if (activeDial !== dial) return;
+      const dy = startY - e.clientY;
+      const min = parseFloat(dial.dataset.min);
+      const max = parseFloat(dial.dataset.max);
+      const sensitivity = (max - min) / 130;
+      updateKnobVisualAndTelemetry(dial, startVal + dy * sensitivity);
+    });
+
+    dial.addEventListener('pointerup', () => {
+      activeDial = null;
+    });
+
+    // Mouse Wheel support on hover
+    dial.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const step = parseFloat(dial.dataset.step);
+      const dir = e.deltaY < 0 ? 1 : -1;
+      const cur = parseFloat(dial.dataset.val);
+      updateKnobVisualAndTelemetry(dial, cur + dir * step * 2);
+    }, { passive: false });
+
+    // Double-Click to Reset to Default
+    dial.addEventListener('dblclick', () => {
+      updateKnobVisualAndTelemetry(dial, parseFloat(dial.dataset.defaultVal));
+    });
+  });
+
+  // =========================================================================
+  // 4. PANEL BUTTONS & SWITCHES
+  // =========================================================================
+  const runStopBtn = document.getElementById('runStopBtn');
+  const osdStatusPill = document.getElementById('osdStatusPill');
+
+  runStopBtn.addEventListener('click', () => {
+    state.running = !state.running;
+    runStopBtn.className = state.running ? 'silicone-btn run-active' : 'silicone-btn stop-active';
+    runStopBtn.textContent = state.running ? '● RUN / STOP' : '■ STOPPED (HOLD)';
+    osdStatusPill.textContent = state.running ? "● TRIG'D" : '■ STOP';
+    osdStatusPill.style.color = state.running ? '#34d399' : '#f43f5e';
+  });
+
+  const xyModeBtn = document.getElementById('xyModeBtn');
+  xyModeBtn.addEventListener('click', () => {
+    state.xyMode = !state.xyMode;
+    xyModeBtn.classList.toggle('lit-amber', state.xyMode);
+  });
+
+  const cursorsBtn = document.getElementById('cursorsBtn');
+  cursorsBtn.addEventListener('click', () => {
+    state.showCursors = !state.showCursors;
+    cursorsBtn.classList.toggle('lit-amber', state.showCursors);
+  });
+
+  document.getElementById('autoSetBtn').addEventListener('click', () => {
+    dials.forEach(dial => {
+      updateKnobVisualAndTelemetry(dial, parseFloat(dial.dataset.defaultVal));
+    });
+  });
+
+  // Channel Enable & Waveform Selectors
+  const ch1EnableBtn = document.getElementById('ch1EnableBtn');
+  ch1EnableBtn.addEventListener('click', () => {
+    state.ch1Enabled = !state.ch1Enabled;
+    ch1EnableBtn.classList.toggle('ch1-on', state.ch1Enabled);
+  });
+
+  const ch2EnableBtn = document.getElementById('ch2EnableBtn');
+  ch2EnableBtn.addEventListener('click', () => {
+    state.ch2Enabled = !state.ch2Enabled;
+    ch2EnableBtn.classList.toggle('ch2-on', state.ch2Enabled);
+  });
+
+  const ch1WaveBtn = document.getElementById('ch1WaveBtn');
+  ch1WaveBtn.addEventListener('click', () => {
+    const idx = (WAVE_TYPES.indexOf(state.ch1Wave) + 1) % WAVE_TYPES.length;
+    state.ch1Wave = WAVE_TYPES[idx];
+    ch1WaveBtn.textContent = WAVE_LABELS[state.ch1Wave];
+  });
+
+  const ch2WaveBtn = document.getElementById('ch2WaveBtn');
+  ch2WaveBtn.addEventListener('click', () => {
+    const idx = (WAVE_TYPES.indexOf(state.ch2Wave) + 1) % WAVE_TYPES.length;
+    state.ch2Wave = WAVE_TYPES[idx];
+    ch2WaveBtn.textContent = WAVE_LABELS[state.ch2Wave];
+  });
+
+  const noiseInjectBtn = document.getElementById('noiseInjectBtn');
+  noiseInjectBtn.addEventListener('click', () => {
+    state.injectNoise = !state.injectNoise;
+    noiseInjectBtn.classList.toggle('lit-amber', state.injectNoise);
+    noiseInjectBtn.textContent = state.injectNoise ? '〰️ INJECT RF NOISE: ON' : '〰️ INJECT RF NOISE: OFF';
+  });
+
+  // Theme Switcher
+  document.querySelectorAll('#scopeThemeGroup .theme-sw-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#scopeThemeGroup .theme-sw-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-scope-theme', btn.dataset.theme);
+    });
+  });
+})();
+</script>
+</body>
+</html>

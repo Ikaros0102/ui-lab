@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Boutique Storefront: Panoramic Wood Interior & Warm Display</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Boutique Storefront & Panoramic Window Display",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "glass"
+  ],
+  "tags": [
+    "storefront",
+    "boutique",
+    "fashion",
+    "window-display",
+    "wood-interior",
+    "awning",
+    "open-sign",
+    "warm-light",
+    "parallax",
+    "ecommerce"
+  ],
+  "description": "Architectural fashion boutique storefront interface featuring a striped fabric awning, panoramic divided wood-mullion windows with cursor-reactive glass reflections, a hanging reversible OPEN/CLOSED sign, and a richly detailed walnut-slat interior bathed in warm 2700K spotlighting.",
+  "techniques": [
+    "multi-pane panoramic window architecture with cursor-tracked diagonal glass glare",
+    "3D striped canvas awning with animated scalloped valance and dynamic cast shadow",
+    "walnut wood-slat interior backdrop with volumetric 2700K track-light cones",
+    "interactive window-shopping mannequin & garment inspection with tailored fabric tag drawer",
+    "reversible hanging OPEN/CLOSED door sign that dims interior store lighting to night mode"
+  ],
+  "recipe": "Layers an exterior mahogany/walnut facade frame and striped awning over a recessed interior stage. Moving the pointer across the facade shifts the specular window reflection layer independently from the interior mannequins, creating genuine depth behind glass.",
+  "preview": {
+    "mode": "page",
+    "width": 1120,
+    "height": 840
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ==========================================================================
+     STOREFRONT & INTERIOR LIGHTING THEMES
+     ========================================================================== */
+  :root,
+  [data-boutique-theme="heritage"] {
+    --street-night-1: #090b10;
+    --street-night-2: #12151f;
+    --facade-wood-dark: #1d120c;
+    --facade-wood-mid: #2f1d13;
+    --facade-wood-trim: #4d3020;
+    --brass-accent: #d4a359;
+    --awning-stripe-1: #1f3a2e;
+    --awning-stripe-2: #e8dec8;
+    --awning-border: #12241c;
+    --warm-bulb: #ffb443;
+    --warm-glow: rgba(255, 178, 67, 0.36);
+    --warm-ambient: rgba(255, 165, 55, 0.22);
+    --interior-wall: #29180f;
+    --interior-slat: #3b2316;
+    --light-intensity: 1;
+    --glare-x: 50%;
+    --glare-y: 50%;
+  }
+
+  [data-boutique-theme="parisian"] {
+    --street-night-1: #0b090e;
+    --street-night-2: #17121e;
+    --facade-wood-dark: #211012;
+    --facade-wood-mid: #381a1d;
+    --facade-wood-trim: #5c2c31;
+    --brass-accent: #e5b869;
+    --awning-stripe-1: #5e1924;
+    --awning-stripe-2: #f3e9d7;
+    --awning-border: #3a0d15;
+    --warm-bulb: #ffbe55;
+    --warm-glow: rgba(255, 185, 80, 0.38);
+    --warm-ambient: rgba(255, 170, 60, 0.24);
+    --interior-wall: #2c1712;
+    --interior-slat: #42231b;
+  }
+
+  [data-boutique-theme="nordic"] {
+    --street-night-1: #080c11;
+    --street-night-2: #111822;
+    --facade-wood-dark: #1c1915;
+    --facade-wood-mid: #2e2923;
+    --facade-wood-trim: #4a4238;
+    --brass-accent: #cbb082;
+    --awning-stripe-1: #1e293b;
+    --awning-stripe-2: #e2e8f0;
+    --awning-border: #0f172a;
+    --warm-bulb: #ffd07b;
+    --warm-glow: rgba(255, 200, 110, 0.34);
+    --warm-ambient: rgba(255, 190, 95, 0.20);
+    --interior-wall: #33261b;
+    --interior-slat: #4a3728;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      /* Warm light spilling onto the pavement outside the shop */
+      radial-gradient(ellipse at 50% 88%, rgba(255, 175, 65, calc(0.22 * var(--light-intensity))) 0%, transparent 62%),
+      radial-gradient(circle at 50% 35%, var(--street-night-2) 0%, var(--street-night-1) 100%);
+    color: #f7efe4;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 18px 34px;
+    overflow-x: hidden;
+    user-select: none;
+    transition: background 0.5s ease;
+  }
+
+  .street-scene-wrapper {
+    width: 100%;
+    max-width: 1080px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ==========================================================================
+     TOP ARCHITECTURAL CONTROLS BAR
+     ========================================================================== */
+  .street-hud-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(14, 16, 23, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px 16px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .hud-shop-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .warm-filament-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--warm-bulb);
+    box-shadow: 0 0 12px var(--warm-bulb);
+  }
+
+  .hud-shop-title span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #fff3df;
+  }
+
+  .hud-shop-title small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-left: 4px;
+  }
+
+  .hud-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hud-pill-group {
+    display: flex;
+    background: #080a0f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .hud-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .hud-btn:hover { color: #ffffff; }
+  .hud-btn.active {
+    background: rgba(212, 163, 89, 0.2);
+    color: #f6d592;
+    box-shadow: inset 0 0 0 1px rgba(212, 163, 89, 0.45);
+  }
+
+  /* ==========================================================================
+     BOUTIQUE STOREFRONT BUILDING EXTERIOR
+     ========================================================================== */
+  .storefront-building {
+    position: relative;
+    width: 100%;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.012) 0px,
+        rgba(255, 255, 255, 0.012) 2px,
+        transparent 2px,
+        transparent 14px
+      ),
+      linear-gradient(180deg, var(--facade-wood-mid) 0%, var(--facade-wood-dark) 100%);
+    border: 3px solid var(--facade-wood-trim);
+    border-radius: 16px 16px 6px 6px;
+    padding: 16px 22px 0;
+    box-shadow:
+      0 35px 80px rgba(0, 0, 0, 0.95),
+      0 0 calc(65px * var(--light-intensity)) rgba(255, 175, 65, 0.18),
+      inset 0 2px 1px rgba(255, 225, 180, 0.18);
+  }
+
+  /* Top Carved Wooden Signboard Entablature above Awning */
+  .entablature-signboard {
+    background: linear-gradient(180deg, #160d08 0%, #24150d 100%);
+    border: 2px solid var(--brass-accent);
+    border-radius: 8px;
+    padding: 10px 24px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.6);
+    position: relative;
+  }
+
+  .signboard-emblem {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--brass-accent);
+    text-transform: uppercase;
+  }
+
+  .signboard-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff8eb 0%, #e5be77 60%, #a87b34 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(212, 163, 89, 0.25);
+  }
+
+  /* ==========================================================================
+     OVERHANGING STRIPED FABRIC AWNING (CANOPY) WITH SCALLOPED VALANCE
+     ========================================================================== */
+  .awning-assembly {
+    position: relative;
+    margin: 0 -30px;
+    z-index: 25;
+    perspective: 900px;
+    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Sloped Striped Canopy Roof */
+  .awning-slope {
+    height: 68px;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.38) 0%, transparent 35%, rgba(0, 0, 0, 0.25) 100%),
+      repeating-linear-gradient(
+        90deg,
+        var(--awning-stripe-1) 0px,
+        var(--awning-stripe-1) 44px,
+        var(--awning-stripe-2) 44px,
+        var(--awning-stripe-2) 88px
+      );
+    border-top: 3px solid var(--brass-accent);
+    border-bottom: 3px solid var(--awning-border);
+    border-radius: 6px 6px 0 0;
+    transform-origin: top center;
+    transform: rotateX(18deg);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.78);
+    transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s ease;
+  }
+
+  .awning-assembly.retracted .awning-slope {
+    height: 20px;
+    transform: rotateX(45deg);
+  }
+
+  /* Scalloped Hanging Valance Trim */
+  .awning-valance {
+    height: 22px;
+    margin-top: -3px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--awning-stripe-1) 0px,
+        var(--awning-stripe-1) 44px,
+        var(--awning-stripe-2) 44px,
+        var(--awning-stripe-2) 88px
+      );
+    /* Scalloped wave bottom edge */
+    -webkit-mask-image: radial-gradient(circle at 22px 0px, #000 20px, transparent 21px);
+    -webkit-mask-size: 44px 22px;
+    mask-image: radial-gradient(circle at 22px 0px, #000 20px, transparent 21px);
+    mask-size: 44px 22px;
+    filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.75));
+    animation: valanceBreeze 4.5s infinite alternate ease-in-out;
+    transform-origin: top center;
+  }
+
+  @keyframes valanceBreeze {
+    0% { transform: rotateX(0deg) translateY(0); }
+    100% { transform: rotateX(-12deg) translateY(-1px); }
+  }
+
+  /* ==========================================================================
+     PANORAMIC DIVIDED WINDOWS & WARM WOOD-SLAT INTERIOR
+     ========================================================================== */
+  .panoramic-window-stage {
+    position: relative;
+    height: 430px;
+    margin-top: -8px;
+    background: var(--interior-wall);
+    border: 6px solid var(--facade-wood-trim);
+    border-bottom: none;
+    overflow: hidden;
+    box-shadow: inset 0 0 85px rgba(0, 0, 0, 0.85);
+  }
+
+  /* Awning Cast Shadow on Top of the Glass */
+  .awning-cast-shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 58px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
+    z-index: 16;
+    pointer-events: none;
+    transition: height 0.45s ease;
+  }
+
+  .awning-assembly.retracted + .panoramic-window-stage .awning-cast-shadow {
+    height: 18px;
+  }
+
+  /* ==========================================================================
+     INTERIOR LAYER: WOOD SLAT WALL, TRACK SPOTLIGHTS & CLOTHING RACKS
+     ========================================================================== */
+  .boutique-interior {
+    position: absolute;
+    inset: 0;
+    /* Vertical Walnut Wood Slat Wall Texture */
+    background:
+      /* Warm ambient radial bath from ceiling lights */
+      radial-gradient(circle at 20% 10%, rgba(255, 180, 70, calc(0.45 * var(--light-intensity))) 0%, transparent 55%),
+      radial-gradient(circle at 50% 10%, rgba(255, 180, 70, calc(0.42 * var(--light-intensity))) 0%, transparent 55%),
+      radial-gradient(circle at 80% 10%, rgba(255, 180, 70, calc(0.45 * var(--light-intensity))) 0%, transparent 55%),
+      /* Vertical wood slats */
+      repeating-linear-gradient(
+        90deg,
+        var(--interior-slat) 0px,
+        var(--interior-slat) 14px,
+        #170d07 14px,
+        #170d07 18px
+      );
+    transition: filter 0.4s ease;
+  }
+
+  /* Herringbone Oak Parquet Floor inside the Shop */
+  .interior-wood-floor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 76px;
+    background:
+      radial-gradient(ellipse at 50% 20%, rgba(255, 185, 75, calc(0.32 * var(--light-intensity))) 0%, transparent 75%),
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.18) 0px,
+        rgba(0, 0, 0, 0.18) 1px,
+        transparent 1px,
+        transparent 48px
+      ),
+      linear-gradient(180deg, #3d2415 0%, #24140b 100%);
+    border-top: 3px solid #6b442a;
+    z-index: 2;
+  }
+
+  /* Warm Ceiling Track Spotlight Cones */
+  .ceiling-light-cones {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    opacity: var(--light-intensity);
+    transition: opacity 0.45s ease;
+  }
+
+  .light-cone {
+    position: absolute;
+    top: -10px;
+    width: 260px;
+    height: 420px;
+    background: conic-gradient(
+      from 162deg at 50% 0%,
+      transparent 0deg,
+      rgba(255, 188, 82, 0.24) 18deg,
+      rgba(255, 215, 130, 0.36) 20deg,
+      rgba(255, 188, 82, 0.24) 22deg,
+      transparent 40deg
+    );
+    filter: blur(10px);
+    transform-origin: top center;
+  }
+  .cone-left   { left: 5%; }
+  .cone-center { left: 38%; }
+  .cone-right  { right: 5%; }
+
+  /* Glowing Warm Pendant Fixtures */
+  .pendant-lamps-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 70px;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  .pendant-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pendant-cord {
+    width: 2px;
+    height: 36px;
+    background: #1a110b;
+  }
+
+  .pendant-shade {
+    width: 38px;
+    height: 18px;
+    border-radius: 20px 20px 4px 4px;
+    background: linear-gradient(180deg, #2e1d12 0%, #784b2a 100%);
+    border: 1px solid var(--brass-accent);
+    position: relative;
+  }
+
+  .pendant-bulb-glow {
+    width: 16px;
+    height: 9px;
+    border-radius: 0 0 12px 12px;
+    background: #fff3c4;
+    box-shadow:
+      0 0 calc(22px * var(--light-intensity)) var(--warm-bulb),
+      0 0 calc(45px * var(--light-intensity)) var(--warm-bulb);
+    margin-top: -1px;
+    opacity: var(--light-intensity);
+    transition: opacity 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  /* ==========================================================================
+     PANORAMIC WOOD WINDOW MULLIONS (3 BAYS: LEFT DISPLAY / DOOR / RIGHT DISPLAY)
+     ========================================================================== */
+  .panoramic-bays-grid {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1.2fr 0.9fr 1.2fr;
+  }
+
+  .window-bay {
+    position: relative;
+    height: 100%;
+    border-right: 10px solid var(--facade-wood-trim);
+    box-shadow: inset 0 0 0 1px rgba(212, 163, 89, 0.25);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 34px;
+  }
+
+  .window-bay:last-child {
+    border-right: none;
+  }
+
+  /* Horizontal Transom Wood Bar across the top of the Panoramic Windows */
+  .window-bay::before {
+    content: "";
+    position: absolute;
+    top: 86px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: var(--facade-wood-trim);
+    border-top: 1px solid rgba(212, 163, 89, 0.35);
+    border-bottom: 1px solid #140b06;
+    z-index: 14;
+    pointer-events: none;
+  }
+
+  /* Specular Glass Reflection Overlay on Windows */
+  .window-glass-sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 13;
+    background:
+      linear-gradient(
+        118deg,
+        transparent 18%,
+        rgba(255, 255, 255, 0.045) 34%,
+        rgba(255, 255, 255, 0.11) 38%,
+        transparent 44%,
+        transparent 62%,
+        rgba(255, 235, 195, 0.05) 68%,
+        transparent 74%
+      );
+    background-size: 200% 200%;
+    background-position: var(--glare-x) var(--glare-y);
+    transition: background-position 0.1s linear;
+  }
+
+  /* ==========================================================================
+     INTERACTIVE DISPLAY ITEMS & MANNEQUINS BEHIND GLASS
+     ========================================================================== */
+  .display-hotspot {
+    position: relative;
+    z-index: 8;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), filter 0.28s ease;
+  }
+
+  .display-hotspot:hover,
+  .display-hotspot.selected {
+    transform: translateY(-5px) scale(1.03);
+    filter: drop-shadow(0 0 22px rgba(255, 190, 85, 0.65));
+  }
+
+  /* Floating Price/Collection Pin above Mannequin */
+  .item-pin-badge {
+    background: rgba(20, 12, 7, 0.9);
+    border: 1px solid var(--brass-accent);
+    color: #fce8c3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 99px;
+    margin-bottom: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    transition: all 0.2s ease;
+  }
+
+  .display-hotspot.selected .item-pin-badge {
+    background: var(--brass-accent);
+    color: #160d07;
+    font-weight: 700;
+  }
+
+  /* Wooden Display Podium under Mannequins */
+  .wood-podium {
+    width: 145px;
+    height: 24px;
+    background: linear-gradient(90deg, #2d1b10 0%, #593822 50%, #26160c 100%);
+    border: 1px solid var(--brass-accent);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+    margin-top: -4px;
+  }
+
+  /* Background Recessed Wooden Shelving Unit inside Left & Right Bays */
+  .wood-shelving-backdrop {
+    position: absolute;
+    top: 112px;
+    width: 82%;
+    height: 185px;
+    background: rgba(20, 11, 6, 0.68);
+    border: 2px solid #593822;
+    border-radius: 6px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0 12px;
+    box-shadow: inset 0 0 25px rgba(255, 175, 60, calc(0.22 * var(--light-intensity)));
+  }
+
+  .wood-shelf-plank {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(180deg, #754a2d, #3b2314);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    position: relative;
+  }
+
+  /* ==========================================================================
+     CENTER BAY: TIMBER ENTRANCE DOOR & HANGING "OPEN" SIGN
+     ========================================================================== */
+  .center-door-frame {
+    width: 86%;
+    height: 318px;
+    margin-bottom: -34px;
+    border: 8px solid #3d2416;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 14px 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 0 0 1px var(--brass-accent);
+    background: rgba(255, 190, 90, calc(0.06 * var(--light-intensity)));
+  }
+
+  /* Brass Door Handle Plate */
+  .brass-door-handle {
+    position: absolute;
+    right: 12px;
+    top: 52%;
+    width: 8px;
+    height: 48px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #fde68a 0%, #b47b2b 50%, #784b12 100%);
+    box-shadow: -2px 4px 8px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Hanging Reversible "OPEN / CLOSED" Sign on Brass Chain */
+  .hanging-open-sign-wrap {
+    position: relative;
+    z-index: 18;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transform-origin: top center;
+    animation: signGentleSwing 3.8s infinite alternate ease-in-out;
+  }
+
+  @keyframes signGentleSwing {
+    0% { transform: rotate(-2.2deg); }
+    100% { transform: rotate(2.2deg); }
+  }
+
+  .hanging-open-sign-wrap:hover {
+    animation-play-state: paused;
+    transform: scale(1.06);
+  }
+
+  .sign-chain-svg {
+    width: 64px;
+    height: 26px;
+    margin-bottom: -3px;
+  }
+
+  .open-sign-plaque {
+    background: linear-gradient(180deg, #21130b 0%, #120a05 100%);
+    border: 2px solid var(--brass-accent);
+    border-radius: 10px;
+    padding: 9px 22px;
+    text-align: center;
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.85),
+      0 0 calc(26px * var(--light-intensity)) rgba(255, 175, 60, 0.55),
+      inset 0 0 12px rgba(255, 185, 75, 0.22);
+    transition: all 0.3s ease;
+  }
+
+  .open-sign-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #ffdfa0;
+    text-shadow:
+      0 0 10px #ffb443,
+      0 0 22px rgba(255, 165, 40, 0.85);
+    display: block;
+    line-height: 1;
+  }
+
+  .open-sign-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 1.2px;
+    color: #cbb082;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .hanging-open-sign-wrap.is-closed .open-sign-plaque {
+    border-color: #64748b;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.85);
+  }
+
+  .hanging-open-sign-wrap.is-closed .open-sign-word {
+    color: #94a3b8;
+    text-shadow: none;
+  }
+
+  /* Lower Wooden Wainscoting Baseboard below Panoramic Windows */
+  .facade-dado-base {
+    background: linear-gradient(180deg, #26170e 0%, #150c07 100%);
+    border-top: 3px solid var(--brass-accent);
+    margin: 0 -22px;
+    padding: 12px 26px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .dado-panel-molding {
+    height: 26px;
+    border: 1px solid #4d3020;
+    background: rgba(0, 0, 0, 0.32);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    color: #a88b6d;
+  }
+
+  /* ==========================================================================
+     BOTTOM INTERACTIVE TAILOR'S GARMENT DOSSIER CARD
+     ========================================================================== */
+  .garment-inspector-bar {
+    background: linear-gradient(180deg, #1b120c 0%, #110b07 100%);
+    border: 1px solid #472e1e;
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 220, 165, 0.12);
+  }
+
+  .garment-info-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .swatch-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1.5px solid var(--brass-accent);
+    background: radial-gradient(circle at 30% 30%, #6b442a, #29180e);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: 0 0 16px rgba(212, 163, 89, 0.25);
+  }
+
+  .garment-titles h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff3df;
+  }
+
+  .garment-titles p {
+    font-size: 12px;
+    color: #b59b82;
+    margin-top: 2px;
+  }
+
+  .garment-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .garment-meta-tags {
+    display: flex;
+    gap: 8px;
+  }
+
+  .fabric-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #e6c896;
+    background: rgba(212, 163, 89, 0.12);
+    border: 1px solid rgba(212, 163, 89, 0.3);
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+
+  .bespoke-cta-btn {
+    background: linear-gradient(180deg, #d4a359 0%, #9c6f2d 100%);
+    border: 1px solid #fde68a;
+    color: #170e07;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(212, 163, 89, 0.35);
+    transition: all 0.18s ease;
+  }
+
+  .bespoke-cta-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow: 0 6px 20px rgba(212, 163, 89, 0.5);
+  }
+
+  @media (max-width: 900px) {
+    .panoramic-bays-grid {
+      grid-template-columns: 1fr;
+    }
+    .panoramic-window-stage {
+      height: auto;
+    }
+    .window-bay {
+      min-height: 310px;
+      border-right: none;
+      border-bottom: 8px solid var(--facade-wood-trim);
+    }
+  }
+</style>
+</head>
+<body data-boutique-theme="heritage">
+
+<div class="street-scene-wrapper">
+
+  <!-- ====================================================================
+       TOP CONTROLS BAR: AWNING, WARM LIGHT DIMMER & FACADE THEME
+       ==================================================================== -->
+  <header class="street-hud-bar">
+    <div class="hud-shop-title">
+      <div class="warm-filament-dot"></div>
+      <span>L’Atelier du Bois • No. 24 Rue Saint-Honoré</span>
+      <small id="storeStatusTelemetry">INTERIOR: 2700K WARMHALO • OPEN</small>
+    </div>
+
+    <div class="hud-actions">
+      <!-- Awning Canopy Toggle -->
+      <div class="hud-pill-group">
+        <button class="hud-btn active" id="awningToggleBtn" type="button">⛺ Awning: Extended</button>
+      </div>
+
+      <!-- Interior Warm Light Dimmer -->
+      <div class="hud-pill-group" id="lightDimmerGroup">
+        <button class="hud-btn" data-lux="0.35">Night Glow</button>
+        <button class="hud-btn active" data-lux="1">Warm 2700K</button>
+        <button class="hud-btn" data-lux="1.45">Golden Showcase</button>
+      </div>
+
+      <!-- Facade Wood & Awning Theme -->
+      <div class="hud-pill-group" id="facadeThemeGroup">
+        <button class="hud-btn active" data-theme="heritage">Walnut &amp; Green</button>
+        <button class="hud-btn" data-theme="parisian">Mahogany &amp; Wine</button>
+        <button class="hud-btn" data-theme="nordic">Smoked Oak</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       MAIN STOREFRONT ARCHITECTURAL FACADE
+       ==================================================================== -->
+  <main class="storefront-building" id="storefrontBuilding">
+
+    <!-- Carved Entablature Signboard Above Awning -->
+    <div class="entablature-signboard">
+      <span class="signboard-emblem">EST. MDCCCXCVIII • BESPOKE CLOTHIERS</span>
+      <h1 class="signboard-title">MAISON VANDERBERG</h1>
+      <span class="signboard-emblem">FINE WOOL &amp; TIMBER INTERIORS</span>
+    </div>
+
+    <!-- Overhanging Striped Awning with Scalloped Valance -->
+    <div class="awning-assembly" id="awningAssembly">
+      <div class="awning-slope"></div>
+      <div class="awning-valance"></div>
+    </div>
+
+    <!-- ==================================================================
+         PANORAMIC DIVIDED WINDOWS + WARM WOOD-SLAT INTERIOR
+         ================================================================== -->
+    <div class="panoramic-window-stage" id="windowStage">
+      <div class="awning-cast-shadow"></div>
+
+      <!-- Interior Walnut Slat Wall, Parquet Floor & Warm Spotlights -->
+      <div class="boutique-interior">
+        <div class="ceiling-light-cones">
+          <div class="light-cone cone-left"></div>
+          <div class="light-cone cone-center"></div>
+          <div class="light-cone cone-right"></div>
+        </div>
+
+        <!-- Hanging Brass & Wood Pendant Lamps -->
+        <div class="pendant-lamps-row">
+          <div class="pendant-unit"><div class="pendant-cord"></div><div class="pendant-shade"></div><div class="pendant-bulb-glow"></div></div>
+          <div class="pendant-unit"><div class="pendant-cord"></div><div class="pendant-shade"></div><div class="pendant-bulb-glow"></div></div>
+          <div class="pendant-unit"><div class="pendant-cord"></div><div class="pendant-shade"></div><div class="pendant-bulb-glow"></div></div>
+        </div>
+
+        <div class="interior-wood-floor"></div>
+      </div>
+
+      <!-- 3-Bay Divided Panoramic Glass Frame -->
+      <div class="panoramic-bays-grid">
+
+        <!-- ==============================================================
+             LEFT PANORAMIC WINDOW BAY: AUTUMN TRENCH & CASHMERE DISPLAY
+             ============================================================== -->
+        <div class="window-bay">
+          <div class="window-glass-sheen"></div>
+
+          <!-- Wooden Shelving Unit on Back Wall -->
+          <div class="wood-shelving-backdrop">
+            <div class="wood-shelf-plank"></div>
+            <div class="wood-shelf-plank"></div>
+          </div>
+
+          <!-- Interactive Left Mannequin Hotspot -->
+          <div class="display-hotspot selected" data-item="trench">
+            <span class="item-pin-badge">01 // CAMEL OVERCOAT • €680</span>
+            <svg width="135" height="215" viewBox="0 0 135 215" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Wooden Tailor Mannequin Neck & Brass Finial -->
+              <rect x="63" y="8" width="9" height="16" rx="2" fill="#854d27" stroke="#d4a359" stroke-width="1.2"/>
+              <circle cx="67.5" cy="6" r="4" fill="#d4a359"/>
+              <!-- Tailored Wool Overcoat Silhouette -->
+              <path d="M40 28 L56 22 L79 22 L95 28 L108 105 L96 108 L88 56 L92 162 L43 162 L47 56 L39 108 L27 105 Z"
+                    fill="#c28b52" stroke="#fde68a" stroke-width="1.4"/>
+              <!-- Burgundy Cashmere Scarf & Lapels -->
+              <path d="M56 22 L67.5 64 L79 22" fill="#29180f" stroke="#78350f" stroke-width="1.2"/>
+              <path d="M53 23 Q67.5 34 82 23 L78 46 Q67.5 52 57 46 Z" fill="#7f1d1d" stroke="#fca5a5" stroke-width="1"/>
+              <rect x="70" y="42" width="9" height="32" rx="2" fill="#991b1b"/>
+              <!-- Double-Breasted Brass Buttons & Belt -->
+              <rect x="46" y="88" width="43" height="7" rx="2" fill="#784b23" stroke="#d4a359" stroke-width="1"/>
+              <circle cx="60" cy="72" r="2.2" fill="#fde68a"/><circle cx="75" cy="72" r="2.2" fill="#fde68a"/>
+              <circle cx="60" cy="106" r="2.2" fill="#fde68a"/><circle cx="75" cy="106" r="2.2" fill="#fde68a"/>
+              <!-- Turned Walnut Mannequin Stand Pole -->
+              <line x1="67.5" y1="162" x2="67.5" y2="212" stroke="#854d27" stroke-width="6"/>
+              <ellipse cx="67.5" cy="186" rx="8" ry="4" fill="#d4a359"/>
+            </svg>
+            <div class="wood-podium"></div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             CENTER ENTRANCE BAY: GLASS DOOR, HANGING "OPEN" SIGN & TABLE
+             ============================================================== -->
+        <div class="window-bay">
+          <div class="window-glass-sheen"></div>
+
+          <div class="center-door-frame">
+            <div class="brass-door-handle"></div>
+
+            <!-- Interactive Hanging OPEN / CLOSED Sign -->
+            <div class="hanging-open-sign-wrap" id="openSignBtn" title="Click to flip OPEN / CLOSED sign">
+              <svg class="sign-chain-svg" viewBox="0 0 64 26" fill="none">
+                <circle cx="32" cy="3" r="3" fill="#d4a359"/>
+                <line x1="32" y1="3" x2="8" y2="26" stroke="#d4a359" stroke-width="1.8" stroke-dasharray="3 2"/>
+                <line x1="32" y1="3" x2="56" y2="26" stroke="#d4a359" stroke-width="1.8" stroke-dasharray="3 2"/>
+              </svg>
+              <div class="open-sign-plaque">
+                <span class="open-sign-word" id="openSignWord">OPEN</span>
+                <span class="open-sign-sub" id="openSignSub">COME IN • BESPOKE TAILORING</span>
+              </div>
+            </div>
+
+            <!-- Center Walnut Display Table with Leather Satchel & Fedora -->
+            <div class="display-hotspot" data-item="satchel">
+              <span class="item-pin-badge">02 // ARTISAN LEATHER • €420</span>
+              <svg width="130" height="105" viewBox="0 0 130 105" fill="none">
+                <!-- Felt Fedora Hat on Brass Stand -->
+                <line x1="40" y1="42" x2="40" y2="72" stroke="#d4a359" stroke-width="2.5"/>
+                <ellipse cx="40" cy="40" rx="22" ry="5" fill="#422006" stroke="#d4a359" stroke-width="1.2"/>
+                <path d="M26 40 C26 24, 54 24, 54 40 Z" fill="#5c2d0c" stroke="#f59e0b" stroke-width="1"/>
+                <!-- Hand-Stitched Leather Weekender Bag -->
+                <rect x="66" y="38" width="44" height="32" rx="5" fill="#7c2d12" stroke="#fdba74" stroke-width="1.3"/>
+                <path d="M78 38 C78 26, 98 26, 98 38" stroke="#431407" stroke-width="3" fill="none"/>
+                <line x1="76" y1="38" x2="76" y2="70" stroke="#fde68a" stroke-width="2"/>
+                <line x1="100" y1="38" x2="100" y2="70" stroke="#fde68a" stroke-width="2"/>
+                <!-- Mid-Century Walnut Console Table -->
+                <rect x="14" y="70" width="102" height="8" rx="2" fill="#593822" stroke="#d4a359" stroke-width="1.2"/>
+                <line x1="26" y1="78" x2="20" y2="104" stroke="#3b2314" stroke-width="4.5"/>
+                <line x1="104" y1="78" x2="110" y2="104" stroke="#3b2314" stroke-width="4.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             RIGHT PANORAMIC WINDOW BAY: SAVILE ROW THREE-PIECE SUIT
+             ============================================================== -->
+        <div class="window-bay">
+          <div class="window-glass-sheen"></div>
+
+          <!-- Wooden Shelving Unit with Folded Knitwear -->
+          <div class="wood-shelving-backdrop">
+            <div class="wood-shelf-plank"></div>
+            <div class="wood-shelf-plank"></div>
+          </div>
+
+          <!-- Interactive Right Mannequin Hotspot -->
+          <div class="display-hotspot" data-item="suit">
+            <span class="item-pin-badge">03 // HERRINGBONE SUIT • €890</span>
+            <svg width="135" height="215" viewBox="0 0 135 215" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Wooden Neck & Brass Finial -->
+              <rect x="63" y="8" width="9" height="16" rx="2" fill="#854d27" stroke="#d4a359" stroke-width="1.2"/>
+              <circle cx="67.5" cy="6" r="4" fill="#d4a359"/>
+              <!-- Crisp White Dress Shirt & Gold Silk Tie -->
+              <polygon points="55,22 80,22 67.5,68" fill="#f8fafc"/>
+              <polygon points="65,24 70,24 71,58 67.5,66 64,58" fill="#d97706"/>
+              <!-- Tailored Forest/Charcoal Tweed Blazer -->
+              <path d="M38 28 L55 22 L67.5 68 L80 22 L97 28 L109 106 L96 109 L89 58 L91 142 L44 142 L46 58 L39 109 L26 106 Z"
+                    fill="#1e293b" stroke="#94a3b8" stroke-width="1.4"/>
+              <!-- Peak Lapels & Gold Pocket Square -->
+              <path d="M55 22 L46 52 L67.5 68 L89 52 L80 22" fill="none" stroke="#cbd5e1" stroke-width="1.2"/>
+              <polygon points="77,54 85,48 87,55" fill="#fbbf24"/>
+              <!-- Wooden Stand Pole -->
+              <line x1="67.5" y1="142" x2="67.5" y2="212" stroke="#854d27" stroke-width="6"/>
+              <ellipse cx="67.5" cy="180" rx="8" ry="4" fill="#d4a359"/>
+            </svg>
+            <div class="wood-podium"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Exterior Wooden Wainscoting Baseboard -->
+    <div class="facade-dado-base">
+      <div class="dado-panel-molding">WEST VITRINE // OUTERWEAR</div>
+      <div class="dado-panel-molding">ENTRANCE // NO. 24</div>
+      <div class="dado-panel-molding">EAST VITRINE // BESPOKE SUITING</div>
+    </div>
+
+  </main>
+
+  <!-- ====================================================================
+       BOTTOM INTERACTIVE WINDOW-SHOPPING GARMENT INSPECTOR
+       ==================================================================== -->
+  <footer class="garment-inspector-bar">
+    <div class="garment-info-left">
+      <div class="swatch-circle" id="inspectIcon">🧥</div>
+      <div class="garment-titles">
+        <h3 id="inspectTitle">01 // Double-Breasted Camelhair Overcoat</h3>
+        <p id="inspectDesc">Displayed in West Panoramic Window • Hand-cut Italian camel wool with horn buttons and burgundy cashmere scarf.</p>
+      </div>
+    </div>
+
+    <div class="garment-actions-right">
+      <div class="garment-meta-tags">
+        <span class="fabric-tag" id="inspectFabric">100% CAMEL WOOL</span>
+        <span class="fabric-tag" id="inspectPrice">€680.00</span>
+      </div>
+      <button class="bespoke-cta-btn" id="reserveFittingBtn" type="button">✨ Request Private Fitting</button>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. PARALLAX GLASS GLARE TRACKING ACROSS PANORAMIC WINDOWS
+  // =========================================================================
+  const windowStage = document.getElementById('windowStage');
+
+  windowStage.addEventListener('pointermove', (e) => {
+    const rect = windowStage.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    document.documentElement.style.setProperty('--glare-x', `${xPct.toFixed(1)}%`);
+    document.documentElement.style.setProperty('--glare-y', `${yPct.toFixed(1)}%`);
+  });
+
+  // =========================================================================
+  // 2. REVERSIBLE HANGING "OPEN / CLOSED" SIGN & WARM LIGHT DIMMER
+  // =========================================================================
+  const openSignBtn = document.getElementById('openSignBtn');
+  const openSignWord = document.getElementById('openSignWord');
+  const openSignSub = document.getElementById('openSignSub');
+  const storeStatusTelemetry = document.getElementById('storeStatusTelemetry');
+  let isStoreOpen = true;
+
+  function setLightIntensity(lux) {
+    document.documentElement.style.setProperty('--light-intensity', lux);
+  }
+
+  openSignBtn.addEventListener('click', () => {
+    isStoreOpen = !isStoreOpen;
+    openSignBtn.classList.toggle('is-closed', !isStoreOpen);
+
+    if (isStoreOpen) {
+      openSignWord.textContent = 'OPEN';
+      openSignSub.textContent = 'COME IN • BESPOKE TAILORING';
+      storeStatusTelemetry.textContent = 'INTERIOR: 2700K WARM HALO • OPEN';
+      setLightIntensity(1);
+    } else {
+      openSignWord.textContent = 'CLOSED';
+      openSignSub.textContent = 'RETURNS AT 09:00 AM';
+      storeStatusTelemetry.textContent = 'INTERIOR: NIGHT STANDBY DIM • CLOSED';
+      setLightIntensity(0.32);
+    }
+  });
+
+  // =========================================================================
+  // 3. AWNING EXTENSION TOGGLE & LIGHTING PRESETS
+  // =========================================================================
+  const awningAssembly = document.getElementById('awningAssembly');
+  const awningToggleBtn = document.getElementById('awningToggleBtn');
+  let awningExtended = true;
+
+  awningToggleBtn.addEventListener('click', () => {
+    awningExtended = !awningExtended;
+    awningAssembly.classList.toggle('retracted', !awningExtended);
+    awningToggleBtn.classList.toggle('active', awningExtended);
+    awningToggleBtn.textContent = awningExtended ? '⛺ Awning: Extended' : '⛺ Awning: Retracted';
+  });
+
+  document.querySelectorAll('#lightDimmerGroup .hud-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#lightDimmerGroup .hud-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setLightIntensity(btn.dataset.lux);
+    });
+  });
+
+  document.querySelectorAll('#facadeThemeGroup .hud-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#facadeThemeGroup .hud-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-boutique-theme', btn.dataset.theme);
+    });
+  });
+
+  // =========================================================================
+  // 4. INTERACTIVE WINDOW-SHOPPING ITEM SELECTION
+  // =========================================================================
+  const DISPLAY_ITEMS = {
+    trench: {
+      icon: '🧥',
+      title: '01 // Double-Breasted Camelhair Overcoat',
+      desc: 'Displayed in West Panoramic Window • Hand-cut Italian camel wool with horn buttons and burgundy cashmere scarf.',
+      fabric: '100% CAMEL WOOL',
+      price: '€680.00'
+    },
+    satchel: {
+      icon: '👜',
+      title: '02 // Bridle Leather Weekender & Felt Fedora',
+      desc: 'Displayed on Center Walnut Table • Vegetable-tanned full-grain saddle leather with solid brass buckles.',
+      fabric: 'TUSCAN CALFSKIN',
+      price: '€420.00'
+    },
+    suit: {
+      icon: '🤵',
+      title: '03 // Savile Row Three-Piece Herringbone Suit',
+      desc: 'Displayed in East Panoramic Window • Structured peak-lapel jacket in midnight slate Scottish tweed.',
+      fabric: 'SCOTTISH TWEED',
+      price: '€890.00'
+    }
+  };
+
+  const hotspots = document.querySelectorAll('.display-hotspot');
+  hotspots.forEach(spot => {
+    spot.addEventListener('click', () => {
+      hotspots.forEach(s => s.classList.remove('selected'));
+      spot.classList.add('selected');
+
+      const data = DISPLAY_ITEMS[spot.dataset.item];
+      document.getElementById('inspectIcon').textContent = data.icon;
+      document.getElementById('inspectTitle').textContent = data.title;
+      document.getElementById('inspectDesc').textContent = data.desc;
+      document.getElementById('inspectFabric').textContent = data.fabric;
+      document.getElementById('inspectPrice').textContent = data.price;
+    });
+  });
+
+  const reserveBtn = document.getElementById('reserveFittingBtn');
+  reserveBtn.addEventListener('click', () => {
+    const orig = reserveBtn.textContent;
+    reserveBtn.textContent = '✓ Fitting Reserved inside Atelier';
+    reserveBtn.style.background = '#10b981';
+    reserveBtn.style.borderColor = '#6ee7b7';
+    reserveBtn.style.color = '#ffffff';
+    setTimeout(() => {
+      reserveBtn.textContent = orig;
+      reserveBtn.style.background = '';
+      reserveBtn.style.borderColor = '';
+      reserveBtn.style.color = '';
+    }, 1800);
+  });
+})();
+</script>
+</body>
+</html>

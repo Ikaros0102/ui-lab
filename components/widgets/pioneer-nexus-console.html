@@ -1,0 +1,2158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Pioneer Pro DJ Nexus Console (2x CDJ + DJM-900NXS)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Pioneer Nexus Pro DJ Console (2x CDJ + DJM Mixer)",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "pioneer",
+    "cdj-2000nxs",
+    "djm-900nxs",
+    "dj-controller",
+    "mixer",
+    "jog-wheel",
+    "knobs",
+    "faders",
+    "vu-meter",
+    "waveform",
+    "performance-pads",
+    "hardware",
+    "audio"
+  ],
+  "description": "Photorealistic flagship club DJ workstation featuring two Pioneer CDJ multi-players and a central DJM 4-channel club mixer. Features brushed anodized aluminum faceplates, authentic Rekordbox 3-band waveform rendering at studio playback speed, studio-grade VU meter ballistics with peak-hold decay, dual On-Jog displays with rotating needles, 8 backlit silicone performance pads, 24 tactile knurled rotary knobs, and smooth faders.",
+  "techniques": [
+    "studio-grade audio VU meter ballistics engine with instantaneous attack, exponential release, and peak-hold decay",
+    "pro Rekordbox 3-band waveform visualizer scrolling at realistic 128 BPM playback velocity (0.65 px/frame)",
+    "tactile knurled rotary potentiometers with vertical drag tracking and colored indicator resin inlays",
+    "dimpled aluminum jog wheels with central On-Jog circular LCD needle displays and interactive vinyl scratching",
+    "8 backlit RGB silicone performance pads per deck with tactile pressed feedback",
+    "brushed gunmetal and black anodized chassis textures with corner hex bolts and specular chamfer highlights"
+  ],
+  "recipe": "Создает 3-модульный клубный сетап Pioneer с фотореалистичными текстурами брашированного алюминия и винтами на лицевых панелях. Движок VU-метров моделирует аналоговую баллистику студийных приборов (мгновенная атака на бочку, экспоненциальный спад ~350мс и пик-холд верхнего сегмента), а канвас волны движется с естественной скоростью трека 128 BPM.",
+  "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 840
+  }
+}
+</script>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+  :root {
+    --chassis-base: #0a0b0e;
+    --chassis-plate: #13151a;
+    --chassis-border: #222630;
+    --metal-chamfer: rgba(255, 255, 255, 0.14);
+    --metal-shadow: rgba(0, 0, 0, 0.95);
+    --led-green: #22c55e;
+    --led-amber: #f59e0b;
+    --led-red: #ef4444;
+    --led-blue: #0ea5e9;
+    --led-cyan: #38bdf8;
+    --pioneer-white: #f8fafc;
+    --silkscreen: #94a3b8;
+    --silkscreen-dim: #475569;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 20%, #1a1e28 0%, #0b0d13 50%, #030406 100%);
+    color: #f1f5f9;
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 14px;
+    overflow-x: hidden;
+  }
+
+  /* Micro-texture SVG filter container (hidden) */
+  .noise-svg-def {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* =========================================================
+     TOP TELEMETRY & STATUS BAR
+     ========================================================= */
+  .hud-status-pill {
+    margin-bottom: 14px;
+    background: rgba(13, 16, 22, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px;
+    padding: 6px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+  }
+
+  .hud-status-pill b {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .hud-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+  }
+
+  /* =========================================================
+     MAIN 3-MODULE PIONEER RIG WRAPPER
+     ========================================================= */
+  .dj-booth-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nexus-rig {
+    display: grid;
+    grid-template-columns: 410px 480px 410px;
+    gap: 8px;
+    align-items: stretch;
+    padding: 10px;
+    background: #040507;
+    border-radius: 12px;
+    box-shadow:
+      0 40px 100px rgba(0, 0, 0, 0.98),
+      0 0 0 1px #1a1c24,
+      0 0 0 2px #090a0d;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Table reflection */
+  .table-reflection {
+    width: 98%;
+    height: 52px;
+    background: linear-gradient(180deg, rgba(20, 24, 32, 0.6) 0%, rgba(4, 5, 8, 0.1) 60%, transparent 100%);
+    transform: perspective(700px) rotateX(-26deg);
+    transform-origin: top center;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    display: grid;
+    grid-template-columns: 410px 480px 410px;
+    gap: 8px;
+    pointer-events: none;
+    opacity: 0.6;
+    filter: blur(1.5px);
+  }
+
+  .refl-front {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.2);
+    transform: scaleY(-1);
+  }
+
+  /* =========================================================
+     HARDWARE CHASSIS & FACEPLATE ARCHITECTURE
+     ========================================================= */
+  .hw-unit {
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.006) 0px 1px, transparent 1px 3px),
+      linear-gradient(180deg, #1d2027 0%, #13151b 15%, #0e1014 85%, #08090c 100%);
+    border: 1.5px solid #282c37;
+    border-radius: 8px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -3px 8px rgba(0, 0, 0, 0.9),
+      0 12px 30px rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative Corner Allen/Torx Screws */
+  .chassis-screw {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, #64748b 0%, #1e293b 60%, #090d16 100%);
+    border: 1px solid #334155;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 1px 2px #000;
+    z-index: 5;
+  }
+  .chassis-screw::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    transform: translate(-50%, -50%);
+    background: #06070a;
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  }
+  .chassis-screw.top-left { top: 7px; left: 7px; }
+  .chassis-screw.top-right { top: 7px; right: 7px; }
+  .chassis-screw.bot-left { bottom: 42px; left: 7px; }
+  .chassis-screw.bot-right { bottom: 42px; right: 7px; }
+
+  /* Front Apron with Pioneer Logo / CD Slot */
+  .front-apron {
+    height: 38px;
+    background: linear-gradient(180deg, #171920 0%, #090a0d 45%, #030406 100%);
+    border-top: 1.5px solid #292d38;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    position: relative;
+  }
+
+  .cd-slot-bezel {
+    width: 185px;
+    height: 10px;
+    background: #010203;
+    border: 1px solid #242732;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px #000;
+  }
+  .cd-slot-bezel::after {
+    content: "";
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: 0;
+    height: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 10px #ffffff, 0 0 20px #38bdf8;
+  }
+
+  .pioneer-badge {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+    color: #f8fafc;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+  }
+
+  .model-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+  .model-tag b {
+    color: #f8fafc;
+    font-size: 9px;
+  }
+
+  /* =========================================================
+     CDJ-2000NXS MULTI PLAYER (LEFT & RIGHT DECKS)
+     ========================================================= */
+  .cdj-body {
+    padding: 12px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  /* 1. Rekordbox LCD Screen Housing */
+  .cdj-screen-housing {
+    background: linear-gradient(180deg, #191c23 0%, #0d0f13 100%);
+    border: 1.5px solid #2e3340;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: 40px 1fr 50px;
+    gap: 8px;
+    align-items: center;
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .screen-left-keys {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .scr-soft-key {
+    height: 20px;
+    background: #101318;
+    border: 1px solid #303746;
+    border-radius: 3px;
+    color: #a3e635;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(163, 230, 53, 0.2);
+    transition: all 0.15s ease;
+  }
+  .scr-soft-key:hover, .scr-soft-key.active {
+    background: #1c2614;
+    border-color: #a3e635;
+    color: #ecfccb;
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.55);
+  }
+
+  .rekordbox-lcd {
+    height: 104px;
+    background: #040609;
+    border: 2px solid #010204;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px 8px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.98);
+  }
+  .rekordbox-lcd::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .lcd-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    border-bottom: 1px solid #141c2c;
+    padding-bottom: 3px;
+    z-index: 2;
+  }
+
+  .lcd-track-title {
+    color: #38bdf8;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 155px;
+  }
+
+  .lcd-bpm-box {
+    background: #081324;
+    border: 1px solid #0284c7;
+    padding: 1px 5px;
+    color: #f8fafc;
+    font-weight: 800;
+    font-size: 9px;
+  }
+
+  .phase-meter-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 2px 20px;
+    z-index: 2;
+  }
+
+  .phase-beat {
+    height: 4px;
+    background: #182030;
+    border-radius: 1px;
+  }
+  .phase-beat.active {
+    background: #f97316;
+    box-shadow: 0 0 8px #f97316;
+  }
+
+  .waveform-canvas {
+    width: 100%;
+    height: 46px;
+    display: block;
+    z-index: 2;
+    image-rendering: pixelated;
+  }
+
+  .browser-view {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 2;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    margin: 2px 0;
+  }
+
+  .browser-row {
+    padding: 2px 5px;
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .browser-row.selected {
+    background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .lcd-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: #e2e8f0;
+    z-index: 2;
+  }
+
+  .quantize-tag {
+    color: #ef4444;
+    font-weight: 900;
+    font-size: 8px;
+    margin-left: 2px;
+  }
+
+  .screen-right-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .browse-encoder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #475569 0%, #1e293b 65%, #080c14 100%);
+    border: 2px solid #94a3b8;
+    box-shadow: 0 4px 8px #000;
+    cursor: pointer;
+    position: relative;
+  }
+  .browse-encoder::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.35);
+  }
+
+  .mini-silver-btn {
+    padding: 3px 7px;
+    font-size: 7px;
+    font-weight: 800;
+    background: linear-gradient(180deg, #cbd5e1 0%, #64748b 100%);
+    color: #090a0f;
+    border: 1px solid #1e293b;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  /* 2. Upper Controls Strip */
+  .cdj-upper-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 0 2px;
+  }
+
+  .hot-cue-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .hot-cue-btn {
+    width: 28px;
+    height: 22px;
+    background: #12151d;
+    border: 1.5px solid #22c55e;
+    border-radius: 3px;
+    color: #4ade80;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.3);
+  }
+  .hot-cue-btn.c-amber { border-color: #f59e0b; color: #fbbf24; box-shadow: 0 0 6px rgba(245, 158, 11, 0.3); }
+  .hot-cue-btn.c-red { border-color: #ef4444; color: #f87171; box-shadow: 0 0 6px rgba(239, 68, 68, 0.3); }
+  .hot-cue-btn:active { transform: translateY(1px); filter: brightness(1.3); }
+
+  .loop-amber-group {
+    display: flex;
+    gap: 5px;
+  }
+
+  .loop-btn {
+    height: 22px;
+    padding: 0 9px;
+    background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
+    border: 1px solid #fde68a;
+    border-radius: 3px;
+    color: #111;
+    font-size: 8.5px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.65);
+  }
+
+  .vinyl-mode-pill {
+    padding: 3px 8px;
+    font-size: 8px;
+    font-weight: 800;
+    background: #121620;
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.35);
+  }
+
+  /* 3. Main Lower Deck Grid */
+  .cdj-main-deck {
+    display: grid;
+    grid-template-columns: 66px 1fr 60px;
+    gap: 10px;
+    align-items: center;
+    padding: 4px 0;
+  }
+
+  /* Transport Column */
+  .cdj-transport-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    width: 100%;
+  }
+
+  .rect-dark-key {
+    height: 22px;
+    background: linear-gradient(180deg, #282c36 0%, #15171d 100%);
+    border: 1px solid #3a414f;
+    border-radius: 3px;
+    color: #e2e8f0;
+    font-size: 8px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .rect-dark-key:active { transform: translateY(1px); }
+
+  /* Iconic Round Pioneer CUE & PLAY Buttons */
+  .round-transport-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #080a0d;
+    padding: 4px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.95);
+  }
+
+  .round-transport-btn .led-ring {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .round-transport-btn.cue-btn .led-ring {
+    border: 2.5px solid var(--led-amber);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.75), inset 0 0 6px rgba(245, 158, 11, 0.5);
+  }
+
+  .round-transport-btn.play-btn .led-ring {
+    border: 2.5px solid var(--led-green);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.75), inset 0 0 6px rgba(34, 197, 94, 0.5);
+  }
+  .round-transport-btn.play-btn.playing .led-ring {
+    box-shadow: 0 0 20px #22c55e, 0 0 32px rgba(34, 197, 94, 0.6);
+  }
+
+  .round-transport-btn .metal-cap {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #5b677a 0%, #293444 55%, #151d28 100%);
+    border: 1px solid #7c8ba1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+  }
+  .cue-btn .metal-cap { color: #fbbf24; }
+  .play-btn .metal-cap { color: #4ade80; }
+  .round-transport-btn:active { transform: scale(0.96); }
+
+  /* Photorealistic CDJ Jog Wheel */
+  .jog-wheel-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .jog-outer-bezel {
+    width: 236px;
+    height: 236px;
+    border-radius: 50%;
+    /* Realistic brushed aluminum specular rim */
+    background:
+      conic-gradient(
+        from 0deg,
+        #828fa3 0deg, #e2e8f0 45deg, #475569 90deg,
+        #1b2230 135deg, #828fa3 180deg, #f8fafc 225deg,
+        #475569 270deg, #1b2230 315deg, #828fa3 360deg
+      );
+    padding: 16px;
+    box-shadow:
+      0 16px 34px rgba(0, 0, 0, 0.98),
+      0 0 0 4px #0d0f14,
+      inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    position: relative;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .jog-outer-bezel:active { cursor: grabbing; }
+
+  /* 16 finger dimples around jog rim */
+  .jog-dimples-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .jog-platter-top {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(circle at 50% 50%, #20242e 0 1px, #161820 1px 2.5px);
+    border: 2px solid #94a3b8;
+    box-shadow:
+      inset 0 0 24px rgba(0, 0, 0, 0.95),
+      0 0 14px rgba(239, 68, 68, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .jog-platter-top::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    border: 2px dashed rgba(239, 68, 68, 0.5);
+    pointer-events: none;
+  }
+
+  /* Center On-Jog LCD */
+  .jog-center-lcd {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #030508;
+    border: 2px solid #334155;
+    box-shadow: inset 0 0 14px #000;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .jog-lcd-ring {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 3.5px solid #bae6fd;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.7), inset 0 0 8px rgba(56, 189, 248, 0.5);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .jog-lcd-core {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2.5px solid #ef4444;
+    position: relative;
+  }
+
+  .jog-needle {
+    position: absolute;
+    width: 3px;
+    height: 31px;
+    background: #ffffff;
+    box-shadow: 0 0 8px #ffffff;
+    top: 3px;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(var(--jog-angle, 0deg));
+    border-radius: 2px;
+  }
+
+  /* Right Pitch Slider */
+  .cdj-pitch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    height: 100%;
+  }
+
+  .master-tempo-btn {
+    width: 42px;
+    height: 20px;
+    background: #14161d;
+    border: 1px solid #ef4444;
+    border-radius: 3px;
+    color: #f87171;
+    font-size: 7px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+  }
+
+  .pitch-fader-well {
+    width: 36px;
+    height: 174px;
+    background: #06070a;
+    border: 1px solid #222630;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    box-shadow: inset 0 2px 6px #000;
+  }
+  .pitch-fader-well::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 5px;
+    right: 5px;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(203, 213, 225, 0.32) 0px 1px,
+      transparent 1px 12px
+    );
+    pointer-events: none;
+  }
+
+  .fader-slit {
+    width: 4px;
+    height: 100%;
+    background: #000;
+    border-left: 1px solid #1a1e26;
+    position: relative;
+  }
+
+  .fader-cap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 16px;
+    background: linear-gradient(180deg, #383e4a 0%, #151820 45%, #08090d 55%, #2c313b 100%);
+    border: 1px solid #64748b;
+    border-radius: 2px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.95);
+    cursor: ns-resize;
+    z-index: 3;
+  }
+  .fader-cap::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background: #f8fafc;
+  }
+
+  .pitch-readout-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    color: #94a3b8;
+  }
+
+  /* 4. 8 RGB Performance Pads Strip (Under Jog Wheel) */
+  .performance-pads-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(8, 10, 14, 0.85);
+    border: 1px solid #1f232d;
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  .pad-mode-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.4px;
+    padding: 0 4px;
+  }
+
+  .performance-pads-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+
+  .rgb-pad {
+    height: 26px;
+    background: #11141b;
+    border: 1.5px solid #334155;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    font-weight: 800;
+    color: #94a3b8;
+    cursor: pointer;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 2px 5px rgba(0,0,0,0.8);
+    transition: all 0.1s ease;
+  }
+  .rgb-pad:hover { filter: brightness(1.2); }
+  .rgb-pad:active, .rgb-pad.pressed {
+    transform: scale(0.95);
+    filter: brightness(1.6);
+  }
+  .rgb-pad.c-blue { border-color: #0284c7; color: #38bdf8; box-shadow: 0 0 8px rgba(14, 165, 233, 0.4); }
+  .rgb-pad.c-orange { border-color: #ea580c; color: #fb923c; box-shadow: 0 0 8px rgba(249, 115, 22, 0.4); }
+  .rgb-pad.c-green { border-color: #16a34a; color: #4ade80; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+  .rgb-pad.c-purple { border-color: #9333ea; color: #c084fc; box-shadow: 0 0 8px rgba(168, 85, 247, 0.4); }
+
+  /* =========================================================
+     PIONEER DJM-900NXS 4-CHANNEL CLUB MIXER
+     ========================================================= */
+  .djm-body {
+    padding: 12px 14px 10px;
+    display: grid;
+    grid-template-columns: 92px 1fr 100px;
+    gap: 8px;
+    flex: 1;
+  }
+
+  /* Left Mixer Column: Sound Color FX */
+  .djm-left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #1f232d;
+    padding-right: 8px;
+  }
+
+  .mixer-section-box {
+    background: rgba(9, 11, 15, 0.75);
+    border: 1px solid #20242e;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .sec-header-tag {
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    text-align: center;
+    border-bottom: 1px solid #1c202a;
+    padding-bottom: 2px;
+  }
+
+  .color-fx-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  .color-fx-btn {
+    height: 23px;
+    background: #091420;
+    border: 1px solid #0284c7;
+    border-radius: 3px;
+    color: #7dd3fc;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(14, 165, 233, 0.35);
+    transition: all 0.15s ease;
+  }
+  .color-fx-btn.active, .color-fx-btn:hover {
+    background: #0ea5e9;
+    border-color: #e0f2fe;
+    color: #040711;
+    box-shadow: 0 0 12px #38bdf8;
+  }
+
+  /* Center 4-Channel Strips */
+  .djm-center-channels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .channels-4-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    flex: 1;
+  }
+
+  .channel-strip {
+    background: rgba(10, 12, 17, 0.8);
+    border: 1px solid #1c202a;
+    border-radius: 4px;
+    padding: 6px 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ch-num-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 800;
+    color: #e2e8f0;
+    background: #191c25;
+    padding: 1px 7px;
+    border-radius: 2px;
+  }
+
+  /* Tactile Knurled Rotary Knobs */
+  .knob-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .rotary-knob {
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    /* 3D knurled potentiometer look with directional shadow */
+    background:
+      radial-gradient(circle at 35% 30%, #525f74 0%, #222936 60%, #0a0d13 100%);
+    border: 2px solid #374151;
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.95),
+      inset 0 1px 1px rgba(255,255,255,0.25);
+    position: relative;
+    cursor: ns-resize;
+    transform: rotate(var(--k-rot, 0deg));
+  }
+  .rotary-knob::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.5px;
+    height: 9px;
+    background: #f8fafc;
+    border-radius: 1px;
+    box-shadow: 0 0 2px rgba(255,255,255,0.8);
+  }
+  .rotary-knob.trim-knob::after { background: #f97316; box-shadow: 0 0 4px #f97316; }
+
+  /* Sound Color Filter Knob (Larger Diameter with knurled grip) */
+  .rotary-knob.color-knob {
+    width: 33px;
+    height: 33px;
+    background: radial-gradient(circle at 35% 30%, #e2e8f0 0%, #5f6f87 60%, #171d27 100%);
+    border-color: #cbd5e1;
+  }
+
+  .knob-lbl {
+    font-size: 6.5px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.3px;
+  }
+
+  .ch-cue-btn {
+    width: 36px;
+    height: 17px;
+    background: #251608;
+    border: 1px solid #f59e0b;
+    border-radius: 2px;
+    color: #fbbf24;
+    font-size: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
+    transition: all 0.15s ease;
+  }
+  .ch-cue-btn.active {
+    background: #f59e0b;
+    color: #07090e;
+    box-shadow: 0 0 12px #f59e0b;
+  }
+
+  /* Channel Fader & 15-Segment Studio VU Meter */
+  .ch-fader-meter-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 104px;
+    padding: 3px 0;
+  }
+
+  .ch-fader-track {
+    width: 24px;
+    height: 98px;
+    background: #050608;
+    border: 1px solid #222631;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  .ch-fader-track::before {
+    content: "";
+    position: absolute;
+    inset: 6px 3px;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.25) 0 1px,
+      transparent 1px 9px
+    );
+    pointer-events: none;
+  }
+
+  .led-vu-column {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.5px;
+    height: 96px;
+    width: 8px;
+    background: #040507;
+    padding: 2px 1px;
+    border-radius: 2px;
+    border: 1px solid #141720;
+  }
+
+  .vu-seg {
+    flex: 1;
+    background: #11141b;
+    border-radius: 1px;
+    transition: background 0.04s ease;
+  }
+  .vu-seg.on.g { background: #22c55e; box-shadow: 0 0 3px #22c55e; }
+  .vu-seg.on.a { background: #f59e0b; box-shadow: 0 0 4px #f59e0b; }
+  .vu-seg.on.r { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+
+  /* Crossfader Zone */
+  .crossfader-zone {
+    height: 38px;
+    background: #090b10;
+    border: 1px solid #202430;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .xfader-side-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+
+  .xfader-track {
+    flex: 1;
+    height: 20px;
+    background: #040507;
+    border: 1px solid #232834;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .xfader-slit {
+    width: 100%;
+    height: 3px;
+    background: #000;
+  }
+
+  .xfader-cap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 28px;
+    background: linear-gradient(90deg, #383e4a 0%, #111319 45%, #f8fafc 50%, #111319 55%, #383e4a 100%);
+    border: 1px solid #94a3b8;
+    border-radius: 2px;
+    cursor: ew-resize;
+    box-shadow: 0 3px 8px #000;
+  }
+
+  /* Right Mixer Column: Master & Beat FX */
+  .djm-right-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-left: 1px solid #1f232d;
+    padding-left: 8px;
+  }
+
+  .beat-fx-oled {
+    background: #030407;
+    border: 1px solid #293444;
+    border-radius: 3px;
+    padding: 5px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+
+  .oled-fx-name {
+    font-size: 8px;
+    color: #38bdf8;
+    font-weight: 800;
+  }
+
+  .oled-fx-bpm {
+    font-size: 11px;
+    color: #f8fafc;
+    font-weight: 800;
+  }
+
+  .tap-blue-btn {
+    height: 23px;
+    background: #0284c7;
+    border: 1px solid #bae6fd;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+  }
+
+  .beat-fx-trigger-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding-top: 2px;
+  }
+
+  .amber-fx-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fef08a 0%, #f59e0b 55%, #b45309 100%);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.85);
+    cursor: pointer;
+    font-size: 7.5px;
+    font-weight: 900;
+    color: #0c0e12;
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+  }
+  .amber-fx-btn.off {
+    opacity: 0.45;
+    box-shadow: none;
+  }
+  .amber-fx-btn:active { transform: scale(0.93); }
+
+  @media (max-width: 1380px) {
+    .dj-booth-stage {
+      transform: scale(0.82);
+      transform-origin: top center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="dj-booth-stage">
+
+  <!-- Interactive Telemetry Pill -->
+  <div class="hud-status-pill">
+    <div class="hud-dot"></div>
+    <span>PRO DJ LINK // <b>SYNC 128.0 BPM</b></span>
+    <span>•</span>
+    <span id="liveParamReadout">PRO SETUP: Drag Jog Wheels to scratch • Turn Knobs • Slide Faders • Hit RGB Pads</span>
+  </div>
+
+  <div class="nexus-rig">
+
+    <!-- =====================================================
+         LEFT UNIT: PIONEER CDJ-2000NXS (DECK A)
+         ===================================================== -->
+    <section class="hw-unit" data-deck="A">
+      <div class="chassis-screw top-left"></div>
+      <div class="chassis-screw top-right"></div>
+      <div class="chassis-screw bot-left"></div>
+      <div class="chassis-screw bot-right"></div>
+
+      <div class="cdj-body">
+
+        <!-- 1. Top Rekordbox Display Housing -->
+        <div class="cdj-screen-housing">
+          <div class="screen-left-keys">
+            <button class="scr-soft-key active" data-mode="wave">WAVE</button>
+            <button class="scr-soft-key" data-mode="browse">BROWSE</button>
+            <button class="scr-soft-key">TAG</button>
+            <button class="scr-soft-key">INFO</button>
+          </div>
+
+          <div class="rekordbox-lcd">
+            <div class="lcd-top-bar">
+              <span class="lcd-track-title" id="titleA">01. Subfocus — Solar System</span>
+              <span class="lcd-bpm-box" id="bpmA">128.00</span>
+            </div>
+
+            <div class="phase-meter-row" id="phaseA">
+              <div class="phase-beat active"></div>
+              <div class="phase-beat"></div>
+              <div class="phase-beat"></div>
+              <div class="phase-beat"></div>
+            </div>
+
+            <canvas class="waveform-canvas" id="waveCanvasA" width="240" height="46"></canvas>
+
+            <div class="browser-view" id="browserA">
+              <div class="browser-row selected"><span>01 Solar System (Original)</span><span>128.0</span></div>
+              <div class="browser-row"><span>02 Eric Prydz — Opus</span><span>126.0</span></div>
+              <div class="browser-row"><span>03 Charlotte de Witte — Age</span><span>132.0</span></div>
+              <div class="browser-row"><span>04 Bicep — Glue (Club Mix)</span><span>130.0</span></div>
+            </div>
+
+            <div class="lcd-bottom-bar">
+              <span>PLAYER 1 <b class="quantize-tag">Q</b></span>
+              <span id="timeA">02:44.8</span>
+              <span style="color:#a3e635; font-weight:800;">MASTER</span>
+            </div>
+          </div>
+
+          <div class="screen-right-controls">
+            <button class="mini-silver-btn" data-toggle-screen="A">VIEW</button>
+            <div class="browse-encoder" title="Rotate to Browse Tracks"></div>
+          </div>
+        </div>
+
+        <!-- 2. Upper Controls Strip -->
+        <div class="cdj-upper-strip">
+          <div class="hot-cue-group">
+            <button class="hot-cue-btn" data-cue="A">A</button>
+            <button class="hot-cue-btn c-amber" data-cue="B">B</button>
+            <button class="hot-cue-btn c-red" data-cue="C">C</button>
+          </div>
+
+          <div class="loop-amber-group">
+            <button class="loop-btn">IN</button>
+            <button class="loop-btn">OUT</button>
+            <button class="rect-dark-key" style="padding:0 6px;">4 BEAT</button>
+          </div>
+
+          <button class="vinyl-mode-pill">VINYL</button>
+        </div>
+
+        <!-- 3. Main Deck Zone -->
+        <div class="cdj-main-deck">
+
+          <!-- Left Transport -->
+          <div class="cdj-transport-col">
+            <div class="search-pair">
+              <button class="rect-dark-key">|&lt;&lt;</button>
+              <button class="rect-dark-key">&gt;&gt;|</button>
+            </div>
+            <div class="search-pair">
+              <button class="rect-dark-key">&lt;&lt;</button>
+              <button class="rect-dark-key">&gt;&gt;</button>
+            </div>
+
+            <button class="round-transport-btn cue-btn" id="cueBtnA" title="Cue Point">
+              <div class="led-ring">
+                <div class="metal-cap">CUE</div>
+              </div>
+            </button>
+
+            <button class="round-transport-btn play-btn playing" id="playBtnA" title="Play / Pause Deck A">
+              <div class="led-ring">
+                <div class="metal-cap">▶/❚❚</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Center Dimpled Jog Wheel -->
+          <div class="jog-wheel-zone">
+            <div class="jog-outer-bezel" id="jogA" title="Drag to Scratch / Nudge Platter A">
+              <svg class="jog-dimples-svg" viewBox="0 0 236 236"></svg>
+              <div class="jog-platter-top">
+                <div class="jog-center-lcd">
+                  <div class="jog-lcd-ring">
+                    <div class="jog-needle" id="needleA"></div>
+                    <div class="jog-lcd-core"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Pitch Slider -->
+          <div class="cdj-pitch-col">
+            <button class="master-tempo-btn">M.TEMPO</button>
+            <div class="pitch-fader-well" data-fader="pitchA" data-val="50">
+              <div class="fader-slit"></div>
+              <div class="fader-cap" style="top: 50%;"></div>
+            </div>
+            <span class="pitch-readout-tag" id="pitchLabelA">±0.0%</span>
+          </div>
+
+        </div>
+
+        <!-- 4. 8 RGB Performance Pads Strip -->
+        <div class="performance-pads-strip">
+          <div class="pad-mode-labels">
+            <span>HOT CUE</span>
+            <span>BEAT LOOP</span>
+            <span>SLIP LOOP</span>
+            <span>BEAT JUMP</span>
+          </div>
+          <div class="performance-pads-grid">
+            <button class="rgb-pad c-blue" data-pad="1">1</button>
+            <button class="rgb-pad c-blue" data-pad="2">2</button>
+            <button class="rgb-pad c-orange" data-pad="3">3</button>
+            <button class="rgb-pad c-orange" data-pad="4">4</button>
+            <button class="rgb-pad c-green" data-pad="5">5</button>
+            <button class="rgb-pad c-green" data-pad="6">6</button>
+            <button class="rgb-pad c-purple" data-pad="7">7</button>
+            <button class="rgb-pad c-purple" data-pad="8">8</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Front Apron -->
+      <div class="front-apron">
+        <div class="cd-slot-bezel"></div>
+        <div class="model-tag">MULTI PLAYER<br><b>CDJ-2000nexus</b></div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         CENTER UNIT: PIONEER DJM-900NXS 4-CHANNEL MIXER
+         ===================================================== -->
+    <section class="hw-unit">
+      <div class="chassis-screw top-left"></div>
+      <div class="chassis-screw top-right"></div>
+      <div class="chassis-screw bot-left"></div>
+      <div class="chassis-screw bot-right"></div>
+
+      <div class="djm-body">
+
+        <!-- 1. Left Column: Mic + 6 Sound Color FX -->
+        <div class="djm-left-col">
+          <div class="mixer-section-box">
+            <span class="sec-header-tag">MIC / BOOTH</span>
+            <div style="display:flex;justify-content:space-around;">
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="MIC LEVEL" style="--k-rot:-30deg;"></div>
+                <span class="knob-lbl">LEVEL</span>
+              </div>
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="BOOTH MON" style="--k-rot:25deg;"></div>
+                <span class="knob-lbl">BOOTH</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mixer-section-box">
+            <span class="sec-header-tag">SOUND COLOR FX</span>
+            <div class="color-fx-grid" id="colorFxGrid">
+              <button class="color-fx-btn active">SPACE</button>
+              <button class="color-fx-btn">DUB ECHO</button>
+              <button class="color-fx-btn">GATE</button>
+              <button class="color-fx-btn">NOISE</button>
+              <button class="color-fx-btn">CRUSH</button>
+              <button class="color-fx-btn active">FILTER</button>
+            </div>
+          </div>
+
+          <div class="mixer-section-box" style="align-items:center;">
+            <span class="sec-header-tag">HEADPHONES</span>
+            <div style="display:flex;gap:8px;">
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="HP MIXING" style="--k-rot:0deg;"></div>
+                <span class="knob-lbl">MIX</span>
+              </div>
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="HP LEVEL" style="--k-rot:15deg;"></div>
+                <span class="knob-lbl">LEVEL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Center 4-Channel Strips + Crossfader -->
+        <div class="djm-center-channels">
+          <div class="channels-4-grid" id="mixerChannelsGrid">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Horizontal Crossfader -->
+          <div class="crossfader-zone">
+            <span class="xfader-side-lbl">&lt; A</span>
+            <div class="xfader-track" id="crossfaderTrack">
+              <div class="xfader-slit"></div>
+              <div class="xfader-cap" id="crossfaderCap" style="left: 50%;"></div>
+            </div>
+            <span class="xfader-side-lbl">B &gt;</span>
+          </div>
+        </div>
+
+        <!-- 3. Right Column: Master Level + Beat FX -->
+        <div class="djm-right-col">
+          <div class="mixer-section-box" style="align-items:center;">
+            <span class="sec-header-tag">MASTER</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="knob-unit">
+                <div class="rotary-knob trim-knob" data-knob="MASTER LEVEL" style="--k-rot:20deg;"></div>
+                <span class="knob-lbl">LEVEL</span>
+              </div>
+              <div class="led-vu-column" id="masterVuL"></div>
+              <div class="led-vu-column" id="masterVuR"></div>
+            </div>
+          </div>
+
+          <div class="mixer-section-box">
+            <span class="sec-header-tag">BEAT EFFECTS</span>
+            <div class="beat-fx-oled">
+              <div class="oled-fx-name" id="fxNameDisplay">SPIRAL 1/2</div>
+              <div class="oled-fx-bpm" id="fxBpmDisplay">128 BPM</div>
+            </div>
+            <button class="tap-blue-btn" id="tapBpmBtn">TAP / AUTO</button>
+
+            <div style="display:flex;justify-content:space-around;margin-top:2px;">
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="FX SELECT" style="--k-rot:40deg;"></div>
+                <span class="knob-lbl">FX SEL</span>
+              </div>
+              <div class="knob-unit">
+                <div class="rotary-knob" data-knob="FX DEPTH" style="--k-rot:10deg;"></div>
+                <span class="knob-lbl">DEPTH</span>
+              </div>
+            </div>
+
+            <div class="beat-fx-trigger-wrap">
+              <button class="amber-fx-btn" id="beatFxToggleBtn">ON/OFF</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Front Apron with Pioneer Badge -->
+      <div class="front-apron">
+        <span class="pioneer-badge">Pioneer</span>
+        <div class="model-tag">DJ MIXER<br><b>DJM-900nexus</b></div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         RIGHT UNIT: PIONEER CDJ-2000NXS (DECK B)
+         ===================================================== -->
+    <section class="hw-unit" data-deck="B">
+      <div class="chassis-screw top-left"></div>
+      <div class="chassis-screw top-right"></div>
+      <div class="chassis-screw bot-left"></div>
+      <div class="chassis-screw bot-right"></div>
+
+      <div class="cdj-body">
+
+        <!-- 1. Top Rekordbox Display Housing -->
+        <div class="cdj-screen-housing">
+          <div class="screen-left-keys">
+            <button class="scr-soft-key" data-mode="wave">WAVE</button>
+            <button class="scr-soft-key active" data-mode="browse">BROWSE</button>
+            <button class="scr-soft-key">TAG</button>
+            <button class="scr-soft-key">MENU</button>
+          </div>
+
+          <div class="rekordbox-lcd">
+            <div class="lcd-top-bar">
+              <span class="lcd-track-title" id="titleB">02. Eric Prydz — Opus (Club)</span>
+              <span class="lcd-bpm-box" id="bpmB">128.00</span>
+            </div>
+
+            <div class="phase-meter-row" id="phaseB">
+              <div class="phase-beat"></div>
+              <div class="phase-beat active"></div>
+              <div class="phase-beat"></div>
+              <div class="phase-beat"></div>
+            </div>
+
+            <canvas class="waveform-canvas" id="waveCanvasB" width="240" height="46" style="display:none;"></canvas>
+
+            <div class="browser-view" id="browserB" style="display:flex;">
+              <div class="browser-row"><span>01 Subfocus — Solar System</span><span>128.0</span></div>
+              <div class="browser-row selected"><span>02 Eric Prydz — Opus (Four Tet)</span><span>128.0</span></div>
+              <div class="browser-row"><span>03 Anyma — Genesys (Afterlife)</span><span>126.0</span></div>
+              <div class="browser-row"><span>04 Adam Beyer — Your Mind</span><span>130.0</span></div>
+            </div>
+
+            <div class="lcd-bottom-bar">
+              <span>PLAYER 2 <b class="quantize-tag">Q</b></span>
+              <span id="timeB">01:19.2</span>
+              <span style="color:#38bdf8; font-weight:800;">SYNC</span>
+            </div>
+          </div>
+
+          <div class="screen-right-controls">
+            <button class="mini-silver-btn" data-toggle-screen="B">VIEW</button>
+            <div class="browse-encoder" title="Click or Rotate to Select Track"></div>
+          </div>
+        </div>
+
+        <!-- 2. Upper Controls -->
+        <div class="cdj-upper-strip">
+          <div class="hot-cue-group">
+            <button class="hot-cue-btn" data-cue="A">A</button>
+            <button class="hot-cue-btn c-amber" data-cue="B">B</button>
+            <button class="hot-cue-btn c-red" data-cue="C">C</button>
+          </div>
+
+          <div class="loop-amber-group">
+            <button class="loop-btn">IN</button>
+            <button class="loop-btn">OUT</button>
+            <button class="rect-dark-key" style="padding:0 6px;">8 BEAT</button>
+          </div>
+
+          <button class="vinyl-mode-pill">VINYL</button>
+        </div>
+
+        <!-- 3. Main Deck B -->
+        <div class="cdj-main-deck">
+
+          <!-- Left Transport -->
+          <div class="cdj-transport-col">
+            <div class="search-pair">
+              <button class="rect-dark-key">|&lt;&lt;</button>
+              <button class="rect-dark-key">&gt;&gt;|</button>
+            </div>
+            <div class="search-pair">
+              <button class="rect-dark-key">&lt;&lt;</button>
+              <button class="rect-dark-key">&gt;&gt;</button>
+            </div>
+
+            <button class="round-transport-btn cue-btn" id="cueBtnB" title="Cue Point">
+              <div class="led-ring">
+                <div class="metal-cap">CUE</div>
+              </div>
+            </button>
+
+            <button class="round-transport-btn play-btn playing" id="playBtnB" title="Play / Pause Deck B">
+              <div class="led-ring">
+                <div class="metal-cap">▶/❚❚</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Center Dimpled Jog Wheel B -->
+          <div class="jog-wheel-zone">
+            <div class="jog-outer-bezel" id="jogB" title="Drag to Scratch / Nudge Platter B">
+              <svg class="jog-dimples-svg" viewBox="0 0 236 236"></svg>
+              <div class="jog-platter-top">
+                <div class="jog-center-lcd">
+                  <div class="jog-lcd-ring">
+                    <div class="jog-needle" id="needleB"></div>
+                    <div class="jog-lcd-core"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Pitch Slider B -->
+          <div class="cdj-pitch-col">
+            <button class="master-tempo-btn">M.TEMPO</button>
+            <div class="pitch-fader-well" data-fader="pitchB" data-val="50">
+              <div class="fader-slit"></div>
+              <div class="fader-cap" style="top: 50%;"></div>
+            </div>
+            <span class="pitch-readout-tag" id="pitchLabelB">±0.0%</span>
+          </div>
+
+        </div>
+
+        <!-- 4. 8 RGB Performance Pads Strip B -->
+        <div class="performance-pads-strip">
+          <div class="pad-mode-labels">
+            <span>HOT CUE</span>
+            <span>BEAT LOOP</span>
+            <span>SLIP LOOP</span>
+            <span>BEAT JUMP</span>
+          </div>
+          <div class="performance-pads-grid">
+            <button class="rgb-pad c-blue" data-pad="1">1</button>
+            <button class="rgb-pad c-blue" data-pad="2">2</button>
+            <button class="rgb-pad c-orange" data-pad="3">3</button>
+            <button class="rgb-pad c-orange" data-pad="4">4</button>
+            <button class="rgb-pad c-green" data-pad="5">5</button>
+            <button class="rgb-pad c-green" data-pad="6">6</button>
+            <button class="rgb-pad c-purple" data-pad="7">7</button>
+            <button class="rgb-pad c-purple" data-pad="8">8</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Front Apron -->
+      <div class="front-apron">
+        <div class="cd-slot-bezel"></div>
+        <div class="model-tag">MULTI PLAYER<br><b>CDJ-2000nexus</b></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Glossy Table Reflection -->
+  <div class="table-reflection">
+    <div class="refl-front"></div>
+    <div class="refl-front">Pioneer</div>
+    <div class="refl-front"></div>
+  </div>
+
+</div>
+
+<script>
+  const liveReadout = document.getElementById('liveParamReadout');
+
+  // =========================================================================
+  // 1. GENERATE PRECISION FINGER DIMPLES AROUND JOG WHEEL BEZELS
+  // =========================================================================
+  document.querySelectorAll('.jog-dimples-svg').forEach(svg => {
+    let circles = '';
+    const radius = 108;
+    const center = 118;
+    for (let i = 0; i < 16; i++) {
+      const rad = (i * 22.5 * Math.PI) / 180;
+      const cx = center + Math.cos(rad) * radius;
+      const cy = center + Math.sin(rad) * radius;
+      circles += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.2" fill="#090b0f" stroke="#475569" stroke-width="1.2"/>`;
+      circles += `<circle cx="${(cx - 0.8).toFixed(1)}" cy="${(cy - 0.8).toFixed(1)}" r="4.2" fill="#040507"/>`;
+    }
+    svg.innerHTML = circles;
+  });
+
+  // =========================================================================
+  // 2. BUILD 4 MIXER CHANNELS + 15-SEGMENT STUDIO LED VU METERS
+  // =========================================================================
+  const mixerGrid = document.getElementById('mixerChannelsGrid');
+  const chConfigs = [
+    { ch: 1, trim: -10, hi: 0, mid: 5,  low: 0,  color: -15, cue: true,  fader: 15 },
+    { ch: 2, trim: 8,   hi: 0, mid: 0,  low: 12, color: 0,   cue: true,  fader: 12 },
+    { ch: 3, trim: 0,   hi: -8, mid: 0, low: 0,  color: 20,  cue: false, fader: 40 },
+    { ch: 4, trim: -5,  hi: 0, mid: -12, low: 0, color: 0,   cue: false, fader: 80 }
+  ];
+
+  // 15 segment LED column (-24 dB to +9 dB / Clip)
+  function createVuSegments(count = 15) {
+    return Array.from({ length: count }, (_, i) => {
+      // 0-9: Green (-24 to -2 dB), 10-12: Amber (0 to +4 dB), 13-14: Red (+6 to CLIP)
+      const cls = i < 10 ? 'g' : i < 13 ? 'a' : 'r';
+      return `<div class="vu-seg ${cls}"></div>`;
+    }).join('');
+  }
+
+  mixerGrid.innerHTML = chConfigs.map(cfg => `
+    <div class="channel-strip" data-ch="${cfg.ch}">
+      <span class="ch-num-title">CH ${cfg.ch}</span>
+
+      <div class="knob-unit">
+        <div class="rotary-knob trim-knob" data-knob="CH${cfg.ch} TRIM" style="--k-rot:${cfg.trim}deg;"></div>
+        <span class="knob-lbl">TRIM</span>
+      </div>
+
+      <div class="knob-unit">
+        <div class="rotary-knob" data-knob="CH${cfg.ch} HI EQ" style="--k-rot:${cfg.hi}deg;"></div>
+        <span class="knob-lbl">HI</span>
+      </div>
+
+      <div class="knob-unit">
+        <div class="rotary-knob" data-knob="CH${cfg.ch} MID EQ" style="--k-rot:${cfg.mid}deg;"></div>
+        <span class="knob-lbl">MID</span>
+      </div>
+
+      <div class="knob-unit">
+        <div class="rotary-knob" data-knob="CH${cfg.ch} LOW EQ" style="--k-rot:${cfg.low}deg;"></div>
+        <span class="knob-lbl">LOW</span>
+      </div>
+
+      <div class="knob-unit">
+        <div class="rotary-knob color-knob" data-knob="CH${cfg.ch} COLOR FILTER" style="--k-rot:${cfg.color}deg;"></div>
+        <span class="knob-lbl" style="color:#38bdf8;">COLOR</span>
+      </div>
+
+      <button class="ch-cue-btn ${cfg.cue ? 'active' : ''}">CUE</button>
+
+      <div class="ch-fader-meter-row">
+        <div class="ch-fader-track" data-fader="ch${cfg.ch}" data-val="${100 - cfg.fader}">
+          <div class="fader-slit"></div>
+          <div class="fader-cap" style="top: ${cfg.fader}%;"></div>
+        </div>
+        <div class="led-vu-column" id="vuCh${cfg.ch}">
+          ${createVuSegments(15)}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('masterVuL').innerHTML = createVuSegments(15);
+  document.getElementById('masterVuR').innerHTML = createVuSegments(15);
+
+  // =========================================================================
+  // 3. INTERACTIVE ROTARY KNOB CONTROLS
+  // =========================================================================
+  document.querySelectorAll('.rotary-knob').forEach(knob => {
+    let dragging = false;
+    let startY = 0;
+    let rot = parseFloat(knob.style.getPropertyValue('--k-rot')) || 0;
+
+    knob.addEventListener('pointerdown', e => {
+      dragging = true;
+      startY = e.clientY;
+      knob.setPointerCapture(e.pointerId);
+    });
+
+    knob.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const dy = startY - e.clientY;
+      rot = Math.max(-135, Math.min(135, rot + dy * 1.6));
+      startY = e.clientY;
+      knob.style.setProperty('--k-rot', `${rot.toFixed(0)}deg`);
+      const pct = Math.round(((rot + 135) / 270) * 100);
+      const db = rot > 0 ? `+${(rot / 12).toFixed(1)} dB` : `${(rot / 12).toFixed(1)} dB`;
+      liveReadout.innerHTML = `POTENTIOMETER // <b>${knob.dataset.knob}</b>: ${pct}% (${db})`;
+    });
+
+    const stop = () => { dragging = false; };
+    knob.addEventListener('pointerup', stop);
+    knob.addEventListener('pointercancel', stop);
+  });
+
+  // =========================================================================
+  // 4. INTERACTIVE VERTICAL & HORIZONTAL FADERS
+  // =========================================================================
+  const faderLevels = { ch1: 0.88, ch2: 0.90, ch3: 0.60, ch4: 0.20, xfader: 0.5 };
+
+  document.querySelectorAll('.ch-fader-track, .pitch-fader-well').forEach(track => {
+    const cap = track.querySelector('.fader-cap');
+    let dragging = false;
+
+    const updatePos = (clientY) => {
+      const rect = track.getBoundingClientRect();
+      const relY = Math.max(10, Math.min(rect.height - 10, clientY - rect.top));
+      const pctTop = (relY / rect.height) * 100;
+      cap.style.top = `${pctTop}%`;
+
+      const faderId = track.dataset.fader;
+      if (faderId.startsWith('ch')) {
+        const level = Math.max(0, Math.min(1, (90 - pctTop) / 78));
+        faderLevels[faderId] = level;
+        liveReadout.innerHTML = `CHANNEL FADER // <b>${faderId.toUpperCase()} VOLUME</b>: ${Math.round(level * 100)}%`;
+      } else if (faderId === 'pitchA' || faderId === 'pitchB') {
+        const deck = faderId === 'pitchA' ? 'A' : 'B';
+        const pitchPct = ((pctTop - 50) / 40) * 6.0;
+        const baseBpm = 128.0;
+        const newBpm = (baseBpm * (1 + pitchPct / 100)).toFixed(2);
+        document.getElementById(`pitchLabel${deck}`).textContent = `${pitchPct >= 0 ? '+' : ''}${pitchPct.toFixed(1)}%`;
+        document.getElementById(`bpm${deck}`).textContent = newBpm;
+        liveReadout.innerHTML = `TEMPO SLIDER // <b>DECK ${deck}</b>: ${pitchPct >= 0 ? '+' : ''}${pitchPct.toFixed(1)}% (${newBpm} BPM)`;
+      }
+    };
+
+    track.addEventListener('pointerdown', e => {
+      dragging = true;
+      updatePos(e.clientY);
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener('pointermove', e => { if (dragging) updatePos(e.clientY); });
+    track.addEventListener('pointerup', () => { dragging = false; });
+  });
+
+  // Crossfader
+  const xfTrack = document.getElementById('crossfaderTrack');
+  const xfCap = document.getElementById('crossfaderCap');
+  let xfDragging = false;
+
+  xfTrack.addEventListener('pointerdown', e => {
+    xfDragging = true;
+    xfTrack.setPointerCapture(e.pointerId);
+  });
+  xfTrack.addEventListener('pointermove', e => {
+    if (!xfDragging) return;
+    const rect = xfTrack.getBoundingClientRect();
+    const relX = Math.max(10, Math.min(rect.width - 10, e.clientX - rect.left));
+    const pct = (relX / rect.width) * 100;
+    xfCap.style.left = `${pct}%`;
+    faderLevels.xfader = pct / 100;
+    liveReadout.innerHTML = `MAGVEL CROSSFADER // <b>MIX A/B</b>: ${Math.round(100 - pct)}% A / ${Math.round(pct)}% B`;
+  });
+  xfTrack.addEventListener('pointerup', () => { xfDragging = false; });
+
+  // =========================================================================
+  // 5. DECK TRANSPORT, SCRATCHING, PAD HITS & LCD MODES
+  // =========================================================================
+  const decks = {
+    A: { playing: true, angle: 0, waveOffset: 0, timeSec: 164.8 },
+    B: { playing: true, angle: 110, waveOffset: 120, timeSec: 79.2 }
+  };
+
+  ['A', 'B'].forEach(d => {
+    const playBtn = document.getElementById(`playBtn${d}`);
+    const cueBtn = document.getElementById(`cueBtn${d}`);
+    const jog = document.getElementById(`jog${d}`);
+
+    playBtn.addEventListener('click', () => {
+      decks[d].playing = !decks[d].playing;
+      playBtn.classList.toggle('playing', decks[d].playing);
+      liveReadout.innerHTML = `TRANSPORT // <b>DECK ${d}</b>: ${decks[d].playing ? 'PLAYING' : 'PAUSED'}`;
+    });
+
+    cueBtn.addEventListener('click', () => {
+      decks[d].waveOffset = 0;
+      decks[d].angle = 0;
+      liveReadout.innerHTML = `CUE POINT // <b>DECK ${d}</b>: RETURNED TO ZERO`;
+    });
+
+    // Realistic Platter Scratching
+    let jogDrag = false;
+    let lastY = 0;
+    jog.addEventListener('pointerdown', e => {
+      jogDrag = true;
+      lastY = e.clientY;
+      jog.setPointerCapture(e.pointerId);
+    });
+    jog.addEventListener('pointermove', e => {
+      if (!jogDrag) return;
+      const delta = lastY - e.clientY;
+      lastY = e.clientY;
+      decks[d].angle = (decks[d].angle + delta * 3.2) % 360;
+      decks[d].waveOffset += delta * 1.2;
+      liveReadout.innerHTML = `VINYL SCRATCH // <b>DECK ${d} PLATTER</b>: ${Math.round(decks[d].angle)}°`;
+    });
+    jog.addEventListener('pointerup', () => { jogDrag = false; });
+  });
+
+  // RGB Performance Pads trigger
+  document.querySelectorAll('.rgb-pad').forEach(pad => {
+    pad.addEventListener('pointerdown', () => {
+      pad.classList.add('pressed');
+      const padNum = pad.dataset.pad;
+      liveReadout.innerHTML = `PERFORMANCE PAD // <b>HOT CUE #${padNum} TRIGGERED</b>`;
+    });
+    const unpress = () => pad.classList.remove('pressed');
+    pad.addEventListener('pointerup', unpress);
+    pad.addEventListener('pointerleave', unpress);
+  });
+
+  // Screen Switching (Waveform vs Browser)
+  function setScreenMode(deckId, mode) {
+    const canvas = document.getElementById(`waveCanvas${deckId}`);
+    const browser = document.getElementById(`browser${deckId}`);
+    if (mode === 'wave') {
+      canvas.style.display = 'block';
+      browser.style.display = 'none';
+    } else {
+      canvas.style.display = 'none';
+      browser.style.display = 'flex';
+    }
+  }
+
+  document.querySelectorAll('[data-toggle-screen]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset.toggleScreen;
+      const canvas = document.getElementById(`waveCanvas${d}`);
+      const nextMode = canvas.style.display === 'none' ? 'wave' : 'browse';
+      setScreenMode(d, nextMode);
+      liveReadout.innerHTML = `REKORDBOX DISPLAY // <b>DECK ${d} VIEW</b>: ${nextMode.toUpperCase()}`;
+    });
+  });
+
+  document.querySelectorAll('.hw-unit[data-deck]').forEach(unit => {
+    const d = unit.dataset.deck;
+    unit.querySelectorAll('.scr-soft-key[data-mode]').forEach(k => {
+      k.addEventListener('click', () => {
+        unit.querySelectorAll('.scr-soft-key').forEach(b => b.classList.remove('active'));
+        k.classList.add('active');
+        setScreenMode(d, k.dataset.mode);
+      });
+    });
+
+    unit.querySelectorAll('.browser-row').forEach(row => {
+      row.addEventListener('click', () => {
+        unit.querySelectorAll('.browser-row').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        const trackName = row.firstElementChild.textContent;
+        document.getElementById(`title${d}`).textContent = trackName;
+        liveReadout.innerHTML = `REKORDBOX // <b>LOADED TO DECK ${d}</b>: ${trackName}`;
+      });
+    });
+  });
+
+  // Mixer toggles
+  document.querySelectorAll('.ch-cue-btn, .color-fx-btn').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('active'));
+  });
+
+  document.getElementById('beatFxToggleBtn').addEventListener('click', e => {
+    e.currentTarget.classList.toggle('off');
+  });
+
+  // =========================================================================
+  // 6. STUDIO AUDIO BALLISTICS ENGINE & REKORDBOX 3-BAND WAVEFORMS
+  // =========================================================================
+  const ctxA = document.getElementById('waveCanvasA').getContext('2d');
+  const ctxB = document.getElementById('waveCanvasB').getContext('2d');
+
+  // Multi-band Rekordbox Waveform Rendering
+  function drawRekordboxWaveform(ctx, offset, deckPlaying) {
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const midY = h / 2;
+
+    // Background graticule
+    ctx.fillStyle = '#080d16';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw beat grid lines (every 28 pixels = 1 beat at 128 BPM playback scale)
+    const beatSpacing = 28;
+    const firstBeat = -(offset % beatSpacing);
+    for (let bx = firstBeat; bx < w; bx += beatSpacing) {
+      const beatNum = Math.floor((bx + offset) / beatSpacing);
+      const isDownbeat = (beatNum % 4 === 0);
+      ctx.fillStyle = isDownbeat ? 'rgba(239, 68, 68, 0.45)' : 'rgba(255, 255, 255, 0.12)';
+      ctx.fillRect(Math.floor(bx), 0, 1, h);
+    }
+
+    // 3-Band Waveform simulation (Low: Navy/Blue, Mid: Amber/Green, High: Cyan/White)
+    for (let x = 0; x < w; x += 2) {
+      const s = (x + offset) * 0.22;
+      const bassAmp = (Math.abs(Math.sin(s * 0.28)) * 0.7 + Math.abs(Math.cos(s * 0.08)) * 0.3) * (h * 0.44);
+      const midAmp = Math.abs(Math.sin(s * 0.6 + 1.2)) * (bassAmp * 0.75);
+      const highAmp = Math.abs(Math.cos(s * 1.4)) * (midAmp * 0.6);
+
+      // Low frequency foundation (Blue core)
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(x, midY - bassAmp, 2, bassAmp * 2);
+
+      // Mid frequency energy (Cyan/Turquoise)
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(x, midY - midAmp, 2, midAmp * 2);
+
+      // High transients (Crisp White/Ice-Blue peak)
+      ctx.fillStyle = '#f0f9ff';
+      ctx.fillRect(x, midY - highAmp, 2, highAmp * 2);
+    }
+
+    // Center Red Playhead Marker
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(w / 2 - 1, 0, 2, h);
+
+    // Small glowing playhead triangle at top
+    ctx.beginPath();
+    ctx.moveTo(w / 2 - 4, 0);
+    ctx.lineTo(w / 2 + 4, 0);
+    ctx.lineTo(w / 2, 5);
+    ctx.fillStyle = '#f87171';
+    ctx.fill();
+  }
+
+  // Realistic VU-Meter State with Peak Decay Ballistics
+  const vuStates = {
+    ch1: { cur: 0, peak: 0, peakHold: 0 },
+    ch2: { cur: 0, peak: 0, peakHold: 0 },
+    ch3: { cur: 0, peak: 0, peakHold: 0 },
+    ch4: { cur: 0, peak: 0, peakHold: 0 },
+    masterL: { cur: 0, peak: 0, peakHold: 0 },
+    masterR: { cur: 0, peak: 0, peakHold: 0 }
+  };
+
+  function updateStudioVuColumn(colEl, state, targetLevel) {
+    // Instant attack (fast response to audio transient)
+    if (targetLevel > state.cur) {
+      state.cur = targetLevel;
+    } else {
+      // Natural exponential decay (~320ms release time)
+      state.cur = Math.max(0, state.cur * 0.91);
+    }
+
+    // Peak-hold ballistics (top LED segment holds for ~24 frames / 400ms)
+    if (state.cur >= state.peak) {
+      state.peak = state.cur;
+      state.peakHold = 24;
+    } else if (state.peakHold > 0) {
+      state.peakHold--;
+    } else {
+      state.peak = Math.max(0, state.peak * 0.92);
+    }
+
+    const segs = colEl.children;
+    const activeCount = Math.round(state.cur * segs.length);
+    const peakIdx = Math.min(segs.length - 1, Math.round(state.peak * segs.length));
+
+    for (let i = 0; i < segs.length; i++) {
+      const isOn = (i < activeCount) || (i === peakIdx && state.peakHold > 0);
+      segs[i].classList.toggle('on', isOn);
+    }
+  }
+
+  let frameCount = 0;
+  const BPM = 128.0;
+  // At 60 FPS, 128 BPM has a beat every (60 * 60 / 128) = 28.125 frames
+  const framesPerBeat = 28.125;
+
+  function audioLoop() {
+    frameCount++;
+
+    // Calculate rhythmic beat phase
+    const beatFraction = (frameCount % framesPerBeat) / framesPerBeat;
+    // Downbeat punch (sharp transient rise at beatFraction = 0, exponential fall)
+    const kickTransient = Math.max(0, Math.exp(-beatFraction * 5.5));
+    // Offbeat hi-hat sizzle at 50%
+    const hatTransient = Math.max(0, Math.exp(-Math.abs(beatFraction - 0.5) * 8.0)) * 0.45;
+    const audioGroove = 0.55 + kickTransient * 0.40 + hatTransient * 0.15;
+
+    // Smooth deck rotation & realistic Rekordbox waveform scroll speed:
+    // 0.65 px/frame at 60fps = 39 px/sec (legible, smooth, professional)
+    ['A', 'B'].forEach(d => {
+      if (decks[d].playing) {
+        decks[d].angle = (decks[d].angle + 1.2) % 360;
+        decks[d].waveOffset += 0.65;
+        decks[d].timeSec += 0.016;
+
+        const mins = String(Math.floor(decks[d].timeSec / 60)).padStart(2, '0');
+        const secs = (decks[d].timeSec % 60).toFixed(1).padStart(4, '0');
+        document.getElementById(`time${d}`).textContent = `${mins}:${secs}`;
+      }
+      document.getElementById(`needle${d}`).style.setProperty('--jog-angle', `${decks[d].angle.toFixed(1)}deg`);
+    });
+
+    // Update 4-beat Phase Meter
+    const currentBeat = Math.floor(frameCount / framesPerBeat) % 4;
+    ['A', 'B'].forEach(d => {
+      const beats = document.getElementById(`phase${d}`).children;
+      for (let i = 0; i < 4; i++) beats[i].classList.toggle('active', i === currentBeat);
+    });
+
+    // Draw active waveforms
+    drawRekordboxWaveform(ctxA, decks.A.waveOffset, decks.A.playing);
+    drawRekordboxWaveform(ctxB, decks.B.waveOffset, decks.B.playing);
+
+    // Compute realistic VU targets based on fader levels & music groove
+    const ch1Target = (decks.A.playing ? faderLevels.ch1 : 0.04) * audioGroove;
+    const ch2Target = (decks.B.playing ? faderLevels.ch2 : 0.04) * (0.6 + kickTransient * 0.35);
+    const ch3Target = faderLevels.ch3 * 0.45;
+    const ch4Target = faderLevels.ch4 * 0.25;
+
+    updateStudioVuColumn(document.getElementById('vuCh1'), vuStates.ch1, ch1Target);
+    updateStudioVuColumn(document.getElementById('vuCh2'), vuStates.ch2, ch2Target);
+    updateStudioVuColumn(document.getElementById('vuCh3'), vuStates.ch3, ch3Target);
+    updateStudioVuColumn(document.getElementById('vuCh4'), vuStates.ch4, ch4Target);
+
+    // Master Stereo Output Level
+    const xf = faderLevels.xfader;
+    const masterMix = (ch1Target * (1 - xf * 0.4)) + (ch2Target * (0.6 + xf * 0.4));
+    const masterTarget = Math.min(0.98, masterMix * 0.88);
+
+    updateStudioVuColumn(document.getElementById('masterVuL'), vuStates.masterL, masterTarget);
+    updateStudioVuColumn(document.getElementById('masterVuR'), vuStates.masterR, masterTarget * 0.97);
+
+    requestAnimationFrame(audioLoop);
+  }
+
+  audioLoop();
+</script>
+</body>
+</html>

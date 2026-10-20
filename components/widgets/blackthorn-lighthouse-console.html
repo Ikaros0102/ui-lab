@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Blackthorn Rock: Maritime Watch & Acoustic Dread</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Blackthorn Rock — Liminal Lighthouse Horror Console",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "horror",
+    "lighthouse",
+    "hydrophone",
+    "ocean",
+    "liminal",
+    "isolation",
+    "dread",
+    "radio",
+    "canvas",
+    "web-audio"
+  ],
+  "description": "Psychological horror lighthouse watchroom console featuring a rain-streaked storm viewport where sweeping the Fresnel beam reveals approaching silhouettes in the surf, a vertical tower acoustic cross-section with bulkhead locks, a phosphor hydrophone radar, and procedural Web Audio foghorn synthesis.",
+  "techniques": [
+    "beam-revealed horror silhouettes that advance closer each time the lamp is extinguished",
+    "rain-streaked storm viewport with lightning-rod corona discharge and multi-layer waves",
+    "vertical lighthouse schematic tracking acoustic footsteps ascending from the sea door",
+    "360-degree phosphor hydrophone radar sweep with anomalous morse contacts",
+    "zero-dependency Web Audio API procedural storm drone and distant foghorn echo"
+  ],
+  "recipe": "Constructed as a corroded cast-iron maritime watch console with analog voltmeter needles, phosphor CRT scopes, and rule-based horror log entries.",
+  "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 800
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root,
+  [data-dread-theme="abyss"] {
+    --bg-void: #020507;
+    --bg-storm: #071014;
+    --console-iron: #090f12;
+    --console-panel: #0c1418;
+    --border-corroded: #1a282e;
+    --border-highlight: #2e4650;
+    --fog-rgb: 145, 175, 185;
+    --beam-rgb: 200, 232, 240;
+    --phosphor-dim: #5e828d;
+    --phosphor-bright: #a8d0db;
+    --warn-amber: #c28744;
+    --alert-crimson: #9e3333;
+    --text-pale: #c8d4d8;
+    --text-faded: #4d626a;
+    --mono-filter: none;
+  }
+
+  [data-dread-theme="ash"] {
+    --bg-void: #060605;
+    --bg-storm: #100f0c;
+    --console-iron: #0e0d0a;
+    --console-panel: #14120e;
+    --border-corroded: #29251e;
+    --border-highlight: #473f32;
+    --fog-rgb: 180, 172, 155;
+    --beam-rgb: 230, 212, 175;
+    --phosphor-dim: #8a7f6c;
+    --phosphor-bright: #d8ccb8;
+    --warn-amber: #b87339;
+    --alert-crimson: #99382e;
+    --text-pale: #d6cfc2;
+    --text-faded: #635b4f;
+    --mono-filter: sepia(0.28) contrast(1.06);
+  }
+
+  [data-dread-theme="monochrome"] {
+    --bg-void: #030303;
+    --bg-storm: #0c0c0c;
+    --console-iron: #0a0a0a;
+    --console-panel: #111111;
+    --border-corroded: #262626;
+    --border-highlight: #454545;
+    --fog-rgb: 190, 190, 190;
+    --beam-rgb: 245, 245, 245;
+    --phosphor-dim: #787878;
+    --phosphor-bright: #e2e2e2;
+    --warn-amber: #a6a6a6;
+    --alert-crimson: #888888;
+    --text-pale: #d4d4d4;
+    --text-faded: #555555;
+    --mono-filter: grayscale(1) contrast(1.22);
+  }
+
+  :root {
+    --cursor-x: 50vw;
+    --cursor-y: 50vh;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-void);
+    background-image: radial-gradient(circle at 50% 30%, var(--bg-storm) 0%, var(--bg-void) 85%);
+    color: var(--text-pale);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    overflow-x: hidden;
+    position: relative;
+    user-select: none;
+    filter: var(--mono-filter);
+    transition: background-color 0.6s ease, filter 0.5s ease;
+  }
+
+  /* Heavy Salt-Corrosion & 16mm Film Grain */
+  .film-grain-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Claustrophobic Dying-Lantern Cursor Vignette */
+  .claustrophobia-vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 35;
+    background:
+      radial-gradient(
+        480px circle at var(--cursor-x) var(--cursor-y),
+        transparent 12%,
+        rgba(1, 3, 5, 0.48) 56%,
+        rgba(0, 1, 2, 0.90) 100%
+      );
+  }
+
+  /* ==========================================================================
+     MAIN CAST-IRON WATCHROOM CONSOLE
+     ========================================================================== */
+  .watchroom-chassis {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1140px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(var(--fog-rgb), 0.03) 0%, transparent 60%),
+      var(--console-iron);
+    border: 1.5px solid var(--border-corroded);
+    box-shadow:
+      0 45px 100px rgba(0, 0, 0, 0.98),
+      0 0 0 1px #010203,
+      inset 0 0 70px rgba(0, 0, 0, 0.95);
+    padding: 18px 22px 20px;
+  }
+
+  .watchroom-chassis::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(var(--fog-rgb), 0.06);
+    pointer-events: none;
+  }
+
+  /* Corner Bolt Rivets */
+  .iron-rivet {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #05080a;
+    border: 1px solid var(--border-highlight);
+    z-index: 5;
+  }
+  .r-tl { top: 10px; left: 10px; }
+  .r-tr { top: 10px; right: 10px; }
+  .r-bl { bottom: 10px; left: 10px; }
+  .r-br { bottom: 10px; right: 10px; }
+
+  /* ==========================================================================
+     HEADER BAR
+     ========================================================================== */
+  .station-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-corroded);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .station-id-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .station-code-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    color: var(--phosphor-dim);
+  }
+
+  .status-led {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #421c1c;
+    border: 1px solid #7d3232;
+    transition: all 0.2s ease;
+  }
+  .status-led.ignited {
+    background: var(--phosphor-bright);
+    border-color: #fff;
+    box-shadow: 0 0 12px var(--phosphor-bright);
+  }
+
+  .station-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-pale);
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .audio-synth-btn {
+    background: #060a0d;
+    border: 1px solid var(--border-corroded);
+    color: var(--phosphor-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    padding: 6px 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .audio-synth-btn.active {
+    border-color: var(--warn-amber);
+    color: #f3d2a2;
+    background: rgba(194, 135, 68, 0.12);
+    box-shadow: 0 0 12px rgba(194, 135, 68, 0.2);
+  }
+
+  .grade-selector {
+    display: flex;
+    background: #040709;
+    border: 1px solid var(--border-corroded);
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .grade-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-faded);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .grade-btn.active {
+    background: var(--console-panel);
+    border-color: var(--border-highlight);
+    color: var(--phosphor-bright);
+  }
+
+  /* ==========================================================================
+     3-ZONE ASYMMETRIC HORROR GRID
+     [1. STORM CASEMENT WINDOW] + [2. TOWER SCHEMATIC] + [3. RADIO/LOGBOOK]
+     ========================================================================== */
+  .watch-layout {
+    display: grid;
+    grid-template-columns: 1.32fr 0.48fr 0.95fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  /* ==========================================================================
+     COLUMN 1: RAIN-STREAKED STORM VIEWPORT & DYNAMO CONTROLS
+     ========================================================================== */
+  .viewport-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .observation-window {
+    position: relative;
+    height: 415px;
+    background: #020406;
+    border: 1.5px solid var(--border-corroded);
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.98);
+    overflow: hidden;
+  }
+
+  canvas#lighthouse-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Iron Casement Mullions (Cross-Frame of the Watchroom Window) */
+  .casement-frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    border: 9px solid rgba(5, 8, 10, 0.9);
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.95);
+  }
+  .casement-frame::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(8, 13, 16, 0.75);
+    box-shadow: 0 0 6px #000;
+  }
+
+  .viewport-hud-top {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--phosphor-dim);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .hud-tag-left {
+    background: rgba(3, 6, 8, 0.84);
+    border-left: 2px solid var(--phosphor-dim);
+    padding: 5px 9px;
+    line-height: 1.45;
+  }
+
+  .hud-proximity-warning {
+    background: rgba(3, 6, 8, 0.88);
+    border: 1px solid var(--border-corroded);
+    padding: 4px 9px;
+    color: var(--warn-amber);
+    letter-spacing: 0.8px;
+    transition: all 0.3s ease;
+  }
+
+  .hud-proximity-warning.danger {
+    border-color: var(--alert-crimson);
+    color: #f87171;
+    box-shadow: 0 0 12px rgba(158, 51, 51, 0.5);
+  }
+
+  .viewport-hud-bottom {
+    position: absolute;
+    bottom: 14px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .eerie-whisper-caption {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15.5px;
+    color: var(--phosphor-bright);
+    background: rgba(2, 5, 7, 0.72);
+    padding: 4px 10px;
+    border-left: 2px solid var(--warn-amber);
+    text-shadow: 0 2px 8px #000;
+  }
+
+  /* Lower Dynamo Control Deck */
+  .dynamo-deck {
+    display: grid;
+    grid-template-columns: 90px 1.25fr 0.9fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  /* Analog Dynamo Voltmeter Gauge */
+  .voltmeter-box {
+    background: var(--console-panel);
+    border: 1px solid var(--border-corroded);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .voltmeter-svg {
+    width: 72px;
+    height: 44px;
+  }
+
+  .volt-needle {
+    transform-origin: 40px 40px;
+    transition: transform 0.12s ease-out;
+  }
+
+  .volt-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    color: var(--phosphor-dim);
+    margin-top: 2px;
+  }
+
+  .crank-igniter-btn {
+    background: linear-gradient(180deg, #131e24 0%, #080d10 100%);
+    border: 1px solid var(--border-highlight);
+    color: var(--phosphor-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 3px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 14px rgba(0, 0, 0, 0.75);
+    transition: all 0.18s ease;
+  }
+
+  .crank-igniter-btn small {
+    font-size: 8.5px;
+    color: var(--text-faded);
+  }
+
+  .crank-igniter-btn:hover {
+    border-color: var(--phosphor-bright);
+  }
+
+  .crank-igniter-btn.cranking {
+    background: rgba(var(--beam-rgb), 0.14);
+    border-color: #ffffff;
+    box-shadow: 0 0 22px rgba(var(--beam-rgb), 0.25);
+  }
+
+  .fog-control-box {
+    background: var(--console-panel);
+    border: 1px solid var(--border-corroded);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .fog-control-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--phosphor-dim);
+  }
+
+  .dread-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: #040709;
+    border: 1px solid var(--border-corroded);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .dread-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 11px;
+    height: 11px;
+    background: var(--phosphor-bright);
+    border: 1px solid #000;
+    cursor: pointer;
+  }
+
+  /* ==========================================================================
+     COLUMN 2: TOWER INTERNAL ACOUSTIC SCHEMATIC & BULKHEAD LOCK
+     ========================================================================== */
+  .tower-schematic-col {
+    background: var(--console-panel);
+    border: 1px solid var(--border-corroded);
+    padding: 12px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+  }
+
+  .module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--phosphor-dim);
+    border-bottom: 1px solid rgba(var(--fog-rgb), 0.08);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  /* 5-Level Vertical Lighthouse Section Diagram */
+  .tower-levels-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+    padding: 4px 0;
+  }
+
+  .tower-floor {
+    background: rgba(3, 6, 8, 0.78);
+    border: 1px solid #162228;
+    padding: 8px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    transition: all 0.25s ease;
+  }
+
+  /* Tapered width effect to mimic lighthouse silhouette */
+  .tower-floor[data-lv="5"] { margin: 0 12px; }
+  .tower-floor[data-lv="4"] { margin: 0 9px; }
+  .tower-floor[data-lv="3"] { margin: 0 6px; }
+  .tower-floor[data-lv="2"] { margin: 0 3px; }
+  .tower-floor[data-lv="1"] { margin: 0 0px; }
+
+  .tower-floor.breached {
+    border-color: var(--alert-crimson);
+    background: rgba(120, 28, 28, 0.18);
+    box-shadow: inset 0 0 12px rgba(158, 51, 51, 0.35);
+  }
+
+  .floor-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-pale);
+  }
+
+  .floor-sensor-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #233840;
+  }
+
+  .tower-floor.breached .floor-sensor-dot {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+    animation: pulseDanger 0.9s infinite alternate;
+  }
+
+  @keyframes pulseDanger {
+    from { opacity: 0.3; }
+    to { opacity: 1; }
+  }
+
+  .floor-sub-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--text-faded);
+  }
+
+  .tower-floor.breached .floor-sub-status {
+    color: #fca5a5;
+  }
+
+  .bulkhead-lock-btn {
+    width: 100%;
+    background: linear-gradient(180deg, #1b1512 0%, #0d0a08 100%);
+    border: 1px solid var(--warn-amber);
+    color: #ebd0b0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    padding: 9px 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .bulkhead-lock-btn:hover {
+    background: rgba(194, 135, 68, 0.2);
+  }
+
+  .bulkhead-lock-btn.bolted {
+    border-color: var(--phosphor-dim);
+    color: var(--phosphor-bright);
+    background: #081216;
+  }
+
+  /* ==========================================================================
+     COLUMN 3: HYDROPHONE AZIMUTH RADAR, SHORTWAVE & KEEPER'S RULES
+     ========================================================================== */
+  .instruments-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .instrument-module {
+    background: var(--console-panel);
+    border: 1px solid var(--border-corroded);
+    padding: 12px 14px;
+    box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.78);
+  }
+
+  /* Hydrophone Radar + Oscilloscope Dual Row */
+  .hydro-scope-row {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .hydrophone-radar {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: #030608;
+    border: 1.5px solid #1e3138;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 16px #000;
+  }
+
+  canvas#radar-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .scope-right-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .oscilloscope-screen {
+    height: 44px;
+    background: #030607;
+    border: 1px solid #162227;
+    position: relative;
+    overflow: hidden;
+  }
+
+  canvas#scope-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .freq-readout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .freq-khz {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--phosphor-bright);
+  }
+
+  .signal-status {
+    font-size: 9px;
+    color: var(--warn-amber);
+  }
+
+  .radio-transcript-box {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(3, 6, 8, 0.78);
+    border-left: 2px solid var(--border-highlight);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    line-height: 1.42;
+    color: var(--text-pale);
+    min-height: 50px;
+  }
+
+  /* Watchkeeper's Journal & Standing Rules */
+  .log-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .log-tab-btn {
+    flex: 1;
+    background: #05090b;
+    border: 1px solid var(--border-corroded);
+    color: var(--text-faded);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    padding: 5px 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .log-tab-btn.active {
+    border-color: var(--phosphor-dim);
+    color: var(--phosphor-bright);
+    background: rgba(var(--fog-rgb), 0.07);
+  }
+
+  .log-paper-excerpt {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14.5px;
+    line-height: 1.48;
+    color: var(--text-pale);
+    background: rgba(3, 6, 8, 0.68);
+    border: 1px solid rgba(var(--fog-rgb), 0.08);
+    padding: 10px 12px;
+    min-height: 108px;
+  }
+
+  .log-paper-excerpt b {
+    color: var(--warn-amber);
+    font-weight: 700;
+  }
+
+  .foghorn-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: #070d10;
+    border: 1px solid var(--border-highlight);
+    color: var(--phosphor-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .foghorn-btn:hover {
+    background: rgba(var(--fog-rgb), 0.1);
+    border-color: #fff;
+  }
+
+  @media (max-width: 1040px) {
+    .watch-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body data-dread-theme="abyss">
+
+<div class="film-grain-overlay"></div>
+<div class="claustrophobia-vignette"></div>
+
+<div class="watchroom-chassis">
+  <div class="iron-rivet r-tl"></div>
+  <div class="iron-rivet r-tr"></div>
+  <div class="iron-rivet r-bl"></div>
+  <div class="iron-rivet r-br"></div>
+
+  <!-- ====================================================================
+       HEADER: STATION IDENTITY, SYNTH AUDIO TOGGLE & COLOR GRADES
+       ==================================================================== -->
+  <header class="station-header">
+    <div class="station-id-block">
+      <div class="station-code-row">
+        <span class="status-led" id="headerBeaconDot"></span>
+        <span id="headerBeaconStatus">FRESNEL OPTIC: EXTINGUISHED // DAY 19 WITHOUT RELIEF TENDER</span>
+      </div>
+      <h1 class="station-title">Blackthorn Rock • North Sea Watch Station 09</h1>
+    </div>
+
+    <div class="header-controls">
+      <button class="audio-synth-btn" id="audioToggleBtn" type="button" title="Enable Procedural Web-Audio Storm & Foghorn Drone">
+        <span>🔇</span> <span id="audioBtnLabel">AUDIO MONITOR: OFF</span>
+      </button>
+
+      <div class="grade-selector" id="themeGradeGroup">
+        <button class="grade-btn active" data-grade="abyss">Abyssal Slate</button>
+        <button class="grade-btn" data-grade="ash">Sulfur Fog</button>
+        <button class="grade-btn" data-grade="monochrome">1904 Ferrotype</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       3-COLUMN HORROR WORKSPACE
+       ==================================================================== -->
+  <main class="watch-layout">
+
+    <!-- COLUMN 1: STORM CASEMENT VIEWPORT & DYNAMO CRANK -->
+    <section class="viewport-column">
+      <div class="observation-window">
+        <canvas id="lighthouse-canvas"></canvas>
+        <div class="casement-frame"></div>
+
+        <div class="viewport-hud-top">
+          <div class="hud-tag-left">
+            <div>REEF BEARING: 014° NNE (OUTER BREAKERS)</div>
+            <div id="beamExposureCounter">BEAM EXPOSURES TONIGHT: 0</div>
+          </div>
+          <div class="hud-proximity-warning" id="proximityAlertTag">SURF CONTACT: 340m OFFSHORE</div>
+        </div>
+
+        <div class="viewport-hud-bottom">
+          <span class="eerie-whisper-caption" id="windowWhisper">
+            "The lamp is cold. Whatever waits in the surf cannot see the watchroom while the glass stays dark..."
+          </span>
+        </div>
+      </div>
+
+      <!-- Dynamo Voltmeter + Hand-Crank Button + Fog Density -->
+      <div class="dynamo-deck">
+        <div class="voltmeter-box">
+          <svg class="voltmeter-svg" viewBox="0 0 80 46">
+            <path d="M 10 40 A 30 30 0 0 1 70 40" fill="none" stroke="#263840" stroke-width="4"/>
+            <path d="M 52 15 A 30 30 0 0 1 70 40" fill="none" stroke="#9e3333" stroke-width="3"/>
+            <g id="voltNeedle" class="volt-needle" style="transform: rotate(-75deg);">
+              <line x1="40" y1="40" x2="40" y2="12" stroke="#d8ccb8" stroke-width="1.8"/>
+              <circle cx="40" cy="40" r="3.5" fill="#5e828d"/>
+            </g>
+          </svg>
+          <span class="volt-lbl" id="voltReadout">0.0 VOLTS</span>
+        </div>
+
+        <button class="crank-igniter-btn" id="crankBtn" type="button">
+          <span id="crankBtnText">⚡ HOLD TO CRANK FRESNEL LAMP</span>
+          <small>Warning: Sweeping the beam attracts movement from the reef</small>
+        </button>
+
+        <div class="fog-control-box">
+          <div class="fog-control-header">
+            <span>MIST DENSITY</span>
+            <span id="fogPctLabel">74% DENSE</span>
+          </div>
+          <input type="range" min="25" max="98" value="74" class="dread-slider" id="fogSlider">
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMN 2: VERTICAL LIGHTHOUSE ACOUSTIC SCHEMATIC -->
+    <section class="tower-schematic-col">
+      <div>
+        <div class="module-header">
+          <span>TOWER ACOUSTICS</span>
+          <span id="towerStatusBadge">QUIET</span>
+        </div>
+        <p style="font-size:10px;color:var(--text-faded);line-height:1.35;margin-bottom:6px;">
+          Internal microphones along the spiral stair shaft:
+        </p>
+      </div>
+
+      <div class="tower-levels-stack" id="towerStack">
+        <div class="tower-floor" data-lv="5">
+          <div class="floor-top-row">
+            <span>05. LANTERN GALLERY</span>
+            <span class="floor-sensor-dot"></span>
+          </div>
+          <div class="floor-sub-status">YOU ARE HERE (LOCKED)</div>
+        </div>
+
+        <div class="tower-floor" data-lv="4">
+          <div class="floor-top-row">
+            <span>04. SERVICE LANDING</span>
+            <span class="floor-sensor-dot"></span>
+          </div>
+          <div class="floor-sub-status">IRON GRATING // CLEAR</div>
+        </div>
+
+        <div class="tower-floor" data-lv="3">
+          <div class="floor-top-row">
+            <span>03. CREW QUARTERS</span>
+            <span class="floor-sensor-dot"></span>
+          </div>
+          <div class="floor-sub-status">BUNKS EMPTY (DAY 19)</div>
+        </div>
+
+        <div class="tower-floor" data-lv="2">
+          <div class="floor-top-row">
+            <span>02. OIL &amp; COAL VAULT</span>
+            <span class="floor-sensor-dot"></span>
+          </div>
+          <div class="floor-sub-status">DRIPPING SEA WATER</div>
+        </div>
+
+        <div class="tower-floor" data-lv="1">
+          <div class="floor-top-row">
+            <span>01. REEF SEA DOOR</span>
+            <span class="floor-sensor-dot"></span>
+          </div>
+          <div class="floor-sub-status" id="seaDoorStatus">HEAVY SURF IMPACT</div>
+        </div>
+      </div>
+
+      <button class="bulkhead-lock-btn" id="boltDoorBtn" type="button">
+        🔒 DROP LOWER IRON BULKHEAD BAR
+      </button>
+    </section>
+
+    <!-- COLUMN 3: HYDROPHONE RADAR, SHORTWAVE & STANDING RULES -->
+    <aside class="instruments-column">
+
+      <!-- Module 1: Hydrophone Azimuth Scope + Shortwave Receiver -->
+      <div class="instrument-module">
+        <div class="module-header">
+          <span>HYDROPHONE &amp; SHORTWAVE</span>
+          <span id="radioLockBadge">BEARING: 014°</span>
+        </div>
+
+        <div class="hydro-scope-row">
+          <div class="hydrophone-radar">
+            <canvas id="radar-canvas" width="92" height="92"></canvas>
+          </div>
+
+          <div class="scope-right-stack">
+            <div class="oscilloscope-screen">
+              <canvas id="scope-canvas"></canvas>
+            </div>
+            <div class="freq-readout-row">
+              <span class="freq-khz" id="freqDisplay">2182.0 kHz</span>
+              <span class="signal-status" id="freqStationName">DISTRESS BAND</span>
+            </div>
+          </div>
+        </div>
+
+        <input type="range" min="1800" max="3200" step="10" value="2180" class="dread-slider" id="freqSlider">
+
+        <div class="radio-transcript-box" id="radioTranscript">
+          "...khhh... [static] ...Blackthorn Station, do you copy?... Why is your light out?... Wait—there are figures standing in the water around your landing stairs..."
+        </div>
+      </div>
+
+      <!-- Module 2: Watchkeeper's Standing Rules & Journal -->
+      <div class="instrument-module">
+        <div class="module-header">
+          <span>WATCHKEEPER'S STANDING ORDERS</span>
+          <span>DAMP VELLUM</span>
+        </div>
+
+        <div class="log-tabs" id="logTabs">
+          <button class="log-tab-btn active" data-entry="0">STANDING RULES</button>
+          <button class="log-tab-btn" data-entry="1">LOG: OCT 16</button>
+          <button class="log-tab-btn" data-entry="2">LOG: OCT 20</button>
+        </div>
+
+        <div class="log-paper-excerpt" id="logExcerptBox">
+          <b>RULE I:</b> Keep the Fresnel lens dark after midnight. They navigate by the beam.<br>
+          <b>RULE II:</b> If the reef foghorn sounds from the north, <em>do not sound back</em>. The North Buoy sank in 1901.<br>
+          <b>RULE III:</b> If footsteps ascend past the Oil Vault, drop the lower bulkhead bar immediately.
+        </div>
+
+        <button class="foghorn-btn" id="soundHornBtn" type="button">
+          🔊 SOUND REEF FOGHORN (VIOLATE RULE II)
+        </button>
+      </div>
+
+    </aside>
+
+  </main>
+
+</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. CURSOR LANTERN VIGNETTE TRACKING
+  // =========================================================================
+  window.addEventListener('pointermove', (e) => {
+    document.documentElement.style.setProperty('--cursor-x', `${e.clientX}px`);
+    document.documentElement.style.setProperty('--cursor-y', `${e.clientY}px`);
+  }, { passive: true });
+
+  // =========================================================================
+  // 2. PROCEDURAL WEB AUDIO API SYNTH (STORM RUMBLE, DYNAMO & EERIE FOGHORN)
+  // =========================================================================
+  let audioCtx = null;
+  let audioEnabled = false;
+  let noiseNode = null;
+  let masterGain = null;
+
+  function initAudio() {
+    if (audioCtx) return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.18;
+    masterGain.connect(audioCtx.destination);
+
+    // Brown-noise ocean storm rumble
+    const bufferSize = audioCtx.sampleRate * 3;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 2.5;
+    }
+
+    noiseNode = audioCtx.createBufferSource();
+    noiseNode.buffer = buffer;
+    noiseNode.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 135;
+
+    noiseNode.connect(filter);
+    filter.connect(masterGain);
+    noiseNode.start();
+  }
+
+  function triggerFoghornSound(pitchHz = 68, delaySec = 0) {
+    if (!audioEnabled || !audioCtx) return;
+    const now = audioCtx.currentTime + delaySec;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const filter = audioCtx.createBiquadFilter();
+    const gain = audioCtx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc2.type = 'triangle';
+    osc1.frequency.setValueAtTime(pitchHz, now);
+    osc1.frequency.exponentialRampToValueAtTime(pitchHz * 0.92, now + 2.6);
+    osc2.frequency.setValueAtTime(pitchHz * 1.5, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(240, now);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.35);
+    gain.gain.setValueAtTime(0.28, now + 1.8);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.1);
+
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 3.2);
+    osc2.stop(now + 3.2);
+  }
+
+  const audioToggleBtn = document.getElementById('audioToggleBtn');
+  const audioBtnLabel = document.getElementById('audioBtnLabel');
+  audioToggleBtn.addEventListener('click', () => {
+    initAudio();
+    audioEnabled = !audioEnabled;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    masterGain.gain.setTargetAtTime(audioEnabled ? 0.18 : 0.0, audioCtx.currentTime, 0.2);
+    audioToggleBtn.classList.toggle('active', audioEnabled);
+    audioBtnLabel.textContent = audioEnabled ? 'AUDIO MONITOR: ON' : 'AUDIO MONITOR: OFF';
+    audioToggleBtn.firstElementChild.textContent = audioEnabled ? '🔊' : '🔇';
+  });
+
+  // =========================================================================
+  // 3. STATE: THE PRICE OF LIGHT & ASCENDING STEPS IN THE TOWER
+  // =========================================================================
+  let time = 0;
+  let fogDensity = 0.74;
+  let lampPower = 0;
+  let isCranking = false;
+  let hornRipple = 0;
+
+  let beamExposures = 0;
+  let entityDistanceMeters = 340;
+  let intruderFloor = 0; // 0 = Outside in surf, 1..4 = Inside tower levels
+
+  const towerFloors = document.querySelectorAll('.tower-floor');
+  const proximityAlertTag = document.getElementById('proximityAlertTag');
+  const beamExposureCounter = document.getElementById('beamExposureCounter');
+  const towerStatusBadge = document.getElementById('towerStatusBadge');
+  const windowWhisper = document.getElementById('windowWhisper');
+
+  function updateIntruderProgression() {
+    towerFloors.forEach(fl => {
+      const lv = Number(fl.dataset.lv);
+      fl.classList.toggle('breached', lv === intruderFloor);
+    });
+
+    if (intruderFloor === 0) {
+      towerStatusBadge.textContent = 'QUIET';
+      towerStatusBadge.style.color = '';
+    } else {
+      towerStatusBadge.textContent = `BREACH LV 0${intruderFloor}`;
+      towerStatusBadge.style.color = '#f87171';
+    }
+  }
+
+  // =========================================================================
+  // 4. STORM VIEWPORT CANVAS (LIGHTHOUSE, BEAM-REVEALED FIGURES & RAIN GLASS)
+  // =========================================================================
+  const lCanvas = document.getElementById('lighthouse-canvas');
+  const lCtx = lCanvas.getContext('2d');
+  let lw = 0, lh = 0;
+
+  function resizeLighthouseCanvas() {
+    const rect = lCanvas.parentElement.getBoundingClientRect();
+    lw = lCanvas.width = rect.width;
+    lh = lCanvas.height = rect.height;
+  }
+  resizeLighthouseCanvas();
+  window.addEventListener('resize', resizeLighthouseCanvas);
+
+  const fogBanks = Array.from({ length: 14 }, (_, i) => ({
+    x: Math.random() * 800,
+    y: 35 + Math.random() * 310,
+    rx: 130 + Math.random() * 160,
+    ry: 24 + Math.random() * 38,
+    speed: (0.16 + Math.random() * 0.32) * (i % 2 === 0 ? 1 : -1),
+    alpha: 0.08 + Math.random() * 0.14
+  }));
+
+  // Raindrops trickling down window pane
+  const rainStreaks = Array.from({ length: 38 }, () => ({
+    x: Math.random() * 700,
+    y: Math.random() * 420,
+    len: 10 + Math.random() * 18,
+    vy: 2.2 + Math.random() * 2.5,
+    alpha: 0.12 + Math.random() * 0.2
+  }));
+
+  function renderLighthouseScene() {
+    time += 0.018;
+
+    if (isCranking) {
+      lampPower = Math.min(1, lampPower + 0.032);
+    } else {
+      lampPower = Math.max(0, lampPower - 0.025);
+    }
+
+    // Update Analog Voltmeter Needle
+    const volts = (lampPower * 112.4 + (isCranking ? (Math.random() - 0.5) * 8 : 0)).toFixed(1);
+    const needleDeg = -75 + lampPower * 145;
+    document.getElementById('voltNeedle').style.transform = `rotate(${needleDeg}deg)`;
+    document.getElementById('voltReadout').textContent = `${ Math.max(0, volts).toFixed(1) } VOLTS`;
+
+    if (hornRipple > 0) hornRipple = Math.max(0, hornRipple - 0.018);
+
+    const shakeX = hornRipple > 0 ? (Math.random() - 0.5) * hornRipple * 7 : 0;
+    const shakeY = hornRipple > 0 ? (Math.random() - 0.5) * hornRipple * 5 : 0;
+
+    lCtx.save();
+    lCtx.clearRect(0, 0, lw, lh);
+    lCtx.translate(shakeX, shakeY);
+
+    // 1. Night Sky
+    const skyGrad = lCtx.createLinearGradient(0, 0, 0, lh);
+    skyGrad.addColorStop(0, '#010304');
+    skyGrad.addColorStop(0.55, '#071116');
+    skyGrad.addColorStop(1, '#020507');
+    lCtx.fillStyle = skyGrad;
+    lCtx.fillRect(0, 0, lw, lh);
+
+    // Suffocated Moon Behind Clouds
+    const moonGrad = lCtx.createRadialGradient(lw * 0.22, lh * 0.2, 2, lw * 0.22, lh * 0.2, 120);
+    moonGrad.addColorStop(0, 'rgba(155, 185, 195, 0.09)');
+    moonGrad.addColorStop(1, 'transparent');
+    lCtx.fillStyle = moonGrad;
+    lCtx.fillRect(0, 0, lw, lh);
+
+    // 2. Distant Horizon Swell
+    drawWaveLayer(lh * 0.66, 9, 0.012, time * 1.1, '#050c10', 0.9);
+
+    const towerX = lw * 0.54;
+    const rockBaseY = lh * 0.72;
+    const towerTopY = lh * 0.23;
+    const lampX = towerX;
+    const lampY = towerTopY + 10;
+
+    // Calculate Sweeping Beam Angle
+    const sweepCos = Math.sin(time * 0.95);
+
+    // 3. BEAM-REVEALED ANOMALIES: Ghost Ship on Left Horizon & Watchers on Reef
+    // Only visible when the beam sweeps over their sector!
+    if (lampPower > 0.2) {
+      // Distant Derelict Ship Silhouette on Left Horizon (x ~ lw * 0.2)
+      const leftIllum = Math.max(0, -sweepCos) * lampPower;
+      if (leftIllum > 0.15) {
+        lCtx.save();
+        lCtx.globalAlpha = leftIllum * 0.7;
+        lCtx.fillStyle = '#020406';
+        const sx = lw * 0.18;
+        const sy = lh * 0.64;
+        // Hull & broken masts
+        lCtx.beginPath();
+        lCtx.moveTo(sx - 28, sy);
+        lCtx.lineTo(sx + 28, sy);
+        lCtx.lineTo(sx + 20, sy + 9);
+        lCtx.lineTo(sx - 22, sy + 9);
+        lCtx.closePath();
+        lCtx.fill();
+        lCtx.strokeStyle = '#020406';
+        lCtx.lineWidth = 1.5;
+        lCtx.beginPath();
+        lCtx.moveTo(sx - 8, sy); lCtx.lineTo(sx - 10, sy - 26);
+        lCtx.moveTo(sx + 8, sy); lCtx.lineTo(sx + 11, sy - 20);
+        lCtx.stroke();
+        lCtx.restore();
+      }
+    }
+
+    // 4. Blackthorn Rock & Extinguished Lighthouse Silhouette
+    lCtx.fillStyle = '#030608';
+    lCtx.beginPath();
+    lCtx.moveTo(towerX - 120, rockBaseY + 26);
+    lCtx.lineTo(towerX - 78, rockBaseY - 12);
+    lCtx.lineTo(towerX - 30, rockBaseY - 24);
+    lCtx.lineTo(towerX + 30, rockBaseY - 22);
+    lCtx.lineTo(towerX + 88, rockBaseY - 7);
+    lCtx.lineTo(towerX + 130, rockBaseY + 26);
+    lCtx.closePath();
+    lCtx.fill();
+
+    // Tower Shaft
+    lCtx.fillStyle = '#020406';
+    lCtx.beginPath();
+    lCtx.moveTo(towerX - 20, rockBaseY - 18);
+    lCtx.lineTo(towerX - 11, towerTopY + 22);
+    lCtx.lineTo(towerX + 11, towerTopY + 22);
+    lCtx.lineTo(towerX + 20, rockBaseY - 18);
+    lCtx.closePath();
+    lCtx.fill();
+
+    // Gallery Deck & Lantern Cage
+    lCtx.fillRect(towerX - 15, towerTopY + 18, 30, 5);
+    lCtx.strokeStyle = '#15232a';
+    lCtx.lineWidth = 1.5;
+    lCtx.strokeRect(towerX - 10, towerTopY + 2, 20, 16);
+
+    // Cupola Roof & St. Elmo's Fire on Lightning Rod
+    lCtx.beginPath();
+    lCtx.moveTo(towerX - 13, towerTopY + 2);
+    lCtx.lineTo(towerX, towerTopY - 12);
+    lCtx.lineTo(towerX + 13, towerTopY + 2);
+    lCtx.closePath();
+    lCtx.fill();
+
+    lCtx.beginPath();
+    lCtx.moveTo(towerX, towerTopY - 12);
+    lCtx.lineTo(towerX, towerTopY - 24);
+    lCtx.stroke();
+
+    // Uncanny silhouettes standing on the Reef Rocks when illuminated by the beam!
+    if (lampPower > 0.25) {
+      const figCount = Math.min(5, 1 + Math.floor(beamExposures / 2));
+      lCtx.fillStyle = `rgba(2, 4, 6, ${lampPower * 0.92})`;
+      for (let i = 0; i < figCount; i++) {
+        const fx = towerX - 55 + i * 24;
+        const fy = rockBaseY - 20 + (i % 2) * 4;
+        lCtx.fillRect(fx - 1.5, fy - 11, 3, 11);
+        lCtx.beginPath();
+        lCtx.arc(fx, fy - 13, 1.8, 0, Math.PI * 2);
+        lCtx.fill();
+      }
+    }
+
+    // 5. Volumetric Fresnel Beams
+    if (lampPower > 0.01) {
+      const flicker = isCranking
+        ? 0.8 + Math.sin(time * 26) * 0.1 + (Math.random() - 0.5) * 0.16
+        : lampPower;
+      const pwr = Math.max(0, lampPower * flicker);
+      const angle = sweepCos * 0.42;
+
+      drawLightBeam(lampX, lampY, angle, pwr);
+      drawLightBeam(lampX, lampY, angle + Math.PI, pwr * 0.75);
+
+      const coreGlow = lCtx.createRadialGradient(lampX, lampY, 1, lampX, lampY, 40 * pwr);
+      coreGlow.addColorStop(0, `rgba(240, 250, 255, ${pwr})`);
+      coreGlow.addColorStop(0.45, `rgba(175, 218, 230, ${pwr * 0.6})`);
+      coreGlow.addColorStop(1, 'transparent');
+      lCtx.fillStyle = coreGlow;
+      lCtx.beginPath();
+      lCtx.arc(lampX, lampY, 40 * pwr, 0, Math.PI * 2);
+      lCtx.fill();
+    }
+
+    // 6. Churning Foreground Waves
+    drawWaveLayer(lh * 0.73, 14, 0.016, -time * 1.5, '#061015', 0.95);
+    drawWaveLayer(lh * 0.80, 19, 0.020, time * 2.0, '#03080b', 1.0, true);
+    drawWaveLayer(lh * 0.88, 23, 0.024, -time * 2.5, '#010406', 1.0, true);
+
+    // 7. Drifting Fog Banks
+    for (let i = 0; i < fogBanks.length; i++) {
+      const f = fogBanks[i];
+      f.x += f.speed;
+      if (f.x - f.rx > lw) f.x = -f.rx;
+      if (f.x + f.rx < 0) f.x = lw + f.rx;
+
+      const fGrad = lCtx.createRadialGradient(f.x, f.y, 5, f.x, f.y, f.rx);
+      const a = f.alpha * fogDensity;
+      fGrad.addColorStop(0, `rgba(145, 170, 180, ${a})`);
+      fGrad.addColorStop(0.55, `rgba(105, 130, 140, ${a * 0.5})`);
+      fGrad.addColorStop(1, 'transparent');
+
+      lCtx.fillStyle = fGrad;
+      lCtx.beginPath();
+      lCtx.ellipse(f.x, f.y, f.rx, f.ry, 0, 0, Math.PI * 2);
+      lCtx.fill();
+    }
+
+    // 8. Rain Streaks Running Down Window Glass
+    lCtx.strokeStyle = 'rgba(175, 205, 215, 0.18)';
+    lCtx.lineWidth = 1;
+    for (let i = 0; i < rainStreaks.length; i++) {
+      const r = rainStreaks[i];
+      r.y += r.vy;
+      if (r.y > lh) {
+        r.y = -r.len;
+        r.x = Math.random() * lw;
+      }
+      lCtx.beginPath();
+      lCtx.moveTo(r.x, r.y);
+      lCtx.lineTo(r.x - 1.5, r.y + r.len);
+      lCtx.stroke();
+    }
+
+    // 9. Foghorn Acoustic Shockwave Ring
+    if (hornRipple > 0.01) {
+      lCtx.strokeStyle = `rgba(180, 215, 225, ${hornRipple * 0.4})`;
+      lCtx.lineWidth = 2;
+      lCtx.beginPath();
+      lCtx.arc(towerX, lampY + 40, (1 - hornRipple) * 340, 0, Math.PI * 2);
+      lCtx.stroke();
+    }
+
+    lCtx.restore();
+    requestAnimationFrame(renderLighthouseScene);
+  }
+
+  function drawWaveLayer(baseY, amp, freq, phase, color, alpha, foam = false) {
+    lCtx.beginPath();
+    lCtx.moveTo(0, lh);
+    for (let x = 0; x <= lw + 10; x += 10) {
+      const y = baseY
+        + Math.sin(x * freq + phase) * amp
+        + Math.cos(x * freq * 2.1 - phase * 0.7) * (amp * 0.38);
+      lCtx.lineTo(x, y);
+    }
+    lCtx.lineTo(lw, lh);
+    lCtx.closePath();
+    lCtx.fillStyle = color;
+    lCtx.globalAlpha = alpha;
+    lCtx.fill();
+
+    if (foam) {
+      lCtx.strokeStyle = 'rgba(150, 185, 195, 0.15)';
+      lCtx.lineWidth = 1.2;
+      lCtx.stroke();
+    }
+    lCtx.globalAlpha = 1;
+  }
+
+  function drawLightBeam(ox, oy, angle, power) {
+    const len = lw * 0.88;
+    const spread = 0.18;
+    const x1 = ox + Math.cos(angle - spread) * len;
+    const y1 = oy + Math.sin(angle - spread) * len * 0.36;
+    const x2 = ox + Math.cos(angle + spread) * len;
+    const y2 = oy + Math.sin(angle + spread) * len * 0.36;
+
+    const grad = lCtx.createRadialGradient(ox, oy, 2, ox, oy, len * 0.75);
+    grad.addColorStop(0, `rgba(215, 238, 245, ${power * 0.45})`);
+    grad.addColorStop(0.45, `rgba(160, 200, 215, ${power * 0.15})`);
+    grad.addColorStop(1, 'transparent');
+
+    lCtx.fillStyle = grad;
+    lCtx.beginPath();
+    lCtx.moveTo(ox, oy);
+    lCtx.lineTo(x1, y1);
+    lCtx.lineTo(x2, y2);
+    lCtx.closePath();
+    lCtx.fill();
+  }
+
+  requestAnimationFrame(renderLighthouseScene);
+
+  // =========================================================================
+  // 5. DYNAMO CRANK & BULKHEAD DOOR INTERACTIONS
+  // =========================================================================
+  const crankBtn = document.getElementById('crankBtn');
+  const crankBtnText = document.getElementById('crankBtnText');
+  const headerBeaconDot = document.getElementById('headerBeaconDot');
+  const headerBeaconStatus = document.getElementById('headerBeaconStatus');
+  const boltDoorBtn = document.getElementById('boltDoorBtn');
+
+  function startCrank() {
+    isCranking = true;
+    beamExposures++;
+    beamExposureCounter.textContent = `BEAM EXPOSURES TONIGHT: ${beamExposures}`;
+
+    crankBtn.classList.add('cranking');
+    crankBtnText.textContent = '⚡ CRANKING DYNAMO... REEF ILLUMINATED';
+    headerBeaconDot.classList.add('ignited');
+    headerBeaconStatus.textContent = 'FRESNEL OPTIC: IGNITED // SWEEPING OUTER BREAKERS';
+    windowWhisper.textContent = '"Look at the base of the rock when the beam passes... There are more of them standing on the landing."';
+  }
+
+  function stopCrank() {
+    if (!isCranking) return;
+    isCranking = false;
+    crankBtn.classList.remove('cranking');
+    crankBtnText.textContent = '⚡ HOLD TO CRANK FRESNEL LAMP';
+    headerBeaconDot.classList.remove('ignited');
+    headerBeaconStatus.textContent = 'FRESNEL OPTIC: EXTINGUISHED // DAY 19 WITHOUT RELIEF';
+
+    // Every time the light goes out, they move closer!
+    entityDistanceMeters = Math.max(0, entityDistanceMeters - 95);
+    if (entityDistanceMeters > 0) {
+      proximityAlertTag.textContent = `SURF CONTACT: ${entityDistanceMeters}m OFFSHORE`;
+      windowWhisper.textContent = `"The light died. In the dark, something just waded ${entityDistanceMeters} meters closer to the sea door."`;
+    } else {
+      proximityAlertTag.textContent = 'CONTACT: INSIDE TOWER SHAFT';
+      proximityAlertTag.classList.add('danger');
+      if (intruderFloor < 4) intruderFloor++;
+      updateIntruderProgression();
+      windowWhisper.textContent = `"Wet footsteps on iron rungs... Level 0${intruderFloor}. Drop the lower bulkhead bar!"`;
+    }
+  }
+
+  crankBtn.addEventListener('pointerdown', startCrank);
+  window.addEventListener('pointerup', stopCrank);
+
+  // Drop Iron Bulkhead Bar to reset/block intruder ascent
+  boltDoorBtn.addEventListener('click', () => {
+    intruderFloor = 0;
+    entityDistanceMeters = 280;
+    proximityAlertTag.classList.remove('danger');
+    proximityAlertTag.textContent = 'BULKHEAD DROPPED // 280m';
+    updateIntruderProgression();
+    boltDoorBtn.classList.add('bolted');
+    boltDoorBtn.textContent = '✓ IRON BULKHEAD BAR DROPPED & SEALED';
+    windowWhisper.textContent = '"The heavy iron bar slammed shut down in the vault. Something is scratching against the underside..."';
+    setTimeout(() => {
+      boltDoorBtn.classList.remove('bolted');
+      boltDoorBtn.textContent = '🔒 DROP LOWER IRON BULKHEAD BAR';
+    }, 3200);
+  });
+
+  // Fog Opacity Slider
+  const fogSlider = document.getElementById('fogSlider');
+  const fogPctLabel = document.getElementById('fogPctLabel');
+  fogSlider.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    fogDensity = val / 100;
+    fogPctLabel.textContent = `${val}% ${val > 80 ? 'BLINDING' : val > 55 ? 'DENSE' : 'DRIFTING'}`;
+  });
+
+  // =========================================================================
+  // 6. CIRCULAR PHOSPHOR HYDROPHONE RADAR & OSCILLOSCOPE
+  // =========================================================================
+  const rCanvas = document.getElementById('radar-canvas');
+  const rCtx = rCanvas.getContext('2d');
+  const sCanvas = document.getElementById('scope-canvas');
+  const sCtx = sCanvas.getContext('2d');
+
+  let radarAngle = 0;
+  let scopePhase = 0;
+  let signalAnomaly = 0.35;
+
+  const radarBlips = [
+    { angle: 0.4, dist: 28 },
+    { angle: 2.1, dist: 34 },
+    { angle: 4.5, dist: 19 }
+  ];
+
+  function renderInstruments() {
+    // 1. Hydrophone Radar
+    const rw = rCanvas.width;
+    const rh = rCanvas.height;
+    const cx = rw / 2;
+    const cy = rh / 2;
+    radarAngle = (radarAngle + 0.03) % (Math.PI * 2);
+
+    rCtx.fillStyle = 'rgba(3, 6, 8, 0.18)';
+    rCtx.fillRect(0, 0, rw, rh);
+
+    rCtx.strokeStyle = 'rgba(94, 130, 141, 0.25)';
+    rCtx.lineWidth = 1;
+    rCtx.beginPath();
+    rCtx.arc(cx, cy, 18, 0, Math.PI * 2);
+    rCtx.arc(cx, cy, 36, 0, Math.PI * 2);
+    rCtx.stroke();
+
+    // Sweep Line
+    rCtx.strokeStyle = '#a8d0db';
+    rCtx.lineWidth = 1.5;
+    rCtx.beginPath();
+    rCtx.moveTo(cx, cy);
+    rCtx.lineTo(cx + Math.cos(radarAngle) * 42, cy + Math.sin(radarAngle) * 42);
+    rCtx.stroke();
+
+    // Blips
+    radarBlips.forEach(b => {
+      const diff = Math.abs(radarAngle - b.angle);
+      if (diff < 0.25) {
+        const bx = cx + Math.cos(b.angle) * b.dist;
+        const by = cy + Math.sin(b.angle) * b.dist;
+        rCtx.fillStyle = '#f5b942';
+        rCtx.beginPath();
+        rCtx.arc(bx, by, 2.5, 0, Math.PI * 2);
+        rCtx.fill();
+      }
+    });
+
+    // 2. Oscilloscope
+    const sw = sCanvas.width = sCanvas.clientWidth;
+    const sh = sCanvas.height = sCanvas.clientHeight;
+    scopePhase += 0.15;
+
+    sCtx.clearRect(0, 0, sw, sh);
+    sCtx.strokeStyle = '#688b96';
+    sCtx.lineWidth = 1.4;
+    sCtx.beginPath();
+    for (let x = 0; x < sw; x += 2) {
+      const noise = (Math.random() - 0.5) * (6 + signalAnomaly * 24);
+      const wave = Math.sin(x * 0.08 + scopePhase) * (3 + signalAnomaly * 9);
+      const y = sh / 2 + wave + noise;
+      if (x === 0) sCtx.moveTo(x, y);
+      else sCtx.lineTo(x, y);
+    }
+    sCtx.stroke();
+
+    requestAnimationFrame(renderInstruments);
+  }
+  requestAnimationFrame(renderInstruments);
+
+  // Shortwave Frequency Scrubber
+  const TRANSMISSIONS = [
+    {
+      min: 1800, max: 2050,
+      station: 'NORTH BUOY 04 (SUNK 1901)',
+      lock: 'BEARING: 002° N',
+      anomaly: 0.3,
+      text: '"...khhh... [water bubbling inside brass microphone] ...barometer 958... why did you sound the horn?... we heard you on the seabed..."'
+    },
+    {
+      min: 2051, max: 2350,
+      station: 'DISTRESS BAND // 2182 kHz',
+      lock: 'BEARING: 014° NNE',
+      anomaly: 0.65,
+      text: '"...Blackthorn Station, do you copy?... Why is your light out?... Wait—there are figures standing in the water around your landing stairs..."'
+    },
+    {
+      min: 2351, max: 2750,
+      station: 'S.S. MORWENNA (LOST 1912)',
+      lock: 'BEARING: 285° WNW',
+      anomaly: 0.5,
+      text: '"...nine... zero... four... [metallic tapping on iron hull] ...do not wind the lens crank... the beam shows us where the door is..."'
+    },
+    {
+      min: 2751, max: 3200,
+      station: 'INTERNAL TOWER INTERCOM',
+      lock: 'BEARING: 000° BELOW',
+      anomaly: 0.95,
+      text: '"[Heavy, waterlogged breathing directly into the speaking tube from the Oil Vault three floors below you.]"'
+    }
+  ];
+
+  document.getElementById('freqSlider').addEventListener('input', (e) => {
+    const khz = Number(e.target.value);
+    document.getElementById('freqDisplay').textContent = `${khz.toFixed(1)} kHz`;
+    const match = TRANSMISSIONS.find(t => khz >= t.min && khz <= t.max) || TRANSMISSIONS[0];
+    document.getElementById('freqStationName').textContent = match.station;
+    document.getElementById('radioLockBadge').textContent = match.lock;
+    document.getElementById('radioTranscript').textContent = match.text;
+    signalAnomaly = match.anomaly;
+  });
+
+  // =========================================================================
+  // 7. STANDING ORDERS LOGBOOK & UNCANNY FOGHORN ECHO RESPONSE
+  // =========================================================================
+  const LOG_PAGES = [
+    '<b>RULE I:</b> Keep the Fresnel lens dark after midnight. They navigate by the beam.<br><b>RULE II:</b> If the reef foghorn sounds from the north, <em>do not sound back</em>. The North Buoy sank in 1901.<br><b>RULE III:</b> If footsteps ascend past the Oil Vault, drop the lower bulkhead bar immediately.',
+    '"Oct 16 — I drained the mercury bath under the lens today. Every time the beam sweeps across the breakers, the shapes in the surf move twenty yards closer to the iron landing stairs."',
+    '"Oct 20 — The radio has been disconnected from the battery bank since Tuesday, yet it whispers my name whenever the tide reaches high water. Someone is turning the handle of the sea door."'
+  ];
+
+  document.querySelectorAll('#logTabs .log-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#logTabs .log-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('logExcerptBox').innerHTML = LOG_PAGES[Number(btn.dataset.entry)];
+    });
+  });
+
+  // Sounding the Foghorn violates Rule II -> Something answers back 2.2 seconds later!
+  document.getElementById('soundHornBtn').addEventListener('click', () => {
+    hornRipple = 1.0;
+    triggerFoghornSound(68, 0);
+    windowWhisper.textContent = '"BWWWWOOOOOOHHH... Your horn echoes out into the blind fog..."';
+
+    setTimeout(() => {
+      hornRipple = 0.85;
+      triggerFoghornSound(51, 0); // Deeper, uncanny answering horn!
+      if (intruderFloor < 4) intruderFloor++;
+      updateIntruderProgression();
+      windowWhisper.textContent = '"...BWWOOOOHHH. Something in the north fog just answered—and the Sea Door below just rattled."';
+    }, 2200);
+  });
+
+  // Theme Grade Switcher
+  document.querySelectorAll('#themeGradeGroup .grade-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#themeGradeGroup .grade-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-dread-theme', btn.dataset.grade);
+    });
+  });
+})();
+</script>
+</body>
+</html>
