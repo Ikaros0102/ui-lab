@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-20T10:19:14.963Z",
- "count": 65,
+ "generated": "2026-10-23T13:24:29.759Z",
+ "count": 72,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -499,6 +499,45 @@
    "hasJs": false
   },
   {
+   "id": "material-you-bento-grid",
+   "path": "components/cards/material-you-bento-grid.html",
+   "title": "Material You Bento Desktop & Palette Switcher",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "glass",
+    "mesh"
+   ],
+   "tags": [
+    "linux",
+    "quickshell",
+    "material-you",
+    "bento-grid",
+    "calendar",
+    "world-clock",
+    "weather",
+    "theme-switcher",
+    "vertical-dock",
+    "pastel",
+    "glassmorphism",
+    "cards"
+   ],
+   "description": "Pastel Material You Linux desktop featuring a 3-segment left vertical dock, a compact Bento widget cluster (profile, stacked clock, weather, tonal CPU/RAM/Battery gauges, monthly calendar, world clock, and WebP converter), and a 5-preset dynamic color theme switcher.",
+   "techniques": [
+    "5 dynamic Material You color presets via CSS custom properties",
+    "3-row Bento widget cluster with tonal surface differentiation for CPU, RAM, and Battery",
+    "interactive monthly calendar grid with month navigation and active day highlight",
+    "Material 3 scalloped 12-sided polygon badges and emblems"
+   ],
+   "recipe": "Combines a full-height 3-pill vertical sidebar on the left with a tightly packed 3-row Bento widget matrix anchored to the bottom-left over a dual-tone ambient mesh background.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 820
+   },
+   "hasJs": true
+  },
+  {
    "id": "pipboy-terminal",
    "path": "components/cards/pipboy-terminal.html",
    "title": "Pip-Boy 3000 Wasteland OS",
@@ -918,6 +957,44 @@
    "hasJs": true
   },
   {
+   "id": "caelestia-hyprland-lockscreen",
+   "path": "components/modals/caelestia-hyprland-lockscreen.html",
+   "title": "Caelestia Hyprland Lockscreen & Widget Suite",
+   "category": "modals",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "hyprland",
+    "caelestia",
+    "cachyos",
+    "lockscreen",
+    "neofetch",
+    "cool-cat",
+    "dino-game",
+    "notifications",
+    "polygon-gauges",
+    "minimal",
+    "pastel",
+    "modal"
+   ],
+   "description": "Dark minimalist Hyprland lockscreen and desktop dashboard featuring caelestiafetch.sh with the CachyOS logo, an asymmetric split clock, an interactive sunglasses cat avatar, polygonal liquid-fill resource gauges, and a playable Dino mini-game inside the empty Notifications panel.",
+   "techniques": [
+    "polygonal SVG clip-path gauges (Pentagon, Squircle, Hexagon) with animated liquid wave levels",
+    "interactive SVG Cool Cat avatar that adjusts its sunglasses on click/hover",
+    "playable T-Rex Dino runner mini-game embedded inside the 'No Notifications' state",
+    "clickable 8-dot terminal color palette that dynamically themes the UI"
+   ],
+   "recipe": "3-column dark obsidian layout (#0b0b10) with matte slate cards (#13131b) and pastel lavender, cyan, and mauve accents.",
+   "preview": {
+    "mode": "page",
+    "width": 1280,
+    "height": 760
+   },
+   "hasJs": true
+  },
+  {
    "id": "crt-terminal",
    "path": "components/modals/crt-terminal.html",
    "title": "CRT Terminal Window",
@@ -979,6 +1056,46 @@
     "mode": "page",
     "width": 960,
     "height": 680
+   },
+   "hasJs": true
+  },
+  {
+   "id": "nordic-hyprland-tui-wm",
+   "path": "components/modals/nordic-hyprland-tui-wm.html",
+   "title": "Nordic Slate Hyprland Tiling Desktop & TUI Suite",
+   "category": "modals",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "linux",
+    "hyprland",
+    "unixporn",
+    "tui",
+    "btop",
+    "spicetify",
+    "cava",
+    "neovim",
+    "file-manager",
+    "monospace",
+    "minimal",
+    "terminal",
+    "desktop",
+    "window-manager"
+   ],
+   "description": "Pixel-faithful recreation of a minimalist slate-grey Linux tiling window manager desktop featuring a TUI Spicetify client, symmetrical Cava audio spectrum visualizer, transparent QML code editor, live Btop system monitor, and GTK dark file manager.",
+   "techniques": [
+    "TUI fieldset-style titled borders with corner ticks and inline metric badges",
+    "symmetrical Canvas audio spectrum visualizer synchronized with music playback",
+    "live Btop system telemetry with braille history graph, per-core CPU bars, and process table",
+    "frosted dark slate glassmorphism over an atmospheric procedural alpine mountain wallpaper"
+   ],
+   "recipe": "3-column tiling window manager layout in muted slate-blue monochrome (#1b2228 to #97a7b3) with sage-emerald accents (#569e72) and JetBrains Mono typography.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 820
    },
    "hasJs": true
   },
@@ -1086,6 +1203,45 @@
     "height": 640
    },
    "hasJs": false
+  },
+  {
+   "id": "hyprland-notch-drawer",
+   "path": "components/navigation/hyprland-notch-drawer.html",
+   "title": "Hyprland Cream-Rose Top Drawer Shell",
+   "category": "navigation",
+   "themes": [
+    "light"
+   ],
+   "tags": [
+    "linux",
+    "hyprland",
+    "ags",
+    "eww",
+    "top-drawer",
+    "bento",
+    "bongo-cat",
+    "calendar",
+    "media-player",
+    "arch-linux",
+    "pastel",
+    "minimal",
+    "navigation",
+    "drawer"
+   ],
+   "description": "Warm cream-rose Linux desktop shell featuring a seamless outer border frame with inverted fillet curves, a top-center dropdown dashboard (Weather, Arch/Hyprland neofetch, vertical clock, calendar, vertical resource sliders, and an animated Bongo Cat media player), and a slim vertical sidebar.",
+   "techniques": [
+    "seamless top-notch drawer with inverted concave corner fillets",
+    "interactive SVG Bongo Cat that taps paws in sync with media playback",
+    "draggable vertical resource sliders for CPU, RAM, and Disk telemetry",
+    "warm parchment and sumi-e ink-wash ambient background without character art"
+   ],
+   "recipe": "Wraps the viewport in a rose-ivory shell frame (#fcf3f0) with a left vertical bar and a center-top connected Bento drawer over a warm ivory canvas.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 820
+   },
+   "hasJs": true
   },
   {
    "id": "pixel-menu",
@@ -1619,6 +1775,42 @@
    "hasJs": true
   },
   {
+   "id": "graphite-sketchbook-studio",
+   "path": "components/widgets/graphite-sketchbook-studio.html",
+   "title": "Graphite Sketchbook UI & Interactive Dotted Pad",
+   "category": "widgets",
+   "themes": [
+    "light"
+   ],
+   "tags": [
+    "pencil",
+    "sketchbook",
+    "hand-drawn",
+    "wireframe",
+    "dotted-grid",
+    "icons",
+    "drawing-canvas",
+    "graphite",
+    "hatching",
+    "sketch",
+    "paper"
+   ],
+   "description": "Hand-sketched pencil UI system on dotted notebook paper featuring all 19 architectural icon studies (Materials, Writing Tools, Elements) with construction guide lines, diagonal graphite hatching, and a live interactive drawing pad.",
+   "techniques": [
+    "SVG feTurbulence and feDisplacementMap graphite wobble filter",
+    "architectural construction guide ticks extending past box corners",
+    "diagonal pencil cross-hatching patterns for shadows and active states",
+    "interactive HTML5 Canvas sketchpad supporting Fountain Pen, 2B Pencil, Highlighter, Eraser, and UI Stamps"
+   ],
+   "recipe": "Combines a 3-row hand-drawn icon specification sheet on the left with a live interactive sketchpad and wireframe inspector on the right over a dottedrhodia-style notebook grid.",
+   "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 820
+   },
+   "hasJs": true
+  },
+  {
    "id": "halloween-witch-cauldron",
    "path": "components/widgets/halloween-witch-cauldron.html",
    "title": "Halloween Witch's Sanctuary & Pumpkin UI",
@@ -1692,6 +1884,43 @@
     "mode": "page",
     "width": 1080,
     "height": 880
+   },
+   "hasJs": true
+  },
+  {
+   "id": "jvc-vhs-stereo-recorder",
+   "path": "components/widgets/jvc-vhs-stereo-recorder.html",
+   "title": "JVC HR-D725 Hi-Fi Stereo VHS Recorder",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "vhs",
+    "vcr",
+    "jvc",
+    "retro-anime",
+    "vfd-display",
+    "cassette",
+    "vu-meter",
+    "80s-hifi",
+    "tactile",
+    "physical-controls",
+    "hardware"
+   ],
+   "description": "Front-panel hardware recreation of the 1980s JVC HR-D725 Hi-Fi Stereo VHS VCR from classic anime. Features a multi-color VFD clock and tape counter, red 7-segment channel readout, beveled piano-style transport keys with a glowing cyan PLAY triangle, search shuttle rockers, dual Hi-Fi LED level meters, and a draggable Rec Level slider.",
+   "techniques": [
+    "multi-zone Vacuum Fluorescent Display (cyan-green DSEG7 clock, tape counter, and red channel digit)",
+    "sculpted 3D beveled slate-blue mechanical push-buttons with neon cyan backlit PLAY triangle",
+    "dual-channel horizontal Hi-Fi LED peak level meters reactive to the Rec Level fader",
+    "smoked acrylic VHS cassette window with rotating tape reels that respond to PLAY, REW, FF, and SEARCH"
+   ],
+   "recipe": "Modeled in deep midnight anime-slate (#1a2433) and piano-black acrylic (#05080d) with authentic 80s Japanese Hi-Fi typography and tactile mechanical rockers.",
+   "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 540
    },
    "hasJs": true
   },
@@ -1989,6 +2218,45 @@
     "mode": "page",
     "width": 1080,
     "height": 780
+   },
+   "hasJs": true
+  },
+  {
+   "id": "quickshell-material-you-desktop",
+   "path": "components/widgets/quickshell-material-you-desktop.html",
+   "title": "Quickshell Material You Jade Desktop",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "glass",
+    "mesh"
+   ],
+   "tags": [
+    "linux",
+    "quickshell",
+    "ags",
+    "material-you",
+    "widgets",
+    "desktop",
+    "weather",
+    "world-clock",
+    "image-converter",
+    "dock",
+    "pastel",
+    "glassmorphism"
+   ],
+   "description": "Jade-teal Material You Linux desktop shell featuring frosted widget cards, scalloped M3 icon badges, a world clock grid, an interactive drag-and-drop WebP converter, media & weather cards, and a floating dock over a soft ambient mesh gradient.",
+   "techniques": [
+    "Material 3 scalloped 12-sided polygon badges via custom SVG clip-paths",
+    "frosted sage-slate glassmorphism cards with subtle inner specular borders",
+    "interactive drag-and-drop image format converter widget",
+    "soft ambient mesh-gradient background in jade, sage, and warm peach tones"
+   ],
+   "recipe": "Full-screen desktop environment combining a top Waybar status strip, left & right Material You widget columns, and a bottom floating icon dock.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 820
    },
    "hasJs": true
   },

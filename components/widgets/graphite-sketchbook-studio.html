@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Hand-Drawn Graphite Sketchbook UI & Interactive Studio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Graphite Sketchbook UI & Interactive Dotted Pad",
+  "category": "widgets",
+  "themes": [
+    "light"
+  ],
+  "tags": [
+    "pencil",
+    "sketchbook",
+    "hand-drawn",
+    "wireframe",
+    "dotted-grid",
+    "icons",
+    "drawing-canvas",
+    "graphite",
+    "hatching",
+    "sketch",
+    "paper"
+  ],
+  "description": "Hand-sketched pencil UI system on dotted notebook paper featuring all 19 architectural icon studies (Materials, Writing Tools, Elements) with construction guide lines, diagonal graphite hatching, and a live interactive drawing pad.",
+  "techniques": [
+    "SVG feTurbulence and feDisplacementMap graphite wobble filter",
+    "architectural construction guide ticks extending past box corners",
+    "diagonal pencil cross-hatching patterns for shadows and active states",
+    "interactive HTML5 Canvas sketchpad supporting Fountain Pen, 2B Pencil, Highlighter, Eraser, and UI Stamps"
+  ],
+  "recipe": "Combines a 3-row hand-drawn icon specification sheet on the left with a live interactive sketchpad and wireframe inspector on the right over a dottedrhodia-style notebook grid.",
+  "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 820
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --paper-bg: #f4f1ea;
+    --paper-dot: #b5b0a4;
+    --graphite-dark: #22211f;
+    --graphite-mid: #4a4843;
+    --graphite-light: #8c887f;
+    --construction-line: rgba(55, 52, 48, 0.32);
+    --marker-yellow: rgba(242, 218, 94, 0.55);
+  }
+
+  /* Soft / Heavy Graphite Lead Grade Modes */
+  body[data-lead="2H"] {
+    --graphite-dark: #4f4d48;
+    --graphite-mid: #737068;
+    --construction-line: rgba(90, 86, 80, 0.42);
+  }
+  body[data-lead="4B"] {
+    --graphite-dark: #11100f;
+    --graphite-mid: #2b2927;
+    --construction-line: rgba(30, 28, 25, 0.45);
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--paper-bg);
+    /* Точечная сетка блокнота (Dotted Rhodia / Moleskine Grid) + текстура бумаги */
+    background-image:
+      radial-gradient(circle, var(--paper-dot) 1.15px, transparent 1.25px),
+      radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.5) 0%, rgba(215, 208, 195, 0.35) 100%);
+    background-size: 20px 20px, 100% 100%;
+    color: var(--graphite-dark);
+    font-family: 'Caveat', cursive;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px;
+    overflow-x: hidden;
+    user-select: none;
+    position: relative;
+  }
+
+  /* Тонкая бумажная зернистость поверх страницы */
+  .paper-fiber-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Диагональная карандашная штриховка (Hatching Pattern) */
+  .hatch-bg {
+    background-image: repeating-linear-gradient(
+      -42deg,
+      rgba(34, 33, 31, 0.14) 0px,
+      rgba(34, 33, 31, 0.14) 1.2px,
+      transparent 1.2px,
+      transparent 4.5px
+    );
+  }
+
+  /* =========================================================
+     MAIN SKETCHBOOK SPREAD LAYOUT
+     ========================================================= */
+  .sketchbook-spread {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Верхняя шапка с рукописным заголовком и выбором мягкости карандаша */
+  .spread-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--graphite-dark);
+    padding-bottom: 8px;
+    position: relative;
+    filter: url(#pencil-sketch);
+  }
+
+  /* Вторая слегка смещенная линия для эффекта ручного наброска */
+  .spread-header::after {
+    content: "";
+    position: absolute;
+    left: -6px;
+    right: -4px;
+    bottom: -3px;
+    height: 1px;
+    background: var(--construction-line);
+    transform: rotate(-0.18deg);
+  }
+
+  .sketch-title-group h1 {
+    font-family: 'Reenie Beanie', cursive;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: 1px;
+    color: var(--graphite-dark);
+  }
+
+  .sketch-title-group p {
+    font-family: 'Architects Daughter', cursive;
+    font-size: 12.5px;
+    color: var(--graphite-mid);
+    margin-top: 3px;
+  }
+
+  .lead-selector-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Architects Daughter', cursive;
+    font-size: 12px;
+  }
+
+  .sketch-pill-btn {
+    background: transparent;
+    border: 1.5px solid var(--graphite-dark);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    padding: 4px 12px;
+    font-family: 'Architects Daughter', cursive;
+    font-size: 12px;
+    color: var(--graphite-dark);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s ease;
+  }
+
+  .sketch-pill-btn:hover {
+    transform: rotate(-1.5deg) scale(1.04);
+  }
+
+  .sketch-pill-btn.active {
+    background: var(--marker-yellow);
+    font-weight: 700;
+    box-shadow: 2px 2px 0 var(--graphite-dark);
+  }
+
+  /* Основная двухколоночная сетка: Слева — матрица скетч-иконок, Справа — живой лист для рисования */
+  .studio-grid {
+    display: grid;
+    grid-template-columns: 1.38fr 0.92fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* =========================================================
+     LEFT SIDE: 3-ROW HAND-DRAWN ICON SPECIFICATION SHEET
+     ========================================================= */
+  .icon-sheet-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 8px 4px;
+  }
+
+  .sketch-category-row {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* Рукописная подпись категории слева как на фото */
+  .row-hand-label {
+    font-family: 'Reenie Beanie', cursive;
+    font-size: 25px;
+    line-height: 0.95;
+    color: var(--graphite-dark);
+    padding-top: 14px;
+    transform: rotate(-2.5deg);
+    position: relative;
+  }
+
+  .row-hand-label small {
+    display: block;
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--graphite-mid);
+    margin-top: 4px;
+  }
+
+  .icons-strip {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  /* Отдельная скетч-ячейка с линиями построения по углам */
+  .sketch-icon-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    group: sketch;
+  }
+
+  .sketch-box-frame {
+    width: 78px;
+    height: 78px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.18s ease;
+  }
+
+  /* Линии построения (Construction Ticks), выходящие за углы квадрата */
+  .sketch-box-frame::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-top: 1px solid var(--construction-line);
+    border-bottom: 1px solid var(--construction-line);
+    pointer-events: none;
+  }
+  .sketch-box-frame::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-left: 1px solid var(--construction-line);
+    border-right: 1px solid var(--construction-line);
+    pointer-events: none;
+  }
+
+  .sketch-icon-cell:hover .sketch-box-frame {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+
+  /* Выделение выбранного инструмента желтым маркером или графитовой штриховкой */
+  .sketch-icon-cell.active .sketch-box-frame {
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        rgba(242, 218, 94, 0.42) 0px,
+        rgba(242, 218, 94, 0.42) 4px,
+        rgba(242, 218, 94, 0.15) 4px,
+        rgba(242, 218, 94, 0.15) 8px
+      );
+    box-shadow: 2px 3px 0 rgba(34, 33, 31, 0.18);
+  }
+
+  .sketch-svg {
+    width: 70px;
+    height: 70px;
+    filter: url(#pencil-sketch);
+    overflow: visible;
+  }
+
+  .icon-hand-caption {
+    font-family: 'Reenie Beanie', cursive;
+    font-size: 22px;
+    line-height: 0.9;
+    color: var(--graphite-dark);
+    text-align: center;
+    transform: rotate(-1.2deg);
+  }
+
+  /* =========================================================
+     RIGHT SIDE: INTERACTIVE GRAPHITE SKETCHPAD & WIREFRAME CARD
+     ========================================================= */
+  .live-sketchpad-wrap {
+    position: relative;
+    background: #faf8f2;
+    border: 2px solid var(--graphite-dark);
+    border-radius: 4px 12px 6px 10px / 10px 4px 12px 6px;
+    box-shadow:
+      6px 7px 0 rgba(34, 33, 31, 0.14),
+      0 18px 38px rgba(0, 0, 0, 0.08);
+    padding: 18px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Спиральные кольца сверху (показываются при выборе Spiral Book / Binder) */
+  .spiral-rings-top {
+    position: absolute;
+    top: -13px;
+    left: 28px;
+    right: 28px;
+    height: 22px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .ring-loop {
+    width: 12px;
+    height: 22px;
+    border: 2px solid var(--graphite-dark);
+    border-radius: 50%;
+    background: linear-gradient(180deg, #444 0%, #faf8f2 60%);
+    transform: rotate(-8deg);
+  }
+
+  .pad-top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px dashed var(--graphite-light);
+    padding-bottom: 6px;
+    font-family: 'Architects Daughter', cursive;
+    font-size: 11.5px;
+    color: var(--graphite-mid);
+  }
+
+  .active-tool-badge {
+    background: var(--marker-yellow);
+    border: 1px solid var(--graphite-dark);
+    padding: 2px 8px;
+    font-weight: 700;
+    color: var(--graphite-dark);
+    transform: rotate(-1deg);
+  }
+
+  /* Контейнер холста с меняющейся разлиновкой бумаги */
+  .canvas-paper-stage {
+    position: relative;
+    height: 340px;
+    border: 1.5px solid var(--graphite-dark);
+    background-color: #fbf9f4;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+
+  /* Режимы разлиновки бумаги при клике на верхний ряд иконок */
+  .canvas-paper-stage[data-surface="dotted"] {
+    background-image: radial-gradient(circle, #9e998e 1.1px, transparent 1.2px);
+    background-size: 18px 18px;
+  }
+  .canvas-paper-stage[data-surface="ruled"] {
+    background-image:
+      linear-gradient(90deg, transparent 38px, rgba(185, 74, 72, 0.35) 38px, rgba(185, 74, 72, 0.35) 40px, transparent 40px),
+      repeating-linear-gradient(180deg, transparent 0px, transparent 21px, rgba(74, 98, 138, 0.25) 21px, rgba(74, 98, 138, 0.25) 22px);
+  }
+  .canvas-paper-stage[data-surface="sticky"] {
+    background-color: #f7efb2;
+    background-image: radial-gradient(circle, rgba(120, 110, 60, 0.35) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .canvas-paper-stage[data-surface="blueprint"] {
+    background-color: #e8eef2;
+    background-image:
+      linear-gradient(rgba(55, 85, 115, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(55, 85, 115, 0.16) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  canvas#sketchPadCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: url(#pencil-sketch);
+  }
+
+  /* Рукописная карточка-заметка поверх угла холста */
+  .pinned-sticky-note {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 138px;
+    background: #f5ec9b;
+    border: 1.5px solid var(--graphite-dark);
+    padding: 8px 10px;
+    font-family: 'Reenie Beanie', cursive;
+    font-size: 19px;
+    line-height: 1.05;
+    color: var(--graphite-dark);
+    transform: rotate(3.5deg);
+    box-shadow: 3px 4px 0 rgba(34, 33, 31, 0.16);
+    pointer-events: none;
+  }
+
+  .pad-bottom-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pad-hint {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    color: var(--graphite-mid);
+  }
+
+  @media (max-width: 1120px) {
+    .studio-grid { grid-template-columns: 1fr; }
+    .icons-strip { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body data-lead="HB">
+
+<!-- Глобальный SVG фильтр живого карандашного штриха и диагональной штриховки -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="pencil-sketch" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" result="noise" seed="4"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.65" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <!-- Паттерн диагональной карандашной штриховки для заливки фигур -->
+    <pattern id="graphite-hatch" width="6" height="6" patternTransform="rotate(42 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#22211f" stroke-width="1.1" opacity="0.48"/>
+    </pattern>
+    <pattern id="dense-hatch" width="4" height="4" patternTransform="rotate(-38 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="4" stroke="#22211f" stroke-width="1.3" opacity="0.68"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="paper-fiber-overlay"></div>
+
+<div class="sketchbook-spread">
+
+  <!-- =========================================================
+       TOP HEADER: SKETCHBOOK TITLE & GRAPHITE GRADE SWITCHER
+       ========================================================= -->
+  <header class="spread-header">
+    <div class="sketch-title-group">
+      <h1>Industrial UI Sketchbook — Sheet № 04</h1>
+      <p>Hand-drawn graphite icon studies, construction guide lines &amp; live interactive drafting pad</p>
+    </div>
+
+    <div class="lead-selector-bar">
+      <span>Graphite Hardness:</span>
+      <button class="sketch-pill-btn" data-lead="2H">2H Light Draft</button>
+      <button class="sketch-pill-btn active" data-lead="HB">HB Standard</button>
+      <button class="sketch-pill-btn" data-lead="4B">4B Charcoal</button>
+    </div>
+  </header>
+
+  <main class="studio-grid">
+
+    <!-- =======================================================
+         LEFT SIDE: 3-ROW HAND-SKETCHED ICON SHEET (FROM REFERENCE)
+         ======================================================= -->
+    <section class="icon-sheet-panel">
+
+      <!-- ROW 1: MATERIALS TO DRAW ON (7 ICONS) -->
+      <div class="sketch-category-row">
+        <div class="row-hand-label">
+          Materials<br>to Draw on
+          <small>(click to switch paper)</small>
+        </div>
+        <div class="icons-strip" id="materialsRow"></div>
+      </div>
+
+      <!-- ROW 2: WRITING / SKETCHING TOOLS (5 ICONS) -->
+      <div class="sketch-category-row">
+        <div class="row-hand-label">
+          Writing / Sketching<br>Tools
+          <small>(click to select brush)</small>
+        </div>
+        <div class="icons-strip" id="toolsRow"></div>
+      </div>
+
+      <!-- ROW 3: OTHER ELEMENTS (7 ICONS) -->
+      <div class="sketch-category-row">
+        <div class="row-hand-label">
+          Other Elements
+          <small>(click to stamp / erase)</small>
+        </div>
+        <div class="icons-strip" id="elementsRow"></div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================
+         RIGHT SIDE: LIVE INTERACTIVE SKETCHPAD & WIREFRAME CANVAS
+         ======================================================= -->
+    <aside class="live-sketchpad-wrap">
+      <div class="spiral-rings-top">
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+        <div class="ring-loop"></div>
+      </div>
+
+      <div class="pad-top-meta">
+        <span id="surfaceNameLabel">PAPER // DOTTED NOTEBOOK GRID</span>
+        <span class="active-tool-badge" id="activeToolBadge">✏️ Tool: Pencil (HB)</span>
+      </div>
+
+      <div class="canvas-paper-stage" id="paperStage" data-surface="dotted">
+        <canvas id="sketchPadCanvas" width="460" height="340"></canvas>
+        <div class="pinned-sticky-note" id="stickyNoteCallout">
+          Draw right here with your mouse! Or click any icon on the left.
+        </div>
+      </div>
+
+      <div class="pad-bottom-controls">
+        <span class="pad-hint">Tip: Click "Other Elements" to stamp hand-drawn UI wireframes</span>
+        <div style="display:flex;gap:8px;">
+          <button class="sketch-pill-btn" id="stampWireframeBtn">+ Sample Sketch</button>
+          <button class="sketch-pill-btn" id="clearPadBtn">🗑️ Tear Off Page</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. ALL 19 HAND-DRAWN GRAPHITE SVG ICONS (MATCHING THE REFERENCE SHEET)
+  // =========================================================================
+  const s = 'stroke="#22211f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  const cLine = 'stroke="#22211f" stroke-width="0.7" opacity="0.45" fill="none"';
+
+  const MATERIALS_ICONS = [
+    {
+      id: 'notebook', label: 'Notebook', surface: 'ruled',
+      svg: `
+        <rect x="10" y="10" width="50" height="50" rx="4" ${s}/>
+        <path d="M10 10 L22 10 L22 60 L10 60 Z" fill="url(#graphite-hatch)" ${s}/>
+        <line x1="22" y1="22" x2="60" y2="22" ${cLine}/>
+        <line x1="22" y1="31" x2="60" y2="31" ${cLine}/>
+        <line x1="22" y1="40" x2="60" y2="40" ${cLine}/>
+        <!-- Dog-ear folded bottom-right corner -->
+        <polygon points="46,60 60,46 46,46" fill="#faf8f2" ${s}/>
+        <polygon points="46,60 60,60 60,46" fill="url(#dense-hatch)" ${s}/>
+      `
+    },
+    {
+      id: 'stickies', label: 'Stickies', surface: 'sticky',
+      svg: `
+        <rect x="24" y="12" width="36" height="36" fill="url(#graphite-hatch)" ${s}/>
+        <rect x="17" y="18" width="36" height="36" fill="#f4f1ea" ${s}/>
+        <rect x="10" y="25" width="36" height="36" fill="#faf8f2" ${s}/>
+        <path d="M10 56 Q28 54 46 61" ${cLine}/>
+      `
+    },
+    {
+      id: 'spiral', label: 'Spiral Book', surface: 'dotted',
+      svg: `
+        <rect x="15" y="10" width="44" height="50" rx="3" fill="url(#graphite-hatch)" ${s}/>
+        <rect x="17" y="10" width="42" height="50" rx="2" fill="#faf8f2" ${s}/>
+        <rect x="28" y="24" width="18" height="10" ${s}/>
+        <line x1="31" y1="29" x2="43" y2="29" ${cLine}/>
+        <!-- Spiral coils on left spine -->
+        <path d="M11 16 C18 14, 18 20, 12 20 M11 25 C18 23, 18 29, 12 29 M11 34 C18 32, 18 38, 12 38 M11 43 C18 41, 18 47, 12 47 M11 52 C18 50, 18 56, 12 56" ${s}/>
+      `
+    },
+    {
+      id: 'clipboard', label: 'Clipboard', surface: 'ruled',
+      svg: `
+        <rect x="11" y="12" width="48" height="48" rx="6" fill="url(#graphite-hatch)" ${s}/>
+        <rect x="22" y="10" width="26" height="9" rx="2" fill="#faf8f2" ${s}/>
+        <!-- Tilted paper sheet clipped inside -->
+        <polygon points="24,22 52,30 42,58 14,49" fill="#faf8f2" ${s}/>
+        <line x1="25" y1="30" x2="46" y2="36" ${cLine}/>
+        <line x1="22" y1="38" x2="43" y2="44" ${cLine}/>
+      `
+    },
+    {
+      id: 'scroll', label: 'Scroll Paper', surface: 'dotted',
+      svg: `
+        <path d="M16 14 H52 C56 14, 56 24, 50 24 H22" fill="url(#graphite-hatch)" ${s}/>
+        <path d="M22 24 L14 50 C12 56, 18 60, 24 60 H48 C54 60, 56 50, 48 50 C44 50, 44 58, 49 58" fill="#faf8f2" ${s}/>
+        <path d="M18 45 L44 45 M20 35 L46 35" ${cLine}/>
+      `
+    },
+    {
+      id: 'device', label: 'Device', surface: 'blueprint',
+      svg: `
+        <rect x="11" y="10" width="48" height="50" rx="7" fill="#faf8f2" ${s}/>
+        <rect x="16" y="15" width="38" height="36" fill="url(#graphite-hatch)" ${s}/>
+        <path d="M26 24 C38 22, 24 36, 36 36 C44 36, 30 46, 26 45" ${s}/>
+        <circle cx="35" cy="55" r="2.5" ${s}/>
+      `
+    },
+    {
+      id: 'binder', label: 'Binder', surface: 'blueprint',
+      svg: `
+        <rect x="11" y="12" width="48" height="48" rx="4" fill="url(#graphite-hatch)" ${s}/>
+        <rect x="15" y="17" width="40" height="40" fill="#faf8f2" ${s}/>
+        <!-- 3 Top Binder Rings -->
+        <ellipse cx="23" cy="16" rx="2.5" ry="5" fill="#faf8f2" ${s}/>
+        <ellipse cx="35" cy="16" rx="2.5" ry="5" fill="#faf8f2" ${s}/>
+        <ellipse cx="47" cy="16" rx="2.5" ry="5" fill="#faf8f2" ${s}/>
+      `
+    }
+  ];
+
+  const TOOLS_ICONS = [
+    {
+      id: 'fountain', label: 'Pen', toolType: 'fountain',
+      svg: `
+        <g transform="rotate(-42 35 35)">
+          <path d="M35 8 L42 26 L28 26 Z" fill="#faf8f2" ${s}/>
+          <line x1="35" y1="8" x2="35" y2="20" ${s}/>
+          <circle cx="35" cy="20" r="1.6" fill="#22211f"/>
+          <rect x="28" y="26" width="14" height="34" rx="5" fill="url(#graphite-hatch)" ${s}/>
+          <line x1="27" y1="31" x2="43" y2="31" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'pencil', label: 'Pencil', toolType: 'pencil',
+      svg: `
+        <g transform="rotate(-42 32 34)">
+          <polygon points="32,8 39,22 25,22" fill="#faf8f2" ${s}/>
+          <polygon points="32,8 35,14 29,14" fill="#22211f"/>
+          <rect x="25" y="22" width="14" height="34" fill="url(#graphite-hatch)" ${s}/>
+          <line x1="30" y1="22" x2="30" y2="56" ${cLine}/>
+          <line x1="34" y1="22" x2="34" y2="56" ${cLine}/>
+        </g>
+        <!-- Small Separate Eraser Sketch Next to Pencil (Exact match to photo!) -->
+        <g transform="rotate(-35 52 50)">
+          <rect x="45" y="43" width="11" height="15" rx="2" fill="url(#dense-hatch)" ${s}/>
+          <line x1="45" y1="49" x2="56" y2="49" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'ballpoint', label: 'Pen', toolType: 'ballpoint',
+      svg: `
+        <g transform="rotate(-42 35 35)">
+          <path d="M35 8 L42 24 L41 56 C41 60, 29 60, 29 56 L28 24 Z" fill="url(#graphite-hatch)" ${s}/>
+          <polygon points="35,8 37,13 33,13" fill="#22211f"/>
+          <!-- Pen Cap Clip -->
+          <path d="M42 22 C47 24, 47 40, 44 44" ${s}/>
+          <path d="M28 32 Q35 35 42 32" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'mechanical', label: 'Mechanical Pencil', toolType: 'mechanical',
+      svg: `
+        <g transform="rotate(-42 35 35)">
+          <line x1="35" y1="5" x2="35" y2="11" stroke="#22211f" stroke-width="2"/>
+          <polygon points="35,10 41,22 29,22" fill="#faf8f2" ${s}/>
+          <rect x="29" y="22" width="12" height="36" fill="url(#graphite-hatch)" ${s}/>
+          <!-- Grip rings & side clip -->
+          <line x1="29" y1="26" x2="41" y2="26" ${s}/>
+          <line x1="29" y1="29" x2="41" y2="29" ${s}/>
+          <path d="M41 36 L45 36 L45 50" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'highlighter', label: 'Highlighter', toolType: 'highlighter',
+      svg: `
+        <g transform="rotate(-42 35 35)">
+          <!-- Chisel tip -->
+          <polygon points="29,8 41,12 39,20 31,20" fill="url(#dense-hatch)" ${s}/>
+          <polygon points="26,20 44,20 42,27 28,27" fill="#faf8f2" ${s}/>
+          <rect x="25" y="27" width="20" height="32" rx="3" fill="url(#graphite-hatch)" ${s}/>
+        </g>
+      `
+    }
+  ];
+
+  const ELEMENTS_ICONS = [
+    {
+      id: 'pdf', label: 'PDF Doc', action: 'stamp-pdf',
+      svg: `
+        <rect x="10" y="10" width="50" height="50" fill="#faf8f2" ${s}/>
+        <text x="20" y="23" font-family="Architects Daughter" font-size="11" font-weight="bold" fill="#22211f">PDF</text>
+        <line x1="10" y1="27" x2="60" y2="27" ${s}/>
+        <path d="M12 45 C32 45, 45 28, 45 28 C45 28, 36 58, 38 58 C42 58, 50 40, 58 42" fill="url(#dense-hatch)" ${s}/>
+      `
+    },
+    {
+      id: 'photo', label: 'Photo', action: 'stamp-photo',
+      svg: `
+        <rect x="10" y="10" width="50" height="50" fill="#faf8f2" ${s}/>
+        <rect x="16" y="16" width="38" height="30" fill="url(#graphite-hatch)" ${s}/>
+        <circle cx="42" cy="24" r="4.5" fill="url(#dense-hatch)" ${s}/>
+        <polyline points="16,42 28,30 37,39 45,32 54,42" fill="#faf8f2" ${s}/>
+      `
+    },
+    {
+      id: 'ribbon', label: 'Ribbon', action: 'stamp-ribbon',
+      svg: `
+        <path d="M12 28 C25 22, 45 22, 58 16 L58 38 C45 44, 25 44, 12 50 Z" fill="#faf8f2" ${s}/>
+        <path d="M12 50 L28 56 L28 45 Z" fill="url(#dense-hatch)" ${s}/>
+        <text x="18" y="38" font-family="Caveat" font-size="16" font-weight="bold" fill="#22211f" transform="rotate(-10 35 35)">Ribbon</text>
+      `
+    },
+    {
+      id: 'eraser', label: 'Eraser', action: 'eraser',
+      svg: `
+        <g transform="rotate(-38 35 35)">
+          <rect x="22" y="14" width="24" height="42" rx="2" fill="#faf8f2" ${s}/>
+          <rect x="22" y="34" width="24" height="22" fill="url(#dense-hatch)" ${s}/>
+          <line x1="22" y1="34" x2="46" y2="34" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'ruler', label: 'Ruler', action: 'stamp-ruler',
+      svg: `
+        <g transform="rotate(-42 35 35)">
+          <rect x="23" y="8" width="22" height="54" fill="url(#graphite-hatch)" ${s}/>
+          <line x1="23" y1="16" x2="30" y2="16" ${s}/>
+          <line x1="23" y1="22" x2="28" y2="22" ${s}/>
+          <line x1="23" y1="28" x2="32" y2="28" ${s}/>
+          <line x1="23" y1="34" x2="28" y2="34" ${s}/>
+          <line x1="23" y1="40" x2="32" y2="40" ${s}/>
+          <line x1="23" y1="46" x2="28" y2="46" ${s}/>
+          <circle cx="35" cy="52" r="2.5" fill="#faf8f2" ${s}/>
+        </g>
+      `
+    },
+    {
+      id: 'paperclip', label: 'Paper Clip', action: 'stamp-clip',
+      svg: `
+        <path d="M26 24 V48 C26 56, 44 56, 44 48 V18 C44 10, 22 10, 22 18 V44 C22 50, 36 50, 36 44 V22" stroke="#22211f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      `
+    },
+    {
+      id: 'shapes', label: 'Shapes', action: 'stamp-shapes',
+      svg: `
+        <rect x="12" y="12" width="24" height="24" rx="2" fill="#faf8f2" ${s}/>
+        <circle cx="44" cy="44" r="14" fill="url(#graphite-hatch)" ${s}/>
+        <polygon points="32,24 46,50 18,50" fill="url(#dense-hatch)" ${s}/>
+      `
+    }
+  ];
+
+  // =========================================================================
+  // 2. RENDER THE 3 ICON ROWS & BIND INTERACTIONS
+  // =========================================================================
+  function renderRow(containerId, items, defaultActiveId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = items.map(item => `
+      <div class="sketch-icon-cell ${item.id === defaultActiveId ? 'active' : ''}" data-id="${item.id}">
+        <div class="sketch-box-frame">
+          <svg class="sketch-svg" viewBox="0 0 70 70">${item.svg}</svg>
+        </div>
+        <span class="icon-hand-caption">${item.label}</span>
+      </div>
+    `).join('');
+  }
+
+  renderRow('materialsRow', MATERIALS_ICONS, 'spiral');
+  renderRow('toolsRow', TOOLS_ICONS, 'pencil');
+  renderRow('elementsRow', ELEMENTS_ICONS, '');
+
+  // =========================================================================
+  // 3. INTERACTIVE GRAPHITE SKETCHPAD CANVAS
+  // =========================================================================
+  const canvas = document.getElementById('sketchPadCanvas');
+  const ctx = canvas.getContext('2d');
+  const paperStage = document.getElementById('paperStage');
+  const activeToolBadge = document.getElementById('activeToolBadge');
+  const surfaceNameLabel = document.getElementById('surfaceNameLabel');
+  const stickyCallout = document.getElementById('stickyNoteCallout');
+
+  let currentTool = 'pencil';
+  let drawing = false;
+  let lastX = 0;
+  let lastY = 0;
+
+  // Draw initial hand-sketched wireframe card on the pad so it looks rich right away
+  function drawSampleSketchWireframe() {
+    ctx.save();
+    ctx.strokeStyle = '#22211f';
+    ctx.fillStyle = '#22211f';
+    ctx.lineCap = 'round';
+
+    // Sketchy outer wireframe card with construction extensions
+    sketchLine(36, 45, 290, 45, 1.4);
+    sketchLine(36, 260, 290, 260, 1.4);
+    sketchLine(44, 36, 44, 270, 1.4);
+    sketchLine(280, 36, 280, 270, 1.4);
+
+    // Image placeholder box with diagonal cross
+    sketchRect(58, 62, 95, 75);
+    sketchLine(58, 62, 153, 137, 0.9);
+    sketchLine(153, 62, 58, 137, 0.9);
+
+    // Heading & text squiggles
+    ctx.font = 'bold 20px "Caveat", cursive';
+    ctx.fillText('UI Wireframe Study #1', 166, 80);
+    sketchLine(166, 95, 265, 95, 1.2);
+    sketchLine(166, 110, 250, 110, 1.0);
+    sketchLine(166, 125, 230, 125, 1.0);
+
+    // Hand-drawn button with diagonal hatching shadow
+    sketchRect(58, 160, 110, 32);
+    for (let hx = 62; hx < 168; hx += 6) {
+      sketchLine(hx, 192, hx - 5, 198, 0.8);
+    }
+    ctx.font = '18px "Architects Daughter", cursive';
+    ctx.fillText('Submit Sketch →', 68, 181);
+
+    // Dimension arrow
+    sketchLine(58, 225, 264, 225, 0.8);
+    ctx.font = '16px "Reenie Beanie", cursive';
+    ctx.fillText('← 240px container width →', 105, 242);
+
+    ctx.restore();
+  }
+
+  function sketchLine(x1, y1, x2, y2, width = 1.4) {
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x1 + (Math.random() - 0.5) * 1.2, y1 + (Math.random() - 0.5) * 1.2);
+    ctx.lineTo(x2 + (Math.random() - 0.5) * 1.2, y2 + (Math.random() - 0.5) * 1.2);
+    ctx.stroke();
+  }
+
+  function sketchRect(x, y, w, h) {
+    sketchLine(x - 4, y, x + w + 4, y, 1.3);
+    sketchLine(x - 4, y + h, x + w + 4, y + h, 1.3);
+    sketchLine(x, y - 4, x, y + h + 4, 1.3);
+    sketchLine(x + w, y - 4, x + w, y + h + 4, 1.3);
+  }
+
+  drawSampleSketchWireframe();
+
+  // Drawing on Canvas with Selected Tool
+  function getCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    drawing = true;
+    const pos = getCoords(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drawing) return;
+    const pos = getCoords(e);
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (currentTool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 22;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    } else if (currentTool === 'highlighter') {
+      ctx.strokeStyle = 'rgba(242, 218, 94, 0.35)';
+      ctx.lineWidth = 16;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    } else if (currentTool === 'fountain') {
+      ctx.strokeStyle = '#141413';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    } else if (currentTool === 'mechanical') {
+      ctx.strokeStyle = '#383632';
+      ctx.lineWidth = 0.95;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    } else {
+      // Graphite Pencil: Multi-strand textured stroke
+      ctx.strokeStyle = 'rgba(34, 33, 31, 0.78)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(34, 33, 31, 0.28)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(lastX + 1.2, lastY - 0.8);
+      ctx.lineTo(pos.x + 1.2, pos.y - 0.8);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+    lastX = pos.x;
+    lastY = pos.y;
+  });
+
+  const stopDraw = () => { drawing = false; };
+  canvas.addEventListener('pointerup', stopDraw);
+  canvas.addEventListener('pointercancel', stopDraw);
+
+  // =========================================================================
+  // 4. ROW CLICK HANDLERS (MATERIALS, TOOLS, AND ELEMENT STAMPS)
+  // =========================================================================
+  document.querySelectorAll('#materialsRow .sketch-icon-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      document.querySelectorAll('#materialsRow .sketch-icon-cell').forEach(c => c.classList.remove('active'));
+      cell.classList.add('active');
+      const item = MATERIALS_ICONS.find(m => m.id === cell.dataset.id);
+      paperStage.setAttribute('data-surface', item.surface);
+      surfaceNameLabel.textContent = `PAPER // ${item.label.toUpperCase()} SURFACE`;
+    });
+  });
+
+  document.querySelectorAll('#toolsRow .sketch-icon-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      document.querySelectorAll('#toolsRow .sketch-icon-cell, #elementsRow .sketch-icon-cell').forEach(c => c.classList.remove('active'));
+      cell.classList.add('active');
+      const item = TOOLS_ICONS.find(t => t.id === cell.dataset.id);
+      currentTool = item.toolType;
+      activeToolBadge.textContent = `✏️ Tool: ${item.label}`;
+    });
+  });
+
+  document.querySelectorAll('#elementsRow .sketch-icon-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const item = ELEMENTS_ICONS.find(e => e.id === cell.dataset.id);
+      if (item.action === 'eraser') {
+        document.querySelectorAll('#toolsRow .sketch-icon-cell, #elementsRow .sketch-icon-cell').forEach(c => c.classList.remove('active'));
+        cell.classList.add('active');
+        currentTool = 'eraser';
+        activeToolBadge.textContent = '🧽 Tool: Rubber Eraser';
+      } else {
+        // Stamp the clicked hand-drawn element at a random spot on the sketchpad!
+        const rx = 60 + Math.random() * 260;
+        const ry = 60 + Math.random() * 190;
+        ctx.save();
+        ctx.strokeStyle = '#22211f';
+        sketchRect(rx, ry, 72, 52);
+        ctx.font = 'bold 17px "Caveat", cursive';
+        ctx.fillStyle = '#22211f';
+        ctx.fillText(`[${item.label}]`, rx + 8, ry + 30);
+        ctx.restore();
+        stickyCallout.textContent = `Stamped "${item.label}" onto the page!`;
+      }
+    });
+  });
+
+  document.getElementById('clearPadBtn').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  document.getElementById('stampWireframeBtn').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSampleSketchWireframe();
+  });
+
+  // Graphite Hardness Switcher
+  document.querySelectorAll('.lead-selector-bar .sketch-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lead-selector-bar .sketch-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-lead', btn.dataset.lead);
+    });
+  });
+})();
+</script>
+</body>
+</html>

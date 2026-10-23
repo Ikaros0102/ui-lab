@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — JVC HR-D725 Hi-Fi Stereo VHS Video Cassette Recorder</title>
+
+<!-- Digital 7-Segment & 14-Segment Fonts for Authentic VFD Readout -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800&family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "JVC HR-D725 Hi-Fi Stereo VHS Recorder",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "vhs",
+    "vcr",
+    "jvc",
+    "retro-anime",
+    "vfd-display",
+    "cassette",
+    "vu-meter",
+    "80s-hifi",
+    "tactile",
+    "physical-controls",
+    "hardware"
+  ],
+  "description": "Front-panel hardware recreation of the 1980s JVC HR-D725 Hi-Fi Stereo VHS VCR from classic anime. Features a multi-color VFD clock and tape counter, red 7-segment channel readout, beveled piano-style transport keys with a glowing cyan PLAY triangle, search shuttle rockers, dual Hi-Fi LED level meters, and a draggable Rec Level slider.",
+  "techniques": [
+    "multi-zone Vacuum Fluorescent Display (cyan-green DSEG7 clock, tape counter, and red channel digit)",
+    "sculpted 3D beveled slate-blue mechanical push-buttons with neon cyan backlit PLAY triangle",
+    "dual-channel horizontal Hi-Fi LED peak level meters reactive to the Rec Level fader",
+    "smoked acrylic VHS cassette window with rotating tape reels that respond to PLAY, REW, FF, and SEARCH"
+  ],
+  "recipe": "Modeled in deep midnight anime-slate (#1a2433) and piano-black acrylic (#05080d) with authentic 80s Japanese Hi-Fi typography and tactile mechanical rockers.",
+  "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 540
+  }
+}
+</script>
+
+<style>
+  @font-face {
+    font-family: 'DSEG7-Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --chassis-slate: #1c2636;
+    --chassis-dark: #111824;
+    --chassis-deep: #090d14;
+    --key-top: #324156;
+    --key-face: #232f42;
+    --key-bottom: #131b26;
+    --vfd-cyan: #72f5d5;
+    --vfd-cyan-glow: rgba(114, 245, 213, 0.65);
+    --vfd-green: #8ce95c;
+    --vfd-red: #ff3b30;
+    --vfd-red-glow: rgba(255, 59, 48, 0.75);
+    --play-neon: #29e3ff;
+    --silkscreen: #c8d6e5;
+    --silkscreen-dim: #7f92a8;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 35%, #1c2533 0%, #090c12 70%, #030406 100%);
+    color: var(--silkscreen);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     MAIN VHS DECK CHASSIS (MIDNIGHT ANIME SLATE-BLUE)
+     ========================================================= */
+  .vcr-chassis {
+    width: 100%;
+    max-width: 1080px;
+    background:
+      linear-gradient(180deg, #344459 0%, #202b3b 6%, #161f2c 92%, #0c1118 100%);
+    border: 2px solid #0a0e14;
+    border-radius: 7px;
+    padding: 8px 12px 10px;
+    box-shadow:
+      0 42px 95px rgba(0, 0, 0, 0.96),
+      0 14px 32px rgba(0, 0, 0, 0.85),
+      inset 0 2px 1px rgba(255, 255, 255, 0.22),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.9);
+    position: relative;
+  }
+
+  /* Top Bevel Rim with Dolby System Badge on Right */
+  .top-chamfer-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 2px 10px 6px;
+    border-bottom: 2px solid #090d14;
+  }
+
+  .dolby-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #101722;
+    border: 1px solid #576b85;
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    color: #dbe4f0;
+  }
+
+  .dolby-dd {
+    background: #dbe4f0;
+    color: #101722;
+    padding: 0 3px;
+    font-weight: 900;
+    font-size: 8px;
+  }
+
+  /* =========================================================
+     UPPER HALF: SMOKED PIANO-BLACK ACRYLIC WINDOW & VFD
+     ========================================================= */
+  .upper-acrylic-bay {
+    height: 118px;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 34%, transparent 34.5%),
+      linear-gradient(180deg, #04070b 0%, #080d14 60%, #05080d 100%);
+    border: 2px solid #040609;
+    border-radius: 4px;
+    margin-top: 4px;
+    padding: 10px 18px;
+    display: grid;
+    grid-template-columns: 155px 1fr 395px;
+    align-items: center;
+    gap: 16px;
+    box-shadow:
+      inset 0 6px 18px rgba(0, 0, 0, 0.98),
+      0 1px 0 rgba(255, 255, 255, 0.12);
+    position: relative;
+  }
+
+  /* 1. Left Status Box (POWER, TIMER, SP/EP) */
+  .vfd-left-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    height: 82px;
+  }
+
+  .power-timer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pwr-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .red-led-dot {
+    width: 9px;
+    height: 5px;
+    border-radius: 2px;
+    background: #ff2a1f;
+    box-shadow: 0 0 8px #ff2a1f, 0 0 14px #ff2a1f;
+    transition: opacity 0.2s ease;
+  }
+  .pwr-indicator.off .red-led-dot {
+    opacity: 0.18;
+    box-shadow: none;
+  }
+
+  .pwr-lbl {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #a3b6cc;
+  }
+
+  .timer-glow-lbl {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #4cd964;
+    text-shadow: 0 0 8px rgba(76, 217, 100, 0.65);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  .timer-glow-lbl.dim {
+    opacity: 0.2;
+    text-shadow: none;
+  }
+
+  .speed-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--vfd-cyan);
+    text-shadow: 0 0 6px var(--vfd-cyan-glow);
+  }
+
+  .speed-stem {
+    width: 1.5px;
+    height: 16px;
+    background: var(--vfd-cyan);
+    box-shadow: 0 0 5px var(--vfd-cyan-glow);
+  }
+
+  /* 2. Center Cassette Compartment Door + [VHS] Emblem + Spinning Reels */
+  .cassette-flap-window {
+    height: 92px;
+    background: linear-gradient(180deg, #060a10 0%, #0b111b 50%, #05080d 100%);
+    border: 1.5px solid #16202e;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 25px #000;
+  }
+
+  /* Faintly Visible VHS Tape Reels Behind Smoked Glass */
+  .tape-reels-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 55px;
+    opacity: 0.22;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .tape-reels-bg.ejected {
+    opacity: 0.03;
+    transform: translateY(-20px);
+  }
+
+  .reel-wheel {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px dashed #6b829e;
+    position: relative;
+  }
+
+  .reel-wheel.spin-play {
+    animation: reelSpin 3.2s linear infinite;
+  }
+  .reel-wheel.spin-fast {
+    animation: reelSpin 0.45s linear infinite;
+  }
+  .reel-wheel.spin-rew {
+    animation: reelSpin 0.45s linear infinite reverse;
+  }
+
+  @keyframes reelSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .vhs-boxed-logo {
+    position: relative;
+    z-index: 2;
+    border: 1.8px solid #d8e3f0;
+    padding: 2px 10px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #e6effa;
+    background: rgba(6, 10, 16, 0.8);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  }
+
+  .cassette-lamp-dot {
+    position: relative;
+    z-index: 2;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff2a1f;
+    box-shadow: 0 0 10px #ff2a1f, 0 0 20px rgba(255, 42, 31, 0.85);
+    transition: all 0.25s ease;
+  }
+  .cassette-lamp-dot.off {
+    background: #331111;
+    box-shadow: none;
+  }
+
+  /* 3. Right Multi-Color Vacuum Fluorescent Display (VFD) */
+  .vfd-screen-cluster {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 12px;
+    height: 86px;
+  }
+
+  /* Left Stereo / Bilingual Tree */
+  .stereo-bilingual- indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: var(--vfd-cyan);
+    text-shadow: 0 0 6px var(--vfd-cyan-glow);
+  }
+
+  .st-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .st-branch {
+    width: 10px;
+    height: 8px;
+    border-left: 1.5px solid var(--vfd-cyan);
+    border-top: 1.5px solid var(--vfd-cyan);
+  }
+
+  /* Center Digital Clock (`AM 11:12`) */
+  .vfd-clock-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .vfd-am-tag {
+    font-size: 8.5px;
+    font-weight: 800;
+    color: var(--vfd-cyan);
+    text-shadow: 0 0 6px var(--vfd-cyan-glow);
+  }
+
+  .vfd-clock-digits {
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 32px;
+    color: var(--vfd-cyan);
+    text-shadow: 0 0 10px var(--vfd-cyan-glow), 0 0 22px rgba(114, 245, 213, 0.35);
+    letter-spacing: 2px;
+  }
+
+  /* Tape Counter (`3843`) */
+  .vfd-counter-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .vfd-m-tag {
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--vfd-cyan);
+    opacity: 0.85;
+  }
+
+  .vfd-counter-digits {
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 20px;
+    color: var(--vfd-cyan);
+    text-shadow: 0 0 8px var(--vfd-cyan-glow);
+    letter-spacing: 1.5px;
+    min-width: 68px;
+    text-align: right;
+  }
+
+  /* Far-Right Big Red Channel Digit (`8`) */
+  .vfd-channel-red {
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 38px;
+    color: var(--vfd-red);
+    text-shadow:
+      0 0 12px var(--vfd-red-glow),
+      0 0 26px rgba(255, 59, 48, 0.45);
+    padding-left: 6px;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* =========================================================
+     MIDDLE DECK: SCULPTED MECHANICAL KEYS, SHUTTLE, VU & SLIDER
+     ========================================================= */
+  .lower-controls-deck {
+    margin-top: 8px;
+    background: #0c111a;
+    border: 2px solid #070a10;
+    border-radius: 4px;
+    padding: 8px 8px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  /* Top Silkscreen Legend Strip Above Keys */
+  .deck-legends-row {
+    display: grid;
+    grid-template-columns: 144px 232px 134px 225px 1fr 56px;
+    align-items: center;
+    padding: 0 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    color: var(--silkscreen);
+  }
+
+  .rew-ff-bridge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+  }
+
+  .hifi-bridge-title {
+    text-align: center;
+    font-style: italic;
+    letter-spacing: 1.5px;
+    color: #e2ecf7;
+  }
+
+  /* Main Row of Angled Physical Keys & Panels */
+  .mechanical-keys-row {
+    display: grid;
+    grid-template-columns: 144px 232px 134px 225px 1fr 56px;
+    gap: 5px;
+    height: 92px;
+    align-items: stretch;
+  }
+
+  /* Shared Sculpted Angled VCR Key Styling */
+  .vcr-key {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+    background:
+      linear-gradient(
+        180deg,
+        #3b4b63 0%,
+        #2b384b 20%,
+        #212c3d 23%,
+        #1b2533 84%,
+        #0f151f 87%,
+        #0a0e15 100%
+      );
+    border-top: 1px solid #586d8a;
+    border-left: 1px solid #3c4d63;
+    border-right: 1px solid #121822;
+    border-bottom: 2px solid #070a0f;
+    border-radius: 2px;
+    box-shadow:
+      0 4px 7px rgba(0, 0, 0, 0.85),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--silkscreen);
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    transition: transform 0.08s ease, filter 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .vcr-key:hover {
+    filter: brightness(1.1);
+  }
+
+  .vcr-key:active, .vcr-key.engaged {
+    transform: translateY(2px);
+    background:
+      linear-gradient(180deg, #253142 0%, #182230 50%, #0e141d 100%);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.85);
+  }
+
+  /* Group 1: Left 3 Tall Narrow Keys (VIDEO/TV, SP/LP, EJECT) */
+  .left-3-keys {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+  }
+
+  .left-3-keys .vcr-key {
+    justify-content: flex-start;
+    padding-top: 10px;
+    text-align: center;
+    line-height: 1.25;
+  }
+
+  /* Group 2: Two-Tier Transport Cluster (REC/REW/FF on top, STOP/PLAY/PAUSE below) */
+  .transport-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .transport-top-tier {
+    height: 30px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+
+  .transport-bottom-tier {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 0.85fr;
+    gap: 3px;
+  }
+
+  /* Iconic PLAY Key with Glowing Neon-Cyan Triangle! */
+  .play-neon-key {
+    justify-content: space-between;
+    padding: 6px 0 8px;
+  }
+
+  .play-triangle-svg {
+    width: 26px;
+    height: 24px;
+    filter: drop-shadow(0 0 6px var(--play-neon)) drop-shadow(0 0 14px var(--play-neon));
+    transition: all 0.2s ease;
+  }
+
+  .play-neon-key.paused .play-triangle-svg {
+    opacity: 0.35;
+    filter: none;
+  }
+
+  /* Group 3: Dual Shuttle Search Rockers (`《` and `》`) */
+  .search-shuttle-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+  }
+
+  .shuttle-chevron {
+    font-size: 20px;
+    font-weight: 900;
+    color: #101722;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+    letter-spacing: -3px;
+  }
+
+  /* Group 4: Hi-Fi Dual Horizontal LED Peak Meter Panel */
+  .hifi-vu-panel {
+    background: linear-gradient(180deg, #070b10 0%, #0d141f 100%);
+    border: 1.5px solid #1c2738;
+    border-radius: 3px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.95);
+  }
+
+  .vu-channel-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .vu-segments-bar {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 2.5px;
+    height: 11px;
+    background: #040609;
+    padding: 2px;
+    border-radius: 2px;
+  }
+
+  .v-led {
+    background: #141d29;
+    border-radius: 1px;
+    transition: background 0.06s ease;
+  }
+
+  .v-led.on.green {
+    background: var(--vfd-green);
+    box-shadow: 0 0 6px var(--vfd-green);
+  }
+
+  .v-led.on.red {
+    background: var(--vfd-red);
+    box-shadow: 0 0 7px var(--vfd-red);
+  }
+
+  .vu-lr-lbl {
+    font-size: 7.5px;
+    font-weight: 800;
+    color: var(--silkscreen);
+    width: 28px;
+    text-align: right;
+  }
+
+  .vu-db-scale {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 34px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7px;
+    color: var(--silkscreen-dim);
+  }
+
+  /* Group 5: Hi-Fi Rec Level Horizontal Fader Panel */
+  .rec-level-panel {
+    background: linear-gradient(180deg, #161f2d 0%, #101722 100%);
+    border: 1px solid #28364a;
+    border-radius: 3px;
+    padding: 6px 10px;
+    display: grid;
+    grid-template-columns: 1fr 28px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .slider-zone {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 2px 0;
+  }
+
+  .slider-num-scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5px;
+    color: var(--silkscreen);
+  }
+
+  .rec-fader-slot {
+    height: 24px;
+    background: #05080c;
+    border: 1px solid #253245;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    cursor: ew-resize;
+    box-shadow: inset 0 2px 5px #000;
+  }
+
+  .rec-fader-line {
+    width: 100%;
+    height: 3px;
+    background: #000;
+    border-bottom: 1px solid #2b394d;
+  }
+
+  .rec-fader-knob {
+    position: absolute;
+    left: 72%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 20px;
+    background: linear-gradient(90deg, #475a75 0%, #1e2836 42%, #e2ecf7 50%, #1e2836 58%, #475a75 100%);
+    border: 1px solid #7f94b0;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px #000;
+  }
+
+  .slider-bottom-caption {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5px;
+    font-weight: 800;
+    color: var(--silkscreen-dim);
+  }
+
+  .mini-switches-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tiny-push-sw {
+    height: 22px;
+    background: #0e141e;
+    border: 1px solid #3c4d63;
+    color: var(--silkscreen);
+    font-size: 6.5px;
+    font-weight: 800;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .tiny-push-sw.active {
+    border-color: var(--vfd-cyan);
+    color: var(--vfd-cyan);
+  }
+
+  /* Group 6: Far-Right Channel Up / Down Buttons */
+  .channel-updown-col {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+  }
+
+  /* =========================================================
+     BOTTOM BEVEL APRON: `Hi-Fi STEREO VIDEO CASSETTE RECORDER HR-D725`
+     ========================================================= */
+  .bottom-model-apron {
+    margin-top: 8px;
+    padding: 6px 14px 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .hifi-model-signature {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-left: 110px;
+  }
+
+  .hifi-emblem-italic {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: transparent;
+    -webkit-text-stroke: 1.3px #d8e3f0;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  }
+
+  .vcr-model-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: #b8c7d9;
+  }
+
+  .vcr-model-text b {
+    color: #e6effa;
+    font-size: 15.5px;
+  }
+
+  @media (max-width: 1060px) {
+    .vcr-chassis {
+      transform: scale(0.84);
+      transform-origin: center center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="vcr-chassis">
+
+  <!-- 1. Top Bevel Rim with Dolby System Badge -->
+  <div class="top-chamfer-bar">
+    <div class="dolby-badge">
+      <span class="dolby-dd">DO</span>
+      <span>DOLBY SYSTEM</span>
+    </div>
+  </div>
+
+  <!-- 2. Upper Smoked Acrylic Window (Power/Timer + VHS Cassette Door + Multi-Color VFD) -->
+  <section class="upper-acrylic-bay">
+
+    <!-- Left Status Indicators -->
+    <div class="vfd-left-status">
+      <div class="power-timer-col">
+        <div class="pwr-indicator" id="pwrStatus" title="Click to toggle Power">
+          <span class="red-led-dot"></span>
+          <span class="pwr-lbl">POWER</span>
+        </div>
+        <div class="timer-glow-lbl" id="timerStatus" title="Click to toggle Timer">TIMER</div>
+      </div>
+
+      <div class="speed-tree">
+        <span id="spIndicator">SP</span>
+        <div class="speed-stem"></div>
+        <span id="lpIndicator" style="opacity:0.35;">EP</span>
+      </div>
+    </div>
+
+    <!-- Center VHS Cassette Compartment Door -->
+    <div class="cassette-flap-window">
+      <div class="tape-reels-bg" id="tapeReelsBg">
+        <div class="reel-wheel spin-play" id="reelLeft"></div>
+        <div class="reel-wheel spin-play" id="reelRight"></div>
+      </div>
+      <div class="vhs-boxed-logo">VHS</div>
+      <div class="cassette-lamp-dot" id="cassetteLamp" title="Tape Loaded Indicator"></div>
+    </div>
+
+    <!-- Right Vacuum Fluorescent Display (Clock + Tape Counter + Red Channel 8) -->
+    <div class="vfd-screen-cluster" id="vfdCluster">
+      <div class="stereo-bilingual-indicator">
+        <div class="st-row">
+          <div class="st-branch"></div>
+          <span>STEREO</span>
+        </div>
+        <div class="st-row">
+          <span style="border:1px solid currentColor;padding:0 2px;font-size:7px;">O</span>
+          <span>BILINGUAL</span>
+        </div>
+      </div>
+
+      <div class="vfd-clock-wrap">
+        <span class="vfd-am-tag">AM</span>
+        <span class="vfd-clock-digits" id="vfdClock">11:12</span>
+      </div>
+
+      <div class="vfd-counter-wrap">
+        <span class="vfd-m-tag">M</span>
+        <span class="vfd-counter-digits" id="vfdCounter">3843</span>
+      </div>
+
+      <div class="vfd-channel-red" id="vfdChannel">8</div>
+    </div>
+
+  </section>
+
+  <!-- 3. Lower Angled Mechanical Keys, Shuttle Search, Hi-Fi VU Meters & Rec Slider -->
+  <section class="lower-controls-deck">
+
+    <!-- Top Silkscreen Labels -->
+    <div class="deck-legends-row">
+      <div style="display:flex;justify-content:space-between;padding-right:8px;">
+        <span></span>
+        <span>EJECT</span>
+      </div>
+      <div class="rew-ff-bridge">
+        <span>INSERT</span>
+        <span>REW◄◄───►►FF</span>
+      </div>
+      <div style="text-align:center;">SEARCH</div>
+      <div class="hifi-bridge-title">─── Hi-Fi ───</div>
+      <div></div>
+      <div style="text-align:center;font-size:8px;">CHANNEL</div>
+    </div>
+
+    <!-- Main Mechanical Controls Strip -->
+    <div class="mechanical-keys-row">
+
+      <!-- Group 1: Left 3 Narrow Keys -->
+      <div class="left-3-keys">
+        <button class="vcr-key" id="tvVideoBtn">VIDEO<br>TV</button>
+        <button class="vcr-key" id="spLpBtn">SP/EP<br>▲ ▼</button>
+        <button class="vcr-key" id="ejectBtn">EJECT<br>⏏</button>
+      </div>
+
+      <!-- Group 2: Two-Tier Transport Cluster -->
+      <div class="transport-cluster">
+        <div class="transport-top-tier">
+          <button class="vcr-key" id="recBtn" style="color:#ff6b6b;">● REC</button>
+          <button class="vcr-key" id="rewBtn">◄◄</button>
+          <button class="vcr-key" id="ffBtn">►►</button>
+          <button class="vcr-key" id="stillBtn">STILL</button>
+        </div>
+
+        <div class="transport-bottom-tier">
+          <button class="vcr-key" id="stopBtn">STOP</button>
+          <button class="vcr-key play-neon-key engaged" id="playBtn">
+            <span>PLAY</span>
+            <svg class="play-triangle-svg" viewBox="0 0 28 24" fill="none">
+              <polygon points="6,3 24,12 6,21" stroke="#29e3ff" stroke-width="2.6" stroke-linejoin="round" fill="rgba(41, 227, 255, 0.18)"/>
+            </svg>
+          </button>
+          <button class="vcr-key" id="pauseBtn">PAUSE</button>
+        </div>
+      </div>
+
+      <!-- Group 3: Shuttle Search Rockers (`《` and `》`) -->
+      <div class="search-shuttle-pair">
+        <button class="vcr-key" id="searchBackBtn" title="Shuttle Search Reverse">
+          <span class="shuttle-chevron">《</span>
+        </button>
+        <button class="vcr-key" id="searchFwdBtn" title="Shuttle Search Forward">
+          <span class="shuttle-chevron">》</span>
+        </button>
+      </div>
+
+      <!-- Group 4: Dual Horizontal Hi-Fi LED Peak Level Meters -->
+      <div class="hifi-vu-panel">
+        <div class="vu-channel-row">
+          <div class="vu-segments-bar" id="vuBarLeft"></div>
+          <span class="vu-lr-lbl">LEFT</span>
+        </div>
+
+        <div class="vu-db-scale">
+          <span>-20</span><span>-10</span><span>-5</span><span>0</span><span style="color:#ff5252;">+3</span><span style="color:#ff5252;">+8dB</span>
+        </div>
+
+        <div class="vu-channel-row">
+          <div class="vu-segments-bar" id="vuBarRight"></div>
+          <span class="vu-lr-lbl">RIGHT</span>
+        </div>
+      </div>
+
+      <!-- Group 5: Horizontal Hi-Fi Rec Level Slider -->
+      <div class="rec-level-panel">
+        <div class="slider-zone">
+          <div class="slider-num-scale">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+
+          <div class="rec-fader-slot" id="recFaderSlot" title="Drag to adjust Hi-Fi Audio Level">
+            <div class="rec-fader-line"></div>
+            <div class="rec-fader-knob" id="recFaderKnob"></div>
+          </div>
+
+          <div class="slider-bottom-caption">
+            <span>MIN</span>
+            <span style="color:var(--silkscreen);">HI-FI REC LEVEL</span>
+            <span>MAX</span>
+          </div>
+        </div>
+
+        <div class="mini-switches-col">
+          <button class="tiny-push-sw active">NORM</button>
+          <button class="tiny-push-sw">EDIT</button>
+        </div>
+      </div>
+
+      <!-- Group 6: Channel Up / Down Buttons -->
+      <div class="channel-updown-col">
+        <button class="vcr-key" id="chUpBtn">▲ UP</button>
+        <button class="vcr-key" id="chDownBtn">▼ DOWN</button>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- 4. Bottom Bevel Apron (`Hi-Fi STEREO VIDEO CASSETTE RECORDER HR-D725`) -->
+  <footer class="bottom-model-apron">
+    <div class="hifi-model-signature">
+      <span class="hifi-emblem-italic">Hi-Fi</span>
+      <span class="vcr-model-text">STEREO VIDEO CASSETTE RECORDER &nbsp;<b>HR-D725</b></span>
+    </div>
+    <span style="font-size:9px;color:var(--silkscreen-dim);letter-spacing:1px;">JVC VICTOR COMPANY OF JAPAN</span>
+  </footer>
+
+</main>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. POPULATE DUAL HI-FI LED PEAK METERS (10 GREEN + 4 RED SEGMENTS)
+  // =========================================================================
+  const vuLeft = document.getElementById('vuBarLeft');
+  const vuRight = document.getElementById('vuBarRight');
+
+  function buildVuSegments(container) {
+    container.innerHTML = Array.from({ length: 14 }, (_, i) =>
+      `<div class="v-led ${i < 10 ? 'green' : 'red'}"></div>`
+    ).join('');
+  }
+  buildVuSegments(vuLeft);
+  buildVuSegments(vuRight);
+
+  // =========================================================================
+  // 2. VCR STATE & TRANSPORT MECHANICS (PLAY, STOP, REW, FF, SEARCH, EJECT)
+  // =========================================================================
+  let mode = 'play'; // 'play' | 'stop' | 'pause' | 'rew' | 'ff' | 'eject'
+  let tapeCounter = 3843;
+  let channelNum = 8;
+  let recLevel = 0.72;
+  let isPowered = true;
+
+  const vfdCounter = document.getElementById('vfdCounter');
+  const vfdChannel = document.getElementById('vfdChannel');
+  const playBtn = document.getElementById('playBtn');
+  const reelLeft = document.getElementById('reelLeft');
+  const reelRight = document.getElementById('reelRight');
+  const tapeReelsBg = document.getElementById('tapeReelsBg');
+  const cassetteLamp = document.getElementById('cassetteLamp');
+
+  function setTransportMode(newMode) {
+    mode = newMode;
+    document.querySelectorAll('.transport-cluster .vcr-key, .search-shuttle-pair .vcr-key').forEach(k => k.classList.remove('engaged'));
+
+    reelLeft.className = 'reel-wheel';
+    reelRight.className = 'reel-wheel';
+
+    if (mode === 'play') {
+      playBtn.classList.add('engaged');
+      playBtn.classList.remove('paused');
+      reelLeft.classList.add('spin-play');
+      reelRight.classList.add('spin-play');
+      tapeReelsBg.classList.remove('ejected');
+      cassetteLamp.classList.remove('off');
+    } else if (mode === 'pause') {
+      document.getElementById('pauseBtn').classList.add('engaged');
+      playBtn.classList.remove('paused');
+    } else if (mode === 'stop') {
+      document.getElementById('stopBtn').classList.add('engaged');
+      playBtn.classList.add('paused');
+    } else if (mode === 'rew') {
+      reelLeft.classList.add('spin-rew');
+      reelRight.classList.add('spin-rew');
+      playBtn.classList.add('paused');
+    } else if (mode === 'ff') {
+      reelLeft.classList.add('spin-fast');
+      reelRight.classList.add('spin-fast');
+      playBtn.classList.add('paused');
+    } else if (mode === 'eject') {
+      tapeReelsBg.classList.add('ejected');
+      cassetteLamp.classList.add('off');
+      playBtn.classList.add('paused');
+    }
+  }
+
+  playBtn.addEventListener('click', () => setTransportMode('play'));
+  document.getElementById('stopBtn').addEventListener('click', () => setTransportMode('stop'));
+  document.getElementById('pauseBtn').addEventListener('click', () => setTransportMode('pause'));
+  document.getElementById('rewBtn').addEventListener('click', (e) => {
+    setTransportMode('rew');
+    e.currentTarget.classList.add('engaged');
+  });
+  document.getElementById('ffBtn').addEventListener('click', (e) => {
+    setTransportMode('ff');
+    e.currentTarget.classList.add('engaged');
+  });
+  document.getElementById('searchBackBtn').addEventListener('click', (e) => {
+    setTransportMode('rew');
+    e.currentTarget.classList.add('engaged');
+  });
+  document.getElementById('searchFwdBtn').addEventListener('click', (e) => {
+    setTransportMode('ff');
+    e.currentTarget.classList.add('engaged');
+  });
+
+  document.getElementById('ejectBtn').addEventListener('click', () => {
+    setTransportMode(mode === 'eject' ? 'play' : 'eject');
+  });
+
+  // =========================================================================
+  // 3. CHANNEL UP / DOWN, SP/EP SPEED & POWER TOGGLES
+  // =========================================================================
+  document.getElementById('chUpBtn').addEventListener('click', () => {
+    channelNum = (channelNum + 1) % 13 || 1;
+    vfdChannel.textContent = channelNum;
+  });
+
+  document.getElementById('chDownBtn').addEventListener('click', () => {
+    channelNum = channelNum - 1 < 1 ? 12 : channelNum - 1;
+    vfdChannel.textContent = channelNum;
+  });
+
+  let isSp = true;
+  document.getElementById('spLpBtn').addEventListener('click', () => {
+    isSp = !isSp;
+    document.getElementById('spIndicator').style.opacity = isSp ? '1' : '0.3';
+    document.getElementById('lpIndicator').style.opacity = isSp ? '0.3' : '1';
+  });
+
+  document.getElementById('pwrStatus').addEventListener('click', (e) => {
+    isPowered = !isPowered;
+    e.currentTarget.classList.toggle('off', !isPowered);
+    document.getElementById('vfdCluster').style.opacity = isPowered ? '1' : '0.08';
+  });
+
+  document.getElementById('timerStatus').addEventListener('click', (e) => {
+    e.currentTarget.classList.toggle('dim');
+  });
+
+  document.querySelectorAll('.tiny-push-sw').forEach(sw => {
+    sw.addEventListener('click', () => sw.classList.toggle('active'));
+  });
+
+  // =========================================================================
+  // 4. DRAGGABLE HI-FI REC LEVEL HORIZONTAL SLIDER
+  // =========================================================================
+  const faderSlot = document.getElementById('recFaderSlot');
+  const faderKnob = document.getElementById('recFaderKnob');
+  let draggingFader = false;
+
+  function updateFader(clientX) {
+    const rect = faderSlot.getBoundingClientRect();
+    const relX = Math.max(8, Math.min(rect.width - 8, clientX - rect.left));
+    const pct = relX / rect.width;
+    faderKnob.style.left = `${pct * 100}%`;
+    recLevel = pct;
+  }
+
+  faderSlot.addEventListener('pointerdown', (e) => {
+    draggingFader = true;
+    updateFader(e.clientX);
+    faderSlot.setPointerCapture(e.pointerId);
+  });
+  faderSlot.addEventListener('pointermove', (e) => {
+    if (draggingFader) updateFader(e.clientX);
+  });
+  faderSlot.addEventListener('pointerup', () => { draggingFader = false; });
+
+  // =========================================================================
+  // 5. LIVE TAPE COUNTER & HI-FI LED PEAK METER ANIMATION LOOP
+  // =========================================================================
+  let tick = 0;
+
+  function updateVuRow(container, level) {
+    const segs = container.children;
+    const lit = Math.round(level * segs.length);
+    for (let i = 0; i < segs.length; i++) {
+      segs[i].classList.toggle('on', i < lit);
+    }
+  }
+
+  function animateVcr() {
+    tick++;
+
+    // Advance or rewind 4-digit tape counter
+    if (isPowered) {
+      if (mode === 'play' && tick % 24 === 0) {
+        tapeCounter = (tapeCounter + 1) % 10000;
+      } else if (mode === 'ff' && tick % 3 === 0) {
+        tapeCounter = (tapeCounter + 3) % 10000;
+      } else if (mode === 'rew' && tick % 3 === 0) {
+        tapeCounter = (tapeCounter - 3 + 10000) % 10000;
+      }
+      vfdCounter.textContent = String(tapeCounter).padStart(4, '0');
+    }
+
+    // Animate Hi-Fi Left & Right LED VU Bars when playing
+    if (isPowered && mode === 'play') {
+      const waveL = (0.55 + Math.sin(tick * 0.18) * 0.25 + Math.random() * 0.2) * recLevel;
+      const waveR = (0.52 + Math.cos(tick * 0.15) * 0.26 + Math.random() * 0.2) * recLevel;
+      updateVuRow(vuLeft, Math.min(1, waveL));
+      updateVuRow(vuRight, Math.min(1, waveR));
+    } else {
+      updateVuRow(vuLeft, 0);
+      updateVuRow(vuRight, 0);
+    }
+
+    requestAnimationFrame(animateVcr);
+  }
+
+  requestAnimationFrame(animateVcr);
+})();
+</script>
+</body>
+</html>

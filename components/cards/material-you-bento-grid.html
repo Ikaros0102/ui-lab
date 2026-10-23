@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Material You Bento Desktop & Theme Switcher</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Material You Bento Desktop & Palette Switcher",
+  "category": "cards",
+  "themes": [
+    "dark",
+    "glass",
+    "mesh"
+  ],
+  "tags": [
+    "linux",
+    "quickshell",
+    "material-you",
+    "bento-grid",
+    "calendar",
+    "world-clock",
+    "weather",
+    "theme-switcher",
+    "vertical-dock",
+    "pastel",
+    "glassmorphism",
+    "cards"
+  ],
+  "description": "Pastel Material You Linux desktop featuring a 3-segment left vertical dock, a compact Bento widget cluster (profile, stacked clock, weather, tonal CPU/RAM/Battery gauges, monthly calendar, world clock, and WebP converter), and a 5-preset dynamic color theme switcher.",
+  "techniques": [
+    "5 dynamic Material You color presets via CSS custom properties",
+    "3-row Bento widget cluster with tonal surface differentiation for CPU, RAM, and Battery",
+    "interactive monthly calendar grid with month navigation and active day highlight",
+    "Material 3 scalloped 12-sided polygon badges and emblems"
+  ],
+  "recipe": "Combines a full-height 3-pill vertical sidebar on the left with a tightly packed 3-row Bento widget matrix anchored to the bottom-left over a dual-tone ambient mesh background.",
+  "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 820
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* =========================================================
+     DYNAMIC MATERIAL YOU COLOR PRESETS (5 THEMES)
+     ========================================================= */
+  :root,
+  [data-theme="sakura"] {
+    --bg-left-ambient: #183238;
+    --bg-right-ambient: #b87c96;
+    --bg-glow-1: rgba(244, 184, 208, 0.32);
+    --bg-glow-2: rgba(45, 110, 118, 0.42);
+    --card-surface: rgba(78, 52, 64, 0.80);
+    --card-surface-alt: rgba(64, 44, 54, 0.86);
+    --card-border: rgba(245, 200, 218, 0.16);
+    --accent-pastel: #f4b8d0;
+    --accent-pastel-dark: #381b28;
+    --text-primary: #fceef4;
+    --text-secondary: #d4b8c4;
+    --text-muted: #9e808d;
+    --cpu-card: rgba(112, 64, 82, 0.82);
+    --ram-card: rgba(74, 68, 76, 0.82);
+    --bat-card: rgba(108, 76, 48, 0.84);
+  }
+
+  [data-theme="matcha"] {
+    --bg-left-ambient: #142824;
+    --bg-right-ambient: #567d72;
+    --bg-glow-1: rgba(182, 224, 206, 0.25);
+    --bg-glow-2: rgba(36, 88, 78, 0.45);
+    --card-surface: rgba(44, 60, 56, 0.80);
+    --card-surface-alt: rgba(34, 48, 45, 0.86);
+    --card-border: rgba(190, 220, 210, 0.16);
+    --accent-pastel: #bce0d2;
+    --accent-pastel-dark: #182b26;
+    --text-primary: #eaf5f1;
+    --text-secondary: #aec4bc;
+    --text-muted: #7b918a;
+    --cpu-card: rgba(58, 86, 78, 0.82);
+    --ram-card: rgba(56, 68, 66, 0.82);
+    --bat-card: rgba(88, 78, 52, 0.84);
+  }
+
+  [data-theme="lavender"] {
+    --bg-left-ambient: #191c30;
+    --bg-right-ambient: #7a68a6;
+    --bg-glow-1: rgba(208, 188, 245, 0.28);
+    --bg-glow-2: rgba(56, 52, 108, 0.45);
+    --card-surface: rgba(54, 46, 74, 0.80);
+    --card-surface-alt: rgba(42, 36, 60, 0.86);
+    --card-border: rgba(212, 196, 245, 0.16);
+    --accent-pastel: #d5c2f7;
+    --accent-pastel-dark: #231938;
+    --text-primary: #f3effc;
+    --text-secondary: #bfb2d9;
+    --text-muted: #8b7ea6;
+    --cpu-card: rgba(78, 62, 108, 0.82);
+    --ram-card: rgba(62, 60, 78, 0.82);
+    --bat-card: rgba(96, 72, 68, 0.84);
+  }
+
+  [data-theme="apricot"] {
+    --bg-left-ambient: #261c1a;
+    --bg-right-ambient: #b87b5e;
+    --bg-glow-1: rgba(248, 200, 168, 0.28);
+    --bg-glow-2: rgba(96, 56, 44, 0.42);
+    --card-surface: rgba(76, 52, 44, 0.82);
+    --card-surface-alt: rgba(58, 40, 34, 0.88);
+    --card-border: rgba(248, 206, 180, 0.16);
+    --accent-pastel: #f7c9ac;
+    --accent-pastel-dark: #362015;
+    --text-primary: #fdf2eb;
+    --text-secondary: #d9bca9;
+    --text-muted: #9e8270;
+    --cpu-card: rgba(110, 68, 54, 0.82);
+    --ram-card: rgba(76, 64, 60, 0.82);
+    --bat-card: rgba(106, 84, 46, 0.84);
+  }
+
+  [data-theme="nordic"] {
+    --bg-left-ambient: #131e29;
+    --bg-right-ambient: #527a9c;
+    --bg-glow-1: rgba(176, 216, 245, 0.26);
+    --bg-glow-2: rgba(34, 68, 98, 0.45);
+    --card-surface: rgba(42, 56, 72, 0.82);
+    --card-surface-alt: rgba(32, 44, 58, 0.88);
+    --card-border: rgba(186, 218, 242, 0.16);
+    --accent-pastel: #b5daf7;
+    --accent-pastel-dark: #162838;
+    --text-primary: #edf5fc;
+    --text-secondary: #adc4d9;
+    --text-muted: #7890a6;
+    --cpu-card: rgba(54, 78, 104, 0.82);
+    --ram-card: rgba(56, 66, 78, 0.82);
+    --bat-card: rgba(88, 76, 54, 0.84);
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-left-ambient);
+    /* Мягкий двухзонный атмосферный фон в тонах референса (без персонажа) */
+    background-image:
+      radial-gradient(circle at 76% 48%, var(--bg-glow-1) 0%, transparent 52%),
+      radial-gradient(circle at 26% 32%, var(--bg-glow-2) 0%, transparent 55%),
+      radial-gradient(circle at 85% 82%, rgba(168, 148, 215, 0.22) 0%, transparent 45%),
+      linear-gradient(115deg, var(--bg-left-ambient) 0%, #2a3942 42%, var(--bg-right-ambient) 100%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    user-select: none;
+    position: relative;
+    transition: background 0.45s ease, color 0.3s ease;
+  }
+
+  /* Мягкое диагональное солнечное свечение справа сверху как из окна на референсе */
+  .window-sunbeams {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      linear-gradient(128deg, transparent 32%, rgba(255, 240, 245, 0.05) 48%, rgba(255, 230, 240, 0.12) 68%, transparent 88%);
+  }
+
+  /* Shared Frosted Material You Card */
+  .m3-card {
+    background: var(--card-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+
+  /* Material 3 Scalloped 12-Pointed Cookie Shape */
+  .scallop-badge {
+    width: 38px;
+    height: 38px;
+    background: var(--accent-pastel);
+    color: var(--accent-pastel-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    clip-path: polygon(
+      50% 0%, 63% 6%, 77% 6%, 85% 17%, 95% 26%, 94% 40%,
+      100% 50%, 94% 60%, 95% 74%, 85% 83%, 77% 94%, 63% 94%,
+      50% 100%, 37% 94%, 23% 94%, 15% 83%, 5% 74%, 6% 60%,
+      0% 50%, 6% 40%, 5% 26%, 15% 17%, 23% 6%, 37% 6%
+    );
+  }
+  .scallop-badge:hover {
+    transform: rotate(20deg) scale(1.07);
+  }
+
+  /* =========================================================
+     TOP-RIGHT PALETTE PRESET SWITCHER PILL
+     ========================================================= */
+  .theme-switcher-bar {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 30;
+    padding: 6px 12px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .theme-switcher-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-right: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .swatch-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .swatch-btn:hover {
+    transform: scale(1.14);
+  }
+
+  .swatch-btn.active {
+    border-color: #ffffff;
+    transform: scale(1.16);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+  }
+
+  /* =========================================================
+     FAR-LEFT VERTICAL SIDEBAR (3 STACKED PILLS)
+     ========================================================= */
+  .left-vertical-bar {
+    position: fixed;
+    top: 12px;
+    bottom: 12px;
+    left: 10px;
+    width: 34px;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .v-pill {
+    width: 100%;
+    background: rgba(24, 28, 32, 0.78);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .v-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    font-size: 12px;
+  }
+
+  .v-icon:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+    transform: scale(1.1);
+  }
+
+  .v-icon.active-dot {
+    color: var(--accent-pastel);
+    font-weight: 700;
+  }
+
+  .v-scallop-mini {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  /* =========================================================
+     MAIN BENTO WIDGET CLUSTER (ANCHORED BOTTOM-LEFT)
+     ========================================================= */
+  .bento-cluster {
+    position: fixed;
+    left: 56px;
+    bottom: 26px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    width: 615px;
+  }
+
+  /* ---------------------------------------------------------
+     BENTO ROW 1: [PROFILE CARD] + [STACKED CLOCK] + [WEATHER]
+     --------------------------------------------------------- */
+  .bento-row-1 {
+    display: grid;
+    grid-template-columns: 196px 102px 1fr;
+    gap: 11px;
+    align-items: end;
+  }
+
+  /* 1A. Profile Card */
+  .profile-bento-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-top-gradient {
+    height: 64px;
+    background:
+      radial-gradient(circle at 70% 30%, var(--accent-pastel) 0%, transparent 65%),
+      linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(0,0,0,0.15) 100%);
+  }
+
+  .profile-body-content {
+    padding: 0 12px 12px;
+    margin-top: -22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-user-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+  }
+
+  .profile-avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, #fff5f8 0%, var(--accent-pastel) 55%, #6e4556 100%);
+    border: 2px solid var(--accent-pastel);
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .profile-user-meta h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .profile-user-meta span {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    display: block;
+  }
+
+  .cloudy-status-line {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .profile-btn-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-lock-pastel {
+    flex: 1;
+    height: 32px;
+    border-radius: 18px;
+    border: none;
+    background: var(--accent-pastel);
+    color: var(--accent-pastel-dark);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: filter 0.15s ease;
+  }
+  .btn-lock-pastel:hover { filter: brightness(1.08); }
+
+  .btn-round-outline {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-round-outline:hover { background: rgba(255, 255, 255, 0.14); }
+
+  /* 1B. Stacked Clock Center */
+  .clock-bento-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 4px;
+  }
+
+  .big-pink-digits {
+    font-family: 'Outfit', sans-serif;
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 0.84;
+    color: var(--accent-pastel);
+    text-align: center;
+    letter-spacing: -1px;
+    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+    transition: color 0.3s ease;
+  }
+
+  .clock-sub-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 6px;
+    opacity: 0.9;
+  }
+
+  /* 1C. Scalloped Emblem + Weather Card */
+  .weather-bento-wrap {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .weather-scallop-sticker {
+    width: 78px;
+    height: 78px;
+    background:
+      radial-gradient(circle at 35% 35%, #fff5f8 0%, var(--accent-pastel) 70%, #8c586e 100%);
+    border: 2px solid #fff;
+    z-index: 2;
+    margin-right: -12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    clip-path: polygon(
+      50% 0%, 63% 6%, 77% 6%, 85% 17%, 95% 26%, 94% 40%,
+      100% 50%, 94% 60%, 95% 74%, 85% 83%, 77% 94%, 63% 94%,
+      50% 100%, 37% 94%, 23% 94%, 15% 83%, 5% 74%, 6% 60%,
+      0% 50%, 6% 40%, 5% 26%, 15% 17%, 23% 6%, 37% 6%
+    );
+  }
+
+  .weather-bento-card {
+    flex: 1;
+    padding: 11px 14px 11px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .w-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .w-temp-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .w-loc-sub {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    line-height: 1.25;
+  }
+
+  .w-bottom-stats {
+    font-size: 8.5px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ---------------------------------------------------------
+     BENTO ROW 2: [3 TONAL HW CARDS] + [MEDIA PLAYER CARD]
+     --------------------------------------------------------- */
+  .bento-row-2 {
+    display: grid;
+    grid-template-columns: 92px 92px 92px 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .tonal-hw-card {
+    height: 92px;
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  }
+
+  .tonal-hw-card.cpu-tone { background: var(--cpu-card); }
+  .tonal-hw-card.ram-tone { background: var(--ram-card); }
+  .tonal-hw-card.bat-tone { background: var(--bat-card); }
+
+  .hw-icon-right {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hw-icon-right .scallop-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .hw-stat-text {
+    position: relative;
+    z-index: 2;
+  }
+  .hw-stat-text strong {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    display: block;
+    line-height: 1.05;
+  }
+  .hw-stat-text span {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+  }
+
+  .hw-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 45% 55% 0 0 / 10px 10px 0 0;
+    transition: height 0.5s ease;
+  }
+
+  /* Media Card in Row 2 */
+  .media-bento-card {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .media-note-square {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+
+  .media-meta-col {
+    flex: 1;
+    min-width: 0;
+    align-self: flex-start;
+    padding-top: 4px;
+  }
+  .media-meta-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .media-meta-col p {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .media-pill-controls {
+    align-self: flex-end;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ---------------------------------------------------------
+     BENTO ROW 3: [WORLD CLOCK] + [MONTHLY CALENDAR] + [WEBP]
+     --------------------------------------------------------- */
+  .bento-row-3 {
+    display: grid;
+    grid-template-columns: 196px 196px 196px;
+    gap: 11px;
+    align-items: stretch;
+  }
+
+  /* 3A. World Clock Card */
+  .wc-bento-card {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .wc-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--text-secondary);
+  }
+
+  .wc-center-time {
+    text-align: center;
+  }
+  .wc-center-time h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 25px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.05;
+  }
+  .wc-center-time p {
+    font-size: 9px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .wc-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .wc-mini-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 6px 7px;
+  }
+
+  .wc-mini-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5px;
+    color: var(--text-muted);
+  }
+  .wc-mini-top b { color: var(--text-secondary); }
+
+  .wc-mini-val {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* 3B. Monthly Calendar Card */
+  .calendar-bento-card {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .cal-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .cal-month-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .cal-nav-arrows {
+    display: flex;
+    gap: 4px;
+  }
+
+  .cal-arrow-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cal-arrow-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+  .cal-weekdays, .cal-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+  }
+
+  .cal-weekdays span {
+    font-size: 8.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding-bottom: 4px;
+  }
+
+  .cal-days-grid {
+    row-gap: 3px;
+  }
+
+  .cal-day {
+    width: 22px;
+    height: 22px;
+    margin: 0 auto;
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .cal-day:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .cal-day.muted {
+    color: var(--text-muted);
+    opacity: 0.55;
+  }
+
+  .cal-day.today {
+    background: var(--accent-pastel);
+    color: var(--accent-pastel-dark);
+    font-weight: 800;
+  }
+
+  /* 3C. Image Converter Card */
+  .converter-bento-card {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .conv-top-formats {
+    font-size: 7.5px;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.4px;
+  }
+
+  .conv-drop-area {
+    flex: 1;
+    border: 1.5px solid rgba(255, 255, 255, 0.28);
+    outline: 1px solid rgba(255, 255, 255, 0.10);
+    outline-offset: 3px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .conv-drop-area:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--accent-pastel);
+  }
+
+  .conv-drop-area span {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  .conv-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+
+  .conv-select {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 3px 8px;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* Watermark Bottom Right */
+  .unix-watermark {
+    position: fixed;
+    bottom: 14px;
+    right: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    text-align: right;
+    line-height: 1.1;
+    pointer-events: none;
+  }
+
+  @media (max-width: 960px) {
+    body { overflow-y: auto; height: auto; padding: 60px 16px 40px 54px; }
+    .bento-cluster { position: static; width: 100%; max-width: 615px; }
+    .bento-row-1, .bento-row-2, .bento-row-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-theme="sakura">
+
+<div class="window-sunbeams"></div>
+
+<!-- =========================================================
+     TOP-RIGHT COLOR PRESET SWITCHER
+     ========================================================= -->
+<div class="m3-card theme-switcher-bar" id="themeSwitcherBar">
+  <div class="theme-switcher-label">
+    <span>🎨</span> <span id="activeThemeName">Sakura Rose</span>
+  </div>
+  <button class="swatch-btn active" data-theme="sakura" data-label="Sakura Rose" style="background:linear-gradient(135deg,#f4b8d0,#593847);" title="Sakura Rose (Reference)"></button>
+  <button class="swatch-btn" data-theme="matcha" data-label="Matcha Jade" style="background:linear-gradient(135deg,#bce0d2,#2b4a43);" title="Matcha Jade"></button>
+  <button class="swatch-btn" data-theme="lavender" data-label="Lavender Dusk" style="background:linear-gradient(135deg,#d5c2f7,#3b3154);" title="Lavender Dusk"></button>
+  <button class="swatch-btn" data-theme="apricot" data-label="Warm Apricot" style="background:linear-gradient(135deg,#f7c9ac,#593a2e);" title="Warm Apricot"></button>
+  <button class="swatch-btn" data-theme="nordic" data-label="Nordic Slate" style="background:linear-gradient(135deg,#b5daf7,#2a3f54);" title="Nordic Slate"></button>
+</div>
+
+<!-- =========================================================
+     FAR-LEFT VERTICAL 3-PILL SIDEBAR
+     ========================================================= -->
+<aside class="left-vertical-bar">
+
+  <!-- Top Pill: Workspaces & Media Counter -->
+  <div class="v-pill">
+    <div class="v-icon active-dot">&lt;&gt;</div>
+    <div class="v-icon">•</div>
+    <div class="v-icon">♪</div>
+    <div class="v-icon">🌐</div>
+    <div class="v-icon">•</div>
+    <div class="scallop-badge v-scallop-mini">♪</div>
+    <div style="font-size:9.5px;font-weight:700;color:var(--text-primary);">12</div>
+  </div>
+
+  <!-- Middle Pill: Application Dock -->
+  <div class="v-pill">
+    <div class="v-icon" title="Files">📁</div>
+    <div class="v-icon" title="Browser">🧭</div>
+    <div class="v-icon" title="Spotify">🟢</div>
+    <div class="v-icon" title="Discord">💬</div>
+    <div class="v-icon active-dot" title="Quickshell">◎</div>
+    <div class="v-icon" title="Steam">🎮</div>
+    <div class="v-icon" title="Zed">⚡</div>
+    <div class="v-icon" title="Terminal">🐚</div>
+    <div class="v-icon" title="Anime">🌸</div>
+    <div class="v-icon" title="Studio">🎲</div>
+    <div class="v-icon" title="Prism">💠</div>
+  </div>
+
+  <!-- Bottom Pill: System Tray & Quick Palette Cycle -->
+  <div class="v-pill">
+    <div class="v-icon" title="Screenshot">⛶</div>
+    <div class="v-icon" id="cycleThemePipette" title="Cycle Color Palette Preset">🎨</div>
+    <div class="v-icon" title="Keyboard">⌨️</div>
+    <div class="v-icon" title="Brightness">☼</div>
+    <div class="v-icon" title="Volume">🔊</div>
+    <div class="v-icon" title="Wi-Fi">🛜</div>
+    <div class="v-icon" title="Bluetooth">ᛒ</div>
+    <div class="v-icon" title="Notifications">🔔</div>
+    <div class="v-icon" title="Power">⏻</div>
+  </div>
+
+</aside>
+
+<!-- =========================================================
+     MAIN BENTO WIDGET CLUSTER
+     ========================================================= -->
+<main class="bento-cluster">
+
+  <!-- ROW 1: PROFILE CARD + STACKED CLOCK + WEATHER CARD -->
+  <div class="bento-row-1">
+
+    <!-- 1A. Profile Card -->
+    <div class="m3-card profile-bento-card">
+      <div class="profile-top-gradient"></div>
+      <div class="profile-body-content">
+        <div class="profile-user-row">
+          <div class="profile-avatar-circle">🌸</div>
+          <div class="profile-user-meta">
+            <h4>blapples@blapples</h4>
+            <span>Up • 1m</span>
+          </div>
+        </div>
+
+        <div class="cloudy-status-line">
+          <span>☁️</span> <span>• a bit cloudy today</span>
+        </div>
+
+        <div class="profile-btn-row">
+          <button class="btn-lock-pastel" id="lockBtn">🔒 Lock</button>
+          <button class="btn-round-outline" title="Settings">⚙️</button>
+          <button class="btn-round-outline" title="Power">⏻</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1B. Stacked Big Clock -->
+    <div class="clock-bento-center">
+      <div class="big-pink-digits">
+        <div>11</div>
+        <div>33</div>
+      </div>
+      <div class="clock-sub-date">Wed, 22/07</div>
+    </div>
+
+    <!-- 1C. Scalloped Sticker + Weather Card -->
+    <div class="weather-bento-wrap">
+      <div class="weather-scallop-sticker">🎀</div>
+      <div class="m3-card weather-bento-card">
+        <div class="w-top">
+          <div>
+            <div class="w-temp-title">27°C</div>
+            <div class="w-loc-sub">Santa Rosa<br>broken clouds</div>
+          </div>
+          <div class="scallop-badge" style="width:32px;height:32px;font-size:13px;">🌙</div>
+        </div>
+        <div class="w-bottom-stats">
+          <span>💧 88%</span>
+          <span>💨 63%</span>
+          <span>↗ 1.66 m/s</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: 3 TONAL HARDWARE CARDS + MEDIA PLAYER -->
+  <div class="bento-row-2">
+
+    <div class="tonal-hw-card cpu-tone">
+      <div class="hw-wave" id="cpuWave" style="height:45%;"></div>
+      <div class="hw-icon-right">
+        <div class="scallop-badge">📈</div>
+      </div>
+      <div class="hw-stat-text">
+        <strong id="cpuReadout">45%</strong>
+        <span>CPU</span>
+      </div>
+    </div>
+
+    <div class="tonal-hw-card ram-tone">
+      <div class="hw-wave" id="ramWave" style="height:26%;"></div>
+      <div class="hw-icon-right">
+        <div class="scallop-badge">⚙️</div>
+      </div>
+      <div class="hw-stat-text">
+        <strong id="ramReadout">26%</strong>
+        <span>RAM</span>
+      </div>
+    </div>
+
+    <div class="tonal-hw-card bat-tone">
+      <div class="hw-wave" style="height:58%;"></div>
+      <div class="hw-icon-right">
+        <div class="scallop-badge">🔋</div>
+      </div>
+      <div class="hw-stat-text">
+        <strong>58%</strong>
+        <span>Battery</span>
+      </div>
+    </div>
+
+    <!-- Media Player Card -->
+    <div class="m3-card media-bento-card">
+      <div class="media-note-square">♪</div>
+      <div class="media-meta-col">
+        <h4 id="mediaTitle">Play</h4>
+        <p id="mediaSub">Something</p>
+      </div>
+      <div class="media-pill-controls">
+        <span style="cursor:pointer;">⇄</span>
+        <div class="scallop-badge" id="playPauseBtn" style="width:34px;height:34px;font-size:12px;">▶</div>
+        <span style="cursor:pointer;" id="nextSongBtn">⏭</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: WORLD CLOCK + MONTHLY CALENDAR + IMAGE CONVERTER -->
+  <div class="bento-row-3">
+
+    <!-- 3A. World Clock -->
+    <div class="m3-card wc-bento-card">
+      <div class="wc-header">
+        <span>📍 Santa Rosa</span>
+        <span>⚙️</span>
+      </div>
+
+      <div class="wc-center-time">
+        <h3>11:33 PM</h3>
+        <p>Wednesday, July 22 2026</p>
+      </div>
+
+      <div class="wc-grid-4">
+        <div class="wc-mini-box">
+          <div class="wc-mini-top"><b>Kolkata</b><span>UTC+5:30</span></div>
+          <div class="wc-mini-val"><span>09:03 PM</span><span>🌙</span></div>
+        </div>
+        <div class="wc-mini-box">
+          <div class="wc-mini-top"><b>Tokyo</b><span>UTC+9</span></div>
+          <div class="wc-mini-val"><span>12:33 AM</span><span>🌙</span></div>
+        </div>
+        <div class="wc-mini-box">
+          <div class="wc-mini-top"><b>Melbourne</b><span>UTC+10</span></div>
+          <div class="wc-mini-val"><span>01:33 AM</span><span>🌙</span></div>
+        </div>
+        <div class="wc-mini-box">
+          <div class="wc-mini-top"><b>Seoul</b><span>UTC+9</span></div>
+          <div class="wc-mini-val"><span>12:33 AM</span><span>🌙</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3B. Monthly Calendar (July 2026) -->
+    <div class="m3-card calendar-bento-card">
+      <div class="cal-header-row">
+        <span class="cal-month-lbl">July 2026</span>
+        <div class="cal-nav-arrows">
+          <button class="cal-arrow-btn">&lt;</button>
+          <button class="cal-arrow-btn">&gt;</button>
+        </div>
+      </div>
+
+      <div class="cal-weekdays">
+        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+      </div>
+
+      <div class="cal-days-grid" id="calDaysGrid"></div>
+    </div>
+
+    <!-- 3C. Image Converter -->
+    <div class="m3-card converter-bento-card">
+      <div class="conv-top-formats">PNG • JPG • WEBP • AVIF • BMP • PDF • TIFF</div>
+
+      <div class="conv-drop-area" id="convDropArea">
+        <span style="font-size:18px;">🖼️</span>
+        <span id="convPromptText">Drop image(s) here<br>to convert to .WEBP</span>
+      </div>
+
+      <div class="conv-bottom-bar">
+        <span>Convert to:</span>
+        <select class="conv-select" id="convFormatSelect">
+          <option value="WEBP">🔄 WEBP</option>
+          <option value="AVIF">🔄 AVIF</option>
+          <option value="PNG">🔄 PNG</option>
+          <option value="JPG">🔄 JPG</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<div class="unix-watermark">&gt;_<br>unix.s</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. COLOR PALETTE PRESET SWITCHER (5 CURATED MATERIAL YOU THEMES)
+  // =========================================================================
+  const swatches = document.querySelectorAll('#themeSwitcherBar .swatch-btn');
+  const activeThemeName = document.getElementById('activeThemeName');
+  const themeOrder = ['sakura', 'matcha', 'lavender', 'apricot', 'nordic'];
+  let currentThemeIdx = 0;
+
+  function applyTheme(themeKey) {
+    document.body.setAttribute('data-theme', themeKey);
+    swatches.forEach((btn, idx) => {
+      const match = btn.dataset.theme === themeKey;
+      btn.classList.toggle('active', match);
+      if (match) {
+        currentThemeIdx = idx;
+        activeThemeName.textContent = btn.dataset.label;
+      }
+    });
+  }
+
+  swatches.forEach(btn => {
+    btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+  });
+
+  // Also allow cycling themes via the Eyedropper/Palette icon in the left bar
+  document.getElementById('cycleThemePipette').addEventListener('click', () => {
+    currentThemeIdx = (currentThemeIdx + 1) % themeOrder.length;
+    applyTheme(themeOrder[currentThemeIdx]);
+  });
+
+  // =========================================================================
+  // 2. POPULATE JULY 2026 CALENDAR GRID (EXACT MATCH TO SCREENSHOT)
+  // =========================================================================
+  const calDaysGrid = document.getElementById('calDaysGrid');
+  const daysData = [
+    { d: 29, m: true }, { d: 30, m: true }, { d: 1 }, { d: 2 }, { d: 3 }, { d: 4 }, { d: 5 },
+    { d: 6 }, { d: 7 }, { d: 8 }, { d: 9 }, { d: 10 }, { d: 11 }, { d: 12 },
+    { d: 13 }, { d: 14 }, { d: 15 }, { d: 16 }, { d: 17 }, { d: 18 }, { d: 19 },
+    { d: 20 }, { d: 21 }, { d: 22, today: true }, { d: 23 }, { d: 24 }, { d: 25 }, { d: 26 },
+    { d: 27 }, { d: 28 }, { d: 29 }, { d: 30 }, { d: 31 }, { d: 1, m: true }, { d: 2, m: true },
+    { d: 3, m: true }, { d: 4, m: true }, { d: 5, m: true }, { d: 6, m: true }, { d: 7, m: true }, { d: 8, m: true }, { d: 9, m: true }
+  ];
+
+  calDaysGrid.innerHTML = daysData.map(item =>
+    `<div class="cal-day ${item.m ? 'muted' : ''} ${item.today ? 'today' : ''}">${item.d}</div>`
+  ).join('');
+
+  calDaysGrid.querySelectorAll('.cal-day').forEach(dayEl => {
+    dayEl.addEventListener('click', () => {
+      calDaysGrid.querySelectorAll('.cal-day').forEach(d => d.classList.remove('today'));
+      dayEl.classList.add('today');
+    });
+  });
+
+  // =========================================================================
+  // 3. MEDIA PLAYER & IMAGE CONVERTER INTERACTIVITY
+  // =========================================================================
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const mediaTitle = document.getElementById('mediaTitle');
+  const mediaSub = document.getElementById('mediaSub');
+  const tracks = [
+    { t: 'IDSMILE', a: 'Nightcord at 25:00' },
+    { t: 'Bake no Hana', a: 'Mizuki Akiyama' },
+    { t: 'Bug', a: 'Kairiki Bear' }
+  ];
+  let tIdx = 0;
+  let isPlaying = false;
+
+  playPauseBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    playPauseBtn.textContent = isPlaying ? '❚❚' : '▶';
+    if (isPlaying) {
+      mediaTitle.textContent = tracks[tIdx].t;
+      mediaSub.textContent = tracks[tIdx].a;
+    }
+  });
+
+  document.getElementById('nextSongBtn').addEventListener('click', () => {
+    tIdx = (tIdx + 1) % tracks.length;
+    isPlaying = false;
+    playPauseBtn.click();
+  });
+
+  // Image Converter
+  const convSelect = document.getElementById('convFormatSelect');
+  const convPrompt = document.getElementById('convPromptText');
+  const convDrop = document.getElementById('convDropArea');
+
+  convSelect.addEventListener('change', () => {
+    convPrompt.innerHTML = `Drop image(s) here<br>to convert to .${convSelect.value}`;
+  });
+
+  convDrop.addEventListener('click', () => {
+    const fmt = convSelect.value;
+    convPrompt.innerHTML = `<b>✓ Converted to .${fmt}!</b>`;
+    setTimeout(() => {
+      convPrompt.innerHTML = `Drop image(s) here<br>to convert to .${fmt}`;
+    }, 1800);
+  });
+
+  // Lock Button
+  const lockBtn = document.getElementById('lockBtn');
+  lockBtn.addEventListener('click', () => {
+    lockBtn.textContent = '🔓 Locked';
+    setTimeout(() => { lockBtn.textContent = '🔒 Lock'; }, 1400);
+  });
+
+  // Subtle Hardware Telemetry Animation
+  setInterval(() => {
+    const cpu = Math.floor(38 + Math.random() * 14);
+    const ram = Math.floor(24 + Math.random() * 5);
+    document.getElementById('cpuReadout').textContent = `${cpu}%`;
+    document.getElementById('cpuWave').style.height = `${cpu}%`;
+    document.getElementById('ramReadout').textContent = `${ram}%`;
+    document.getElementById('ramWave').style.height = `${ram}%`;
+  }, 2600);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Caelestia Hyprland Lockscreen & Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Caelestia Hyprland Lockscreen & Widget Suite",
+  "category": "modals",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "hyprland",
+    "caelestia",
+    "cachyos",
+    "lockscreen",
+    "neofetch",
+    "cool-cat",
+    "dino-game",
+    "notifications",
+    "polygon-gauges",
+    "minimal",
+    "pastel",
+    "modal"
+  ],
+  "description": "Dark minimalist Hyprland lockscreen and desktop dashboard featuring caelestiafetch.sh with the CachyOS logo, an asymmetric split clock, an interactive sunglasses cat avatar, polygonal liquid-fill resource gauges, and a playable Dino mini-game inside the empty Notifications panel.",
+  "techniques": [
+    "polygonal SVG clip-path gauges (Pentagon, Squircle, Hexagon) with animated liquid wave levels",
+    "interactive SVG Cool Cat avatar that adjusts its sunglasses on click/hover",
+    "playable T-Rex Dino runner mini-game embedded inside the 'No Notifications' state",
+    "clickable 8-dot terminal color palette that dynamically themes the UI"
+  ],
+  "recipe": "3-column dark obsidian layout (#0b0b10) with matte slate cards (#13131b) and pastel lavender, cyan, and mauve accents.",
+  "preview": {
+    "mode": "page",
+    "width": 1280,
+    "height": 760
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg-abyss: #0b0b0f;
+    --card-bg: #13131a;
+    --card-border: rgba(255, 255, 255, 0.045);
+    --text-main: #d8dce8;
+    --text-bright: #eef1f8;
+    --text-muted: #7a7f94;
+    --accent-primary: #b4befe;
+    --accent-cyan: #2de2e6;
+    --poly-cpu: #485b85;
+    --poly-ram: #755985;
+    --poly-bat: #566375;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-abyss);
+    background-image:
+      radial-gradient(circle at 50% 40%, rgba(180, 190, 254, 0.03) 0%, transparent 60%);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    user-select: none;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     MAIN 3-COLUMN LOCKSCREEN & DASHBOARD GRID
+     ========================================================= */
+  .caelestia-shell {
+    width: 100%;
+    max-width: 1120px;
+    display: grid;
+    grid-template-columns: 300px 1fr 320px;
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .col-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .c-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* =========================================================
+     LEFT COLUMN: WEATHER + CAELESTIAFETCH.SH + MEDIA PLAYER
+     ========================================================= */
+
+  /* 1. Weather Card */
+  .weather-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 22px 18px;
+    gap: 8px;
+  }
+
+  .w-condition {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .w-temp-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 2px 0;
+  }
+
+  .w-temp-val {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    letter-spacing: -1px;
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  .w-sun-ico {
+    width: 38px;
+    height: 38px;
+    color: var(--text-main);
+    animation: slowRotate 24s linear infinite;
+  }
+
+  @keyframes slowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .w-sub-lines {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  /* 2. System Fetch Card (`caelestiafetch.sh`) */
+  .fetch-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+  }
+
+  .fetch-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .term-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    background: var(--accent-primary);
+    color: #0b0b0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    transition: background 0.3s ease;
+  }
+
+  .fetch-body {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 4px 0;
+  }
+
+  .cachy-logo-svg {
+    width: 74px;
+    height: 74px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 12px rgba(45, 226, 230, 0.2));
+  }
+
+  .fetch-stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.75;
+    color: var(--text-main);
+    white-space: pre;
+  }
+
+  .fetch-stats b {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* 8 Palette Dots Row */
+  .palette-dots-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  .pal-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border: 2px solid transparent;
+  }
+
+  .pal-dot:hover, .pal-dot.active {
+    transform: scale(1.22);
+    border-color: #ffffff;
+  }
+
+  /* 3. Bottom-Left Media Player Card */
+  .media-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 18px;
+    gap: 14px;
+  }
+
+  .media-status-text h4 {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .media-status-text p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .media-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .m-btn-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1f202b;
+    border: none;
+    color: var(--text-main);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+  .m-btn-circle:hover { background: #2c2e3d; }
+
+  .m-btn-play {
+    width: 52px;
+    height: 32px;
+    border-radius: 16px;
+    background: #262836;
+    border: none;
+    color: var(--text-bright);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .m-btn-play:hover, .m-btn-play.playing {
+    background: var(--accent-primary);
+    color: #0b0b0f;
+  }
+
+  /* =========================================================
+     CENTER COLUMN: ASYMMETRIC CLOCK + COOL CAT + PASSWORD PILL
+     ========================================================= */
+  .center-lock-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 10px 12px;
+  }
+
+  /* Top Split Clock (`04` | `07 / PM`) */
+  .split-clock-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .clock-row-top {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    line-height: 0.82;
+  }
+
+  .clock-hour-big {
+    font-size: 118px;
+    font-weight: 700;
+    color: #9da8c4;
+    letter-spacing: -2px;
+  }
+
+  .clock-right-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2px 0;
+  }
+
+  .clock-min-small {
+    font-size: 56px;
+    font-weight: 700;
+    color: #9da8c4;
+    line-height: 0.85;
+  }
+
+  .clock-ampm-badge {
+    background: #1a1b24;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #9da8c4;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .clock-date-sub {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Center Rounded-Hexagon Cool Cat Avatar */
+  .cat-hexagon-wrap {
+    width: 220px;
+    height: 200px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .cat-hexagon-wrap:hover {
+    transform: scale(1.04);
+  }
+
+  .cat-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.6));
+  }
+
+  .cat-shades-group {
+    transition: transform 0.25s ease;
+  }
+
+  .cat-hexagon-wrap:hover .cat-shades-group,
+  .cat-hexagon-wrap.cool-active .cat-shades-group {
+    transform: translateY(4px) rotate(-2deg);
+  }
+
+  /* Bottom Password Input Pill */
+  .password-pill {
+    width: 210px;
+    height: 38px;
+    background: #14141c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .password-pill:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 14px rgba(180, 190, 254, 0.2);
+  }
+
+  .pw-user-ico {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .pw-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-bright);
+    font-family: inherit;
+    font-size: 10.5px;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .pw-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .pw-submit-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .pw-submit-btn:hover { color: var(--text-bright); }
+
+  /* =========================================================
+     RIGHT COLUMN: 3 POLYGON GAUGES + NOTIFICATIONS DINO CARD
+     ========================================================= */
+
+  /* 1. Top-Right 3 Geometric Polygon Gauges Card */
+  .gauges-card {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .poly-gauge-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .poly-shape {
+    width: 82px;
+    height: 82px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    overflow: hidden;
+    background: #1c1d28;
+  }
+
+  /* Pentagon (CPU) */
+  .poly-pentagon {
+    clip-path: polygon(50% 2%, 98% 36%, 80% 96%, 20% 96%, 2% 36%);
+  }
+
+  /* Rounded Square (RAM) */
+  .poly-squircle {
+    border-radius: 20px;
+  }
+
+  /* Hexagon (Battery) */
+  .poly-hexagon {
+    clip-path: polygon(50% 2%, 95% 25%, 95% 75%, 50% 98%, 5% 75%, 5% 25%);
+  }
+
+  .poly-wave-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: height 0.5s ease;
+  }
+
+  .poly-pentagon .poly-wave-fill { background: var(--poly-cpu); height: 68%; }
+  .poly-squircle .poly-wave-fill { background: var(--poly-ram); height: 55%; }
+  .poly-hexagon .poly-wave-fill { background: var(--poly-bat); height: 57%; }
+
+  .poly-ico {
+    position: relative;
+    z-index: 2;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .poly-val {
+    position: relative;
+    z-index: 2;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  /* Floating Temp Badge on Top-Right of CPU Pentagon */
+  .temp-floating-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    z-index: 4;
+    background: #232736;
+    border: 2px solid var(--card-bg);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  /* 2. Bottom-Right Notifications Card (With Playable Dino Game!) */
+  .notifications-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 18px 20px;
+    cursor: pointer;
+  }
+
+  .notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .dino-stage-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  canvas#dinoCanvas {
+    width: 240px;
+    height: 110px;
+    display: block;
+  }
+
+  .no-notif-caption {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 980px) {
+    .caelestia-shell {
+      grid-template-columns: 1fr;
+      max-width: 420px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="caelestia-shell">
+
+  <!-- =======================================================
+       LEFT COLUMN: WEATHER + CAELESTIAFETCH.SH + MEDIA
+       ======================================================= -->
+  <section class="col-stack">
+
+    <!-- 1. Weather Card -->
+    <div class="c-card weather-card">
+      <div class="w-condition">Clear</div>
+      <div class="w-temp-row">
+        <span class="w-temp-val">27°C</span>
+        <svg class="w-sun-ico" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="18" cy="18" r="7"/>
+          <line x1="18" y1="3" x2="18" y2="7"/>
+          <line x1="18" y1="29" x2="18" y2="33"/>
+          <line x1="3" y1="18" x2="7" y2="18"/>
+          <line x1="29" y1="18" x2="33" y2="18"/>
+          <line x1="7.4" y1="7.4" x2="10.2" y2="10.2"/>
+          <line x1="25.8" y1="25.8" x2="28.6" y2="28.6"/>
+          <line x1="28.6" y1="7.4" x2="25.8" y2="10.2"/>
+          <line x1="10.2" y1="25.8" x2="7.4" y2="28.6"/>
+        </svg>
+      </div>
+      <div class="w-sub-lines">
+        Feels like 27°C<br>
+        High 29°C • Low 22°C
+      </div>
+    </div>
+
+    <!-- 2. System Fetch Card (`caelestiafetch.sh`) -->
+    <div class="c-card fetch-card">
+      <div class="fetch-header">
+        <div class="term-badge">&gt;_</div>
+        <span>caelestiafetch.sh</span>
+      </div>
+
+      <div class="fetch-body">
+        <!-- Geometric CachyOS / Caelestia Hexagon C Logo -->
+        <svg class="cachy-logo-svg" viewBox="0 0 80 80" fill="none">
+          <polygon points="56,12 24,12 8,40 24,68 56,68 46,52 30,52 22,40 30,28 46,28" fill="#17b8bd"/>
+          <polygon points="24,12 8,40 22,40 30,28 56,12" fill="#2de2e6"/>
+          <polygon points="8,40 24,68 56,68 46,52 22,40" fill="#0d8a94"/>
+          <!-- 3 Floating Dots -->
+          <circle cx="60" cy="28" r="3" fill="#2de2e6"/>
+          <circle cx="52" cy="40" r="4.5" fill="#2de2e6"/>
+          <circle cx="67" cy="46" r="5.5" fill="#17b8bd"/>
+        </svg>
+
+        <div class="fetch-stats"><b>WM  :</b> Hyprland
+<b>SH  :</b> zsh 5.9
+<b>UP  :</b> 5 hours, 19m
+<b>BATT:</b> [+] 58%</div>
+      </div>
+
+      <!-- 8 Interactive Color Palette Dots -->
+      <div class="palette-dots-row" id="paletteRow">
+        <div class="pal-dot" data-color="#6c7086" style="background:#262833;"></div>
+        <div class="pal-dot" data-color="#9b7bf7" style="background:#9b7bf7;"></div>
+        <div class="pal-dot" data-color="#2de2e6" style="background:#2de2e6;"></div>
+        <div class="pal-dot" data-color="#f5c2e7" style="background:#f5c2e7;"></div>
+        <div class="pal-dot" data-color="#89b4fa" style="background:#89b4fa;"></div>
+        <div class="pal-dot active" data-color="#b4befe" style="background:#b4befe;"></div>
+        <div class="pal-dot" data-color="#89dceb" style="background:#89dceb;"></div>
+        <div class="pal-dot" data-color="#f2cdcd" style="background:#f2cdcd;"></div>
+      </div>
+    </div>
+
+    <!-- 3. Media Player Card -->
+    <div class="c-card media-card">
+      <div class="media-status-text">
+        <h4 id="mediaTitle">Nothing playing</h4>
+        <p id="mediaSub">Try playing some music!</p>
+      </div>
+
+      <div class="media-controls-row">
+        <button class="m-btn-circle" id="prevBtn">⏮</button>
+        <button class="m-btn-play" id="playBtn">▶</button>
+        <button class="m-btn-circle" id="nextBtn">⏭</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =======================================================
+       CENTER COLUMN: SPLIT CLOCK + COOL CAT + PASSWORD INPUT
+       ======================================================= -->
+  <section class="center-lock-column">
+
+    <!-- 1. Split Asymmetric Clock -->
+    <div class="split-clock-block">
+      <div class="clock-row-top">
+        <div class="clock-hour-big">04</div>
+        <div class="clock-right-stack">
+          <div class="clock-min-small">07</div>
+          <div class="clock-ampm-badge">PM</div>
+        </div>
+      </div>
+      <div class="clock-date-sub">THURSDAY • 9 JUL</div>
+    </div>
+
+    <!-- 2. Rounded Hexagon Cool Cat with Sunglasses (Interactive!) -->
+    <div class="cat-hexagon-wrap" id="coolCatBox" title="Click to adjust sunglasses!">
+      <svg class="cat-svg" viewBox="0 0 220 200" fill="none">
+        <defs>
+          <clipPath id="hexClip">
+            <path d="M 65 12 Q 110 8 155 12 Q 192 16 206 55 Q 218 100 206 145 Q 192 184 155 188 Q 110 192 65 188 Q 28 184 14 145 Q 2 100 14 55 Q 28 16 65 12 Z"/>
+          </clipPath>
+        </defs>
+
+        <!-- Outer Hexagon Frame -->
+        <path d="M 65 12 Q 110 8 155 12 Q 192 16 206 55 Q 218 100 206 145 Q 192 184 155 188 Q 110 192 65 188 Q 28 184 14 145 Q 2 100 14 55 Q 28 16 65 12 Z"
+              fill="#6e6059" stroke="#262220" stroke-width="4"/>
+
+        <g clip-path="url(#hexClip)">
+          <!-- Cat White & Ginger Head -->
+          <path d="M 38 195 C 34 130, 48 85, 52 28 L 92 62 C 115 56, 135 58, 152 66 L 182 32 C 188 85, 195 135, 192 195 Z"
+                fill="#f7efe8" stroke="#1c1614" stroke-width="4.5" stroke-linejoin="round"/>
+
+          <!-- Ginger Forehead & Ear Patches -->
+          <path d="M 52 28 L 92 62 C 108 58, 125 58, 136 62 C 122 98, 92 98, 86 68 L 44 108 Z" fill="#d9955b"/>
+          <path d="M 142 64 L 182 32 L 186 96 C 165 92, 150 82, 142 64 Z" fill="#d9955b"/>
+
+          <!-- Pink Inner Ears -->
+          <polygon points="60,44 78,64 56,78" fill="#e89da2"/>
+          <polygon points="174,46 156,66 176,78" fill="#e89da2"/>
+
+          <!-- Cute Pink Nose & Mouth -->
+          <polygon points="104,136 116,136 110,145" fill="#d97f82" stroke="#1c1614" stroke-width="2.5"/>
+          <path d="M 110 145 L 108 156 M 96 158 Q 108 152 122 158" stroke="#1c1614" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Dark Aviator Sunglasses + Paw Adjusting Them -->
+          <g class="cat-shades-group">
+            <!-- Glasses Frame & Lenses -->
+            <path d="M 44 96 L 102 106 L 118 106 L 176 96 L 168 128 C 154 140, 126 138, 115 116 L 105 116 C 92 138, 62 138, 50 124 Z"
+                  fill="#222225" stroke="#111113" stroke-width="4" stroke-linejoin="round"/>
+            <!-- Lens Glint -->
+            <line x1="62" y1="104" x2="56" y2="120" stroke="#52525b" stroke-width="3" stroke-linecap="round"/>
+            <line x1="132" y1="104" x2="126" y2="120" stroke="#52525b" stroke-width="3" stroke-linecap="round"/>
+
+            <!-- White Paw Holding Right Edge of Sunglasses -->
+            <path d="M 198 188 C 198 145, 188 112, 168 108 C 152 106, 150 126, 164 134 C 154 140, 158 154, 170 156 L 174 195 Z"
+                  fill="#ffffff" stroke="#1c1614" stroke-width="4" stroke-linejoin="round"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 3. Password Pill Input -->
+    <form class="password-pill" id="loginForm">
+      <span class="pw-user-ico">🔒</span>
+      <input type="password" class="pw-input" id="pwInput" placeholder="Enter your password">
+      <button type="submit" class="pw-submit-btn">→</button>
+    </form>
+
+  </section>
+
+  <!-- =======================================================
+       RIGHT COLUMN: 3 POLYGON GAUGES + DINO NOTIFICATIONS
+       ======================================================= -->
+  <section class="col-stack">
+
+    <!-- 1. 3 Geometric Polygon Resource Gauges -->
+    <div class="c-card gauges-card">
+      <!-- CPU Pentagon + 48°C Badge -->
+      <div class="poly-gauge-wrap">
+        <div class="temp-floating-badge" id="cpuTempBadge">48°C</div>
+        <div class="poly-shape poly-pentagon">
+          <div class="poly-wave-fill" id="cpuPolyFill"></div>
+          <span class="poly-ico">☁️</span>
+          <span class="poly-val" id="cpuPolyVal">1%</span>
+        </div>
+      </div>
+
+      <!-- RAM Rounded Square -->
+      <div class="poly-gauge-wrap">
+        <div class="poly-shape poly-squircle">
+          <div class="poly-wave-fill" id="ramPolyFill"></div>
+          <span class="poly-ico">🖧</span>
+          <span class="poly-val" id="ramPolyVal">13%</span>
+        </div>
+      </div>
+
+      <!-- Battery Hexagon -->
+      <div class="poly-gauge-wrap">
+        <div class="poly-shape poly-hexagon">
+          <div class="poly-wave-fill" style="height: 57%;"></div>
+          <span class="poly-ico">🔋</span>
+          <span class="poly-val">57%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Notifications Card with Playable Chrome Dino -->
+    <div class="c-card notifications-card" id="dinoCard" title="Click or press Space to jump!">
+      <div class="notif-header">
+        <span>Notifications</span>
+        <span id="dinoScoreLabel" style="font-family:'JetBrains Mono',monospace;font-size:10px;"></span>
+      </div>
+
+      <div class="dino-stage-wrap">
+        <canvas id="dinoCanvas" width="240" height="110"></canvas>
+        <div class="no-notif-caption" id="notifCaption">No Notifications</div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. CLICKABLE 8-DOT PALETTE SWITCHER IN CAELESTIAFETCH.SH
+  // =========================================================================
+  const dots = document.querySelectorAll('#paletteRow .pal-dot');
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      dots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      document.documentElement.style.setProperty('--accent-primary', dot.dataset.color);
+    });
+  });
+
+  // =========================================================================
+  // 2. COOL CAT AVATAR & PASSWORD FORM INTERACTION
+  // =========================================================================
+  const coolCat = document.getElementById('coolCatBox');
+  coolCat.addEventListener('click', () => {
+    coolCat.classList.toggle('cool-active');
+  });
+
+  const loginForm = document.getElementById('loginForm');
+  const pwInput = document.getElementById('pwInput');
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    pwInput.value = '';
+    pwInput.placeholder = '✓ Unlocked Hyprland';
+    setTimeout(() => { pwInput.placeholder = 'Enter your password'; }, 2000);
+  });
+
+  // =========================================================================
+  // 3. MEDIA PLAYER CONTROLS
+  // =========================================================================
+  const playBtn = document.getElementById('playBtn');
+  const mediaTitle = document.getElementById('mediaTitle');
+  const mediaSub = document.getElementById('mediaSub');
+  const tracks = [
+    { t: 'After Dark', a: 'Mr.Kitty' },
+    { t: 'Memory Reboot', a: 'VØJ & Narvent' },
+    { t: 'Resonance', a: 'HOME' }
+  ];
+  let tIdx = 0;
+  let playing = false;
+
+  function updateMedia() {
+    if (playing) {
+      mediaTitle.textContent = tracks[tIdx].t;
+      mediaSub.textContent = tracks[tIdx].a;
+      playBtn.textContent = '❚❚';
+      playBtn.classList.add('playing');
+    } else {
+      mediaTitle.textContent = 'Nothing playing';
+      mediaSub.textContent = 'Try playing some music!';
+      playBtn.textContent = '▶';
+      playBtn.classList.remove('playing');
+    }
+  }
+
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    updateMedia();
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    tIdx = (tIdx - 1 + tracks.length) % tracks.length;
+    playing = true;
+    updateMedia();
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    tIdx = (tIdx + 1) % tracks.length;
+    playing = true;
+    updateMedia();
+  });
+
+  // =========================================================================
+  // 4. PLAYABLE DINO MINI-GAME IN THE "NO NOTIFICATIONS" PANEL
+  // =========================================================================
+  const dCanvas = document.getElementById('dinoCanvas');
+  const dCtx = dCanvas.getContext('2d');
+  const dinoScoreLabel = document.getElementById('dinoScoreLabel');
+  const notifCaption = document.getElementById('notifCaption');
+
+  let dinoY = 72;
+  let dinoVy = 0;
+  let isJumping = false;
+  let cactusX = 205;
+  let cloudX = 120;
+  let gameActive = false;
+  let score = 0;
+
+  function jumpDino() {
+    if (!gameActive) {
+      gameActive = true;
+      score = 0;
+      notifCaption.textContent = 'Dino Runner Active (Click to Jump)';
+    }
+    if (!isJumping) {
+      dinoVy = -7.2;
+      isJumping = true;
+    }
+  }
+
+  document.getElementById('dinoCard').addEventListener('click', jumpDino);
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && document.activeElement !== pwInput) {
+      e.preventDefault();
+      jumpDino();
+    }
+  });
+
+  function drawDinoScene() {
+    dCtx.clearRect(0, 0, dCanvas.width, dCanvas.height);
+
+    // Physics update when active
+    if (gameActive) {
+      dinoY += dinoVy;
+      dinoVy += 0.42;
+      if (dinoY >= 72) {
+        dinoY = 72;
+        dinoVy = 0;
+        isJumping = false;
+      }
+
+      cactusX -= 2.6;
+      if (cactusX < -20) {
+        cactusX = 245;
+        score++;
+        dinoScoreLabel.textContent = `HI ${String(score).padStart(3, '0')}`;
+      }
+
+      cloudX -= 0.4;
+      if (cloudX < -30) cloudX = 250;
+
+      // Simple collision reset
+      if (Math.abs(cactusX - 36) < 12 && dinoY > 56) {
+        gameActive = false;
+        cactusX = 205;
+        dinoY = 72;
+        notifCaption.textContent = 'No Notifications';
+      }
+    }
+
+    // 1. Outlined Cloud (Matches Screenshot)
+    dCtx.strokeStyle = '#525668';
+    dCtx.lineWidth = 1.5;
+    dCtx.beginPath();
+    dCtx.moveTo(cloudX - 16, 26);
+    dCtx.lineTo(cloudX + 18, 26);
+    dCtx.arc(cloudX + 10, 21, 6, 0, Math.PI, true);
+    dCtx.arc(cloudX, 18, 8, 0, Math.PI, true);
+    dCtx.arc(cloudX - 10, 22, 5, 0, Math.PI, true);
+    dCtx.closePath();
+    dCtx.stroke();
+
+    // 2. Ground Horizon Line & Pebbles
+    dCtx.strokeStyle = '#3b3e4f';
+    dCtx.beginPath();
+    dCtx.moveTo(10, 94);
+    dCtx.lineTo(230, 94);
+    dCtx.stroke();
+
+    // 3. T-Rex Dino Silhouette
+    dCtx.fillStyle = '#55596b';
+    const dy = Math.round(dinoY);
+    // Head & snout
+    dCtx.fillRect(34, dy - 16, 14, 10);
+    dCtx.clearRect(37, dy - 14, 2, 2); // Eye
+    // Body & tail
+    dCtx.fillRect(28, dy - 6, 14, 14);
+    dCtx.fillRect(22, dy - 2, 6, 8);
+    // Tiny arm
+    dCtx.fillRect(42, dy - 2, 4, 3);
+    // Legs
+    dCtx.fillRect(30, dy + 8, 3, 8);
+    dCtx.fillRect(37, dy + 8, 3, 8);
+
+    // 4. Cactus Silhouette
+    const cx = Math.round(cactusX);
+    dCtx.fillStyle = '#55596b';
+    dCtx.fillRect(cx, 66, 6, 28);
+    dCtx.fillRect(cx - 6, 72, 4, 10);
+    dCtx.fillRect(cx - 6, 79, 6, 3);
+    dCtx.fillRect(cx + 8, 70, 4, 12);
+    dCtx.fillRect(cx + 6, 79, 6, 3);
+
+    requestAnimationFrame(drawDinoScene);
+  }
+
+  requestAnimationFrame(drawDinoScene);
+
+  // Subtle Live Polygon Telemetry Update
+  setInterval(() => {
+    const cpu = Math.floor(1 + Math.random() * 5);
+    const temp = Math.floor(46 + Math.random() * 4);
+    document.getElementById('cpuPolyVal').textContent = `${cpu}%`;
+    document.getElementById('cpuTempBadge').textContent = `${temp}°C`;
+  }, 3000);
+})();
+</script>
+</body>
+</html>
