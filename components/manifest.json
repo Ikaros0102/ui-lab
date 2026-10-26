@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-23T13:24:29.759Z",
- "count": 72,
+ "generated": "2026-10-26T15:24:56.362Z",
+ "count": 78,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -1556,6 +1556,43 @@
    "hasJs": true
   },
   {
+   "id": "berlinetta-starship-vfd-dash",
+   "path": "components/widgets/berlinetta-starship-vfd-dash.html",
+   "title": "1984 Berlinetta Starship Digital VFD Dashboard",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "camaro",
+    "berlinetta",
+    "80s-dashboard",
+    "vfd-display",
+    "digital-cluster",
+    "synthwave",
+    "tachometer",
+    "speedometer",
+    "delco-radio",
+    "retro-futurism",
+    "automotive"
+   ],
+   "description": "Precision-aligned 1984 Chevrolet Camaro Berlinetta digital cockpit featuring a unified midnight indigo-violet dashboard housing, phosphor-green 7-segment VFD speedometer, dual-column bar-graph tachometer, symmetrical neon-orange 4-quadrant analog gauges, amber warning light matrix, flanking control pods, and Delco cassette equalizer.",
+   "techniques": [
+    "authentic 80s studio color grading (midnight indigo-navy #191c32, phosphor VFD green #54f57a, and warm incandescent amber #ffba38)",
+    "symmetrical 4-quadrant hybrid gauges combining VFD square dot markers with neon-orange physical needles",
+    "dual-column 24-segment VFD bar-graph tachometer with dynamic throttle response",
+    "strict grid-aligned flanking control pods and flush-mounted Delco 5-band EQ cassette receiver"
+   ],
+   "recipe": "Full-width precision-aligned cockpit layout showcasing the digital VFD instrument panel, control pods, and Delco stereo deck.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 780
+   },
+   "hasJs": true
+  },
+  {
    "id": "blacksmith-forge-station",
    "path": "components/widgets/blacksmith-forge-station.html",
    "title": "Aethelgard Relic Forge & Item Dossier",
@@ -2039,6 +2076,44 @@
    "hasJs": true
   },
   {
+   "id": "nixie-tube-clock",
+   "path": "components/widgets/nixie-tube-clock.html",
+   "title": "Realistic IN-14 Nixie Clock in Walnut Case",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "nixie",
+    "in-14",
+    "vacuum-tube",
+    "clock",
+    "walnut",
+    "art-deco",
+    "photorealistic",
+    "svg-glass",
+    "neon",
+    "skeuomorphic",
+    "hardware",
+    "light-mode"
+   ],
+   "description": "Macro-photorealistic 6-tube IN-14 Nixie clock seated in a handcrafted walnut wood enclosure with a brushed aluminum Art-Deco emblem. Features seamless SVG blown-glass envelopes, internal metal getter bridges, ultra-fine hexagonal anode meshes, thin wire cathode stacks, and volumetric red-orange neon discharge.",
+   "techniques": [
+    "seamless SVG blown-glass bulb paths with Fresnel wall thickness and curved specular highlights",
+    "authentic thin-wire SVG cathode paths (0-9) stacked in 3D depth with multi-stage Gaussian neon halation",
+    "procedural SVG walnut wood-grain filter with warm top-surface tube reflections",
+    "3 studio lighting environments (Studio White, Warm Dusk, Dark Room)"
+   ],
+   "recipe": "Combines precision SVG vacuum-tube rendering with a textured walnut and brushed-aluminum enclosure over a studio cyclorama backdrop.",
+   "preview": {
+    "mode": "page",
+    "width": 1240,
+    "height": 740
+   },
+   "hasJs": true
+  },
+  {
    "id": "nocturne-streetlamp-reader",
    "path": "components/widgets/nocturne-streetlamp-reader.html",
    "title": "Nocturne Gaslamp Night Reader",
@@ -2072,6 +2147,43 @@
     "mode": "page",
     "width": 1080,
     "height": 740
+   },
+   "hasJs": true
+  },
+  {
+   "id": "optitron-automotive-cluster",
+   "path": "components/widgets/optitron-automotive-cluster.html",
+   "title": "Optitron Acrylic Prism Automotive Cluster",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "speedometer",
+    "tachometer",
+    "dashboard",
+    "car-cluster",
+    "optitron",
+    "acrylic",
+    "svg-gauges",
+    "telemetry",
+    "theme-switcher",
+    "automotive",
+    "neon"
+   ],
+   "description": "Pitch-black 3-pod Optitron automotive instrument cluster featuring a dominant center Speedometer, left Tachometer, and right dual Temp/Fuel combi-gauge with backlit LCD readouts, 3D faceted acrylic prism tick marks, bi-color light-piped needles, and Michroma euro-automotive typography.",
+   "techniques": [
+    "3-pod asymmetric sport cluster layout (Left Tachometer, Dominant Center Speedometer, Right Dual Temp/Fuel Pod)",
+    "clean 3D multi-faceted SVG acrylic prism ticks slicing across a glowing red neon perimeter ring",
+    "bi-color translucent acrylic needles with a red neon edge and ice-cyan core",
+    "backlit Optitron LCD odometer and ambient/boost telemetry panels"
+   ],
+   "recipe": "Built on an absolute pitch-black (#000000) high-contrast canvas inside sculpted 3-pod gauge barrels with SVG glow filters.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 780
    },
    "hasJs": true
   },
@@ -2217,6 +2329,44 @@
    "preview": {
     "mode": "page",
     "width": 1080,
+    "height": 780
+   },
+   "hasJs": true
+  },
+  {
+   "id": "quantum-atom-confinement",
+   "path": "components/widgets/quantum-atom-confinement.html",
+   "title": "Cryo-Magnetic 3D Atom Confinement Chamber",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "quantum",
+    "atom",
+    "3d-canvas",
+    "metallic",
+    "copper",
+    "brass",
+    "reactor",
+    "plasma",
+    "tactile-buttons",
+    "sci-fi-ui",
+    "hardware",
+    "sci-fi"
+   ],
+   "description": "Machined stainless-steel and brushed-copper quantum confinement chamber UI featuring a central interactive 3D textured plasma nucleus with depth-sorted neon blue and fiery orange electron orbits, a side laser injector nozzle, and tactile hardware controls.",
+   "techniques": [
+    "depth-sorted 3D HTML5 Canvas rendering (back orbital arcs behind sphere, front arcs over sphere)",
+    "procedural 3D spherical surface granulation and plasma cellular texture on the rotating nucleus",
+    "multi-layered machined copper, brass, and brushed steel CSS gradients with specular reflections",
+    "interactive mouse 3D gimbal rotation, laser pulse injection, and isotope harmonic switching"
+   ],
+   "recipe": "Encases a cylindrical glass vacuum viewport between stepped copper induction coils inside a bolted brushed-steel housing with mechanical push-buttons and rotary flux controls.",
+   "preview": {
+    "mode": "page",
+    "width": 1120,
     "height": 780
    },
    "hasJs": true
@@ -2515,6 +2665,82 @@
     "mode": "page",
     "width": 1000,
     "height": 660
+   },
+   "hasJs": true
+  },
+  {
+   "id": "tl-audio-valve-processor",
+   "path": "components/widgets/tl-audio-valve-processor.html",
+   "title": "TL Audio Ivory 2 — 5052 Stereo Valve Processor",
+   "category": "widgets",
+   "themes": [
+    "light",
+    "retro"
+   ],
+   "tags": [
+    "tlaudio",
+    "ivory-2",
+    "5052",
+    "rackmount",
+    "compressor",
+    "equaliser",
+    "vu-meter",
+    "knobs",
+    "valve-preamp",
+    "studio-gear",
+    "hardware",
+    "audio"
+   ],
+   "description": "Photorealistic 19-inch 2U rackmount studio hardware interface of the TL Audio Ivory 2 (5052 Stereo Valve Processor). Features 42 draggable fluted rotary knobs with color-coded caps, 25 push-button switches with status LEDs, dual backlit analog VU meters, 1/4-inch TRS instrument jacks, and Stereo Master link mode.",
+   "techniques": [
+    "42 interactive fluted rotary knobs with SVG radial tick scales and color-coded caps (Red, Green, Blue, Grey, Black)",
+    "dual warm-backlit circular analog VU meters with real-time ballistic needle physics",
+    "authentic Stereo Mode (CH1 MSTR) linking Channel 1 and Channel 2 parameters dynamically",
+    "brushed ivory-cream anodized aluminum faceplate with navy-blue silkscreen and glowing vacuum-tube vents"
+   ],
+   "recipe": "Built as a 2U 19-inch rackmount processor with a top 3D Perspective chassis lid, rack ears, and modular channel strips.",
+   "preview": {
+    "mode": "page",
+    "width": 1420,
+    "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "vector-w8-avionics-cockpit",
+   "path": "components/widgets/vector-w8-avionics-cockpit.html",
+   "title": "Vector W8 Supercar Avionics Cockpit",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "vector-w8",
+    "avionics",
+    "amber-display",
+    "korry-switches",
+    "circuit-breakers",
+    "supercar",
+    "80s-cockpit",
+    "wireframe",
+    "hobbs-meter",
+    "military-ui",
+    "automotive",
+    "hardware"
+   ],
+   "description": "Front-facing recreation of the Vector W8 Twin-Turbo supercar avionics instrument panel. Features an amber electroluminescent (EL) display with an interactive wireframe car diagram, military Korry backlit push-buttons, dual vertical thumbwheel dimmers, HUD/Boost rotary knobs, a 6-lamp warning matrix, a mechanical Hobbs hour meter, and a 3x5 grid of push-pull aircraft circuit breakers.",
+   "techniques": [
+    "amber electroluminescent (EL) pixel-grid screen with interactive gullwing door/canopy wireframe and multi-page tabs",
+    "vertical brushed black-anodized aluminum modular panels secured with socket-head Allen screws",
+    "draggable notched vertical thumbwheel dimmers dynamically controlling panel and display brightness",
+    "3x5 matrix of pop-out aircraft thermal circuit breakers with amperage stamps"
+   ],
+   "recipe": "Encased in a stitched black leather dashboard binnacle with 5 modular anodized-aluminum avionics sub-panels.",
+   "preview": {
+    "mode": "page",
+    "width": 1420,
+    "height": 760
    },
    "hasJs": true
   },

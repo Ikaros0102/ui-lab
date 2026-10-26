@@ -1,0 +1,1246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — TL Audio Ivory 2 (5052 Stereo Valve Processor)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "TL Audio Ivory 2 — 5052 Stereo Valve Processor",
+  "category": "widgets",
+  "themes": [
+    "light",
+    "retro"
+  ],
+  "tags": [
+    "tlaudio",
+    "ivory-2",
+    "5052",
+    "rackmount",
+    "compressor",
+    "equaliser",
+    "vu-meter",
+    "knobs",
+    "valve-preamp",
+    "studio-gear",
+    "hardware",
+    "audio"
+  ],
+  "description": "Photorealistic 19-inch 2U rackmount studio hardware interface of the TL Audio Ivory 2 (5052 Stereo Valve Processor). Features 42 draggable fluted rotary knobs with color-coded caps, 25 push-button switches with status LEDs, dual backlit analog VU meters, 1/4-inch TRS instrument jacks, and Stereo Master link mode.",
+  "techniques": [
+    "42 interactive fluted rotary knobs with SVG radial tick scales and color-coded caps (Red, Green, Blue, Grey, Black)",
+    "dual warm-backlit circular analog VU meters with real-time ballistic needle physics",
+    "authentic Stereo Mode (CH1 MSTR) linking Channel 1 and Channel 2 parameters dynamically",
+    "brushed ivory-cream anodized aluminum faceplate with navy-blue silkscreen and glowing vacuum-tube vents"
+  ],
+  "recipe": "Built as a 2U 19-inch rackmount processor with a top 3D Perspective chassis lid, rack ears, and modular channel strips.",
+  "preview": {
+    "mode": "page",
+    "width": 1420,
+    "height": 640
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --ivory-main: #eae5d7;
+    --ivory-light: #f4f0e6;
+    --ivory-shadow: #cfcab8;
+    --navy-ink: #1e2d52;
+    --navy-border: #3a4f7a;
+    --knob-red: #b82925;
+    --knob-green: #225c39;
+    --knob-blue: #1f4e8c;
+    --knob-grey: #969ba3;
+    --knob-black: #1e2024;
+    --vu-glow: 1;
+  }
+
+  body.power-off {
+    --vu-glow: 0.08;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #1e222a 0%, #0b0d11 75%, #050608 100%);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 10px;
+    overflow-x: hidden;
+  }
+
+  /* Telemetry HUD Pill Above Rack */
+  .studio-hud-bar {
+    margin-bottom: 14px;
+    background: rgba(15, 19, 26, 0.9);
+    border: 1px solid #334155;
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  }
+  .studio-hud-bar b { color: #f59e0b; }
+
+  /* =========================================================
+     2U 19-INCH RACKMOUNT HARDWARE WRAPPER & 3D TOP LID
+     ========================================================= */
+  .rack-unit-wrapper {
+    width: 1360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 32px 60px rgba(0, 0, 0, 0.92));
+  }
+
+  /* Black Steel 3D Top Chassis Lid (Visible in Reference Photo) */
+  .chassis-top-lid {
+    width: 1244px;
+    height: 44px;
+    background: linear-gradient(180deg, #0d0e11 0%, #1b1e24 85%, #090a0c 100%);
+    clip-path: polygon(3% 0%, 97% 0%, 100% 100%, 0% 100%);
+    border-top: 1px solid #333842;
+    position: relative;
+    margin-bottom: -2px;
+    z-index: 1;
+  }
+
+  /* Side silver rivets along top lid edge */
+  .chassis-top-lid::after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 18px;
+    height: 4px;
+    background: radial-gradient(circle, #94a3b8 2px, transparent 3px);
+    background-size: 120px 4px;
+  }
+
+  /* Main Brushed Ivory Faceplate */
+  .ivory-faceplate {
+    position: relative;
+    z-index: 2;
+    width: 1360px;
+    height: 368px;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.18) 0px 1px, rgba(0,0,0,0.015) 1px 2px),
+      linear-gradient(180deg, #f3efe4 0%, var(--ivory-main) 15%, #e2ddd0 88%, #d4cfc0 100%);
+    border: 1.5px solid #b5afa0;
+    border-top: 2px solid #ffffff;
+    border-bottom: 3px solid #8c8778;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 74px 1fr 74px;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.06);
+  }
+
+  /* =========================================================
+     LEFT & RIGHT 19" RACK EARS, SLOTS, SCREWS & BRANDING
+     ========================================================= */
+  .rack-ear {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+  }
+
+  /* Oval Rack Mounting Cutouts on Outer Edges */
+  .ear-notch {
+    position: absolute;
+    width: 22px;
+    height: 15px;
+    background: #0b0d11;
+    border: 1.5px solid #8c8778;
+    box-shadow: inset 0 2px 4px #000;
+  }
+  .rack-ear.left .ear-notch { left: -2px; border-radius: 0 10px 10px 0; }
+  .rack-ear.right .ear-notch { right: -2px; border-radius: 10px 0 0 10px; }
+  .ear-notch.top { top: 44px; }
+  .ear-notch.bot { bottom: 44px; }
+
+  /* Phillips Machine Screws on Faceplate Flanks */
+  .panel-screw {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #e2e8f0 0%, #64748b 60%, #1e293b 100%);
+    border: 1px solid #334155;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .panel-screw::before, .panel-screw::after {
+    content: "";
+    position: absolute;
+    background: #1e293b;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(35deg);
+  }
+  .panel-screw::before { width: 8px; height: 1.6px; }
+  .panel-screw::after { width: 1.6px; height: 8px; }
+  .rack-ear.left .panel-screw.s-top { right: 6px; top: 54px; }
+  .rack-ear.left .panel-screw.s-bot { right: 6px; bottom: 54px; }
+  .rack-ear.right .panel-screw.s-top { left: 6px; top: 54px; }
+  .rack-ear.right .panel-screw.s-bot { left: 6px; bottom: 54px; }
+
+  /* Left Brand Logo: Outlined `2` + `TL Audio` + `IVORY` */
+  .brand-left-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+    margin-left: 8px;
+  }
+
+  .giant-outline-2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 118px;
+    font-weight: 800;
+    line-height: 0.75;
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--navy-ink);
+    opacity: 0.72;
+    pointer-events: none;
+  }
+
+  .tla-badge-overlay {
+    position: absolute;
+    top: 34%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tla-blue-box {
+    background: var(--navy-ink);
+    color: #ffffff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-style: italic;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 1px 5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .ivory-title-txt {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--navy-ink);
+    letter-spacing: 0.5px;
+    background: var(--ivory-main);
+    padding: 0 2px;
+    margin-top: 2px;
+  }
+
+  /* Right Brand Text: `5052 STEREO VALVE PROCESSOR` */
+  .brand-right-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 22px;
+    margin-right: 10px;
+    color: var(--navy-ink);
+  }
+
+  .model-5052 {
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+  }
+
+  .model-sub {
+    font-size: 7.5px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+  }
+
+  /* =========================================================
+     MAIN CENTER CONTROL SURFACE (TOP ROW + BOTTOM ROW)
+     ========================================================= */
+  .main-control-surface {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px 4px 10px;
+    gap: 6px;
+  }
+
+  /* ---------------------------------------------------------
+     UPPER ROW: [CH1 PREAMP/LIM] + [VU1 | POWER | VU2] + [CH2 PREAMP/LIM]
+     --------------------------------------------------------- */
+  .upper-strip-row {
+    height: 112px;
+    border: 1.5px solid var(--navy-border);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: grid;
+    grid-template-columns: 1fr 270px 1fr;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
+
+  .preamp-half {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    gap: 4px;
+  }
+
+  /* 4 Horizontal Tube Ventilation Slots */
+  .vent-slots-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 44px;
+    padding: 4px 0;
+  }
+
+  .vent-slit {
+    height: 7px;
+    background: #141210;
+    border-radius: 4px;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 3px #000;
+  }
+
+  /* Warm Orange Vacuum Tube Glow Inside Vents */
+  .vent-slit::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 120, 20, calc(0.45 * var(--vu-glow))) 0%, transparent 80%);
+  }
+
+  /* Center VU Meters & Power Switch Cluster */
+  .vu-power-center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 2px;
+  }
+
+  /* Circular Backlit Analog VU Meter */
+  .vu-meter-circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #111317;
+    border: 2.5px solid #2b303a;
+    box-shadow:
+      0 4px 10px rgba(0,0,0,0.45),
+      inset 0 2px 6px #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .vu-dial-face {
+    width: 100%;
+    height: 72%;
+    background:
+      radial-gradient(circle at 50% 90%,
+        rgba(255, 225, 130, var(--vu-glow)) 0%,
+        rgba(242, 198, 105, var(--vu-glow)) 55%,
+        rgba(195, 155, 75, var(--vu-glow)) 100%
+      ),
+      #2a2620;
+    position: relative;
+    transition: background 0.35s ease;
+  }
+
+  .vu-scale-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Стрелка с центром вращения ровно в геометрическом центре дуги шкалы */
+  .vu-needle {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 1.5px;
+    height: 55px;
+    background: linear-gradient(180deg, #d92626 0%, #d92626 38%, #1e2024 38%, #1e2024 100%);
+    border-radius: 1px;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(var(--needle-deg, -38deg));
+    transition: transform 0.08s ease-out;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.28));
+    z-index: 2;
+  }
+
+  /* Dark Crescent Lower Cap of Circular VU Meter */
+  .vu-lower-crescent {
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(180deg, #252830 0%, #0d0f13 100%);
+    border-top: 1.5px solid #475569;
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Center Power Rocker Switch Column */
+  .power-switch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .sec-tiny-lbl {
+    font-size: 7.5px;
+    font-weight: 800;
+    color: var(--navy-ink);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .round-power-rocker {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #374151 0%, #111827 70%, #030712 100%);
+    border: 3px solid #1e2229;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.2);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    color: #e2e8f0;
+    font-size: 8px;
+    font-weight: 800;
+    transition: transform 0.12s ease;
+  }
+  .round-power-rocker:active { transform: scale(0.95); }
+
+  .ch-num-badges-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
+  }
+
+  .navy-ch-box {
+    background: var(--navy-ink);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------------------------------------------------------
+     LOWER ROW: [COMP 1] + [EQUALISER 1] + [METERS/STEREO] + [COMP 2] + [EQUALISER 2]
+     --------------------------------------------------------- */
+  .lower-strip-row {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 186px 1fr 112px 186px 1fr;
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .outlined-module {
+    border: 1.5px solid var(--navy-border);
+    border-radius: 10px;
+    padding: 6px 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .module-bottom-title {
+    font-size: 8.5px;
+    font-weight: 900;
+    color: var(--navy-ink);
+    text-align: center;
+    letter-spacing: 0.4px;
+  }
+
+  /* =========================================================
+     SHARED ROTARY KNOB WITH RADIAL TICK SCALE & COLORED CAP
+     ========================================================= */
+  .knob-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .knob-dial-wrap {
+    width: 52px;
+    height: 52px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .knob-scale-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* 3D Fluted Potentiometer Knob */
+  .fluted-knob {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    /* Fluted dark skirt teeth around perimeter */
+    background:
+      repeating-conic-gradient(#141619 0deg 12deg, #32363e 12deg 24deg);
+    border: 1.5px solid #0d0e11;
+    box-shadow:
+      0 4px 7px rgba(0, 0, 0, 0.55),
+      inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    position: relative;
+    cursor: ns-resize;
+    transform: rotate(var(--deg, 0deg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Colored Center Cap of Knob */
+  .knob-cap {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.45);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.35);
+    position: relative;
+  }
+
+  .fluted-knob.red .knob-cap   { background: radial-gradient(circle at 35% 35%, #dc3530, var(--knob-red)); }
+  .fluted-knob.green .knob-cap { background: radial-gradient(circle at 35% 35%, #2f7d4e, var(--knob-green)); }
+  .fluted-knob.blue .knob-cap  { background: radial-gradient(circle at 35% 35%, #2b6cb0, var(--knob-blue)); }
+  .fluted-knob.grey .knob-cap  { background: radial-gradient(circle at 35% 35%, #b8bec7, var(--knob-grey)); }
+  .fluted-knob.black .knob-cap { background: radial-gradient(circle at 35% 35%, #373a42, var(--knob-black)); }
+
+  /* White Pointer Line Extending from Center Cap to Top Edge */
+  .fluted-knob::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.2px;
+    height: 11px;
+    background: #ffffff;
+    border-radius: 1px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.8);
+  }
+
+  .knob-range-foot {
+    display: flex;
+    justify-content: space-between;
+    width: 48px;
+    font-size: 6.5px;
+    font-weight: 800;
+    color: var(--navy-ink);
+    margin-top: -3px;
+  }
+
+  /* =========================================================
+     ROUND BLACK PUSH BUTTONS & COLORED LED INDICATORS
+     ========================================================= */
+  .push-btn-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .black-push-btn {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #3f444e 0%, #181a1f 65%, #090a0c 100%);
+    border: 1.5px solid #0d0e11;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.22);
+    cursor: pointer;
+    transition: transform 0.08s ease;
+  }
+
+  .black-push-btn:active,
+  .black-push-btn.pressed {
+    transform: scale(0.91);
+    background: radial-gradient(circle at 50% 50%, #14161a 0%, #2a2e36 100%);
+    box-shadow: inset 0 2px 4px #000;
+  }
+
+  .led-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.45);
+    transition: all 0.15s ease;
+  }
+
+  .led-dot.green  { background: #3b523b; }
+  .led-dot.yellow { background: #6b5c28; }
+  .led-dot.red    { background: #5c2626; }
+
+  .led-dot.green.on  { background: #22c55e; box-shadow: 0 0 7px #22c55e; }
+  .led-dot.yellow.on { background: #eab308; box-shadow: 0 0 7px #eab308; }
+  .led-dot.red.on    { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+  /* 1/4" TRS Instrument Jack Socket */
+  .inst-jack-box {
+    border: 1.5px solid var(--navy-border);
+    border-radius: 8px;
+    padding: 4px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .trs-socket {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: conic-gradient(#cbd5e1, #475569, #f8fafc, #334155, #cbd5e1);
+    border: 2px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+  }
+
+  .trs-hole {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #050608;
+    border: 2px solid #94a3b8;
+    box-shadow: inset 0 2px 4px #000;
+  }
+
+  /* Equaliser 4-Column Matrix */
+  .eq-4col-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .eq-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: end;
+    justify-items: center;
+    padding-top: 2px;
+  }
+
+  @media (max-width: 1380px) {
+    .rack-unit-wrapper {
+      transform: scale(0.76);
+      transform-origin: top center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Interactive Readout Bar -->
+<div class="studio-hud-bar">
+  <span>TL AUDIO 5052 // <b>VALVE TELEMETRY</b></span>
+  <span>•</span>
+  <span id="paramReadout">Drag any of the 42 knobs • Toggle STEREO MODE (CH1 MSTR) to link channels</span>
+</div>
+
+<main class="rack-unit-wrapper">
+
+  <!-- 3D Top Steel Rack Chassis Lid -->
+  <div class="chassis-top-lid"></div>
+
+  <!-- Front 2U Ivory Faceplate -->
+  <section class="ivory-faceplate">
+
+    <!-- =======================================================
+         LEFT 19" RACK EAR & TL AUDIO IVORY 2 LOGO
+         ======================================================= -->
+    <aside class="rack-ear left">
+      <div class="ear-notch top"></div>
+      <div class="ear-notch bot"></div>
+      <div class="panel-screw s-top"></div>
+      <div class="panel-screw s-bot"></div>
+
+      <div class="brand-left-wrap">
+        <div class="giant-outline-2">2</div>
+        <div class="tla-badge-overlay">
+          <div class="tla-blue-box">TL Audio</div>
+          <div class="ivory-title-txt">IVORY</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =======================================================
+         CENTER MAIN CONTROL SURFACE (UPPER + LOWER ROWS)
+         ======================================================= -->
+    <div class="main-control-surface">
+
+      <!-- -----------------------------------------------------
+           UPPER ROW: PREAMP 1 + DUAL VU METERS / POWER + PREAMP 2
+           ----------------------------------------------------- -->
+      <div class="upper-strip-row">
+
+        <!-- Left Half: Channel 1 Preamp & Limiter -->
+        <div class="preamp-half" id="preampCh1"></div>
+
+        <!-- Center: VU Meter 1 + Power Rocker + VU Meter 2 -->
+        <div class="vu-power-center">
+          <!-- VU Meter 1 -->
+          <div class="vu-meter-circle">
+            <div class="vu-dial-face">
+              <svg class="vu-scale-svg" data-vu-svg viewBox="0 0 100 68"></svg>
+              <div class="vu-needle" id="vuNeedle1"></div>
+            </div>
+            <div class="vu-lower-crescent"></div>
+          </div>
+
+          <!-- Center Power Rocker -->
+          <div class="power-switch-col">
+            <span class="sec-tiny-lbl">POWER</span>
+            <button class="round-power-rocker" id="powerSwitchBtn" title="Toggle Mains Power">
+              <span>O</span>
+              <span>I</span>
+            </button>
+            <div class="ch-num-badges-row">
+              <span class="navy-ch-box">1</span>
+              <div class="push-btn-unit">
+                <span class="led-dot green on" id="powerLed"></span>
+                <span class="sec-tiny-lbl">ON</span>
+              </div>
+              <span class="navy-ch-box">2</span>
+            </div>
+          </div>
+
+          <!-- VU Meter 2 -->
+          <div class="vu-meter-circle">
+            <div class="vu-dial-face">
+              <svg class="vu-scale-svg" data-vu-svg viewBox="0 0 100 68"></svg>
+              <div class="vu-needle" id="vuNeedle2"></div>
+            </div>
+            <div class="vu-lower-crescent"></div>
+          </div>
+        </div>
+
+        <!-- Right Half: Channel 2 Preamp & Limiter -->
+        <div class="preamp-half" id="preampCh2"></div>
+
+      </div>
+
+      <!-- -----------------------------------------------------
+           LOWER ROW: COMP 1 + EQ 1 + METERS/STEREO + COMP 2 + EQ 2
+           ----------------------------------------------------- -->
+      <div class="lower-strip-row">
+
+        <!-- 1. Compressor 1 Module -->
+        <div class="outlined-module" id="compModule1"></div>
+
+        <!-- 2. 4-Band Equaliser 1 Module -->
+        <div class="outlined-module" id="eqModule1"></div>
+
+        <!-- 3. Center Meters & Stereo Mode Link Module -->
+        <div style="display:flex;flex-direction:column;justify-content:space-between;gap:6px;">
+          <div class="outlined-module" style="flex:1;align-items:center;justify-content:space-around;">
+            <span class="sec-tiny-lbl">METERS</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button class="black-push-btn" title="+10dB Meter Pad"></button>
+              <span class="sec-tiny-lbl">+10dB</span>
+            </div>
+            <div class="knob-cell" id="metersSelectorCell"></div>
+          </div>
+
+          <div class="outlined-module" style="height:88px;justify-content:space-between;">
+            <div class="sec-tiny-lbl">STEREO MODE<br>◄── (CH1 MSTR)</div>
+            <div style="display:flex;justify-content:space-around;padding-top:2px;">
+              <div class="push-btn-unit">
+                <span class="sec-tiny-lbl">COMP</span>
+                <button class="black-push-btn stereo-link-btn pressed" data-link="comp"></button>
+                <span class="led-dot yellow on"></span>
+              </div>
+              <div class="push-btn-unit">
+                <span class="sec-tiny-lbl">EQ</span>
+                <button class="black-push-btn stereo-link-btn pressed" data-link="eq"></button>
+                <span class="led-dot yellow on"></span>
+              </div>
+              <div class="push-btn-unit">
+                <span class="sec-tiny-lbl">LIM</span>
+                <button class="black-push-btn stereo-link-btn" data-link="lim"></button>
+                <span class="led-dot yellow"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Compressor 2 Module -->
+        <div class="outlined-module" id="compModule2"></div>
+
+        <!-- 5. 4-Band Equaliser 2 Module -->
+        <div class="outlined-module" id="eqModule2"></div>
+
+      </div>
+
+    </div>
+
+    <!-- =======================================================
+         RIGHT 19" RACK EAR & 5052 MODEL DESIGNATION
+         ======================================================= -->
+    <aside class="rack-ear right">
+      <div class="ear-notch top"></div>
+      <div class="ear-notch bot"></div>
+      <div class="panel-screw s-top"></div>
+      <div class="panel-screw s-bot"></div>
+
+      <div class="brand-right-wrap">
+        <div class="model-5052">5052</div>
+        <div class="model-sub">STEREO VALVE<br>PROCESSOR</div>
+      </div>
+    </aside>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // =========================================================================
+  // 0. PRECISION ANALOG VU METER DIAL GENERATOR (NO KINK, CLEAN LABELS)
+  // =========================================================================
+  function buildPrecisionVuDialSvg() {
+    const cx = 50;
+    const cy = 76; // Pivot matches needle bottom center
+    const rArc = 45;
+
+    const polar = (r, deg) => {
+      const rad = ((deg - 90) * Math.PI) / 180;
+      return {
+        x: +(cx + r * Math.cos(rad)).toFixed(2),
+        y: +(cy + r * Math.sin(rad)).toFixed(2)
+      };
+    };
+
+    const describeArc = (r, startDeg, endDeg) => {
+      const start = polar(r, startDeg);
+      const end = polar(r, endDeg);
+      return `M ${start.x} ${start.y} A ${r} ${r} 0 0 1 ${end.x} ${end.y}`;
+    };
+
+    // Scale marks: angle in degrees (-40° to +40°), major/minor ticks, and labels
+    const marks = [
+      { deg: -40, label: '-20', major: true, red: false },
+      { deg: -31, label: '',    major: false, red: false },
+      { deg: -22, label: '-10', major: true, red: false },
+      { deg: -13, label: '',    major: false, red: false },
+      { deg: -4,  label: '-3',  major: true, red: false },
+      { deg: 5,   label: '',    major: false, red: false },
+      { deg: 14,  label: '0',   major: true, red: false },
+      { deg: 27,  label: '',    major: false, red: true },
+      { deg: 40,  label: '+3',  major: true, red: true }
+    ];
+
+    let ticksAndLabels = '';
+    marks.forEach(m => {
+      const tickLen = m.major ? 4.2 : 2.5;
+      const p1 = polar(rArc - 0.5, m.deg);
+      const p2 = polar(rArc + tickLen, m.deg);
+      const strokeColor = m.red ? '#d92626' : '#1e2024';
+      const strokeW = m.major ? 1.25 : 0.9;
+
+      ticksAndLabels += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${strokeColor}" stroke-width="${strokeW}" stroke-linecap="round"/>`;
+
+      if (m.label) {
+        const pTxt = polar(rArc + 9.2, m.deg);
+        ticksAndLabels += `
+          <text x="${pTxt.x}" y="${(pTxt.y + 2).toFixed(2)}"
+                text-anchor="middle"
+                font-family="Inter, sans-serif"
+                font-size="5.8"
+                font-weight="800"
+                fill="${strokeColor}">${m.label}</text>`;
+      }
+    });
+
+    // Smooth single-center arcs: black (-40° to +14°) & red overload zone (+14° to +40°)
+    const blackArc = describeArc(rArc, -40, 14);
+    const redArc = describeArc(rArc, 14, 40);
+    // Subtle inner secondary trim line under red zone for authentic studio meter look
+    const redInnerArc = describeArc(rArc - 2.2, 14, 40);
+
+    return `
+      <path d="${blackArc}" fill="none" stroke="#1e2024" stroke-width="1.35" stroke-linecap="round"/>
+      <path d="${redArc}" fill="none" stroke="#d92626" stroke-width="2.2" stroke-linecap="butt"/>
+      <path d="${redInnerArc}" fill="none" stroke="#d92626" stroke-width="0.7" opacity="0.75"/>
+      ${ticksAndLabels}
+      <text x="50" y="48" text-anchor="middle" font-family="'Barlow Condensed', sans-serif" font-style="italic" font-size="9.5" font-weight="800" letter-spacing="0.2" fill="#1e2d52">TL Audio</text>
+      <text x="50" y="57.5" text-anchor="middle" font-family="Inter, sans-serif" font-size="5.6" font-weight="800" letter-spacing="0.6" fill="#1e2024" opacity="0.85">VU</text>
+    `;
+  }
+
+  const vuSvgMarkup = buildPrecisionVuDialSvg();
+  document.querySelectorAll('[data-vu-svg]').forEach(svg => {
+    svg.innerHTML = vuSvgMarkup;
+  });
+
+  // =========================================================================
+  // 1. HELPER: GENERATE RADIAL TICK SCALE + COLORED FLUTED KNOB HTML
+  // =========================================================================
+  function createKnobMarkup({ id, title, color, deg = 0, leftLbl = '', midLbl = '', rightLbl = '', group = '' }) {
+    let ticks = '';
+    for (let i = -135; i <= 135; i += 22.5) {
+      const rad = ((i - 90) * Math.PI) / 180;
+      const x1 = 26 + Math.cos(rad) * 19;
+      const y1 = 26 + Math.sin(rad) * 19;
+      const x2 = 26 + Math.cos(rad) * 23.5;
+      const y2 = 26 + Math.sin(rad) * 23.5;
+      ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#1e2d52" stroke-width="1.1"/>`;
+    }
+
+    return `
+      <div class="knob-cell">
+        ${title ? `<span class="sec-tiny-lbl">${title}</span>` : ''}
+        <div class="knob-dial-wrap">
+          <svg class="knob-scale-svg" viewBox="0 0 52 52">${ticks}</svg>
+          <div class="fluted-knob ${color}" id="${id}" data-title="${title || id}" data-group="${group}" style="--deg:${deg}deg;">
+            <div class="knob-cap"></div>
+          </div>
+        </div>
+        ${(leftLbl || midLbl || rightLbl) ? `
+          <div class="knob-range-foot">
+            <span>${leftLbl}</span><span>${midLbl}</span><span>${rightLbl}</span>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // 2. BUILD UPPER PREAMP & LIMITER STRIPS (CH 1 & CH 2)
+  // =========================================================================
+  function buildPreampStrip(chNum, isRightSide) {
+    const vents = `
+      <div class="vent-slots-stack">
+        <div class="vent-slit"></div>
+        <div class="vent-slit"></div>
+        <div class="vent-slit"></div>
+        <div class="vent-slit"></div>
+      </div>
+    `;
+
+    const controls = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <div style="display:flex;gap:12px;">
+          <div class="push-btn-unit"><span class="sec-tiny-lbl">DRIVE</span><span class="led-dot yellow on" id="driveLed${chNum}"></span></div>
+          <div class="push-btn-unit"><span class="sec-tiny-lbl">PEAK</span><span class="led-dot red" id="peakLed${chNum}"></span></div>
+        </div>
+        ${createKnobMarkup({ id: `ch${chNum}-input-sel`, title: `INPUT ${chNum}`, color: 'black', deg: -35, leftLbl: '48V', midLbl: 'MIC', rightLbl: 'INST', group: 'pre' })}
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+        <div class="push-btn-unit">
+          <span class="sec-tiny-lbl">MIC<br>-30dB</span>
+          <button class="black-push-btn toggle-btn"></button>
+        </div>
+        <div class="push-btn-unit">
+          <button class="black-push-btn toggle-btn"></button>
+          <span class="sec-tiny-lbl">90Hz</span>
+        </div>
+      </div>
+
+      ${createKnobMarkup({ id: `ch${chNum}-in-gain`, title: 'INPUT GAIN', color: 'red', deg: 15, leftLbl: '-20', midLbl: 'dB', rightLbl: '+60', group: 'pre' })}
+
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:center;">
+        <span class="sec-tiny-lbl">BYPASS</span>
+        <span class="led-dot yellow"></span>
+        <button class="black-push-btn toggle-btn"></button>
+        <button class="black-push-btn toggle-btn"></button>
+        <span class="sec-tiny-lbl">PH REV</span>
+      </div>
+
+      ${createKnobMarkup({ id: `ch${chNum}-out-gain`, title: 'OUTPUT GAIN', color: 'green', deg: 10, leftLbl: '-∞', midLbl: 'dB', rightLbl: '+15', group: 'pre' })}
+
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="display:flex;gap:14px;margin-bottom:-2px;">
+          <span class="led-dot green on"></span>
+          <span class="led-dot red" id="limLed${chNum}"></span>
+        </div>
+        ${createKnobMarkup({ id: `ch${chNum}-limiter`, title: 'LIMITER', color: 'blue', deg: -25, leftLbl: '0', midLbl: 'dB', rightLbl: '+20', group: 'lim' })}
+      </div>
+    `;
+
+    return isRightSide ? controls + vents : vents + controls;
+  }
+
+  document.getElementById('preampCh1').innerHTML = buildPreampStrip(1, false);
+  document.getElementById('preampCh2').innerHTML = buildPreampStrip(2, true);
+
+  // =========================================================================
+  // 3. BUILD LOWER COMPRESSOR MODULES (COMP 1 & COMP 2)
+  // =========================================================================
+  function buildCompressorModule(chNum) {
+    return `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;">
+        ${createKnobMarkup({ id: `ch${chNum}-thresh`, title: 'THRESHOLD', color: 'black', deg: -20, leftLbl: '+10', midLbl: 'dB', rightLbl: '-20', group: 'comp' })}
+        ${createKnobMarkup({ id: `ch${chNum}-ratio`, title: 'RATIO', color: 'black', deg: 15, leftLbl: '1:1.5', midLbl: '', rightLbl: '1:30', group: 'comp' })}
+        ${createKnobMarkup({ id: `ch${chNum}-gmu`, title: 'GMU', color: 'green', deg: 25, leftLbl: '0', midLbl: 'dB', rightLbl: '20', group: 'comp' })}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;justify-items:center;">
+        <span class="module-bottom-title">COMP${chNum}</span>
+        ${createKnobMarkup({ id: `ch${chNum}-attack`, title: 'ATTACK', color: 'black', deg: -30, leftLbl: 'FAST', midLbl: '', rightLbl: 'SLOW', group: 'comp' })}
+        ${createKnobMarkup({ id: `ch${chNum}-release`, title: 'RELEASE', color: 'black', deg: 10, leftLbl: 'FAST', midLbl: '', rightLbl: 'SLOW', group: 'comp' })}
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:2px;">
+        <div class="inst-jack-box">
+          <span class="sec-tiny-lbl">INST<br>INPUT ${chNum}</span>
+          <div class="trs-socket"><div class="trs-hole"></div></div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:flex-end;padding-right:4px;">
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">ON</span>
+            <button class="black-push-btn toggle-btn pressed"></button>
+            <span class="led-dot green on"></span>
+          </div>
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">KNEE</span>
+            <button class="black-push-btn toggle-btn"></button>
+            <span class="sec-tiny-lbl" style="font-size:6px;">HARD/SOFT</span>
+          </div>
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">EQ S/C</span>
+            <button class="black-push-btn toggle-btn"></button>
+            <span class="led-dot yellow"></span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('compModule1').innerHTML = buildCompressorModule(1);
+  document.getElementById('compModule2').innerHTML = buildCompressorModule(2);
+
+  // =========================================================================
+  // 4. BUILD LOWER 4-BAND PARAMETRIC EQUALISER MODULES (EQ 1 & EQ 2)
+  // =========================================================================
+  function buildEqualiserModule(chNum) {
+    return `
+      <!-- Row 1: 4 Light-Grey Gain Knobs (LF, LM, HM, HF) -->
+      <div class="eq-4col-grid">
+        ${createKnobMarkup({ id: `ch${chNum}-lf-gain`, title: 'LF', color: 'grey', deg: 20, leftLbl: '-15', midLbl: 'dB', rightLbl: '+15', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-lm-gain`, title: 'LM', color: 'grey', deg: -10, leftLbl: '-15', midLbl: 'dB', rightLbl: '+15', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-hm-gain`, title: 'HM', color: 'grey', deg: 15, leftLbl: '-15', midLbl: 'dB', rightLbl: '+15', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-hf-gain`, title: 'HF', color: 'grey', deg: 30, leftLbl: '-15', midLbl: 'dB', rightLbl: '+15', group: 'eq' })}
+      </div>
+
+      <!-- Row 2: 4 Black Frequency Selection Knobs -->
+      <div class="eq-4col-grid">
+        ${createKnobMarkup({ id: `ch${chNum}-lf-freq`, title: '', color: 'black', deg: -25, leftLbl: '30', midLbl: 'Hz', rightLbl: '1K', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-lm-freq`, title: '', color: 'black', deg: 5, leftLbl: '100', midLbl: 'Hz', rightLbl: '3K', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-hm-freq`, title: '', color: 'black', deg: 20, leftLbl: '1K', midLbl: 'Hz', rightLbl: '12K', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-hf-freq`, title: '', color: 'black', deg: 35, leftLbl: '3K', midLbl: 'Hz', rightLbl: '20K', group: 'eq' })}
+      </div>
+
+      <!-- Row 3: EQ Pre/Shelf Buttons + 2 Mid Q Bandwidth Knobs + EQ On/Shelf -->
+      <div class="eq-bottom-row">
+        <div style="display:flex;gap:8px;">
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">EQ<br>PRE</span>
+            <button class="black-push-btn toggle-btn"></button>
+            <span class="led-dot yellow"></span>
+          </div>
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">PK<br>SHLV</span>
+            <button class="black-push-btn toggle-btn"></button>
+          </div>
+        </div>
+
+        ${createKnobMarkup({ id: `ch${chNum}-lm-q`, title: '', color: 'black', deg: 0, leftLbl: '窄', midLbl: 'Q', rightLbl: '宽', group: 'eq' })}
+        ${createKnobMarkup({ id: `ch${chNum}-hm-q`, title: '', color: 'black', deg: 0, leftLbl: '窄', midLbl: 'Q', rightLbl: '宽', group: 'eq' })}
+
+        <div style="display:flex;gap:8px;">
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">EQ<br>ON</span>
+            <button class="black-push-btn toggle-btn pressed"></button>
+            <span class="led-dot green on"></span>
+          </div>
+          <div class="push-btn-unit">
+            <span class="sec-tiny-lbl">PK<br>SHLV</span>
+            <button class="black-push-btn toggle-btn"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-bottom-title">EQUALISER ${chNum}</div>
+    `;
+  }
+
+  document.getElementById('eqModule1').innerHTML = buildEqualiserModule(1);
+  document.getElementById('eqModule2').innerHTML = buildEqualiserModule(2);
+
+  // Center Meters Selector Knob
+  document.getElementById('metersSelectorCell').innerHTML = createKnobMarkup({
+    id: 'meters-mode-knob', title: '', color: 'black', deg: -15, leftLbl: 'I/P', midLbl: 'O/P', rightLbl: 'G/R'
+  });
+
+  // =========================================================================
+  // 5. INTERACTIVE KNOB ROTATION + STEREO MODE (CH1 MSTR) LINKING
+  // =========================================================================
+  const paramReadout = document.getElementById('paramReadout');
+  const stereoLinks = { comp: true, eq: true, lim: false };
+
+  document.querySelectorAll('.fluted-knob').forEach(knob => {
+    let dragging = false;
+    let startY = 0;
+
+    knob.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      startY = e.clientY;
+      knob.setPointerCapture(e.pointerId);
+    });
+
+    knob.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dy = startY - e.clientY;
+      startY = e.clientY;
+
+      let curDeg = parseFloat(knob.style.getPropertyValue('--deg')) || 0;
+      curDeg = Math.max(-135, Math.min(135, curDeg + dy * 1.8));
+      knob.style.setProperty('--deg', `${curDeg.toFixed(1)}deg`);
+
+      // If CH1 knob is turned and Stereo Link is active for its group, sync CH2 knob!
+      const grp = knob.dataset.group;
+      if (knob.id.startsWith('ch1-') && stereoLinks[grp]) {
+        const ch2Knob = document.getElementById(knob.id.replace('ch1-', 'ch2-'));
+        if (ch2Knob) {
+          ch2Knob.style.setProperty('--deg', `${curDeg.toFixed(1)}deg`);
+        }
+      }
+
+      const dbVal = ((curDeg / 135) * 15).toFixed(1);
+      paramReadout.innerHTML = `ADJUST // <b>${knob.id.toUpperCase()}</b>: ${dbVal >= 0 ? '+' : ''}${dbVal} dB ${stereoLinks[grp] ? '(STEREO LINKED)' : ''}`;
+    });
+
+    const stop = () => { dragging = false; };
+    knob.addEventListener('pointerup', stop);
+    knob.addEventListener('pointercancel', stop);
+  });
+
+  // Push-Buttons & LEDs
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('pressed');
+      const led = btn.parentElement.querySelector('.led-dot');
+      if (led) led.classList.toggle('on');
+    });
+  });
+
+  document.querySelectorAll('.stereo-link-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.link;
+      stereoLinks[key] = !stereoLinks[key];
+      btn.classList.toggle('pressed', stereoLinks[key]);
+      btn.parentElement.querySelector('.led-dot').classList.toggle('on', stereoLinks[key]);
+      paramReadout.innerHTML = `STEREO MODE // <b>${key.toUpperCase()} CH1 MASTER LINK</b>: ${stereoLinks[key] ? 'ENABLED' : 'INDEPENDENT'}`;
+    });
+  });
+
+  // Power Rocker Switch
+  let poweredOn = true;
+  document.getElementById('powerSwitchBtn').addEventListener('click', () => {
+    poweredOn = !poweredOn;
+    document.body.classList.toggle('power-off', !poweredOn);
+    document.getElementById('powerLed').classList.toggle('on', poweredOn);
+  });
+
+  // =========================================================================
+  // 6. REAL-TIME BALLISTIC VU METER NEEDLE ANIMATION
+  // =========================================================================
+  const needle1 = document.getElementById('vuNeedle1');
+  const needle2 = document.getElementById('vuNeedle2');
+  let t = 0;
+
+  function animateVuMeters() {
+    t += 0.08;
+
+    if (!poweredOn) {
+      needle1.style.setProperty('--needle-deg', '-40deg');
+      needle2.style.setProperty('--needle-deg', '-40deg');
+    } else {
+      const gain1 = parseFloat(document.getElementById('ch1-in-gain').style.getPropertyValue('--deg')) || 0;
+      const gain2 = parseFloat(document.getElementById('ch2-in-gain').style.getPropertyValue('--deg')) || 0;
+
+      const osc1 = Math.sin(t) * 14 + Math.cos(t * 2.3) * 8 + (gain1 * 0.22);
+      const osc2 = Math.sin(t + 0.4) * 14 + Math.cos(t * 2.1) * 8 + (gain2 * 0.22);
+
+      const deg1 = Math.max(-40, Math.min(40, osc1));
+      const deg2 = Math.max(-40, Math.min(40, osc2));
+
+      needle1.style.setProperty('--needle-deg', `${deg1.toFixed(1)}deg`);
+      needle2.style.setProperty('--needle-deg', `${deg2.toFixed(1)}deg`);
+
+      document.getElementById('peakLed1').classList.toggle('on', deg1 > 20);
+      document.getElementById('peakLed2').classList.toggle('on', deg2 > 20);
+    }
+
+    requestAnimationFrame(animateVuMeters);
+  }
+
+  requestAnimationFrame(animateVuMeters);
+})();
+</script>
+</body>
+</html>

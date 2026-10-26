@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — 1984 Camaro Berlinetta Digital VFD Cockpit</title>
+
+<!-- Authentic 7-Segment VFD Digital Font -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dseg@0.46.0/css/dseg.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "1984 Berlinetta Starship Digital VFD Dashboard",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "camaro",
+    "berlinetta",
+    "80s-dashboard",
+    "vfd-display",
+    "digital-cluster",
+    "synthwave",
+    "tachometer",
+    "speedometer",
+    "delco-radio",
+    "retro-futurism",
+    "automotive"
+  ],
+  "description": "Precision-aligned 1984 Chevrolet Camaro Berlinetta digital cockpit featuring a unified midnight indigo-violet dashboard housing, phosphor-green 7-segment VFD speedometer, dual-column bar-graph tachometer, symmetrical neon-orange 4-quadrant analog gauges, amber warning light matrix, flanking control pods, and Delco cassette equalizer.",
+  "techniques": [
+    "authentic 80s studio color grading (midnight indigo-navy #191c32, phosphor VFD green #54f57a, and warm incandescent amber #ffba38)",
+    "symmetrical 4-quadrant hybrid gauges combining VFD square dot markers with neon-orange physical needles",
+    "dual-column 24-segment VFD bar-graph tachometer with dynamic throttle response",
+    "strict grid-aligned flanking control pods and flush-mounted Delco 5-band EQ cassette receiver"
+  ],
+  "recipe": "Full-width precision-aligned cockpit layout showcasing the digital VFD instrument panel, control pods, and Delco stereo deck.",
+  "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 780
+  }
+}
+</script>
+
+<style>
+  @font-face {
+    font-family: 'DSEG7-Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --dash-indigo-deep: #0e101d;
+    --dash-indigo-mid: #191c32;
+    --dash-indigo-surface: #222642;
+    --dash-violet-rim: #434a78;
+    --vfd-void: #07090f;
+    --vfd-green: #54f57a;
+    --vfd-green-glow: rgba(84, 245, 122, 0.72);
+    --vfd-green-dim: rgba(84, 245, 122, 0.11);
+    --needle-orange: #ff621a;
+    --needle-orange-glow: rgba(255, 98, 26, 0.85);
+    --warn-amber: #ffba38;
+    --warn-amber-glow: rgba(255, 186, 56, 0.78);
+    --warn-red: #ff4d36;
+    --silkscreen: #d8e0f0;
+    --silkscreen-muted: #8c9cc2;
+    --panel-brightness: 1;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 35%, #1d2038 0%, #0d0e1a 70%, #06070d 100%);
+    color: var(--silkscreen);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 12px;
+    overflow-x: hidden;
+  }
+
+  /* Subtle 80s Magazine Print Grain Overlay */
+  .print-grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* =========================================================
+     MAIN COCKPIT MOLDED DASHBOARD STRUCTURE (CLEAN INDIGO BROW)
+     ========================================================= */
+  .berlinetta-cockpit {
+    width: 100%;
+    max-width: 1380px;
+    background:
+      linear-gradient(180deg, #212542 0%, var(--dash-indigo-mid) 35%, var(--dash-indigo-deep) 100%);
+    border-radius: 22px;
+    border: 2px solid var(--dash-violet-rim);
+    box-shadow:
+      0 40px 95px rgba(0, 0, 0, 0.96),
+      inset 0 2px 12px rgba(135, 145, 215, 0.22);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Unified Indigo Upper Dash Brow with Recessed Defroster Vents (No Red Bar!) */
+  .dash-upper-brow {
+    height: 36px;
+    background: linear-gradient(180deg, #2b3054 0%, #1c2038 65%, #111324 100%);
+    border-bottom: 2px solid #090b14;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 42px;
+  }
+
+  .defroster-vents {
+    display: flex;
+    gap: 5px;
+    transform: skewX(-24deg);
+    opacity: 0.65;
+  }
+
+  .def-slit {
+    width: 12px;
+    height: 10px;
+    background: #090b14;
+    border-right: 1px solid #3d4470;
+    border-radius: 1px;
+  }
+
+  .brow-model-tag {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #6b76a8;
+    text-transform: uppercase;
+  }
+
+  /* =========================================================
+     PRECISION 4-COLUMN COCKPIT GRID (ALL COLUMNS EQUAL HEIGHT)
+     [LEFT PODS: 132px] + [CENTER VFD CLUSTER: 684px] + [RIGHT PODS: 144px] + [CONSOLE: 1fr]
+     ========================================================= */
+  .cockpit-main-deck {
+    padding: 22px 24px 24px;
+    display: grid;
+    grid-template-columns: 132px 730px 144px 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .pods-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    height: 348px;
+  }
+
+  /* Shared Molded Indigo Control Pod Styling */
+  .control-pod {
+    background: linear-gradient(165deg, #262a47 0%, #171a2e 65%, #101221 100%);
+    border: 1.5px solid var(--dash-violet-rim);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow:
+      0 12px 24px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(175, 185, 240, 0.22);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .pod-section-lbl {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--silkscreen-muted);
+    text-align: center;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(140, 156, 194, 0.18);
+    padding-bottom: 3px;
+  }
+
+  .pod-btn {
+    background: linear-gradient(180deg, #252947 0%, #141729 100%);
+    border: 1px solid #3e4670;
+    border-bottom: 2px solid #090a14;
+    border-radius: 5px;
+    color: var(--silkscreen);
+    font-family: 'Inter', sans-serif;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+    transition: all 0.12s ease;
+  }
+
+  .pod-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pod-btn:hover {
+    border-color: #6c75b5;
+    color: #ffffff;
+  }
+
+  .pod-btn:active, .pod-btn.active {
+    background: #101426;
+    border-color: var(--vfd-green);
+    color: var(--vfd-green);
+    box-shadow: 0 0 10px rgba(84, 245, 122, 0.28), inset 0 0 6px rgba(84, 245, 122, 0.12);
+  }
+
+  /* =========================================================
+     1. LEFT CONTROL PODS (HEADLIGHTS, DIMMER, TACH, MPH/KMH)
+     ========================================================= */
+  .light-pod-grid {
+    display: grid;
+    grid-template-columns: 1fr 36px;
+    gap: 8px;
+    align-items: stretch;
+    flex: 1;
+  }
+
+  .light-btns-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .panel-dimmer-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 7px;
+    font-weight: 800;
+    color: var(--silkscreen-muted);
+  }
+
+  .dimmer-wheel {
+    width: 16px;
+    flex: 1;
+    margin: 4px 0;
+    background: repeating-linear-gradient(180deg, #0d0f1c 0px 3px, #32385e 3px 6px);
+    border: 1px solid #4c558a;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+  }
+
+  /* =========================================================
+     2. CENTER DIGITAL VFD INSTRUMENT CLUSTER (THE STARSHIP HEART)
+     ========================================================= */
+  .vfd-cluster-bezel {
+    height: 348px;
+    background: linear-gradient(180deg, #0c0e1a 0%, #171a2d 100%);
+    border: 2.5px solid #353b63;
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow:
+      inset 0 10px 28px rgba(0, 0, 0, 0.98),
+      0 12px 28px rgba(0, 0, 0, 0.85);
+    display: flex;
+  }
+
+  .vfd-glass-screen {
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 46% 42%, rgba(84, 245, 122, 0.05) 0%, transparent 60%),
+      var(--vfd-void);
+    border: 1.5px solid #20253d;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 204px 1fr 74px 136px;
+    gap: 14px;
+    align-items: stretch;
+    position: relative;
+    opacity: var(--panel-brightness);
+    transition: opacity 0.2s ease;
+  }
+
+  /* Subtle Vertical Divider Lines Between Instrument Zones */
+  .vfd-zone-divider {
+    border-right: 1px solid rgba(140, 156, 194, 0.12);
+    padding-right: 12px;
+  }
+
+  /* A. Left Symmetrical 4-Quadrant Gauges (OIL, FUEL, TEMP, VOLTS) */
+  .quad-gauges-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .quad-pair-box {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .quad-titles-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--silkscreen-muted);
+    padding: 0 4px;
+  }
+
+  .quad-svg {
+    width: 100%;
+    height: 120px;
+    display: block;
+    overflow: visible;
+  }
+
+  .vfd-dot-pair {
+    fill: var(--vfd-green);
+    filter: drop-shadow(0 0 3.5px var(--vfd-green-glow));
+  }
+
+  .quad-num-txt {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    fill: #c8d6f0;
+    dominant-baseline: central;
+  }
+
+  .orange-needle {
+    stroke: var(--needle-orange);
+    stroke-width: 3;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px var(--needle-orange-glow));
+  }
+
+  .needle-hub {
+    fill: #1b2036;
+    stroke: var(--needle-orange);
+    stroke-width: 1.5;
+  }
+
+  /* B. Center Digital VFD Speedometer, Odometer & Berlinetta Signature */
+  .center-speedo-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px 2px;
+  }
+
+  .speedo-top-header {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--silkscreen-muted);
+    text-transform: uppercase;
+  }
+
+  .speedo-display-frame {
+    background: rgba(10, 18, 15, 0.65);
+    border: 1px solid rgba(84, 245, 122, 0.22);
+    border-radius: 8px;
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
+  }
+
+  .speedo-digits-wrap {
+    position: relative;
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 64px;
+    line-height: 1;
+    width: 142px;
+    text-align: right;
+  }
+
+  .speedo-ghost {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: var(--vfd-green-dim);
+    pointer-events: none;
+  }
+
+  .speedo-active {
+    position: relative;
+    color: var(--vfd-green);
+    text-shadow:
+      0 0 12px var(--vfd-green-glow),
+      0 0 26px rgba(84, 245, 122, 0.32);
+  }
+
+  .speedo-units-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 54px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--vfd-green);
+    text-shadow: 0 0 6px var(--vfd-green-glow);
+  }
+
+  .odometer-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(12, 22, 18, 0.75);
+    border: 1px solid rgba(84, 245, 122, 0.24);
+    padding: 5px 12px;
+    border-radius: 4px;
+  }
+
+  .odo-lbl {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--silkscreen-muted);
+  }
+
+  .odometer-digits {
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 15px;
+    letter-spacing: 2.5px;
+    color: var(--vfd-green);
+    text-shadow: 0 0 8px var(--vfd-green-glow);
+  }
+
+  .berlinetta-emblem-bar {
+    width: 100%;
+    text-align: center;
+    border-top: 2px solid var(--needle-orange);
+    background: linear-gradient(180deg, #161a2e 0%, #0e101d 100%);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    color: #f5b942;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+  }
+
+  /* C. Vertical Bar-Graph Tachometer (`0 1 2 3 4 5 6 7`) */
+  .bar-tacho-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tacho-body-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  .tacho-segments-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    width: 24px;
+    padding: 2px 0;
+  }
+
+  .tacho-pair-seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    height: 6.5px;
+  }
+
+  .t-cell {
+    background: rgba(84, 245, 122, 0.12);
+    border-radius: 1px;
+    transition: background 0.05s ease, box-shadow 0.05s ease;
+  }
+
+  .tacho-pair-seg.lit .t-cell {
+    background: var(--vfd-green);
+    box-shadow: 0 0 6px var(--vfd-green-glow);
+  }
+
+  .tacho-pair-seg.lit.redline .t-cell {
+    background: var(--warn-amber);
+    box-shadow: 0 0 8px var(--warn-amber-glow);
+  }
+
+  .tacho-numbers-ladder {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1;
+    color: #c8d6f0;
+    padding-right: 7px;
+    position: relative;
+  }
+
+  /* Vertical Orange-Red Redline Stripe Next to 5-6-7 */
+  .tacho-numbers-ladder::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 2px;
+    height: 34%;
+    width: 2.5px;
+    background: var(--needle-orange);
+    box-shadow: 0 0 6px var(--needle-orange);
+    border-radius: 1px;
+  }
+
+  /* D. Right 2x5 Warning Telltale Light Matrix */
+  .warning-matrix-col {
+    border: 1.5px solid rgba(255, 115, 40, 0.5);
+    border-radius: 6px;
+    padding: 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 5px;
+    background: rgba(15, 12, 10, 0.6);
+  }
+
+  .warn-lamp-cell {
+    background: #171311;
+    border: 1px solid #2e231c;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    line-height: 1.15;
+    color: rgba(255, 165, 80, 0.25);
+    cursor: pointer;
+    padding: 2px;
+    transition: all 0.16s ease;
+  }
+
+  .warn-lamp-cell.amber-lens {
+    background: rgba(120, 68, 16, 0.28);
+    color: rgba(255, 190, 110, 0.35);
+  }
+
+  .warn-lamp-cell.lit-amber {
+    background: radial-gradient(circle, #ffe47a 0%, var(--warn-amber) 78%);
+    border-color: #fff3b0;
+    color: #211102;
+    box-shadow:
+      0 0 12px var(--warn-amber-glow),
+      inset 0 0 5px #ffffff;
+  }
+
+  .warn-lamp-cell.lit-red {
+    background: rgba(224, 60, 38, 0.16);
+    border-color: rgba(255, 90, 60, 0.55);
+    color: #ff5b42;
+    text-shadow: 0 0 8px rgba(255, 85, 51, 0.85);
+  }
+
+  /* =========================================================
+     3. RIGHT CONTROL PODS (WIPERS & CLIMATE CONTROL)
+     ========================================================= */
+  .wiper-pod-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .climate-pod-grid {
+    display: grid;
+    grid-template-columns: 44px 18px 1fr;
+    gap: 6px;
+    align-items: stretch;
+    flex: 1;
+  }
+
+  .climate-left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .temp-dots-strip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    background: #0d0f1c;
+    border: 1px solid #2b3052;
+    border-radius: 10px;
+  }
+
+  .temp-dot {
+    width: 4.5px;
+    height: 4.5px;
+    border-radius: 50%;
+  }
+
+  .air-flow-bracket {
+    border: 1px solid #454d7d;
+    border-radius: 5px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+    background: rgba(13, 15, 28, 0.45);
+  }
+
+  .air-flow-lbl {
+    font-size: 6.5px;
+    font-weight: 800;
+    color: var(--silkscreen-muted);
+    text-align: center;
+    letter-spacing: 0.6px;
+  }
+
+  /* =========================================================
+     4. FAR-RIGHT AC LOUVERS & FLUSH DELCO STEREO RECEIVER POD
+     ========================================================= */
+  .right-console-zone {
+    height: 348px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* Dual Rectangular Dash A/C Vents */
+  .ac-vents-pair {
+    width: 100%;
+    height: 62px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #0c0e1a;
+    border: 1.5px solid var(--dash-violet-rim);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: inset 0 4px 12px #000, 0 8px 18px rgba(0,0,0,0.6);
+  }
+
+  .ac-vent-box {
+    height: 100%;
+    background:
+      linear-gradient(180deg, transparent 46%, #2e3459 48%, #090a14 52%, transparent 54%),
+      repeating-linear-gradient(90deg, #101221 0px 11px, #252a48 11px 13px);
+    border: 1px solid #222742;
+    border-radius: 5px;
+  }
+
+  /* Straight, Precision-Aligned Delco GM Cassette / Graphic EQ Receiver */
+  .delco-stereo-pod {
+    flex: 1;
+    width: 100%;
+    background: linear-gradient(165deg, #262a47 0%, #16192b 65%, #0e101d 100%);
+    border: 1.5px solid var(--dash-violet-rim);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow:
+      0 14px 28px rgba(0, 0, 0, 0.85),
+      inset 0 1px 1px rgba(175, 185, 240, 0.22);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .delco-top-bay {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .delco-left-rockers {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .delco-vfd-screen {
+    background: #06080e;
+    border: 1.5px solid #242a47;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: inset 0 0 16px #000;
+  }
+
+  .delco-vfd-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--vfd-green);
+    text-shadow: 0 0 6px var(--vfd-green-glow);
+  }
+
+  .delco-freq-digits {
+    font-family: 'DSEG7-Classic', monospace;
+    font-size: 26px;
+    color: var(--vfd-green);
+    text-shadow: 0 0 10px var(--vfd-green-glow);
+    text-align: right;
+    line-height: 1;
+  }
+
+  /* 5-Band Graphic Equalizer Knobs (`60, 250, 1k, 3.5k, 10k`) */
+  .delco-eq-box {
+    border: 1px solid #383f66;
+    background: rgba(11, 13, 24, 0.55);
+    border-radius: 6px;
+    padding: 6px 12px;
+  }
+
+  .delco-eq-title {
+    text-align: center;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+    color: var(--silkscreen-muted);
+  }
+
+  .delco-eq-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .eq-mini-knob {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5px;
+    font-weight: 700;
+    color: var(--silkscreen);
+  }
+
+  .tiny-knob-cap {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #525b8c, #15182b);
+    border: 1.5px solid #7c87c2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .tiny-knob-cap::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 5px;
+    background: var(--vfd-green);
+    border-radius: 1px;
+  }
+
+  .delco-cassette-deck {
+    background: #0b0d18;
+    border: 1px solid #2b3052;
+    border-radius: 6px;
+    padding: 7px 10px;
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .tape-controls-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6.5px;
+    font-weight: 700;
+    color: var(--silkscreen-muted);
+  }
+
+  .tape-slot-door {
+    height: 30px;
+    background: #05060b;
+    border: 1px solid #232846;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #5d6794;
+    box-shadow: inset 0 2px 6px #000;
+  }
+
+  /* =========================================================
+     BOTTOM INTERACTIVE TEST-DRIVE BAR
+     ========================================================= */
+  .test-drive-bar {
+    margin-top: 14px;
+    background: #101221;
+    border: 1px solid #32375c;
+    border-radius: 14px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1380px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+  }
+
+  .drive-btn {
+    background: linear-gradient(180deg, #ff621a 0%, #b83700 100%);
+    border: 1px solid #ffaa80;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 8px 18px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 98, 26, 0.45);
+    transition: transform 0.1s ease;
+  }
+  .drive-btn:active { transform: scale(0.97); }
+
+  @media (max-width: 1380px) {
+    .berlinetta-cockpit {
+      transform: scale(0.76);
+      transform-origin: top center;
+      margin-bottom: -110px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-grain"></div>
+
+<main class="berlinetta-cockpit">
+
+  <!-- 1. Clean Indigo Upper Dash Brow with Recessed Defroster Vents (Red Strip Removed!) -->
+  <header class="dash-upper-brow">
+    <div class="defroster-vents">
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+    </div>
+    <span class="brow-model-tag">CHEVROLET CAMARO // BERLINETTA VFD SYSTEM</span>
+    <div class="defroster-vents" style="transform:skewX(24deg);">
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+      <div class="def-slit"></div><div class="def-slit"></div><div class="def-slit"></div>
+    </div>
+  </header>
+
+  <!-- 2. Main Precision-Aligned Cockpit Deck -->
+  <section class="cockpit-main-deck">
+
+    <!-- =======================================================
+         COLUMN 1: LEFT FLANKING CONTROL PODS (LIGHTS & MPH/KMH)
+         ======================================================= -->
+    <aside class="pods-column">
+      <!-- Upper Left Pod: Headlights & Panel Dimmer -->
+      <div class="control-pod" style="flex:1.15;">
+        <div class="pod-section-lbl">LIGHTING</div>
+        <button class="pod-btn active" title="Headlamps">
+          <svg viewBox="0 0 24 24"><path d="M11 5 C17 5, 20 8, 20 12 C20 16, 17 19, 11 19 Z"/><line x1="3" y1="8" x2="8" y2="8"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="3" y1="16" x2="8" y2="16"/></svg>
+        </button>
+        <div class="light-pod-grid">
+          <div class="light-btns-col">
+            <button class="pod-btn" style="flex:1;" title="Parking Lamps">PARK</button>
+            <button class="pod-btn" style="flex:1;" title="Fog Lamps">FOG</button>
+          </div>
+          <div class="panel-dimmer-col">
+            <span>DIM</span>
+            <div class="dimmer-wheel" id="dimmerWheel" title="Click to toggle VFD Brightness"></div>
+            <span>BRT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lower Left Pod: TACH, MPH/km/h Converter & Trip Reset -->
+      <div class="control-pod" style="flex:1;">
+        <div class="pod-section-lbl">TRIP / MODE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button class="pod-btn active" id="tachToggleBtn">TACH</button>
+          <button class="pod-btn" id="unitToggleBtn" title="Switch Speedometer between MPH and km/h">MPH<br>km/h</button>
+        </div>
+        <button class="pod-btn" id="tripResetBtn">TRIP RESET</button>
+        <button class="pod-btn" id="hazardBtn">▲ HAZARD ▼</button>
+      </div>
+    </aside>
+
+    <!-- =======================================================
+         COLUMN 2: CENTER VFD DIGITAL INSTRUMENT CLUSTER
+         ======================================================= -->
+    <section class="vfd-cluster-bezel">
+      <div class="vfd-glass-screen" id="vfdScreen">
+
+        <!-- A. Left Symmetrical 4-Quadrant Gauges (OIL, FUEL, TEMP, VOLTS) -->
+        <div class="quad-gauges-col vfd-zone-divider">
+
+          <!-- Upper Pair: OIL & FUEL -->
+          <div class="quad-pair-box">
+            <div class="quad-titles-row">
+              <span>OIL PSI</span>
+              <span>UNLEADED FUEL</span>
+            </div>
+            <svg class="quad-svg" viewBox="0 0 190 116">
+              <!-- Center subtle separator -->
+              <line x1="95" y1="12" x2="95" y2="104" stroke="rgba(140,156,194,0.12)" stroke-width="1"/>
+
+              <!-- LEFT GAUGE: OIL (60, 30, 0) -->
+              <rect x="40" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="46" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="56" y="20" class="quad-num-txt">60</text>
+
+              <rect x="48" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="54" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="64" y="58" class="quad-num-txt">30</text>
+
+              <rect x="40" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="46" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="56" y="96" class="quad-num-txt">0</text>
+
+              <!-- Oil Can Vector Icon -->
+              <path d="M4 36 L14 36 L17 33 L20 33 M6 33 L13 33 L13 36" fill="none" stroke="#8c9cc2" stroke-width="1.4"/>
+
+              <!-- OIL Orange Needle (Pivot at 14, 58) -->
+              <line id="oilNeedle" x1="14" y1="58" x2="44" y2="38" class="orange-needle"/>
+              <circle cx="14" cy="58" r="3.5" class="needle-hub"/>
+
+              <!-- RIGHT GAUGE: FUEL (F, 1/2, E) -->
+              <text x="134" y="20" class="quad-num-txt" text-anchor="end">F</text>
+              <rect x="140" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="146" y="18" width="4" height="4" class="vfd-dot-pair"/>
+
+              <text x="126" y="58" class="quad-num-txt" text-anchor="end">1/2</text>
+              <rect x="132" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="138" y="56" width="4" height="4" class="vfd-dot-pair"/>
+
+              <text x="134" y="96" class="quad-num-txt" text-anchor="end">E</text>
+              <rect x="140" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="146" y="94" width="4" height="4" class="vfd-dot-pair"/>
+
+              <!-- Fuel Pump Vector Icon -->
+              <g transform="translate(172, 28)" stroke="#8c9cc2" stroke-width="1.3" fill="none">
+                <rect x="0" y="0" width="8" height="11" rx="1"/>
+                <line x1="8" y1="3" x2="11" y2="6"/>
+              </g>
+
+              <!-- FUEL Orange Needle (Pivot at 176, 58) -->
+              <line id="fuelNeedle" x1="176" y1="58" x2="144" y2="34" class="orange-needle"/>
+              <circle cx="176" cy="58" r="3.5" class="needle-hub"/>
+            </svg>
+          </div>
+
+          <!-- Lower Pair: TEMP & VOLTS -->
+          <div class="quad-pair-box">
+            <div class="quad-titles-row">
+              <span>TEMP °F</span>
+              <span>VOLTS</span>
+            </div>
+            <svg class="quad-svg" viewBox="0 0 190 116">
+              <line x1="95" y1="12" x2="95" y2="104" stroke="rgba(140,156,194,0.12)" stroke-width="1"/>
+
+              <!-- LEFT GAUGE: TEMP (260, 220, 100) -->
+              <rect x="40" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="46" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="56" y="20" class="quad-num-txt">260</text>
+
+              <rect x="48" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="54" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="64" y="58" class="quad-num-txt">220</text>
+
+              <rect x="40" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="46" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <text x="56" y="96" class="quad-num-txt">100</text>
+
+              <!-- Thermometer Vector Icon -->
+              <g transform="translate(8, 28)" stroke="#8c9cc2" stroke-width="1.3" fill="none">
+                <line x1="4" y1="0" x2="4" y2="9"/>
+                <circle cx="4" cy="10" r="2.2" fill="#8c9cc2"/>
+              </g>
+
+              <!-- TEMP Orange Needle (Pivot at 14, 58) -->
+              <line id="tempNeedle" x1="14" y1="58" x2="45" y2="62" class="orange-needle"/>
+              <circle cx="14" cy="58" r="3.5" class="needle-hub"/>
+
+              <!-- RIGHT GAUGE: VOLTS (18, 13, 8) -->
+              <text x="134" y="20" class="quad-num-txt" text-anchor="end">18</text>
+              <rect x="140" y="18" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="146" y="18" width="4" height="4" class="vfd-dot-pair"/>
+
+              <text x="126" y="58" class="quad-num-txt" text-anchor="end">13</text>
+              <rect x="132" y="56" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="138" y="56" width="4" height="4" class="vfd-dot-pair"/>
+
+              <text x="134" y="96" class="quad-num-txt" text-anchor="end">8</text>
+              <rect x="140" y="94" width="4" height="4" class="vfd-dot-pair"/>
+              <rect x="146" y="94" width="4" height="4" class="vfd-dot-pair"/>
+
+              <!-- Battery Vector Icon -->
+              <g transform="translate(170, 29)" stroke="#8c9cc2" stroke-width="1.3" fill="none">
+                <rect x="0" y="2" width="11" height="8" rx="1"/>
+                <line x1="2" y1="0" x2="4" y2="0"/><line x1="7" y1="0" x2="9" y2="0"/>
+              </g>
+
+              <!-- VOLTS Orange Needle (Pivot at 176, 58) -->
+              <line id="voltsNeedle" x1="176" y1="58" x2="142" y2="54" class="orange-needle"/>
+              <circle cx="176" cy="58" r="3.5" class="needle-hub"/>
+            </svg>
+          </div>
+
+        </div>
+
+        <!-- B. Center Digital VFD Speedometer & Odometer -->
+        <div class="center-speedo-col vfd-zone-divider">
+          <div class="speedo-top-header">DIGITAL SPEEDOMETER</div>
+
+          <div class="speedo-display-frame">
+            <div class="speedo-digits-wrap">
+              <span class="speedo-ghost">888</span>
+              <span class="speedo-active" id="vfdSpeedVal">0</span>
+            </div>
+            <div class="speedo-units-col">
+              <span id="speedUnitTag">MPH</span>
+              <span style="opacity:0.45;">KM/H</span>
+            </div>
+          </div>
+
+          <div class="odometer-box">
+            <span class="odo-lbl">ODO</span>
+            <span class="odometer-digits" id="vfdOdoVal">01582.6</span>
+          </div>
+
+          <div class="berlinetta-emblem-bar">BERLINETTA</div>
+        </div>
+
+        <!-- C. Vertical Dual-Column VFD Bar-Graph Tachometer (`0 - 7`) -->
+        <div class="bar-tacho-col" id="tachoBarCol">
+          <div class="quad-titles-row" style="width:100%;justify-content:center;">
+            <span>RPM x1000</span>
+          </div>
+          <div class="tacho-body-wrap">
+            <div class="tacho-segments-stack" id="tachoSegmentsStack"></div>
+            <div class="tacho-numbers-ladder">
+              <span>7</span>
+              <span>6</span>
+              <span>5</span>
+              <span>4</span>
+              <span>3</span>
+              <span>2</span>
+              <span>1</span>
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- D. Right 2x5 Warning Light Matrix (Clean Typography, No Broken Emojis) -->
+        <div class="warning-matrix-col" id="warningMatrix">
+          <div class="warn-lamp-cell lit-red" title="Choke Indicator">CHOKE</div>
+          <div class="warn-lamp-cell lit-red" title="Parking Brake">BRAKE</div>
+
+          <div class="warn-lamp-cell lit-red" title="Hatch / Door Ajar">DOOR<br>AJAR</div>
+          <div class="warn-lamp-cell lit-red" title="Fasten Belts">FASTEN<br>BELTS</div>
+
+          <div class="warn-lamp-cell lit-amber" title="Check Engine">CHECK<br>ENGINE</div>
+          <div class="warn-lamp-cell amber-lens" title="Low Coolant">LOW<br>COOLANT</div>
+
+          <div class="warn-lamp-cell lit-amber" title="Washer Fluid">WASHER<br>FLUID</div>
+          <div class="warn-lamp-cell amber-lens" title="Service">SERVICE<br>REQD</div>
+
+          <div class="warn-lamp-cell lit-amber" title="Battery Charge">BATT<br>CHARGE</div>
+          <div class="warn-lamp-cell amber-lens" title="Oil Pressure">LOW<br>OIL</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         COLUMN 3: RIGHT FLANKING CONTROL PODS (WIPERS & HVAC)
+         ======================================================= -->
+    <aside class="pods-column">
+      <!-- Upper Right Pod: Windshield Wipers -->
+      <div class="control-pod">
+        <div class="pod-section-lbl">WIPER / WASH</div>
+        <div class="wiper-pod-grid">
+          <button class="pod-btn">HI</button>
+          <button class="pod-btn">WASH</button>
+          <button class="pod-btn">MIST<br>OFF</button>
+          <button class="pod-btn active">DELAY</button>
+        </div>
+      </div>
+
+      <!-- Lower Right Pod: Climate Control & Airflow -->
+      <div class="control-pod" style="flex:1;">
+        <div class="pod-section-lbl">CLIMATE CONTROL</div>
+        <div class="climate-pod-grid">
+          <div class="climate-left-col">
+            <button class="pod-btn" style="flex:1;">OFF</button>
+            <button class="pod-btn active" style="flex:1;">A/C</button>
+            <button class="pod-btn" style="flex:1;">REC</button>
+          </div>
+
+          <div class="temp-dots-strip" title="Temperature Gradient">
+            <span class="temp-dot" style="background:#ef4444;"></span>
+            <span class="temp-dot" style="background:#f97316;"></span>
+            <span class="temp-dot" style="background:#eab308;"></span>
+            <span class="temp-dot" style="background:#e2e8f0;"></span>
+            <span class="temp-dot" style="background:#38bdf8;"></span>
+            <span class="temp-dot" style="background:#0284c7;"></span>
+          </div>
+
+          <div class="air-flow-bracket">
+            <span class="air-flow-lbl">AIR FLOW</span>
+            <button class="pod-btn" style="height:24px;font-size:7.5px;">DEFROST</button>
+            <button class="pod-btn active" style="height:24px;font-size:7.5px;">BI-LEV</button>
+            <button class="pod-btn" style="height:24px;font-size:7.5px;">FLOOR</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:7.5px;font-weight:800;padding:2px 4px 0;color:var(--silkscreen-muted);">
+          <span>FAN LO</span>
+          <span style="letter-spacing:2px;color:var(--vfd-green);">•••●•</span>
+          <span>HI</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =======================================================
+         COLUMN 4: RIGHT DASH A/C VENTS & FLUSH DELCO STEREO POD
+         ======================================================= -->
+    <aside class="right-console-zone">
+      <!-- Dual A/C Louvers -->
+      <div class="ac-vents-pair">
+        <div class="ac-vent-box"></div>
+        <div class="ac-vent-box"></div>
+      </div>
+
+      <!-- Straight, Flush-Mounted Delco GM Cassette / Graphic EQ Receiver -->
+      <div class="delco-stereo-pod">
+        <div class="delco-top-bay">
+          <div class="delco-left-rockers">
+            <button class="pod-btn" style="height:24px;font-size:7.5px;">▲ VOL ▼</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <button class="pod-btn" id="radioSeekBtn" style="height:24px;font-size:7.5px;">SEEK</button>
+              <button class="pod-btn" style="height:24px;font-size:7.5px;">SCAN</button>
+            </div>
+          </div>
+
+          <div class="delco-vfd-screen">
+            <div class="delco-vfd-top">
+              <span>DELCO-GM</span>
+              <span>FM STEREO</span>
+            </div>
+            <div class="delco-freq-digits" id="radioFreqVal">103.5</div>
+          </div>
+        </div>
+
+        <!-- 5-Band Graphic Equalizer -->
+        <div class="delco-eq-box">
+          <div class="delco-eq-title">──── 5-BAND GRAPHIC EQUALIZER ────</div>
+          <div class="delco-eq-row">
+            <div class="eq-mini-knob"><div class="tiny-knob-cap"></div><span>60</span></div>
+            <div class="eq-mini-knob"><div class="tiny-knob-cap"></div><span>250</span></div>
+            <div class="eq-mini-knob"><div class="tiny-knob-cap"></div><span>1k</span></div>
+            <div class="eq-mini-knob"><div class="tiny-knob-cap"></div><span>3.5k</span></div>
+            <div class="eq-mini-knob"><div class="tiny-knob-cap"></div><span>10k</span></div>
+          </div>
+        </div>
+
+        <!-- Lower Cassette Deck Slot -->
+        <div class="delco-cassette-deck">
+          <div class="tape-controls-col">
+            <span>FWD ▲</span>
+            <span>SEEK</span>
+            <span>REV ▼</span>
+            <span>PROG</span>
+          </div>
+          <div class="tape-slot-door">
+            AUTO REVERSE CASSETTE
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </section>
+
+</main>
+
+<!-- =========================================================
+     INTERACTIVE TEST-DRIVE BAR
+     ========================================================= -->
+<footer class="test-drive-bar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="drive-btn" id="throttleBtn">🚀 HOLD TO ACCELERATE V8 (SPACE)</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8c9cc2;">
+      Click any warning lamp, pod button, MPH/km/h converter, or radio SEEK
+    </span>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+    <span>MANUAL SPEED:</span>
+    <input type="range" min="0" max="140" value="55" id="speedSlider" style="width:140px;cursor:pointer;">
+  </div>
+</footer>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. POPULATE 24-SEGMENT VERTICAL BAR-GRAPH TACHOMETER
+  // =========================================================================
+  const tachoStack = document.getElementById('tachoSegmentsStack');
+  const TOTAL_TACHO_SEGS = 24;
+
+  tachoStack.innerHTML = Array.from({ length: TOTAL_TACHO_SEGS }, (_, i) => `
+    <div class="tacho-pair-seg ${i >= 18 ? 'redline' : ''}">
+      <div class="t-cell"></div>
+      <div class="t-cell"></div>
+    </div>
+  `).join('');
+
+  const tachoSegEls = tachoStack.children;
+
+  // =========================================================================
+  // 2. LIVE VFD SPEEDOMETER, BAR-GRAPH TACHOMETER & 4-QUADRANT NEEDLES
+  // =========================================================================
+  let speedMph = 55;
+  let targetSpeedMph = 55;
+  let rpmVal = 3.8;
+  let odoMiles = 1582.6;
+  let isMetric = false;
+  let accelerating = false;
+
+  const vfdSpeedVal = document.getElementById('vfdSpeedVal');
+  const vfdOdoVal = document.getElementById('vfdOdoVal');
+  const speedUnitTag = document.getElementById('speedUnitTag');
+  const speedSlider = document.getElementById('speedSlider');
+
+  function updateTachoBars(rpm) {
+    const activeCount = Math.round((rpm / 7.0) * TOTAL_TACHO_SEGS);
+    for (let i = 0; i < TOTAL_TACHO_SEGS; i++) {
+      tachoSegEls[i].classList.toggle('lit', i < activeCount);
+    }
+  }
+
+  function animateCockpit() {
+    if (accelerating) {
+      targetSpeedMph = Math.min(135, targetSpeedMph + 0.55);
+      speedSlider.value = Math.round(targetSpeedMph);
+    }
+
+    speedMph += (targetSpeedMph - speedMph) * 0.12;
+
+    if (speedMph > 0.5) {
+      odoMiles += speedMph * 0.00004;
+      vfdOdoVal.textContent = odoMiles.toFixed(1).padStart(7, '0');
+      rpmVal = Math.min(6.8, 1.4 + ((speedMph % 32) / 32) * 4.2 + (speedMph / 135) * 1.4);
+    } else if (!accelerating) {
+      rpmVal += (1.2 - rpmVal) * 0.08;
+    }
+
+    const displayedSpeed = isMetric ? Math.round(speedMph * 1.60934) : Math.round(speedMph);
+    vfdSpeedVal.textContent = displayedSpeed;
+
+    updateTachoBars(rpmVal);
+
+    // Smoothly pivot OIL needle based on RPM (Pivot at 14, 58)
+    const oilY = 74 - (rpmVal / 7) * 48;
+    document.getElementById('oilNeedle').setAttribute('y2', oilY.toFixed(1));
+
+    requestAnimationFrame(animateCockpit);
+  }
+
+  requestAnimationFrame(animateCockpit);
+
+  // =========================================================================
+  // 3. INTERACTIVE CONTROLS (MPH/KMH, WARNING LIGHTS, RADIO SEEK, THROTTLE)
+  // =========================================================================
+  const throttleBtn = document.getElementById('throttleBtn');
+  throttleBtn.addEventListener('pointerdown', () => {
+    if (speedMph >= 132) targetSpeedMph = 0;
+    accelerating = true;
+  });
+  window.addEventListener('pointerup', () => { accelerating = false; });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); accelerating = true; }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') accelerating = false;
+  });
+
+  speedSlider.addEventListener('input', (e) => {
+    targetSpeedMph = Number(e.target.value);
+  });
+
+  // MPH / km/h Pod Button
+  const unitBtn = document.getElementById('unitToggleBtn');
+  unitBtn.addEventListener('click', () => {
+    isMetric = !isMetric;
+    unitBtn.classList.toggle('active', isMetric);
+    speedUnitTag.textContent = isMetric ? 'KM/H' : 'MPH';
+  });
+
+  // TACH Pod Button
+  document.getElementById('tachToggleBtn').addEventListener('click', (e) => {
+    e.currentTarget.classList.toggle('active');
+    const col = document.getElementById('tachoBarCol');
+    col.style.opacity = e.currentTarget.classList.contains('active') ? '1' : '0.15';
+  });
+
+  // Trip Reset Button
+  document.getElementById('tripResetBtn').addEventListener('click', () => {
+    odoMiles = 0.0;
+    vfdOdoVal.textContent = '00000.0';
+  });
+
+  // Panel Dimmer Wheel
+  let dimFull = true;
+  document.getElementById('dimmerWheel').addEventListener('click', () => {
+    dimFull = !dimFull;
+    document.documentElement.style.setProperty('--panel-brightness', dimFull ? '1' : '0.45');
+  });
+
+  // Clickable Warning Matrix Lamps
+  document.querySelectorAll('#warningMatrix .warn-lamp-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (cell.classList.contains('amber-lens') || cell.classList.contains('lit-amber')) {
+        cell.classList.toggle('lit-amber');
+        cell.classList.toggle('amber-lens', !cell.classList.contains('lit-amber'));
+      } else {
+        cell.classList.toggle('lit-red');
+      }
+    });
+  });
+
+  // All Pod Buttons Toggle
+  document.querySelectorAll('.control-pod .pod-btn:not(#unitToggleBtn):not(#tachToggleBtn):not(#tripResetBtn)').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('active'));
+  });
+
+  // Delco Radio SEEK Button
+  const stations = ['103.5', '98.7', '101.1', '89.3', '106.9'];
+  let stIdx = 0;
+  document.getElementById('radioSeekBtn').addEventListener('click', () => {
+    stIdx = (stIdx + 1) % stations.length;
+    document.getElementById('radioFreqVal').textContent = stations[stIdx];
+  });
+})();
+</script>
+</body>
+</html>

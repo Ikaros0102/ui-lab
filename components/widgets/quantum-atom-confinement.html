@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Cryo-Magnetic Quantum Atom Confinement Chamber</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Cryo-Magnetic 3D Atom Confinement Chamber",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "quantum",
+    "atom",
+    "3d-canvas",
+    "metallic",
+    "copper",
+    "brass",
+    "reactor",
+    "plasma",
+    "tactile-buttons",
+    "sci-fi-ui",
+    "hardware",
+    "sci-fi"
+  ],
+  "description": "Machined stainless-steel and brushed-copper quantum confinement chamber UI featuring a central interactive 3D textured plasma nucleus with depth-sorted neon blue and fiery orange electron orbits, a side laser injector nozzle, and tactile hardware controls.",
+  "techniques": [
+    "depth-sorted 3D HTML5 Canvas rendering (back orbital arcs behind sphere, front arcs over sphere)",
+    "procedural 3D spherical surface granulation and plasma cellular texture on the rotating nucleus",
+    "multi-layered machined copper, brass, and brushed steel CSS gradients with specular reflections",
+    "interactive mouse 3D gimbal rotation, laser pulse injection, and isotope harmonic switching"
+  ],
+  "recipe": "Encases a cylindrical glass vacuum viewport between stepped copper induction coils inside a bolted brushed-steel housing with mechanical push-buttons and rotary flux controls.",
+  "preview": {
+    "mode": "page",
+    "width": 1120,
+    "height": 780
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --steel-dark: #12161f;
+    --steel-mid: #262e3d;
+    --steel-bright: #8fa3bd;
+    --copper-deep: #4a230c;
+    --copper-mid: #b86228;
+    --copper-bright: #f7b679;
+    --brass-gold: #e5a95c;
+    --neon-blue: #38bdf8;
+    --neon-orange: #fb923c;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 42%, #1a2436 0%, #090c12 65%, #030407 100%);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     OUTER MACHINED STAINLESS STEEL & BRASS REACTOR HOUSING
+     ========================================================= */
+  .reactor-chassis {
+    width: 100%;
+    max-width: 920px;
+    background:
+      /* Brushed metal micro-lines */
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px 1px, transparent 1px 3px),
+      linear-gradient(135deg, #2d3646 0%, #181d27 35%, #11151d 70%, #232b3a 100%);
+    border: 3px solid #3d485c;
+    border-radius: 18px;
+    padding: 20px 24px 22px;
+    box-shadow:
+      0 45px 100px rgba(0, 0, 0, 0.96),
+      0 0 40px rgba(56, 189, 248, 0.08),
+      inset 0 2px 2px rgba(255, 255, 255, 0.28),
+      inset 0 -4px 10px rgba(0, 0, 0, 0.9);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Machined Inner Bevel Frame */
+  .reactor-chassis::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1.5px solid rgba(247, 182, 121, 0.22);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  /* Heavy Hex Bolts in the 4 Corners */
+  .hex-bolt {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #cbd5e1 0%, #475569 65%, #0f172a 100%);
+    border: 2px solid #1e293b;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.5);
+    z-index: 5;
+  }
+  .hex-bolt::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1.5px solid #1e293b;
+    border-radius: 2px;
+    transform: rotate(30deg);
+  }
+  .hb-tl { top: 16px; left: 16px; }
+  .hb-tr { top: 16px; right: 16px; }
+  .hb-bl { bottom: 16px; left: 16px; }
+  .hb-br { bottom: 16px; right: 16px; }
+
+  /* =========================================================
+     TOP METALLIC HEADER & TELEMETRY READOUTS
+     ========================================================= */
+  .chassis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px 10px;
+    border-bottom: 2px solid #0d1017;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .core-led-beacon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fb923c;
+    box-shadow: 0 0 12px #fb923c, 0 0 22px #f97316;
+    animation: beaconPulse 2s infinite alternate;
+  }
+
+  @keyframes beaconPulse {
+    from { opacity: 0.65; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1.08); }
+  }
+
+  .header-brand h1 {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #f8fafc 0%, #f7b679 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-telemetry-pills {
+    display: flex;
+    gap: 10px;
+  }
+
+  .metal-readout-pill {
+    background: #090c12;
+    border: 1px solid #334155;
+    border-top-color: #1e293b;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.9);
+  }
+
+  .metal-readout-pill b {
+    color: var(--copper-bright);
+  }
+
+  /* =========================================================
+     CENTER CONTAINMENT STAGE: PILLARS + GLASS CHAMBER + 3D ATOM
+     ========================================================= */
+  .confinement-stage {
+    position: relative;
+    height: 450px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.16) 0%, rgba(56, 189, 248, 0.10) 38%, #05080e 78%);
+    border: 2px solid #0a0d14;
+    border-radius: 12px;
+    box-shadow:
+      inset 0 0 70px rgba(0, 0, 0, 0.98),
+      0 1px 0 rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Left & Right Vertical Brass/Steel Support Columns (Like the Reference Photo!) */
+  .structural-rod {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    background:
+      linear-gradient(90deg,
+        #1e2430 0%,
+        #8fa3bd 22%,
+        #f8fafc 35%,
+        #475569 55%,
+        #b86228 78%,
+        #11151c 100%
+      );
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+    z-index: 4;
+    pointer-events: none;
+  }
+  .rod-left { left: 26px; }
+  .rod-right { right: 26px; }
+
+  /* Brass Collar Rings on the Support Columns */
+  .rod-collar {
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    height: 22px;
+    background: linear-gradient(90deg, #4a230c 0%, #f7b679 38%, #9a4816 70%, #2a1205 100%);
+    border-top: 1px solid #fde68a;
+    border-bottom: 2px solid #1c0c02;
+    border-radius: 3px;
+  }
+  .rc-top { top: 58px; }
+  .rc-bot { bottom: 58px; }
+
+  /* Cylindrical Glass Containment Tube Reflection Overlay */
+  .glass-cylinder-walls {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 88px;
+    right: 88px;
+    border-left: 2px solid rgba(186, 230, 253, 0.25);
+    border-right: 2px solid rgba(251, 146, 60, 0.28);
+    background:
+      linear-gradient(90deg,
+        rgba(56, 189, 248, 0.07) 0%,
+        rgba(255, 255, 255, 0.03) 8%,
+        transparent 22%,
+        transparent 78%,
+        rgba(251, 146, 60, 0.06) 92%,
+        rgba(255, 255, 255, 0.05) 100%
+      );
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* TOP STEPPED COPPER ELECTROMAGNETIC COIL ASSEMBLY */
+  .copper-emitter-top {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .coil-tier-wide {
+    width: 380px;
+    height: 26px;
+    background:
+      linear-gradient(90deg,
+        #1e2636 0%, #64748b 12%, #f1f5f9 24%, #334155 42%,
+        #b86228 62%, #f7b679 78%, #4a230c 92%, #11151d 100%
+      );
+    border-bottom: 2px solid #090c10;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.85);
+  }
+
+  .coil-tier-mid {
+    width: 280px;
+    height: 30px;
+    background:
+      linear-gradient(90deg,
+        #2d1406 0%, #9a4816 16%, #fcd34d 32%, #b86228 50%,
+        #78350f 68%, #f7b679 84%, #2d1406 100%
+      );
+    border-radius: 0 0 10px 10px;
+    border-bottom: 2px solid #fde68a;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+  }
+
+  .coil-emitter-lens {
+    width: 190px;
+    height: 16px;
+    background: radial-gradient(ellipse at 50% 0%, #fb923c 0%, #7c2d12 65%, #1c0a03 100%);
+    border-radius: 0 0 50% 50%;
+    border-bottom: 1.5px solid #fed7aa;
+    box-shadow: 0 6px 25px rgba(251, 146, 60, 0.65);
+  }
+
+  /* BOTTOM STEPPED COPPER PEDESTAL ASSEMBLY */
+  .copper-pedestal-bottom {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .pedestal-lens-dish {
+    width: 200px;
+    height: 16px;
+    background: radial-gradient(ellipse at 50% 100%, #fde047 0%, #ea580c 55%, #431407 100%);
+    border-radius: 50% 50% 0 0;
+    border-top: 2px solid #fef08a;
+    box-shadow: 0 -8px 28px rgba(251, 146, 60, 0.8);
+  }
+
+  .pedestal-tier-mid {
+    width: 290px;
+    height: 28px;
+    background:
+      linear-gradient(90deg,
+        #2d1406 0%, #b86228 15%, #fde68a 30%, #78350f 48%,
+        #d97736 68%, #fef08a 82%, #3b1a08 100%
+      );
+    border-radius: 8px 8px 0 0;
+    border-top: 1px solid #fde68a;
+  }
+
+  .pedestal-tier-base {
+    width: 410px;
+    height: 26px;
+    background:
+      linear-gradient(90deg,
+        #161c28 0%, #38bdf8 10%, #cbd5e1 22%, #334155 42%,
+        #b86228 64%, #f7b679 80%, #1e2430 100%
+      );
+    border-top: 2px solid #94a3b8;
+  }
+
+  /* RIGHT-SIDE LASER INJECTOR NOZZLE (EXACT MATCH TO REFERENCE IMAGE!) */
+  .side-laser-injector {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .nozzle-tip {
+    width: 22px;
+    height: 18px;
+    background: linear-gradient(180deg, #475569 0%, #f8fafc 45%, #b86228 80%, #1e293b 100%);
+    border-radius: 4px 0 0 4px;
+    border-left: 2px solid #fde047;
+    box-shadow: -6px 0 18px rgba(251, 146, 60, 0.85);
+  }
+
+  .nozzle-barrel {
+    width: 38px;
+    height: 34px;
+    background: linear-gradient(180deg, #1e293b 0%, #94a3b8 35%, #d97736 70%, #0f172a 100%);
+    border: 1px solid #64748b;
+  }
+
+  /* Interactive 3D Atom Canvas */
+  canvas#atom3dCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    cursor: grab;
+  }
+  canvas#atom3dCanvas:active {
+    cursor: grabbing;
+  }
+
+  /* Stage Floating Hint */
+  .chamber-hud-hint {
+    position: absolute;
+    bottom: 84px;
+    left: 108px;
+    z-index: 4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(226, 232, 240, 0.65);
+    background: rgba(9, 12, 18, 0.72);
+    border-left: 2px solid var(--neon-blue);
+    padding: 4px 9px;
+    pointer-events: none;
+  }
+
+  /* =========================================================
+     BOTTOM MACHINED HARDWARE CONTROL DECK (BUTTONS & KNOB)
+     ========================================================= */
+  .control-deck {
+    background:
+      linear-gradient(180deg, #161b24 0%, #0d1017 100%);
+    border: 1.5px solid #2d3748;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 0.95fr;
+    gap: 18px;
+    align-items: center;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.85);
+  }
+
+  .deck-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .deck-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Tactile Machined Metal Push-Buttons */
+  .metal-buttons-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .machined-btn {
+    height: 40px;
+    background:
+      linear-gradient(180deg, #384357 0%, #222936 48%, #171c26 100%);
+    border: 1.5px solid #4a576e;
+    border-bottom-width: 3px;
+    border-bottom-color: #0b0e14;
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.22);
+    transition: all 0.12s ease;
+  }
+
+  .machined-btn:hover {
+    filter: brightness(1.1);
+  }
+
+  .machined-btn:active,
+  .machined-btn.active {
+    transform: translateY(1.5px);
+    border-color: var(--copper-bright);
+    color: #ffffff;
+    background: linear-gradient(180deg, #4a2c18 0%, #24150b 100%);
+    box-shadow:
+      0 0 12px rgba(251, 146, 60, 0.45),
+      inset 0 0 8px rgba(251, 146, 60, 0.25);
+  }
+
+  .btn-led-strip {
+    width: 18px;
+    height: 3px;
+    border-radius: 2px;
+    background: #334155;
+  }
+
+  .machined-btn.active .btn-led-strip {
+    background: var(--neon-orange);
+    box-shadow: 0 0 8px var(--neon-orange);
+  }
+
+  /* Action Trigger Buttons (Laser Pulse & Polarity Invert) */
+  .action-triggers-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 8px;
+  }
+
+  .injector-fire-btn {
+    height: 40px;
+    background: linear-gradient(180deg, #b85d24 0%, #7c350f 55%, #4a1d06 100%);
+    border: 1.5px solid #fdba74;
+    border-radius: 6px;
+    color: #fff7ed;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(251, 146, 60, 0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+    transition: all 0.12s ease;
+  }
+
+  .injector-fire-btn:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 22px rgba(251, 146, 60, 0.65);
+  }
+
+  .injector-fire-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Flux Velocity Slider */
+  .flux-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    background: #080b10;
+    border: 1px solid #283242;
+    border-radius: 6px;
+    padding: 0 12px;
+  }
+
+  .copper-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: linear-gradient(90deg, #38bdf8 0%, #fb923c 100%);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .copper-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 22px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #f7b679 0%, #9a4816 100%);
+    border: 1px solid #fef08a;
+    box-shadow: 0 2px 6px #000;
+    cursor: grab;
+  }
+
+  @media (max-width: 820px) {
+    .control-deck { grid-template-columns: 1fr; }
+    .structural-rod { display: none; }
+    .glass-cylinder-walls { left: 20px; right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="reactor-chassis">
+  <!-- 4 Corner Hex Bolts -->
+  <div class="hex-bolt hb-tl"></div>
+  <div class="hex-bolt hb-tr"></div>
+  <div class="hex-bolt hb-bl"></div>
+  <div class="hex-bolt hb-br"></div>
+
+  <!-- 1. Top Metallic Header -->
+  <header class="chassis-header">
+    <div class="header-brand">
+      <span class="core-led-beacon"></span>
+      <h1>Cryo-Magnetic Quantum Confinement // Chamber 04</h1>
+    </div>
+
+    <div class="header-telemetry-pills">
+      <div class="metal-readout-pill">FIELD: <b id="teslaReadout">14.8 TESLA</b></div>
+      <div class="metal-readout-pill">CORE TEMP: <b id="kelvinReadout">4,200 K</b></div>
+    </div>
+  </header>
+
+  <!-- 2. Central Cylindrical Containment Viewport & Textured 3D Atom -->
+  <section class="confinement-stage">
+
+    <!-- Left & Right Machined Steel & Brass Support Pillars -->
+    <div class="structural-rod rod-left">
+      <div class="rod-collar rc-top"></div>
+      <div class="rod-collar rc-bot"></div>
+    </div>
+    <div class="structural-rod rod-right">
+      <div class="rod-collar rc-top"></div>
+      <div class="rod-collar rc-bot"></div>
+    </div>
+
+    <!-- Cylindrical Quartz Glass Reflections -->
+    <div class="glass-cylinder-walls"></div>
+
+    <!-- Top Stepped Copper Electromagnetic Emitter -->
+    <div class="copper-emitter-top">
+      <div class="coil-tier-wide"></div>
+      <div class="coil-tier-mid"></div>
+      <div class="coil-emitter-lens"></div>
+    </div>
+
+    <!-- Interactive 3D Atom & Textured Plasma Nucleus Canvas -->
+    <canvas id="atom3dCanvas"></canvas>
+
+    <!-- Right-Side Laser Injector Nozzle -->
+    <div class="side-laser-injector">
+      <div class="nozzle-tip"></div>
+      <div class="nozzle-barrel"></div>
+    </div>
+
+    <div class="chamber-hud-hint">
+      DRAG MOUSE ON CHAMBER TO ROTATE 3D GIMBAL • CLICK "INJECT LASER PULSE" TO EXCITE NUCLEUS
+    </div>
+
+    <!-- Bottom Stepped Copper Pedestal -->
+    <div class="copper-pedestal-bottom">
+      <div class="pedestal-lens-dish"></div>
+      <div class="pedestal-tier-mid"></div>
+      <div class="pedestal-tier-base"></div>
+    </div>
+
+  </section>
+
+  <!-- 3. Bottom Tactile Metallic Control Deck -->
+  <section class="control-deck">
+
+    <!-- Group 1: Isotope Harmonic Selector -->
+    <div class="deck-group">
+      <div class="deck-group-label">
+        <span>Isotope Harmonic State</span>
+        <span id="orbitCountLabel" style="color:var(--copper-bright);">4 ORBITALS</span>
+      </div>
+      <div class="metal-buttons-row" id="isotopeBtns">
+        <button class="machined-btn active" data-iso="helion">
+          <span class="btn-led-strip"></span>
+          <span>HELION-4</span>
+        </button>
+        <button class="machined-btn" data-iso="cobalt">
+          <span class="btn-led-strip"></span>
+          <span>COBALT-60</span>
+        </button>
+        <button class="machined-btn" data-iso="solaris">
+          <span class="btn-led-strip"></span>
+          <span>SOLARIS-99</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Group 2: Laser Injector & Magnetic Tether Triggers -->
+    <div class="deck-group">
+      <div class="deck-group-label">
+        <span>Particle Beam &amp; Stabilizer</span>
+        <span>READY</span>
+      </div>
+      <div class="action-triggers-row">
+        <button class="injector-fire-btn" id="pulseLaserBtn">⚡ INJECT LASER PULSE</button>
+        <button class="machined-btn active" id="tetherToggleBtn">
+          <span class="btn-led-strip"></span>
+          <span>BEAM TETHER</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Group 3: Orbital Spin Velocity Slider -->
+    <div class="deck-group">
+      <div class="deck-group-label">
+        <span>Magnetic Flux Velocity</span>
+        <span id="rpmReadout" style="color:var(--neon-blue);">100% RPM</span>
+      </div>
+      <div class="flux-slider-wrap">
+        <input type="range" min="20" max="260" value="100" class="copper-slider" id="speedSlider">
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  const canvas = document.getElementById('atom3dCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let cw = 0, ch = 0;
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    cw = canvas.width = rect.width;
+    ch = canvas.height = rect.height;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // =========================================================================
+  // 1. 3D TEXTURED NUCLEUS SURFACE POINTS & ORBIT CONFIGURATIONS
+  // =========================================================================
+  const ISOTOPES = {
+    helion: {
+      tesla: '14.8 TESLA',
+      kelvin: '4,200 K',
+      coreRadius: 48,
+      orbits: [
+        { rx: 168, ry: 54, tiltX: 0.42, tiltY: 0.55, tiltZ: 0.35, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.85)', speed: 1.3, phase: 0 },
+        { rx: 162, ry: 50, tiltX: -0.48, tiltY: 0.52, tiltZ: -0.42, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.85)', speed: 1.15, phase: 2.1 },
+        { rx: 152, ry: 46, tiltX: 0.18, tiltY: -0.35, tiltZ: 0.22, color: '#fb923c', glow: 'rgba(251, 146, 60, 0.9)', speed: -1.45, phase: 1.0 },
+        { rx: 140, ry: 44, tiltX: -0.25, tiltY: -0.45, tiltZ: -0.18, color: '#f97316', glow: 'rgba(249, 115, 22, 0.9)', speed: 1.6, phase: 4.2 }
+      ]
+    },
+    cobalt: {
+      tesla: '21.4 TESLA',
+      kelvin: '6,850 K',
+      coreRadius: 52,
+      orbits: [
+        { rx: 175, ry: 56, tiltX: 0.6, tiltY: 0.3, tiltZ: 0.5, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.9)', speed: 1.5, phase: 0 },
+        { rx: 175, ry: 56, tiltX: -0.6, tiltY: 0.3, tiltZ: -0.5, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.9)', speed: -1.5, phase: 1.5 },
+        { rx: 160, ry: 48, tiltX: 0.1, tiltY: 0.75, tiltZ: 0.9, color: '#c084fc', glow: 'rgba(192, 132, 252, 0.9)', speed: 1.8, phase: 3.0 },
+        { rx: 148, ry: 44, tiltX: 0.2, tiltY: -0.2, tiltZ: 0.1, color: '#fb923c', glow: 'rgba(251, 146, 60, 0.9)', speed: 1.25, phase: 0.8 },
+        { rx: 135, ry: 40, tiltX: -0.35, tiltY: 0.6, tiltZ: -0.8, color: '#f43f5e', glow: 'rgba(244, 63, 94, 0.9)', speed: -1.7, phase: 2.4 }
+      ]
+    },
+    solaris: {
+      tesla: '32.0 TESLA',
+      kelvin: '9,900 K',
+      coreRadius: 55,
+      orbits: [
+        { rx: 182, ry: 60, tiltX: 0.35, tiltY: 0.4, tiltZ: 0.25, color: '#fde047', glow: 'rgba(253, 224, 71, 0.9)', speed: 1.8, phase: 0 },
+        { rx: 172, ry: 54, tiltX: -0.45, tiltY: 0.45, tiltZ: -0.35, color: '#fb923c', glow: 'rgba(251, 146, 60, 0.9)', speed: -1.65, phase: 1.2 },
+        { rx: 165, ry: 50, tiltX: 0.65, tiltY: -0.35, tiltZ: 0.6, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.9)', speed: 1.4, phase: 2.5 },
+        { rx: 155, ry: 48, tiltX: -0.55, tiltY: -0.5, tiltZ: -0.6, color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.9)', speed: -1.9, phase: 3.8 },
+        { rx: 142, ry: 42, tiltX: 0.05, tiltY: 0.15, tiltZ: 0.0, color: '#f97316', glow: 'rgba(249, 115, 22, 0.95)', speed: 2.2, phase: 5.0 },
+        { rx: 128, ry: 38, tiltX: 0.8, tiltY: 0.1, tiltZ: 1.2, color: '#f43f5e', glow: 'rgba(244, 63, 94, 0.9)', speed: -2.1, phase: 0.4 }
+      ]
+    }
+  };
+
+  // Generate 260 3D Fibonacci Sphere Points for the Textured Plasma Nucleus Surface!
+  const NUM_SURFACE_CELLS = 260;
+  const sphereCells = [];
+  const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
+  for (let i = 0; i < NUM_SURFACE_CELLS; i++) {
+    const theta = (2 * Math.PI * i) / goldenRatio;
+    const phi = Math.acos(1 - (2 * (i + 0.5)) / NUM_SURFACE_CELLS);
+    const type = i % 7 === 0 ? 'violet' : i % 3 === 0 ? 'brightGold' : 'moltenOrange';
+    sphereCells.push({
+      x: Math.cos(theta) * Math.sin(phi),
+      y: Math.sin(theta) * Math.sin(phi),
+      z: Math.cos(phi),
+      size: 2.2 + (i % 5) * 1.1,
+      type
+    });
+  }
+
+  // Ambient floating spark dust around the atom
+  const dustSparks = Array.from({ length: 42 }, () => ({
+    angle: Math.random() * Math.PI * 2,
+    radius: 58 + Math.random() * 115,
+    yOff: (Math.random() - 0.5) * 90,
+    speed: (0.008 + Math.random() * 0.018) * (Math.random() < 0.5 ? 1 : -1),
+    size: 1 + Math.random() * 1.8,
+    color: Math.random() < 0.5 ? '#fde047' : '#7dd3fc'
+  }));
+
+  // =========================================================================
+  // 2. INTERACTIVE STATE & MOUSE 3D GIMBAL ROTATION
+  // =========================================================================
+  let currentIso = 'helion';
+  let speedMult = 1.0;
+  let tetherActive = true;
+  let pulseEnergy = 0;
+  let userRotX = 0.08;
+  let userRotY = 0.0;
+  let isDragging = false;
+  let lastMouseX = 0, lastMouseY = 0;
+
+  canvas.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMouseX;
+    const dy = e.clientY - lastMouseY;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    userRotY += dx * 0.007;
+    userRotX = Math.max(-0.85, Math.min(0.85, userRotX + dy * 0.007));
+  });
+
+  const stopDrag = () => { isDragging = false; };
+  canvas.addEventListener('pointerup', stopDrag);
+  canvas.addEventListener('pointercancel', stopDrag);
+
+  // 3D Rotation Helper
+  function rotate3D(x, y, z, rx, ry, rz) {
+    // Rotate Z
+    let x1 = x * Math.cos(rz) - y * Math.sin(rz);
+    let y1 = x * Math.sin(rz) + y * Math.cos(rz);
+    let z1 = z;
+    // Rotate X
+    let y2 = y1 * Math.cos(rx) - z1 * Math.sin(rx);
+    let z2 = y1 * Math.sin(rx) + z1 * Math.cos(rx);
+    let x2 = x1;
+    // Rotate Y
+    let x3 = x2 * Math.cos(ry) + z2 * Math.sin(ry);
+    let z3 = -x2 * Math.sin(ry) + z2 * Math.cos(ry);
+    return { x: x3, y: y2, z: z3 };
+  }
+
+  // =========================================================================
+  // 3. MAIN 3D RENDER LOOP (DEPTH-SORTED ORBITS + TEXTURED PLASMA CORE)
+  // =========================================================================
+  let time = 0;
+
+  function drawOrbitPass(cx, cy, orbit, isFrontPass) {
+    const steps = 90;
+    ctx.save();
+    ctx.lineCap = 'round';
+
+    // Outer Neon Glow Pass + Inner Crisp White-Hot Core Pass
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.beginPath();
+      let started = false;
+
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / steps) * Math.PI * 2;
+        const ox = Math.cos(a) * orbit.rx * (1 + pulseEnergy * 0.08);
+        const oy = Math.sin(a) * orbit.ry * (1 + pulseEnergy * 0.08);
+
+        const p = rotate3D(
+          ox, oy, 0,
+          orbit.tiltX + userRotX,
+          orbit.tiltY + userRotY,
+          orbit.tiltZ
+        );
+
+        const belongsToPass = isFrontPass ? (p.z >= -4) : (p.z < 4);
+        if (belongsToPass) {
+          const sx = cx + p.x;
+          const sy = cy + p.y;
+          if (!started) {
+            ctx.moveTo(sx, sy);
+            started = true;
+          } else {
+            ctx.lineTo(sx, sy);
+          }
+        } else {
+          started = false;
+        }
+      }
+
+      if (pass === 0) {
+        ctx.strokeStyle = orbit.glow;
+        ctx.lineWidth = isFrontPass ? 5.5 : 3.5;
+        ctx.shadowColor = orbit.color;
+        ctx.shadowBlur = 16;
+        ctx.globalAlpha = isFrontPass ? 0.55 : 0.28;
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = isFrontPass ? '#ffffff' : orbit.color;
+        ctx.lineWidth = isFrontPass ? 2.0 : 1.3;
+        ctx.shadowColor = orbit.color;
+        ctx.shadowBlur = 8;
+        ctx.globalAlpha = isFrontPass ? 0.95 : 0.55;
+        ctx.stroke();
+      }
+    }
+
+    // Draw Orbiting Subatomic Electron Particle on This Ring
+    const eAngle = time * orbit.speed + orbit.phase;
+    const ex = Math.cos(eAngle) * orbit.rx * (1 + pulseEnergy * 0.08);
+    const ey = Math.sin(eAngle) * orbit.ry * (1 + pulseEnergy * 0.08);
+    const ep = rotate3D(
+      ex, ey, 0,
+      orbit.tiltX + userRotX,
+      orbit.tiltY + userRotY,
+      orbit.tiltZ
+    );
+
+    if ((isFrontPass && ep.z >= 0) || (!isFrontPass && ep.z < 0)) {
+      const px = cx + ep.x;
+      const py = cy + ep.y;
+      const pGrad = ctx.createRadialGradient(px, py, 0.5, px, py, isFrontPass ? 11 : 7);
+      pGrad.addColorStop(0, '#ffffff');
+      pGrad.addColorStop(0.35, orbit.color);
+      pGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = pGrad;
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(px, py, isFrontPass ? 11 : 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  function renderTexturedNucleus(cx, cy, radius) {
+    ctx.save();
+
+    // 1. Outer Volumetric Corona Halo (Matches the fiery/violet glow in the photo)
+    const haloRadius = radius * (2.15 + pulseEnergy * 0.45);
+    const haloGrad = ctx.createRadialGradient(cx, cy, radius * 0.5, cx, cy, haloRadius);
+    haloGrad.addColorStop(0, 'rgba(255, 230, 150, 0.85)');
+    haloGrad.addColorStop(0.35, 'rgba(251, 146, 60, 0.55)');
+    haloGrad.addColorStop(0.65, 'rgba(168, 85, 247, 0.22)');
+    haloGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = haloGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, haloRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Base Molten Sphere Body
+    const baseGrad = ctx.createRadialGradient(
+      cx - radius * 0.25, cy - radius * 0.25, radius * 0.1,
+      cx, cy, radius
+    );
+    baseGrad.addColorStop(0, '#fff7ed');
+    baseGrad.addColorStop(0.35, '#fb923c');
+    baseGrad.addColorStop(0.72, '#9a3412');
+    baseGrad.addColorStop(0.92, '#4c1d95');
+    baseGrad.addColorStop(1, '#fde047');
+
+    ctx.fillStyle = baseGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. 3D Textured Surface Granulation & Plasma Filaments (Rotating 3D Points on Sphere)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
+
+    const rotY = time * 0.55 + userRotY;
+    const rotX = Math.sin(time * 0.3) * 0.25 + userRotX;
+
+    for (let i = 0; i < sphereCells.length; i++) {
+      const cell = sphereCells[i];
+      const p = rotate3D(cell.x, cell.y, cell.z, rotX, rotY, 0.2);
+
+      // Only draw front-facing hemisphere cells
+      if (p.z > -0.1) {
+        const sx = cx + p.x * radius * 0.92;
+        const sy = cy + p.y * radius * 0.92;
+        const scale = (0.45 + p.z * 0.75) * cell.size;
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, scale, 0, Math.PI * 2);
+
+        if (cell.type === 'violet') {
+          ctx.fillStyle = `rgba(139, 92, 246, ${0.45 * p.z})`;
+        } else if (cell.type === 'brightGold') {
+          ctx.fillStyle = `rgba(254, 249, 195, ${0.75 * p.z})`;
+        } else {
+          ctx.fillStyle = `rgba(234, 88, 12, ${0.52 * p.z})`;
+        }
+        ctx.fill();
+      }
+    }
+
+    // Internal criss-crossing plasma web lines inside the sphere
+    ctx.strokeStyle = 'rgba(255, 250, 220, 0.32)';
+    ctx.lineWidth = 1.1;
+    for (let k = 0; k < 5; k++) {
+      ctx.beginPath();
+      const offset = time * 0.8 + k * 1.2;
+      ctx.ellipse(
+        cx, cy,
+        radius * 0.85,
+        radius * Math.abs(Math.sin(offset)) * 0.85,
+        offset * 0.7, 0, Math.PI * 2
+      );
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // 4. Crisp Specular Rim Ring Around the 3D Nucleus (Exact match to reference!)
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.9)';
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = '#fb923c';
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function animateChamber() {
+    time += 0.022 * speedMult;
+    if (pulseEnergy > 0) pulseEnergy = Math.max(0, pulseEnergy - 0.025);
+
+    ctx.clearRect(0, 0, cw, ch);
+
+    const cx = cw / 2;
+    const cy = ch / 2;
+    const iso = ISOTOPES[currentIso];
+    const coreR = iso.coreRadius * (1 + pulseEnergy * 0.14);
+
+    // 1. Vertical Magnetic Confinement Tether Beam (Anchoring Atom to Bottom Dish)
+    if (tetherActive) {
+      ctx.save();
+      const tetherGrad = ctx.createLinearGradient(cx, cy, cx, ch - 65);
+      tetherGrad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+      tetherGrad.addColorStop(0.6, 'rgba(251, 146, 60, 0.55)');
+      tetherGrad.addColorStop(1, 'rgba(254, 240, 138, 0.9)');
+
+      ctx.strokeStyle = tetherGrad;
+      ctx.lineWidth = 2.2 + pulseEnergy * 3;
+      ctx.shadowColor = '#fb923c';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + coreR * 0.8);
+      ctx.lineTo(cx, ch - 68);
+      ctx.stroke();
+
+      // Top faint tether beam
+      ctx.strokeStyle = 'rgba(251, 146, 60, 0.24)';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(cx, 70);
+      ctx.lineTo(cx, cy - coreR * 0.8);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 2. Right-Side Laser Injector Particle Stream (From Nozzle to Nucleus)
+    ctx.save();
+    const nozzleX = cw - 118;
+    const beamGrad = ctx.createLinearGradient(nozzleX, cy, cx + coreR, cy);
+    beamGrad.addColorStop(0, `rgba(254, 240, 138, ${0.45 + pulseEnergy * 0.55})`);
+    beamGrad.addColorStop(0.5, `rgba(251, 146, 60, ${0.22 + pulseEnergy * 0.5})`);
+    beamGrad.addColorStop(1, 'transparent');
+
+    ctx.fillStyle = beamGrad;
+    ctx.beginPath();
+    ctx.moveTo(nozzleX, cy - 3);
+    ctx.lineTo(cx + coreR, cy - 18);
+    ctx.lineTo(cx + coreR, cy + 18);
+    ctx.lineTo(nozzleX, cy + 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 3. PASS 1: Render Back Halves of All 3D Electron Orbits (Behind Nucleus)
+    iso.orbits.forEach(orb => drawOrbitPass(cx, cy, orb, false));
+
+    // 4. Floating Spark Particles Around Core
+    dustSparks.forEach(sp => {
+      sp.angle += sp.speed * speedMult;
+      const sx = cx + Math.cos(sp.angle) * sp.radius;
+      const sy = cy + Math.sin(sp.angle) * (sp.radius * 0.38) + sp.yOff * 0.3;
+      ctx.fillStyle = sp.color;
+      ctx.globalAlpha = 0.55 + Math.sin(time * 3 + sp.radius) * 0.35;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sp.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // 5. PASS 2: Render Textured 3D Atomic Nucleus Sphere in the Center
+    renderTexturedNucleus(cx, cy, coreR);
+
+    // 6. PASS 3: Render Front Halves of All 3D Electron Orbits (In Front of Nucleus!)
+    iso.orbits.forEach(orb => drawOrbitPass(cx, cy, orb, true));
+
+    requestAnimationFrame(animateChamber);
+  }
+
+  requestAnimationFrame(animateChamber);
+
+  // =========================================================================
+  // 4. HARDWARE BUTTONS & SLIDER CONTROLS
+  // =========================================================================
+  document.querySelectorAll('#isotopeBtns .machined-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#isotopeBtns .machined-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentIso = btn.dataset.iso;
+      const cfg = ISOTOPES[currentIso];
+      document.getElementById('teslaReadout').textContent = cfg.tesla;
+      document.getElementById('kelvinReadout').textContent = cfg.kelvin;
+      document.getElementById('orbitCountLabel').textContent = `${cfg.orbits.length} ORBITALS`;
+      pulseEnergy = 0.65;
+    });
+  });
+
+  document.getElementById('pulseLaserBtn').addEventListener('click', () => {
+    pulseEnergy = 1.0;
+  });
+
+  const tetherBtn = document.getElementById('tetherToggleBtn');
+  tetherBtn.addEventListener('click', () => {
+    tetherActive = !tetherActive;
+    tetherBtn.classList.toggle('active', tetherActive);
+  });
+
+  const speedSlider = document.getElementById('speedSlider');
+  const rpmReadout = document.getElementById('rpmReadout');
+  speedSlider.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    speedMult = val / 100;
+    rpmReadout.textContent = `${val}% RPM`;
+  });
+})();
+</script>
+</body>
+</html>

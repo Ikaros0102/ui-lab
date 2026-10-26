@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Realistic IN-14 Nixie Tube Clock in Walnut & Aluminum</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Realistic IN-14 Nixie Clock in Walnut Case",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "nixie",
+    "in-14",
+    "vacuum-tube",
+    "clock",
+    "walnut",
+    "art-deco",
+    "photorealistic",
+    "svg-glass",
+    "neon",
+    "skeuomorphic",
+    "hardware",
+    "light-mode"
+  ],
+  "description": "Macro-photorealistic 6-tube IN-14 Nixie clock seated in a handcrafted walnut wood enclosure with a brushed aluminum Art-Deco emblem. Features seamless SVG blown-glass envelopes, internal metal getter bridges, ultra-fine hexagonal anode meshes, thin wire cathode stacks, and volumetric red-orange neon discharge.",
+  "techniques": [
+    "seamless SVG blown-glass bulb paths with Fresnel wall thickness and curved specular highlights",
+    "authentic thin-wire SVG cathode paths (0-9) stacked in 3D depth with multi-stage Gaussian neon halation",
+    "procedural SVG walnut wood-grain filter with warm top-surface tube reflections",
+    "3 studio lighting environments (Studio White, Warm Dusk, Dark Room)"
+  ],
+  "recipe": "Combines precision SVG vacuum-tube rendering with a textured walnut and brushed-aluminum enclosure over a studio cyclorama backdrop.",
+  "preview": {
+    "mode": "page",
+    "width": 1240,
+    "height": 740
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  /* По дефолту стоят переменные Night Glow, чтобы не было белой вспышки */
+  :root,
+  body[data-env="night"] {
+    --bg-top: #070606;
+    --bg-mid: #120d0a;
+    --bg-bottom: #080605;
+    --table-shadow: rgba(0, 0, 0, 0.95);
+    --glass-rim-dark: rgba(5, 4, 3, 0.82);
+    --glass-specular: rgba(255, 220, 190, 0.38);
+    --ambient-orange: rgba(255, 75, 0, 0.42);
+    --ctrl-bg: rgba(18, 15, 13, 0.88);
+    --ctrl-border: rgba(255, 140, 60, 0.22);
+    --ctrl-text: #d6d3d1;
+  }
+
+  body[data-env="studio"] {
+    --bg-top: #d5d7da;
+    --bg-mid: #e4e5e7;
+    --bg-bottom: #f2f3f5;
+    --table-shadow: rgba(0, 0, 0, 0.42);
+    --glass-rim-dark: rgba(25, 22, 20, 0.52);
+    --glass-specular: rgba(255, 255, 255, 0.78);
+    --ambient-orange: rgba(255, 90, 0, 0.14);
+    --ctrl-bg: rgba(255, 255, 255, 0.75);
+    --ctrl-border: rgba(0, 0, 0, 0.12);
+    --ctrl-text: #27272a;
+  }
+
+  body[data-env="dusk"] {
+    --bg-top: #262322;
+    --bg-mid: #38322e;
+    --bg-bottom: #1c1816;
+    --table-shadow: rgba(0, 0, 0, 0.78);
+    --glass-rim-dark: rgba(10, 8, 6, 0.68);
+    --glass-specular: rgba(255, 245, 235, 0.55);
+    --ambient-orange: rgba(255, 85, 0, 0.28);
+    --ctrl-bg: rgba(28, 25, 23, 0.82);
+    --ctrl-border: rgba(255, 255, 255, 0.12);
+    --ctrl-text: #e7e5e4;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 50% 42%, var(--ambient-orange) 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 72%, var(--bg-bottom) 100%);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+    overflow-x: hidden;
+    transition: background 0.5s ease;
+  }
+
+  /* =========================================================
+     MAIN CLOCK PRESENTATION STAGE
+     ========================================================= */
+  .clock-studio-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1060px;
+  }
+
+  /* Black Power Cord Extending Out Left Behind Wood Base */
+  .power-cord-left {
+    position: absolute;
+    left: -120px;
+    bottom: 92px;
+    width: 180px;
+    height: 11px;
+    background: linear-gradient(180deg, #27272a 0%, #09090b 60%, #18181b 100%);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.38);
+    z-index: 1;
+    border-radius: 4px;
+  }
+
+  /* =========================================================
+     ROW OF 6 REALISTIC IN-14 TUBES & 2 IN-3 NEON BULBS
+     ========================================================= */
+  .tubes-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 38px;
+    position: relative;
+    z-index: 5;
+    /* Опускаем лампы глубже в деревянный короб, чтобы убрать левитацию */
+    margin-bottom: -27px;
+  }
+
+  .in14-tube {
+    width: 116px;
+    height: 292px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+  }
+
+  .in14-tube:hover {
+    transform: translateY(-2px);
+  }
+
+  .in14-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Mini IN-3 Neon Colon Bulbs Seated in Clear Acrylic Stand-Offs */
+  .in3-colon {
+    width: 34px;
+    height: 156px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0 2px;
+    /* Чуть корректируем посадку маленьких ламп относительно глубоких гнезд */
+    transform: translateY(-2px);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+  }
+
+  .in3-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+  }
+
+  /* =========================================================
+     ПЕРЕДНЯЯ КРОМКА ДЕРЕВЯННЫХ ЛУНОК ПОВЕРХ ДОНЫШКА ЛАМП (z-index: 6)
+     Создает реалистичный эффект того, что лампы входят внутрь дерева
+     ========================================================= */
+  .wood-sockets-front-lip {
+    position: relative;
+    z-index: 6;
+    width: 960px;
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 38px;
+    pointer-events: none;
+  }
+
+  .front-lip-large {
+    width: 116px;
+    height: 20px;
+    transform: translateY(-10px);
+    border-radius: 0 0 52% 52% / 0 0 100% 100%;
+    /* Внутренняя тень в месте стыка + тонкая деревянная фаска спереди */
+    box-shadow:
+      inset 0 -5px 6px rgba(10, 4, 0, 0.92),
+      0 2px 1px rgba(235, 175, 115, 0.32),
+      0 3px 4px rgba(0, 0, 0, 0.55);
+  }
+
+  .front-lip-small {
+    width: 34px;
+    height: 14px;
+    margin: 0 2px;
+    transform: translateY(-9px);
+    border-radius: 0 0 52% 52% / 0 0 100% 100%;
+    box-shadow:
+      inset 0 -4px 4px rgba(10, 4, 0, 0.92),
+      0 1.5px 1px rgba(235, 175, 115, 0.28),
+      0 2px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  /* =========================================================
+     HANDCRAFTED SOLID WALNUT WOOD BASE + ART-DECO METAL INLAY
+     ========================================================= */
+  .walnut-enclosure {
+    position: relative;
+    z-index: 4;
+    width: 960px;
+    height: 146px;
+    border-radius: 34px 34px 10px 10px / 28px 28px 8px 8px;
+    /* Layered Walnut Wood Color + Top Specular Chamfer + Warm Neon Bounce */
+    background:
+      /* Warm orange bounce light under each of the 6 tubes */
+      radial-gradient(ellipse 68px 22px at 11.5% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      radial-gradient(ellipse 68px 22px at 24.8% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      radial-gradient(ellipse 68px 22px at 43.2% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      radial-gradient(ellipse 68px 22px at 56.8% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      radial-gradient(ellipse 68px 22px at 75.2% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      radial-gradient(ellipse 68px 22px at 88.5% 12px, rgba(255, 100, 0, 0.48) 0%, transparent 100%),
+      /* Top rounded wood bevel highlight */
+      linear-gradient(180deg,
+        #c7925e 0%,
+        #a86e3b 9%,
+        #78471e 19%,
+        #5e3413 55%,
+        #47250b 88%,
+        #2b1505 100%
+      );
+    box-shadow:
+      0 24px 38px var(--table-shadow),
+      0 6px 12px rgba(0, 0, 0, 0.45),
+      inset 0 2px 3px rgba(255, 225, 185, 0.48),
+      inset 0 -6px 14px rgba(15, 6, 0, 0.85),
+      inset 22px 0 28px rgba(20, 8, 0, 0.55),
+      inset -22px 0 28px rgba(20, 8, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Procedural Organic Walnut Wood-Grain Texture Overlay */
+  .wood-grain-texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.26;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    filter: url(#walnut-grain);
+    background: #5c3314;
+  }
+
+  /* Subtle Horizontal Wood Pores & Varnish Sheen */
+  .walnut-enclosure::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        1.5deg,
+        rgba(28, 12, 2, 0.16) 0px,
+        rgba(28, 12, 2, 0.16) 2px,
+        transparent 2px,
+        transparent 7px,
+        rgba(255, 200, 140, 0.05) 7px,
+        rgba(255, 200, 140, 0.05) 9px
+      );
+    pointer-events: none;
+  }
+
+  /* Recessed Socket Wells Along Top Edge of Wood Block (Задняя/внутренняя часть лунки) */
+  .wood-sockets-ledge {
+    position: absolute;
+    top: 3px;
+    left: 38px;
+    right: 38px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    pointer-events: none;
+  }
+
+  .socket-hole-large {
+    width: 116px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 45%, #050200 0%, #160902 72%, #6e411c 100%);
+    box-shadow:
+      0 1px 2px rgba(255, 210, 160, 0.35),
+      inset 0 5px 8px #000;
+  }
+
+  .socket-hole-small {
+    width: 34px;
+    height: 12px;
+    margin: 0 2px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 45%, #070301 0%, #1a0b03 70%, #6e411c 100%);
+    box-shadow:
+      0 1px 1px rgba(255, 210, 160, 0.28),
+      inset 0 3px 5px #000;
+  }
+
+  /* Front Brushed Aluminum Art-Deco Wing Inlay */
+  .art-deco-inlay-svg {
+    position: relative;
+    z-index: 3;
+    width: 780px;
+    height: 96px;
+    margin-top: 16px;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.75)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.6));
+  }
+
+  /* =========================================================
+     BOTTOM MINIMALIST STUDIO CONTROL BAR
+     ========================================================= */
+  .studio-controls-bar {
+    margin-top: 32px;
+    background: var(--ctrl-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--ctrl-border);
+    border-radius: 40px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    color: var(--ctrl-text);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+    z-index: 10;
+  }
+
+  .ctrl-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ctrl-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.65;
+    margin-right: 4px;
+  }
+
+  .studio-pill-btn {
+    background: transparent;
+    border: 1px solid var(--ctrl-border);
+    color: var(--ctrl-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .studio-pill-btn:hover {
+    border-color: #d97736;
+  }
+
+  .studio-pill-btn.active {
+    background: linear-gradient(135deg, #c25e1a 0%, #8c3b08 100%);
+    border-color: #f59e0b;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(194, 94, 26, 0.35);
+  }
+
+  @media (max-width: 1020px) {
+    .clock-studio-wrap {
+      transform: scale(0.74);
+      transform-origin: top center;
+    }
+  }
+</style>
+</head>
+<!-- По умолчанию активирована тема Night Glow -->
+<body data-env="night">
+
+<!-- Global SVG Filters: Walnut Wood Grain, Fine Anode Honeycomb & Volumetric Neon Plasma Glow -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <!-- Realistic Stretched Walnut Wood Grain Filter -->
+    <filter id="walnut-grain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.18" numOctaves="4" seed="11" result="noise"/>
+      <feColorMatrix type="matrix" values="
+        0.35 0 0 0 0.18
+        0.20 0 0 0 0.08
+        0.08 0 0 0 0.02
+        0    0 0 1 0" in="noise"/>
+    </filter>
+
+    <!-- Multi-Stage Volumetric Neon Discharge Glow Filter -->
+    <filter id="nixie-plasma" x="-45%" y="-35%" width="190%" height="170%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="blurCore"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blurMid"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blurWide"/>
+      <feColorMatrix in="blurWide" type="matrix" values="
+        1 0 0 0 1.0
+        0 0.15 0 0 0.08
+        0 0 0 0 0.0
+        0 0 0 1.3 0" result="redHalo"/>
+      <feColorMatrix in="blurMid" type="matrix" values="
+        1 0 0 0 1.0
+        0 0.45 0 0 0.25
+        0 0 0 0 0.0
+        0 0 0 1.2 0" result="orangeHalo"/>
+      <feMerge>
+        <feMergeNode in="redHalo"/>
+        <feMergeNode in="orangeHalo"/>
+        <feMergeNode in="blurCore"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Ultra-Fine Hexagonal Anode Wire Mesh Pattern -->
+    <pattern id="in14-hex-mesh" width="8.5" height="14.7" patternUnits="userSpaceOnUse">
+      <path d="M4.25 0 L8.5 2.45 L8.5 7.35 L4.25 9.8 L0 7.35 L0 2.45 Z M4.25 14.7 L8.5 12.25 M4.25 14.7 L0 12.25 M4.25 9.8 L4.25 14.7"
+            fill="none" stroke="#1a0b05" stroke-width="0.65" opacity="0.72"/>
+      <path d="M4.25 0 L8.5 2.45 L8.5 7.35 L4.25 9.8 L0 7.35 L0 2.45 Z"
+            fill="none" stroke="rgba(255, 165, 90, 0.22)" stroke-width="0.35"/>
+    </pattern>
+
+    <!-- Brushed Aluminum Metallic Gradient for Front Art-Deco Inlay -->
+    <linearGradient id="brushed-alu" x1="0%" y1="0%" x2="100%" y2="8%">
+      <stop offset="0%" stop-color="#d4d6d8"/>
+      <stop offset="25%" stop-color="#ebedef"/>
+      <stop offset="50%" stop-color="#c8cbce"/>
+      <stop offset="75%" stop-color="#f3f4f6"/>
+      <stop offset="100%" stop-color="#cfd2d5"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main class="clock-studio-wrap">
+  <div class="power-cord-left"></div>
+
+  <!-- =========================================================
+       1. ROW OF 6 PHOTOREALISTIC IN-14 TUBES & 2 IN-3 COLONS
+       ========================================================= -->
+  <section class="tubes-row" id="tubesRow">
+    <!-- Dynamically Populated with Precision SVG Blown-Glass Tubes -->
+  </section>
+
+  <!-- Передняя кромка лунок, перекрывающая самый низ стеклянных колб -->
+  <div class="wood-sockets-front-lip" aria-hidden="true">
+    <div class="front-lip-large"></div>
+    <div class="front-lip-large"></div>
+    <div class="front-lip-small"></div>
+    <div class="front-lip-large"></div>
+    <div class="front-lip-large"></div>
+    <div class="front-lip-small"></div>
+    <div class="front-lip-large"></div>
+    <div class="front-lip-large"></div>
+  </div>
+
+  <!-- =========================================================
+       2. SOLID WALNUT WOOD BASE WITH ART-DECO ALUMINUM INLAY
+       ========================================================= -->
+  <section class="walnut-enclosure">
+    <div class="wood-grain-texture"></div>
+
+    <!-- Top Recessed Socket Holes Under Each Bulb -->
+    <div class="wood-sockets-ledge">
+      <div class="socket-hole-large"></div>
+      <div class="socket-hole-large"></div>
+      <div class="socket-hole-small"></div>
+      <div class="socket-hole-large"></div>
+      <div class="socket-hole-large"></div>
+      <div class="socket-hole-small"></div>
+      <div class="socket-hole-large"></div>
+      <div class="socket-hole-large"></div>
+    </div>
+
+    <!-- Front Art-Deco Brushed Aluminum 3-Wing Medallion -->
+    <svg class="art-deco-inlay-svg" viewBox="0 0 780 96" fill="none">
+      <!-- Outer Winged Bar & Center Ring Cutout -->
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M 18 26 C 12 26, 12 37, 18 37 L 336 37 C 340 37, 342 40, 341 44 C 340 46, 338 47, 334 47 L 196 47 C 190 47, 190 58, 196 58 L 336 58 C 340 58, 343 61, 344 64 C 345 67, 342 69, 338 69 L 266 69 C 260 69, 260 80, 266 80 L 352 80 C 362 91, 375 95, 390 95 C 405 95, 418 91, 428 80 L 514 80 C 520 80, 520 69, 514 69 L 442 69 C 438 69, 435 67, 436 64 C 437 61, 440 58, 444 58 L 584 58 C 590 58, 590 47, 584 47 L 446 47 C 442 47, 440 46, 439 44 C 438 40, 440 37, 444 37 L 762 37 C 768 37, 768 26, 762 26 L 430 26 C 420 12, 406 5, 390 5 C 374 5, 360 12, 350 26 Z
+           M 390 20 C 407 20, 420 33, 420 50 C 420 67, 407 80, 390 80 C 373 80, 360 67, 360 50 C 360 33, 373 20, 390 20 Z"
+        fill="url(#brushed-alu)" stroke="#2b1606" stroke-width="1.2"/>
+
+      <!-- Center Solid Brushed Aluminum Disc -->
+      <circle cx="390" cy="50" r="18" fill="url(#brushed-alu)" stroke="#2b1606" stroke-width="1.2"/>
+    </svg>
+  </section>
+
+  <!-- =========================================================
+       3. INTERACTIVE CONTROLS (TIME MODE, DEPOISON ROLL, LIGHTING)
+       ========================================================= -->
+  <footer class="studio-controls-bar">
+    <div class="ctrl-section" id="modeGroup">
+      <span class="ctrl-label">Display:</span>
+      <button class="studio-pill-btn active" data-mode="photo">14:12:53 (PHOTO)</button>
+      <button class="studio-pill-btn" data-mode="live">LIVE CLOCK</button>
+      <button class="studio-pill-btn" id="rollBtn">⚡ CATHODE ROLL</button>
+    </div>
+
+    <div class="ctrl-section" id="envGroup">
+      <span class="ctrl-label">Backdrop:</span>
+      <button class="studio-pill-btn" data-env="studio">Studio White</button>
+      <button class="studio-pill-btn" data-env="dusk">Warm Dusk</button>
+      <button class="studio-pill-btn active" data-env="night">Night Glow</button>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. AUTHENTIC IN-14 THIN WIRE CATHODE SVG PATHS (DIGITS 0 - 9)
+  // =========================================================================
+  const DIGIT_PATHS = {
+    '0': 'M 60 112 C 79 112, 84 134, 84 162 C 84 190, 79 212, 60 212 C 41 212, 36 190, 36 162 C 36 134, 41 112, 60 112 Z',
+    '1': 'M 55 120 L 61 112 L 61 212',
+    '2': 'M 38 130 C 38 114, 82 110, 82 136 C 82 160, 38 184, 38 210 L 84 210',
+    '3': 'M 38 114 L 82 114 L 58 152 C 78 152, 85 168, 84 186 C 83 204, 68 212, 54 212 C 42 212, 36 204, 35 196',
+    '4': 'M 68 212 L 68 112 L 35 176 L 86 176',
+    '5': 'M 80 114 L 40 114 L 39 156 C 48 148, 83 150, 83 182 C 83 204, 68 212, 53 212 C 41 212, 36 204, 35 196',
+    '6': 'M 76 114 C 54 128, 37 154, 37 182 C 37 202, 47 212, 61 212 C 75 212, 84 202, 84 184 C 84 166, 73 156, 59 156 C 46 156, 38 166, 37 180',
+    '7': 'M 36 114 L 84 114 C 70 148, 56 178, 50 212',
+    '8': 'M 60 158 C 75 158, 81 146, 81 134 C 81 120, 72 112, 60 112 C 48 112, 39 120, 39 134 C 39 146, 45 158, 60 158 C 77 158, 84 170, 84 186 C 84 202, 74 212, 60 212 C 46 212, 36 202, 36 186 C 36 170, 43 158, 60 158 Z',
+    '9': 'M 44 212 C 66 198, 83 172, 83 144 C 83 124, 73 112, 59 112 C 45 112, 36 124, 36 142 C 36 160, 47 170, 61 170 C 74 170, 82 160, 83 146'
+  };
+
+  // Build Inactive Wire Stack Markup (All 10 wire cathodes faintly visible inside the cage)
+  function buildGhostWireStack() {
+    return Object.entries(DIGIT_PATHS).map(([d, path], idx) => {
+      const offsetX = ((idx % 3) - 1) * 0.8;
+      const alpha = idx % 2 === 0 ? 0.24 : 0.16;
+      return `<path d="${path}" transform="translate(${offsetX}, 0)" fill="none" stroke="rgba(120, 85, 65, ${alpha})" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }).join('');
+  }
+
+  const GHOST_STACK_SVG = buildGhostWireStack();
+
+  // Build Complete Blown-Glass IN-14 Tube SVG
+  function createIn14TubeSvg(idx, initialDigit) {
+    return `
+      <div class="in14-tube" data-tube="${idx}" title="Click tube to roll cathodes">
+        <svg class="in14-svg" viewBox="0 0 120 295">
+          <defs>
+            <!-- Internal Volumetric Red-Orange Neon Cage Backlight -->
+            <radialGradient id="cageGlow-${idx}" cx="50%" cy="52%" r="54%">
+              <stop offset="0%" stop-color="rgba(255, 110, 15, 0.88)"/>
+              <stop offset="48%" stop-color="rgba(215, 42, 0, 0.62)"/>
+              <stop offset="85%" stop-color="rgba(65, 12, 2, 0.85)"/>
+              <stop offset="100%" stop-color="rgba(22, 6, 2, 0.95)"/>
+            </radialGradient>
+
+            <!-- Blown Glass Body Gradient -->
+            <linearGradient id="glassBody-${idx}" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgba(30, 26, 24, 0.58)"/>
+              <stop offset="6%" stop-color="rgba(255, 255, 255, 0.62)"/>
+              <stop offset="14%" stop-color="rgba(255, 255, 255, 0.12)"/>
+              <stop offset="50%" stop-color="rgba(255, 255, 255, 0.02)"/>
+              <stop offset="86%" stop-color="rgba(255, 230, 210, 0.12)"/>
+              <stop offset="94%" stop-color="rgba(255, 255, 255, 0.52)"/>
+              <stop offset="100%" stop-color="rgba(25, 22, 20, 0.62)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- 1. SEAMLESS OUTER BLOWN-GLASS BULB & EXHAUST TIP -->
+          <path d="M 60 4
+                   C 63 4, 65 11, 66 19
+                   C 68 29, 73 35, 84 40
+                   C 101 47, 108 62, 108 84
+                   L 108 276
+                   C 108 286, 98 292, 86 293
+                   L 34 293
+                   C 22 292, 12 286, 12 276
+                   L 12 84
+                   C 12 62, 19 47, 36 40
+                   C 47 35, 52 29, 54 19
+                   C 55 11, 57 4, 60 4 Z"
+                fill="url(#glassBody-${idx})"
+                stroke="rgba(70, 65, 62, 0.48)"
+                stroke-width="1.4"/>
+
+          <!-- Glass Nipple Dark Tip & Specular Glint -->
+          <ellipse cx="60" cy="7" rx="3.2" ry="2.5" fill="#1c1917"/>
+          <path d="M 55 12 C 54 24, 48 33, 35 40" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 65 12 C 66 24, 72 33, 85 40" fill="none" stroke="rgba(40,35,32,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+
+          <!-- 2. TOP SILVER GETTER BRACKET & MICA DISC UNDER GLASS DOME -->
+          <g>
+            <!-- Bent Silver U-Bracket -->
+            <path d="M 25 84 L 25 65 C 25 58, 32 55, 42 55 L 78 55 C 88 55, 95 58, 95 65 L 95 84"
+                  fill="none" stroke="#d4d8dd" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M 25 84 L 25 65 C 25 58, 32 55, 42 55 L 78 55 C 88 55, 95 58, 95 65 L 95 84"
+                  fill="none" stroke="#3f3f46" stroke-width="1.2"/>
+            <!-- Getter Pill on top of bracket -->
+            <rect x="51" y="48" width="18" height="6" rx="2" fill="#52525b" stroke="#27272a"/>
+            <!-- Horizontal Mica Insulator Plate -->
+            <ellipse cx="60" cy="83" rx="38" ry="4" fill="#e4e4e7" stroke="#52525b" stroke-width="1"/>
+          </g>
+
+          <!-- 3. INTERNAL DARK RED-BROWN ANODE CAGE -->
+          <g>
+            <rect x="21" y="84" width="78" height="156" rx="3"
+                  fill="url(#cageGlow-${idx})"
+                  stroke="#29150c" stroke-width="1.5"/>
+
+            <!-- Vertical Internal Support Rods -->
+            <line x1="26" y1="84" x2="26" y2="240" stroke="rgba(180, 120, 90, 0.35)" stroke-width="2"/>
+            <line x1="94" y1="84" x2="94" y2="240" stroke="rgba(180, 120, 90, 0.35)" stroke-width="2"/>
+
+            <!-- 3D Stack of Unlit Wire Cathodes (0-9) -->
+            ${GHOST_STACK_SVG}
+
+            <!-- ACTIVE GLOWING WIRE CATHODE (Volumetric Plasma Halo + Bright Core Wire) -->
+            <g filter="url(#nixie-plasma)">
+              <path id="glow-outer-${idx}" d="${DIGIT_PATHS[initialDigit]}"
+                    fill="none" stroke="#ff3b00" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="glow-mid-${idx}" d="${DIGIT_PATHS[initialDigit]}"
+                    fill="none" stroke="#ff9500" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="glow-core-${idx}" d="${DIGIT_PATHS[initialDigit]}"
+                    fill="none" stroke="#fff3a6" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+
+            <!-- Fine Hexagonal Honeycomb Anode Mesh Over the Cage -->
+            <rect x="21" y="84" width="78" height="156" rx="3" fill="url(#in14-hex-mesh)"/>
+
+            <!-- Subtle Red-Orange Neon Reflection on the Mesh Wires -->
+            <ellipse cx="60" cy="162" rx="32" ry="56" fill="none" stroke="rgba(255, 140, 40, 0.18)" stroke-width="12" style="mix-blend-mode:screen;"/>
+          </g>
+
+          <!-- 4. BOTTOM CERAMIC INSULATOR & INTERNAL BENT WIRE LEADS -->
+          <g>
+            <!-- Lower Mica/Ceramic Ring -->
+            <rect x="20" y="240" width="80" height="7" rx="2" fill="#d6d3d1" stroke="#44403c" stroke-width="1"/>
+            <!-- Small Pink/White Ceramic Bead in Center Bottom -->
+            <circle cx="60" cy="233" r="4.5" fill="#78350f" stroke="#29150c" stroke-width="1.2"/>
+            <circle cx="60" cy="233" r="2" fill="#a8a29e"/>
+
+            <!-- Dense Cluster of Thin Bent Wire Pins Inside Bottom of Glass Bulb -->
+            <g stroke="#292524" stroke-width="1.6" stroke-linecap="round">
+              <line x1="25" y1="247" x2="23" y2="288"/>
+              <line x1="31" y1="247" x2="30" y2="289"/>
+              <line x1="37" y1="247" x2="36" y2="290"/>
+              <line x1="43" y1="247" x2="44" y2="290"/>
+              <line x1="50" y1="247" x2="49" y2="290"/>
+              <line x1="56" y1="247" x2="57" y2="290"/>
+              <line x1="63" y1="247" x2="63" y2="290"/>
+              <line x1="70" y1="247" x2="71" y2="290"/>
+              <line x1="77" y1="247" x2="76" y2="290"/>
+              <line x1="84" y1="247" x2="85" y2="289"/>
+              <line x1="91" y1="247" x2="93" y2="288"/>
+            </g>
+            <!-- Warm Orange Glint on the Pins -->
+            <g stroke="rgba(255, 160, 80, 0.45)" stroke-width="0.8">
+              <line x1="38" y1="248" x2="37" y2="282"/>
+              <line x1="50" y1="248" x2="49" y2="284"/>
+              <line x1="63" y1="248" x2="63" y2="284"/>
+              <line x1="77" y1="248" x2="76" y2="282"/>
+            </g>
+
+            <!-- Мягкое затемнение нижней части колбы, уходящей в гнездо деревянного корпуса -->
+            <path d="M 12 271 Q 60 280 108 271 L 105 289 Q 60 296 15 289 Z" fill="rgba(12, 6, 3, 0.88)"/>
+          </g>
+
+          <!-- 5. FRONT CURVED GLASS SPECULAR REFLECTIONS -->
+          <path d="M 18 58 Q 16 150 17 272" fill="none" stroke="rgba(255, 255, 255, 0.55)" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M 24 52 Q 22 150 23 268" fill="none" stroke="rgba(255, 255, 255, 0.22)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M 102 62 Q 103 150 102 272" fill="none" stroke="rgba(255, 255, 255, 0.38)" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    `;
+  }
+
+  // Build Mini IN-3 Neon Bulb in Clear Acrylic Sleeve
+  function createIn3ColonSvg(id) {
+    return `
+      <div class="in3-colon" id="${id}">
+        <svg class="in3-svg" viewBox="0 0 38 156">
+          <!-- Exhaust Nipple -->
+          <path d="M 19 8 C 21 8, 22 14, 24 20 C 29 24, 31 30, 31 38 L 31 92 C 31 98, 27 102, 23 102 L 15 102 C 11 102, 7 98, 7 92 L 7 38 C 7 30, 9 24, 14 20 C 16 14, 17 8, 19 8 Z"
+                fill="rgba(255,255,255,0.22)" stroke="rgba(60,55,50,0.55)" stroke-width="1.2"/>
+          <circle cx="19" cy="10" r="2" fill="#27272a"/>
+
+          <!-- Internal Electrodes & Warm Neon Glow -->
+          <ellipse class="colon-glow" cx="19" cy="64" rx="5" ry="18" fill="rgba(255, 115, 0, 0.45)" filter="url(#nixie-plasma)"/>
+          <line x1="16" y1="44" x2="16" y2="86" stroke="#27272a" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="22" y1="44" x2="22" y2="86" stroke="#27272a" stroke-width="2.2" stroke-linecap="round"/>
+
+          <!-- Bottom Clear Acrylic Cylindrical Standoff Sleeve -->
+          <rect x="8" y="100" width="22" height="54" rx="3"
+                fill="rgba(255, 255, 255, 0.25)" stroke="rgba(80, 75, 70, 0.45)" stroke-width="1"/>
+          <line x1="15" y1="96" x2="15" y2="152" stroke="#3f3f46" stroke-width="1.4"/>
+          <line x1="23" y1="96" x2="23" y2="152" stroke="#3f3f46" stroke-width="1.4"/>
+          <!-- Тень у основания мини-колбы внутри гнезда -->
+          <path d="M 8 144 Q 19 149 30 144 L 30 153 Q 19 156 8 153 Z" fill="rgba(12, 6, 3, 0.85)"/>
+          <!-- Specular Glint on Glass & Acrylic -->
+          <line x1="10" y1="32" x2="10" y2="148" stroke="rgba(255,255,255,0.65)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+    `;
+  }
+
+  // Render [1][4] : [1][2] : [5][3]
+  const tubesRow = document.getElementById('tubesRow');
+  const startDigits = ['1', '4', '1', '2', '5', '3'];
+
+  tubesRow.innerHTML =
+    createIn14TubeSvg(0, startDigits[0]) +
+    createIn14TubeSvg(1, startDigits[1]) +
+    createIn3ColonSvg('in3-left') +
+    createIn14TubeSvg(2, startDigits[2]) +
+    createIn14TubeSvg(3, startDigits[3]) +
+    createIn3ColonSvg('in3-right') +
+    createIn14TubeSvg(4, startDigits[4]) +
+    createIn14TubeSvg(5, startDigits[5]);
+
+  // =========================================================================
+  // 2. CLOCK TICKING, LIVE TIME & CATHODE ROLL ANIMATION
+  // =========================================================================
+  let mode = 'photo';
+  let photoSec = 14 * 3600 + 12 * 60 + 53;
+  let rolling = false;
+
+  function setTubeDigit(tubeIdx, charDigit) {
+    const dPath = DIGIT_PATHS[charDigit] || DIGIT_PATHS['0'];
+    document.getElementById(`glow-outer-${tubeIdx}`).setAttribute('d', dPath);
+    document.getElementById(`glow-mid-${tubeIdx}`).setAttribute('d', dPath);
+    document.getElementById(`glow-core-${tubeIdx}`).setAttribute('d', dPath);
+  }
+
+  function setAllDigits(str6) {
+    for (let i = 0; i < 6; i++) {
+      setTubeDigit(i, str6[i]);
+    }
+  }
+
+  function triggerCathodeRoll(singleTubeIdx = null) {
+    if (rolling) return;
+    rolling = true;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      for (let i = 0; i < 6; i++) {
+        if (singleTubeIdx === null || singleTubeIdx === i) {
+          setTubeDigit(i, String((step + i) % 10));
+        }
+      }
+      if (step >= 16) {
+        clearInterval(timer);
+        rolling = false;
+        refreshClock();
+      }
+    }, 55);
+  }
+
+  document.querySelectorAll('.in14-tube').forEach(tube => {
+    tube.addEventListener('click', () => {
+      triggerCathodeRoll(Number(tube.dataset.tube));
+    });
+  });
+
+  document.getElementById('rollBtn').addEventListener('click', () => {
+    triggerCathodeRoll(null);
+  });
+
+  function refreshClock() {
+    if (rolling) return;
+    if (mode === 'photo') {
+      const h = String(Math.floor(photoSec / 3600) % 24).padStart(2, '0');
+      const m = String(Math.floor((photoSec % 3600) / 60)).padStart(2, '0');
+      const s = String(photoSec % 60).padStart(2, '0');
+      setAllDigits(`${h}${m}${s}`);
+    } else {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      setAllDigits(`${h}${m}${s}`);
+    }
+  }
+
+  setInterval(() => {
+    photoSec++;
+    refreshClock();
+  }, 1000);
+
+  // Mode Switchers
+  document.querySelectorAll('#modeGroup .studio-pill-btn[data-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#modeGroup .studio-pill-btn[data-mode]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      if (mode === 'photo') photoSec = 14 * 3600 + 12 * 60 + 53;
+      triggerCathodeRoll(null);
+    });
+  });
+
+  // Studio Backdrop Environment Switcher
+  document.querySelectorAll('#envGroup .studio-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#envGroup .studio-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-env', btn.dataset.env);
+    });
+  });
+})();
+</script>
+</body>
+</html>

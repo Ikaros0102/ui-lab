@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Optitron Acrylic Prism Automotive Instrument Cluster</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=JetBrains+Mono:wght@500;600;700&family=Michroma&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Optitron Acrylic Prism Automotive Cluster",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "speedometer",
+    "tachometer",
+    "dashboard",
+    "car-cluster",
+    "optitron",
+    "acrylic",
+    "svg-gauges",
+    "telemetry",
+    "theme-switcher",
+    "automotive",
+    "neon"
+  ],
+  "description": "Pitch-black 3-pod Optitron automotive instrument cluster featuring a dominant center Speedometer, left Tachometer, and right dual Temp/Fuel combi-gauge with backlit LCD readouts, 3D faceted acrylic prism tick marks, bi-color light-piped needles, and Michroma euro-automotive typography.",
+  "techniques": [
+    "3-pod asymmetric sport cluster layout (Left Tachometer, Dominant Center Speedometer, Right Dual Temp/Fuel Pod)",
+    "clean 3D multi-faceted SVG acrylic prism ticks slicing across a glowing red neon perimeter ring",
+    "bi-color translucent acrylic needles with a red neon edge and ice-cyan core",
+    "backlit Optitron LCD odometer and ambient/boost telemetry panels"
+  ],
+  "recipe": "Built on an absolute pitch-black (#000000) high-contrast canvas inside sculpted 3-pod gauge barrels with SVG glow filters.",
+  "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 780
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  /* =========================================================
+     5 DYNAMIC OPTITRON ILLUMINATION COLOR PRESETS
+     ========================================================= */
+  :root,
+  body[data-illum="cyan-red"] {
+    --arc-color: #ff1e00;
+    --arc-glow: rgba(255, 30, 0, 0.85);
+    --num-color: #1cf2ff;
+    --num-glow: rgba(28, 242, 255, 0.72);
+    --prism-light: #e0ffff;
+    --prism-mid: #00d9ff;
+    --prism-dark: #004466;
+    --needle-edge: #ff1e00;
+    --needle-core: #38f6ff;
+    --lcd-bg: rgba(0, 175, 255, 0.16);
+    --lcd-border: rgba(28, 242, 255, 0.45);
+  }
+
+  body[data-illum="amber-red"] {
+    --arc-color: #ff2200;
+    --arc-glow: rgba(255, 34, 0, 0.85);
+    --num-color: #ffaa00;
+    --num-glow: rgba(255, 170, 0, 0.72);
+    --prism-light: #fff3d1;
+    --prism-mid: #ff9d00;
+    --prism-dark: #5c3000;
+    --needle-edge: #ff1900;
+    --needle-core: #ffdd77;
+    --lcd-bg: rgba(255, 145, 0, 0.16);
+    --lcd-border: rgba(255, 170, 0, 0.45);
+  }
+
+  body[data-illum="ice-white"] {
+    --arc-color: #00aaff;
+    --arc-glow: rgba(0, 170, 255, 0.85);
+    --num-color: #f4faff;
+    --num-glow: rgba(210, 238, 255, 0.75);
+    --prism-light: #ffffff;
+    --prism-mid: #a3dcff;
+    --prism-dark: #1d3c5c;
+    --needle-edge: #0088ff;
+    --needle-core: #ffffff;
+    --lcd-bg: rgba(160, 220, 255, 0.16);
+    --lcd-border: rgba(220, 242, 255, 0.45);
+  }
+
+  body[data-illum="violet-cyber"] {
+    --arc-color: #f43f5e;
+    --arc-glow: rgba(244, 63, 94, 0.85);
+    --num-color: #c084fc;
+    --num-glow: rgba(192, 132, 252, 0.75);
+    --prism-light: #f5d0fe;
+    --prism-mid: #a855f7;
+    --prism-dark: #3b0764;
+    --needle-edge: #f43f5e;
+    --needle-core: #e879f9;
+    --lcd-bg: rgba(168, 85, 247, 0.16);
+    --lcd-border: rgba(192, 132, 252, 0.45);
+  }
+
+  body[data-illum="emerald-gold"] {
+    --arc-color: #f59e0b;
+    --arc-glow: rgba(245, 158, 11, 0.85);
+    --num-color: #10f58c;
+    --num-glow: rgba(16, 245, 140, 0.72);
+    --prism-light: #d1fae5;
+    --prism-mid: #10b981;
+    --prism-dark: #064e3b;
+    --needle-edge: #f59e0b;
+    --needle-core: #34d399;
+    --lcd-bg: rgba(16, 245, 140, 0.15);
+    --lcd-border: rgba(16, 245, 140, 0.45);
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Michroma', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     MAIN DASHBOARD BINNACLE HOOD (3-POD SCULPTED OPTITRON)
+     ========================================================= */
+  .cluster-binnacle {
+    width: 100%;
+    max-width: 1260px;
+    background: radial-gradient(ellipse at 50% 58%, #07090d 0%, #000000 72%);
+    border-radius: 260px 260px 48px 48px / 190px 190px 34px 34px;
+    border: 3px solid #12151c;
+    border-top: 6px solid #1b202b;
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, 1),
+      inset 0 14px 40px rgba(255, 255, 255, 0.035),
+      inset 0 -18px 45px rgba(0, 0, 0, 1);
+    padding: 16px 32px 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  /* =========================================================
+     TOP WARNING TELLTALE ICONS BAR (CLICKABLE INDICATORS)
+     ========================================================= */
+  .telltale-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 4px 24px 6px;
+    z-index: 6;
+  }
+
+  .telltale-ico {
+    width: 30px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.14;
+    transition: opacity 0.18s ease, filter 0.18s ease;
+  }
+
+  .telltale-ico:hover {
+    opacity: 0.45;
+  }
+
+  .telltale-ico.active {
+    opacity: 1;
+  }
+
+  .telltale-ico.c-green.active {
+    color: #10f56c;
+    filter: drop-shadow(0 0 8px #10f56c);
+  }
+  .telltale-ico.c-amber.active {
+    color: #ffaa00;
+    filter: drop-shadow(0 0 8px #ffaa00);
+  }
+  .telltale-ico.c-red.active {
+    color: #ff2222;
+    filter: drop-shadow(0 0 9px #ff2222);
+  }
+  .telltale-ico.c-blue.active {
+    color: #00bfff;
+    filter: drop-shadow(0 0 9px #00bfff);
+  }
+
+  .turn-arrow {
+    font-size: 19px;
+    font-weight: 900;
+  }
+
+  .blink-anim {
+    animation: turnBlink 0.65s infinite alternate;
+  }
+
+  @keyframes turnBlink {
+    0%, 45% { opacity: 1; filter: drop-shadow(0 0 10px #10f56c); }
+    55%, 100% { opacity: 0.12; filter: none; }
+  }
+
+  /* =========================================================
+     3-POD ASYMMETRIC GAUGE DECK (LIKE REFERENCE PHOTO #3):
+     [LEFT: COMPACT TACHO] | [CENTER: GIANT SPEEDO] | [RIGHT: TEMP & FUEL COMBI]
+     ========================================================= */
+  .gauges-deck {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+    padding: 4px 0 6px;
+  }
+
+  .gauge-barrel {
+    position: relative;
+    background: radial-gradient(circle at 50% 50%, #040609 0%, #000000 78%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 0 2px #11151e,
+      0 14px 40px rgba(0, 0, 0, 0.95),
+      inset 0 0 42px rgba(0, 0, 0, 1);
+  }
+
+  /* Left Pod: Smaller Tachometer tucked slightly behind center Speedo */
+  .barrel-tacho {
+    width: 344px;
+    height: 344px;
+    margin-right: -34px;
+    margin-bottom: 12px;
+    z-index: 2;
+  }
+
+  /* Center Pod: Dominant Large Speedometer */
+  .barrel-speedo {
+    width: 496px;
+    height: 496px;
+    z-index: 4;
+    box-shadow:
+      0 0 0 3px #171c28,
+      0 0 55px rgba(0, 0, 0, 1),
+      inset 0 0 50px rgba(0, 0, 0, 1);
+  }
+
+  /* Right Pod: Dual Temp/Fuel Combi-Gauge tucked on right side */
+  .barrel-combi {
+    width: 344px;
+    height: 344px;
+    margin-left: -34px;
+    margin-bottom: 12px;
+    z-index: 2;
+  }
+
+  .gauge-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+  }
+
+  /* SVG Text Styling Matching the Reference Photo's Wide Euro Font */
+  .dial-num {
+    font-family: 'Michroma', sans-serif;
+    fill: var(--num-color);
+    filter: drop-shadow(0 0 5px var(--num-glow));
+    text-anchor: middle;
+    dominant-baseline: central;
+    transition: fill 0.3s ease;
+  }
+
+  .dial-unit {
+    font-family: 'Michroma', sans-serif;
+    fill: var(--num-color);
+    filter: drop-shadow(0 0 4px var(--num-glow));
+    text-anchor: middle;
+    letter-spacing: 1.4px;
+  }
+
+  /* =========================================================
+     BACKLIT OPTITRON LCD SCREENS (LIKE REFERENCE PHOTO #3)
+     ========================================================= */
+  /* Gear Indicator Box Inside Left Tachometer */
+  .tacho-gear-lcd {
+    position: absolute;
+    bottom: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+  }
+
+  .gear-box-frame {
+    border: 1.5px solid var(--lcd-border);
+    background: var(--lcd-bg);
+    padding: 2px 12px;
+    border-radius: 4px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--num-color);
+    text-shadow: 0 0 8px var(--num-glow);
+    box-shadow: inset 0 0 10px var(--lcd-bg), 0 0 10px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Center Speedometer Odometer & Trip LCD Screen */
+  .speedo-odo-lcd {
+    position: absolute;
+    bottom: 66px;
+    width: 142px;
+    padding: 5px 10px 4px;
+    border-radius: 5px;
+    background: var(--lcd-bg);
+    border: 1.5px solid var(--lcd-border);
+    box-shadow:
+      0 0 14px var(--lcd-bg),
+      inset 0 0 12px var(--lcd-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    pointer-events: none;
+  }
+
+  .lcd-odo-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--num-color);
+    text-shadow: 0 0 6px var(--num-glow);
+    letter-spacing: 1.5px;
+    line-height: 1.1;
+  }
+
+  .lcd-trip-sub {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--num-color);
+    text-shadow: 0 0 5px var(--num-glow);
+    opacity: 0.92;
+  }
+
+  /* Right Pod Ambient Temp & Turbo Boost LCD Screen */
+  .right-ambient-lcd {
+    position: absolute;
+    bottom: 62px;
+    left: 52px;
+    width: 148px;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: var(--lcd-bg);
+    border: 1.5px solid var(--lcd-border);
+    box-shadow:
+      0 0 12px var(--lcd-bg),
+      inset 0 0 10px var(--lcd-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: none;
+  }
+
+  .ambient-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--num-color);
+    text-shadow: 0 0 5px var(--num-glow);
+  }
+
+  .ambient-lbl {
+    font-size: 8.5px;
+    letter-spacing: 0.6px;
+    opacity: 0.85;
+  }
+
+  .ambient-val {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+
+  /* =========================================================
+     BOTTOM INTERACTIVE DRIVER CONTROL BAR & COLOR SWITCHER
+     ========================================================= */
+  .driver-controls-bar {
+    margin-top: 14px;
+    background: #080a0e;
+    border: 1px solid #1e2430;
+    border-radius: 16px;
+    padding: 11px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.9);
+  }
+
+  .ctrl-cluster {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ctrl-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .pedal-btn {
+    background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 9px 20px;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.45);
+    transition: all 0.12s ease;
+  }
+
+  .pedal-btn:active, .pedal-btn.pressed {
+    transform: scale(0.96);
+    background: #ef4444;
+    box-shadow: 0 0 28px rgba(239, 68, 68, 0.85);
+  }
+
+  .dash-action-btn {
+    background: #11151d;
+    border: 1px solid #2e3846;
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .dash-action-btn:hover {
+    border-color: var(--num-color);
+    color: #ffffff;
+  }
+
+  /* Illumination Color Swatches */
+  .illum-swatches {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .illum-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid #262c36;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+
+  .illum-dot:hover {
+    transform: scale(1.12);
+  }
+
+  .illum-dot.active {
+    border-color: #ffffff;
+    transform: scale(1.16);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.55);
+  }
+
+  @media (max-width: 1240px) {
+    .cluster-binnacle {
+      transform: scale(0.78);
+      transform-origin: top center;
+      margin-bottom: -110px;
+    }
+  }
+</style>
+</head>
+<body data-illum="cyan-red">
+
+<!-- Global SVG Glow Filters & 3D Acrylic Gradients -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <!-- Red Neon Perimeter Arc Glow -->
+    <filter id="red-arc-glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.8" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6.5" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- 3D Acrylic Prism Tick Mark Glow (Crisp, without outward shadow flare) -->
+    <filter id="acrylic-prism-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Bi-Color Light-Piped Needle Glow -->
+    <filter id="needle-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3.8" result="nBlur"/>
+      <feMerge>
+        <feMergeNode in="nBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<main class="cluster-binnacle">
+
+  <!-- =========================================================
+       1. TOP AUTOMOTIVE TELLTALE WARNING ICONS BAR
+       ========================================================= -->
+  <header class="telltale-strip" id="telltaleBar">
+    <!-- Left Turn Signal -->
+    <div class="telltale-ico c-green active blink-anim" title="Left Turn Signal">
+      <span class="turn-arrow">◄</span>
+    </div>
+
+    <!-- Position Lamps (Like photo #3) -->
+    <div class="telltale-ico c-green active" title="Side Marker Lamps">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <ellipse cx="9" cy="10" rx="2.5" ry="3.5"/>
+        <ellipse cx="15" cy="10" rx="2.5" ry="3.5"/>
+        <line x1="2" y1="6" x2="5" y2="8"/><line x1="2" y1="10" x2="5" y2="10"/><line x1="2" y1="14" x2="5" y2="12"/>
+        <line x1="22" y1="6" x2="19" y2="8"/><line x1="22" y1="10" x2="19" y2="10"/><line x1="22" y1="14" x2="19" y2="12"/>
+      </svg>
+    </div>
+
+    <!-- High Beam -->
+    <div class="telltale-ico c-blue active" title="High Beam Indicator">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4 C16 4, 19 7, 19 10 C19 13, 16 16, 11 16 Z"/>
+        <line x1="2" y1="5" x2="8" y2="5"/>
+        <line x1="2" y1="10" x2="8" y2="10"/>
+        <line x1="2" y1="15" x2="8" y2="15"/>
+      </svg>
+    </div>
+
+    <!-- Check Engine (MIL) -->
+    <div class="telltale-ico c-amber" data-sweep="1" title="Check Engine">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="5" y="6" width="13" height="9" rx="1"/>
+        <line x1="9" y1="3" x2="14" y2="3"/>
+        <line x1="11.5" y1="3" x2="11.5" y2="6"/>
+        <line x1="2" y1="8" x2="5" y2="8"/>
+        <line x1="18" y1="9" x2="21" y2="9"/>
+        <line x1="21" y1="6" x2="21" y2="12"/>
+      </svg>
+    </div>
+
+    <!-- Oil Pressure -->
+    <div class="telltale-ico c-red" data-sweep="1" title="Oil Pressure">
+      <svg width="26" height="20" viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M4 13 L15 13 L19 9 L23 9 M6 9 L14 9 L14 13 M4 9 C2 9, 2 13, 4 13"/>
+        <path d="M23 12 C24 14, 22 15, 23 12 Z" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- Battery / Alternator -->
+    <div class="telltale-ico c-red" data-sweep="1" title="Battery Charge">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="6" width="18" height="11" rx="1"/>
+        <line x1="6" y1="4" x2="9" y2="4"/>
+        <line x1="15" y1="4" x2="18" y2="4"/>
+        <text x="6" y="14" font-size="7" fill="currentColor" stroke="none" font-weight="bold">- +</text>
+      </svg>
+    </div>
+
+    <!-- ABS -->
+    <div class="telltale-ico c-amber" data-sweep="1" title="Anti-Lock Braking System">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="10" r="7"/>
+        <text x="12" y="12.5" text-anchor="middle" font-size="5.5" fill="currentColor" stroke="none" font-weight="bold">ABS</text>
+      </svg>
+    </div>
+
+    <!-- Seatbelt -->
+    <div class="telltale-ico c-red active" title="Seatbelt Reminder">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="10" cy="4" r="2.5"/>
+        <path d="M6 8 L14 8 L13 17 L7 17 Z"/>
+        <line x1="4" y1="6" x2="16" y2="16" stroke-width="2.2"/>
+      </svg>
+    </div>
+
+    <!-- Right Turn Signal -->
+    <div class="telltale-ico c-green active blink-anim" title="Right Turn Signal">
+      <span class="turn-arrow">►</span>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. 3-POD INSTRUMENT CLUSTER DECK (TACHO | GIANT SPEEDO | TEMP+FUEL)
+       ========================================================= -->
+  <section class="gauges-deck">
+
+    <!-- LEFT POD: COMPACT TACHOMETER (0 - 8 x1000 r/min) -->
+    <div class="gauge-barrel barrel-tacho">
+      <svg class="gauge-svg" id="tachoSvg" viewBox="0 0 360 360"></svg>
+      <div class="tacho-gear-lcd">
+        <div class="gear-box-frame" id="gearDisplay">S6</div>
+      </div>
+    </div>
+
+    <!-- CENTER DOMINANT POD: LARGE SPEEDOMETER (0 - 220 km/h) -->
+    <div class="gauge-barrel barrel-speedo">
+      <svg class="gauge-svg" id="speedoSvg" viewBox="0 0 500 500"></svg>
+      <!-- Bottom Backlit Optitron Odometer & Trip LCD (Like Photo #3) -->
+      <div class="speedo-odo-lcd">
+        <div class="lcd-odo-main" id="odoDisplay">201561</div>
+        <div class="lcd-trip-sub">
+          <span style="font-size:9px;opacity:0.75;">TRIP A</span>
+          <span id="tripDisplay">412.8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT POD: DUAL COOLANT TEMP & FUEL LEVEL COMBI-GAUGE + AMBIENT LCD -->
+    <div class="gauge-barrel barrel-combi">
+      <svg class="gauge-svg" id="combiSvg" viewBox="0 0 360 360"></svg>
+      <div class="right-ambient-lcd">
+        <div class="ambient-row">
+          <span class="ambient-lbl">BOOST</span>
+          <span class="ambient-val" id="boostLcdVal">+1.4 BAR</span>
+        </div>
+        <div class="ambient-row">
+          <span class="ambient-lbl">AMBIENT</span>
+          <span class="ambient-val">21.5 °C</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- =========================================================
+     3. INTERACTIVE THROTTLE PEDAL, IGNITION SWEEP & COLOR SWITCHER
+     ========================================================= -->
+<footer class="driver-controls-bar">
+  <div class="ctrl-cluster">
+    <button class="pedal-btn" id="accelBtn">🚀 HOLD TO ACCELERATE (SPACE)</button>
+    <button class="dash-action-btn" id="sweepBtn">🔑 IGNITION START SWEEP</button>
+  </div>
+
+  <div class="ctrl-cluster">
+    <span class="ctrl-caption">Manual Speed:</span>
+    <input type="range" min="0" max="220" value="208" id="manualSpeedSlider" style="width:140px;cursor:pointer;">
+    <span id="speedReadoutTag" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--num-color);min-width:68px;">208 km/h</span>
+  </div>
+
+  <div class="ctrl-cluster">
+    <span class="ctrl-caption">Illumination Color:</span>
+    <div class="illum-swatches" id="illumSwatches">
+      <div class="illum-dot active" data-theme="cyan-red" style="background:linear-gradient(135deg,#1cf2ff 50%,#ff1e00 50%);" title="OEM Ice Cyan & Red (Reference)"></div>
+      <div class="illum-dot" data-theme="amber-red" style="background:linear-gradient(135deg,#ffaa00 50%,#ff2200 50%);" title="Sport Amber & Red"></div>
+      <div class="illum-dot" data-theme="ice-white" style="background:linear-gradient(135deg,#ffffff 50%,#00aaff 50%);" title="Pure Ice White & Cobalt"></div>
+      <div class="illum-dot" data-theme="violet-cyber" style="background:linear-gradient(135deg,#c084fc 50%,#f43f5e 50%);" title="Ultraviolet & Crimson"></div>
+      <div class="illum-dot" data-theme="emerald-gold" style="background:linear-gradient(135deg,#10f58c 50%,#f59e0b 50%);" title="Emerald Matrix & Gold"></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. CORE SVG GEOMETRY & CLEAN 3D ACRYLIC PRISM TICKS (NO BLUE FLARE!)
+  // =========================================================================
+  function polarToCartesian(cx, cy, r, angleDeg) {
+    const rad = (angleDeg * Math.PI) / 180;
+    return {
+      x: cx + Math.cos(rad) * r,
+      y: cy + Math.sin(rad) * r
+    };
+  }
+
+  function describeArc(cx, cy, r, startAngle, endAngle) {
+    const start = polarToCartesian(cx, cy, r, startAngle);
+    const end = polarToCartesian(cx, cy, r, endAngle);
+    const sweep = ((endAngle - startAngle + 360) % 360);
+    const largeArcFlag = sweep > 180 ? '1' : '0';
+    return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+  }
+
+  // Draws a crisp 3D Faceted Acrylic Prism Tick at `angleDeg` slicing across `arcRadius`
+  // (Outward shadow flare removed as requested!)
+  function create3DAcrylicPrismTick(cx, cy, arcRadius, angleDeg, scale = 1) {
+    const inLen = 14 * scale;
+    const outLen = 15 * scale;
+    const halfW = 3.5 * scale;
+
+    return `
+      <g transform="translate(${cx}, ${cy}) rotate(${angleDeg})">
+        <!-- Main Acrylic Block Body Bridging Across the Red Arc -->
+        <g filter="url(#acrylic-prism-glow)">
+          <!-- Dark Sapphire Base Refraction -->
+          <polygon points="${arcRadius - inLen},${-halfW * 0.72} ${arcRadius + outLen},${-halfW * 1.1} ${arcRadius + outLen},${halfW * 1.1} ${arcRadius - inLen},${halfW * 0.72}"
+                   fill="var(--prism-dark)" stroke="var(--prism-mid)" stroke-width="0.85"/>
+
+          <!-- Upper Bevel Facet (Bright Ice-Cyan Refraction) -->
+          <polygon points="${arcRadius - inLen + 1},${-halfW * 0.68} ${arcRadius + outLen - 2},${-halfW * 1.0} ${arcRadius + outLen - 5},0 ${arcRadius - inLen + 3},0"
+                   fill="var(--prism-mid)"/>
+
+          <!-- Lower Bevel Facet (Deep Translucent Glass) -->
+          <polygon points="${arcRadius - inLen + 3},0 ${arcRadius + outLen - 5},0 ${arcRadius + outLen - 2},${halfW * 1.0} ${arcRadius - inLen + 1},${halfW * 0.68}"
+                   fill="var(--prism-dark)" opacity="0.92"/>
+
+          <!-- Crisp White Specular Ridge Along the Center -->
+          <line x1="${arcRadius - inLen + 2}" y1="-0.3" x2="${arcRadius + outLen - 3}" y2="-0.3"
+                stroke="var(--prism-light)" stroke-width="${1.4 * scale}" stroke-linecap="round"/>
+
+          <!-- Molded Acrylic Claw / Notch Detail at Outer Tip (Matches Macro Photo #2) -->
+          <polygon points="${arcRadius + outLen - 4.5},${-halfW * 1.05} ${arcRadius + outLen + 1.8},${-halfW * 0.45} ${arcRadius + outLen - 1.8},0 ${arcRadius + outLen + 1.8},${halfW * 0.45} ${arcRadius + outLen - 4.5},${halfW * 1.05}"
+                   fill="var(--prism-light)" opacity="0.95"/>
+        </g>
+      </g>
+    `;
+  }
+
+  // Draws the Bi-Color Translucent Acrylic Needle with Pitch-Black Center Cap
+  function createOptitronNeedle(needleId, cx, cy, length, scale = 1) {
+    const capLen = 44 * scale;
+    const capHalfH = 11 * scale;
+    const bladeStart = 17 * scale;
+
+    return `
+      <g id="${needleId}" data-cx="${cx}" data-cy="${cy}" transform="translate(${cx}, ${cy}) rotate(0)">
+        <!-- Outer Red Neon Glowing Needle Blade -->
+        <g filter="url(#needle-glow)">
+          <polygon points="${bladeStart},${-8 * scale} ${length},${-2.5 * scale} ${length},${2.5 * scale} ${bladeStart},${8 * scale}"
+                   fill="var(--needle-edge)"/>
+        </g>
+
+        <!-- Inner Brilliant Ice-Cyan Light-Piped Core -->
+        <polygon points="${bladeStart + 4},${-4.3 * scale} ${length - 5},${-1 * scale} ${length - 5},${1 * scale} ${bladeStart + 4},${4.3 * scale}"
+                 fill="var(--needle-core)" opacity="0.95"/>
+
+        <!-- White-Hot Specular Spine Down Center of Needle -->
+        <line x1="${bladeStart + 8}" y1="0" x2="${length - 10}" y2="0"
+              stroke="#ffffff" stroke-width="${1.4 * scale}" opacity="0.88"/>
+
+        <!-- Cyan Crescent Collar Where Blade Emerges From Black Cap -->
+        <path d="M ${bladeStart - 2} ${-capHalfH + 1} C ${bladeStart + 5} ${-4.5 * scale}, ${bladeStart + 5} ${4.5 * scale}, ${bladeStart - 2} ${capHalfH - 1}"
+              fill="none" stroke="var(--prism-light)" stroke-width="${2 * scale}"/>
+
+        <!-- Pitch-Black Matte Counterweight Center Cap -->
+        <rect x="${-capLen}" y="${-capHalfH}" width="${capLen + bladeStart}" height="${capHalfH * 2}" rx="${5 * scale}"
+              fill="#050608" stroke="#222834" stroke-width="1.2"/>
+      </g>
+    `;
+  }
+
+  // =========================================================================
+  // 2. BUILD DOMINANT CENTER SPEEDOMETER (0 – 220 km/h — NO NUMBER OVERLAP!)
+  // =========================================================================
+  function buildSpeedometer() {
+    const svg = document.getElementById('speedoSvg');
+    const cx = 250, cy = 250, arcR = 208;
+    const startAng = 148;   // 0 km/h
+    const endAng = 376;     // 220 km/h
+    const tailEndAng = 402; // Extra red arc tail at bottom-right just like Macro Photo #2!
+
+    let html = '';
+
+    // 1. Continuous Glowing Red Perimeter Arc
+    const arcPath = describeArc(cx, cy, arcR, startAng - 10, tailEndAng % 360);
+    html += `
+      <path d="${arcPath}" fill="none" stroke="var(--arc-color)" stroke-width="6.5" stroke-linecap="round" filter="url(#red-arc-glow)"/>
+      <path d="${arcPath}" fill="none" stroke="#ff6a4d" stroke-width="2.2" stroke-linecap="round"/>
+    `;
+
+    // Bottom-left blue-cyan light-pipe reflection tail under 0 km/h (visible in Macro Photo #2)
+    const leftTailPath = describeArc(cx, cy, arcR - 4, startAng - 10, startAng + 11);
+    html += `<path d="${leftTailPath}" fill="none" stroke="var(--prism-mid)" stroke-width="3.8" opacity="0.78" filter="url(#acrylic-prism-glow)"/>`;
+
+    // 2. Sub-ticks (3 small cyan dots between each 20 km/h increment) & Major 3D Acrylic Prisms
+    const majorCount = 11; // 0 to 220 in steps of 20
+    const totalSpan = endAng - startAng;
+
+    for (let i = 0; i <= majorCount; i++) {
+      const speedVal = i * 20;
+      const ang = startAng + (i / majorCount) * totalSpan;
+
+      // 3 Minor Cyan Rectangular Dots between major ticks
+      if (i < majorCount) {
+        for (let m = 1; m <= 3; m++) {
+          const subAng = ang + (m / 4) * (totalSpan / majorCount);
+          const dotPos = polarToCartesian(cx, cy, arcR - 11, subAng);
+          html += `
+            <rect x="-2.1" y="-2.1" width="4.2" height="4.2" rx="0.8"
+                  fill="var(--num-color)"
+                  transform="translate(${dotPos.x.toFixed(1)}, ${dotPos.y.toFixed(1)}) rotate(${subAng})"
+                  filter="url(#acrylic-prism-glow)"/>
+          `;
+        }
+      }
+
+      // 3D Faceted Acrylic Prism Tick Slicing Across Red Arc
+      html += create3DAcrylicPrismTick(cx, cy, arcR, ang, 1.08);
+
+      // Carefully tuned radial placement so wide 3-digit Michroma numbers (100, 120, 140) NEVER overlap!
+      let numR = arcR - 40;
+      let shiftX = 0;
+      let shiftY = 0;
+
+      if (speedVal === 80)  { numR = arcR - 41; shiftX = -4; shiftY = 2; }
+      if (speedVal === 100) { numR = arcR - 42; shiftX = -7; shiftY = 1; }
+      if (speedVal === 120) { numR = arcR - 42; shiftX = 5;  shiftY = 1; }
+      if (speedVal === 140) { numR = arcR - 45; shiftX = 5;  shiftY = 4; }
+      if (speedVal === 160) { numR = arcR - 48; shiftX = 2;  shiftY = 3; }
+      if (speedVal === 180) { numR = arcR - 50; }
+      if (speedVal === 200) { numR = arcR - 50; }
+      if (speedVal === 220) { numR = arcR - 50; shiftY = -2; }
+
+      const numPos = polarToCartesian(cx, cy, numR, ang);
+      html += `<text x="${(numPos.x + shiftX).toFixed(1)}" y="${(numPos.y + shiftY).toFixed(1)}" class="dial-num" font-size="21">${speedVal}</text>`;
+    }
+
+    // Extra bottom-most acrylic prism stopper below 0 km/h
+    html += create3DAcrylicPrismTick(cx, cy, arcR, startAng - 10, 0.96);
+
+    // 3. "km/h" label neatly centered under 100 / 120
+    html += `<text x="${cx - 4}" y="${cy - 108}" class="dial-unit" font-size="14.5">km/h</text>`;
+
+    // 4. Dual-Tone Illuminated Acrylic Needle
+    html += createOptitronNeedle('speedoNeedle', cx, cy, arcR + 4, 1.08);
+
+    svg.innerHTML = html;
+  }
+
+  // =========================================================================
+  // 3. BUILD COMPACT LEFT TACHOMETER (0 – 8 x1000 r/min)
+  // =========================================================================
+  function buildTachometer() {
+    const svg = document.getElementById('tachoSvg');
+    const cx = 180, cy = 180, arcR = 142;
+    const startAng = 142;
+    const endAng = 378;
+    const totalSpan = endAng - startAng;
+
+    let html = '';
+
+    // Main Red Arc + Thick Redline Zone (from 6.5 to 8)
+    const mainArc = describeArc(cx, cy, arcR, startAng - 6, endAng % 360);
+    html += `<path d="${mainArc}" fill="none" stroke="var(--arc-color)" stroke-width="5" filter="url(#red-arc-glow)"/>`;
+
+    const redlineStart = startAng + (6.5 / 8) * totalSpan;
+    const redlineArc = describeArc(cx, cy, arcR - 8, redlineStart, endAng % 360);
+    html += `<path d="${redlineArc}" fill="none" stroke="#ff1e00" stroke-width="6" opacity="0.9" filter="url(#red-arc-glow)"/>`;
+
+    for (let i = 0; i <= 8; i++) {
+      const ang = startAng + (i / 8) * totalSpan;
+
+      if (i < 8) {
+        for (let m = 1; m <= 3; m++) {
+          const subAng = ang + (m / 4) * (totalSpan / 8);
+          const dp = polarToCartesian(cx, cy, arcR - 8, subAng);
+          html += `<circle cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="1.6" fill="var(--num-color)"/>`;
+        }
+      }
+
+      html += create3DAcrylicPrismTick(cx, cy, arcR, ang, 0.82);
+
+      const np = polarToCartesian(cx, cy, arcR - 31, ang);
+      html += `<text x="${np.x.toFixed(1)}" y="${np.y.toFixed(1)}" class="dial-num" font-size="18">${i}</text>`;
+    }
+
+    html += `<text x="${cx}" y="${cy - 66}" class="dial-unit" font-size="9.5">x1000 r/min</text>`;
+    html += createOptitronNeedle('tachoNeedle', cx, cy, arcR + 2, 0.82);
+
+    svg.innerHTML = html;
+  }
+
+  // =========================================================================
+  // 4. BUILD RIGHT POD: DUAL TEMP & FUEL COMBI-GAUGE (LIKE PHOTO #3!)
+  // =========================================================================
+  function buildRightCombiPod() {
+    const svg = document.getElementById('combiSvg');
+    let html = '';
+
+    // Subtle outer decorative rim arc on the right side of the pod
+    const outerRim = describeArc(180, 180, 146, 295, 65);
+    html += `<path d="${outerRim}" fill="none" stroke="var(--prism-dark)" stroke-width="2" opacity="0.5"/>`;
+
+    // -----------------------------------------------------------------------
+    // A. UPPER SUB-GAUGE: COOLANT TEMPERATURE (C — H)
+    // -----------------------------------------------------------------------
+    const tCx = 188, tCy = 116, tR = 68;
+    const tStart = 305, tEnd = 45; // Sweeps along the right side (11 o'clock -> 4:30)
+    const tArc = describeArc(tCx, tCy, tR, tStart, tEnd);
+    html += `<path d="${tArc}" fill="none" stroke="var(--arc-color)" stroke-width="3.8" filter="url(#red-arc-glow)"/>`;
+
+    // 3 Prism ticks for C, Normal, H
+    [tStart, (tStart + 50) % 360, tEnd].forEach(ang => {
+      html += create3DAcrylicPrismTick(tCx, tCy, tR, ang, 0.56);
+    });
+
+    // Labels C & H + Thermometer Icon
+    const posH = polarToCartesian(tCx, tCy, tR - 20, tStart + 4);
+    const posC = polarToCartesian(tCx, tCy, tR - 20, tEnd - 4);
+    html += `<text x="${posH.x.toFixed(1)}" y="${posH.y.toFixed(1)}" class="dial-num" font-size="11">H</text>`;
+    html += `<text x="${posC.x.toFixed(1)}" y="${posC.y.toFixed(1)}" class="dial-num" font-size="11">C</text>`;
+
+    // Crisp Thermometer SVG Icon
+    html += `
+      <g transform="translate(${tCx - 28}, ${tCy - 36})" stroke="var(--num-color)" stroke-width="1.6" fill="none" filter="url(#acrylic-prism-glow)">
+        <path d="M8 2 L8 12 M6 4 L11 4 M6 7 L11 7 M6 10 L11 10"/>
+        <circle cx="8" cy="14" r="2.6" fill="var(--num-color)"/>
+        <path d="M2 18 Q5 16 8 18 T14 18"/>
+      </g>
+    `;
+
+    html += createOptitronNeedle('tempNeedle', tCx, tCy, tR - 2, 0.52);
+
+    // -----------------------------------------------------------------------
+    // B. LOWER SUB-GAUGE: FUEL LEVEL (F — 1/2 — E)
+    // -----------------------------------------------------------------------
+    const fCx = 202, fCy = 228, fR = 68;
+    const fStart = 305, fEnd = 52;
+    const fArc = describeArc(fCx, fCy, fR, fStart, fEnd);
+    html += `<path d="${fArc}" fill="none" stroke="var(--arc-color)" stroke-width="3.8" filter="url(#red-arc-glow)"/>`;
+
+    // Extra Red Reserve Zone at bottom near E (like photo #3)
+    const resArc = describeArc(fCx, fCy, fR - 5, 32, fEnd);
+    html += `<path d="${resArc}" fill="none" stroke="#ff1e00" stroke-width="4.5" filter="url(#red-arc-glow)"/>`;
+
+    // 5 Ticks (F, 3/4, 1/2, 1/4, E)
+    const fSpan = 107; // 305 -> 412 (52 deg)
+    for (let i = 0; i <= 4; i++) {
+      const ang = (fStart + (i / 4) * fSpan) % 360;
+      html += create3DAcrylicPrismTick(fCx, fCy, fR, ang, i % 2 === 0 ? 0.56 : 0.44);
+    }
+
+    const posF = polarToCartesian(fCx, fCy, fR - 20, fStart + 5);
+    const posE = polarToCartesian(fCx, fCy, fR - 20, fEnd - 4);
+    html += `<text x="${posF.x.toFixed(1)}" y="${posF.y.toFixed(1)}" class="dial-num" font-size="11">F</text>`;
+    html += `<text x="${posE.x.toFixed(1)}" y="${posE.y.toFixed(1)}" class="dial-num" font-size="11">E</text>`;
+
+    // Fuel Pump SVG Icon
+    html += `
+      <g transform="translate(${fCx - 24}, ${fCy - 18})" stroke="var(--num-color)" stroke-width="1.5" fill="none" filter="url(#acrylic-prism-glow)">
+        <rect x="2" y="3" width="9" height="12" rx="1"/>
+        <rect x="4" y="5" width="5" height="4" fill="var(--num-color)"/>
+        <path d="M11 6 L14 8 L14 13 C14 14.5, 12 14.5, 12 13"/>
+      </g>
+    `;
+
+    html += createOptitronNeedle('fuelNeedle', fCx, fCy, fR - 2, 0.52);
+
+    svg.innerHTML = html;
+  }
+
+  buildSpeedometer();
+  buildTachometer();
+  buildRightCombiPod();
+
+  // =========================================================================
+  // 5. LIVE DRIVING TELEMETRY, ACCELERATION PHYSICS & IGNITION SWEEP
+  // =========================================================================
+  // Starts at 208 km/h so the initial needle position matches the macro reference photo!
+  let currentSpeed = 208;
+  let targetSpeed = 208;
+  let currentRpm = 6.2;
+  let currentBoost = 1.45;
+  let tripKm = 412.8;
+  let isAccelerating = false;
+  let isSweeping = false;
+
+  const speedoNeedle = document.getElementById('speedoNeedle');
+  const tachoNeedle = document.getElementById('tachoNeedle');
+  const tempNeedle = document.getElementById('tempNeedle');
+  const fuelNeedle = document.getElementById('fuelNeedle');
+  const manualSlider = document.getElementById('manualSpeedSlider');
+  const speedReadoutTag = document.getElementById('speedReadoutTag');
+  const gearDisplay = document.getElementById('gearDisplay');
+  const boostLcdVal = document.getElementById('boostLcdVal');
+  const tripDisplay = document.getElementById('tripDisplay');
+
+  function setNeedleAngle(el, valRatio, startAng, endAng) {
+    const clamped = Math.max(0, Math.min(1, valRatio));
+    const deg = startAng + clamped * (endAng - startAng);
+    const cx = el.dataset.cx;
+    const cy = el.dataset.cy;
+    el.setAttribute('transform', `translate(${cx}, ${cy}) rotate(${deg.toFixed(2)})`);
+  }
+
+  // Set normal operating Temp (middle between C=45° and H=305° -> going counter-clockwise 405 to 305)
+  // Note: For right-side sub-gauges, 0% (C or E) is at ~48° and 100% (H or F) is at ~305° (i.e. 408° -> 305°)
+  setNeedleAngle(tempNeedle, 0.48, 405, 305);
+  setNeedleAngle(fuelNeedle, 0.74, 412, 305);
+
+  function animateCluster() {
+    if (!isSweeping) {
+      if (isAccelerating) {
+        targetSpeed = Math.min(220, targetSpeed + 0.85);
+        manualSlider.value = Math.round(targetSpeed);
+      }
+
+      // Smooth interpolation towards target speed
+      currentSpeed += (targetSpeed - currentSpeed) * 0.12;
+
+      if (currentSpeed > 5) {
+        tripKm += (currentSpeed / 3600) * 0.05;
+        tripDisplay.textContent = tripKm.toFixed(1);
+      }
+
+      // Calculate Gear (1-6) & realistic RPM sawtooth profile
+      let gear = 1;
+      if (currentSpeed > 175) gear = 6;
+      else if (currentSpeed > 135) gear = 5;
+      else if (currentSpeed > 95) gear = 4;
+      else if (currentSpeed > 60) gear = 3;
+      else if (currentSpeed > 30) gear = 2;
+
+      gearDisplay.textContent = currentSpeed < 1 ? 'N' : `S${gear}`;
+
+      const targetRpm = currentSpeed < 1
+        ? 0.85
+        : Math.min(7.7, 1.8 + ((currentSpeed % 42) / 42) * 4.8 + (currentSpeed / 220) * 1.6);
+      currentRpm += (targetRpm - currentRpm) * 0.15;
+
+      const targetBoost = isAccelerating
+        ? Math.min(1.9, (currentRpm / 7) * 1.95)
+        : Math.max(-0.6, (currentSpeed / 220) * 1.4 - 0.2);
+      currentBoost += (targetBoost - currentBoost) * 0.12;
+    }
+
+    // Update Needles
+    setNeedleAngle(speedoNeedle, currentSpeed / 220, 148, 376);
+    setNeedleAngle(tachoNeedle, currentRpm / 8, 142, 378);
+
+    boostLcdVal.textContent = `${currentBoost >= 0 ? '+' : ''}${currentBoost.toFixed(1)} BAR`;
+    speedReadoutTag.textContent = `${Math.round(currentSpeed)} km/h`;
+
+    requestAnimationFrame(animateCluster);
+  }
+
+  requestAnimationFrame(animateCluster);
+
+  // =========================================================================
+  // 6. USER INTERACTIONS: PEDAL, KEYBOARD SPACE, IGNITION SWEEP & COLORS
+  // =========================================================================
+  const accelBtn = document.getElementById('accelBtn');
+
+  function startAccel() {
+    if (currentSpeed >= 218) targetSpeed = 0; // Reset from top speed for a full pull!
+    isAccelerating = true;
+    accelBtn.classList.add('pressed');
+  }
+
+  function stopAccel() {
+    isAccelerating = false;
+    accelBtn.classList.remove('pressed');
+  }
+
+  accelBtn.addEventListener('pointerdown', startAccel);
+  window.addEventListener('pointerup', stopAccel);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !isAccelerating) {
+      e.preventDefault();
+      startAccel();
+    }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') stopAccel();
+  });
+
+  manualSlider.addEventListener('input', (e) => {
+    targetSpeed = Number(e.target.value);
+  });
+
+  // Ignition Start Ceremony (Full Needle Sweep 0 -> Max -> Current)
+  document.getElementById('sweepBtn').addEventListener('click', () => {
+    if (isSweeping) return;
+    isSweeping = true;
+    const savedSpeed = targetSpeed;
+
+    // Light up all warning telltales during self-check
+    document.querySelectorAll('[data-sweep="1"]').forEach(ico => ico.classList.add('active'));
+
+    let phase = 0;
+    const sweepTimer = setInterval(() => {
+      phase += 0.04;
+      const ratio = phase <= 1 ? phase : Math.max(0, 2 - phase);
+      currentSpeed = ratio * 220;
+      currentRpm = ratio * 8.0;
+      currentBoost = -1 + ratio * 3.0;
+      setNeedleAngle(tempNeedle, ratio, 405, 305);
+      setNeedleAngle(fuelNeedle, ratio, 412, 305);
+
+      if (phase >= 2) {
+        clearInterval(sweepTimer);
+        isSweeping = false;
+        targetSpeed = savedSpeed;
+        setNeedleAngle(tempNeedle, 0.48, 405, 305);
+        setNeedleAngle(fuelNeedle, 0.74, 412, 305);
+        document.querySelectorAll('[data-sweep="1"]').forEach(ico => ico.classList.remove('active'));
+      }
+    }, 16);
+  });
+
+  // Clickable Telltale Warning Icons
+  document.querySelectorAll('#telltaleBar .telltale-ico').forEach(ico => {
+    ico.addEventListener('click', () => ico.classList.toggle('active'));
+  });
+
+  // Illumination Color Preset Switcher
+  document.querySelectorAll('#illumSwatches .illum-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('#illumSwatches .illum-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      document.body.setAttribute('data-illum', dot.dataset.theme);
+    });
+  });
+})();
+</script>
+</body>
+</html>
