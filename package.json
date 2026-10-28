@@ -7,6 +7,7 @@
   "scripts": {
     "build:manifest": "node tools/build-manifest.mjs",
     "build:thumbs": "node tools/generate-thumbnails.mjs",
+    "build:seo": "node tools/generate-seo-assets.mjs",
     "build": "node tools/build-manifest.mjs && node tools/generate-thumbnails.mjs"
   },
   "devDependencies": {

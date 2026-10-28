@@ -78,6 +78,26 @@ if (errors.length) {
   process.exit(1);
 }
 
-const manifest = { generated: new Date().toISOString(), count: items.length, items };
+const nowIso = new Date().toISOString();
+const todayDate = nowIso.slice(0, 10);
+const manifest = { generated: nowIso, count: items.length, items };
 await writeFile(join(COMPONENTS, "manifest.json"), JSON.stringify(manifest, null, 1) + "\n");
 console.log(`✔ manifest.json — ${items.length} component(s)`);
+
+// Generate sitemap.xml for search engine indexing
+const SITE_URL = "https://ikaros0102.github.io/ui-lab";
+const urlEntries = [
+  `  <url>\n    <loc>${SITE_URL}/</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>`,
+  ...taxonomy.categories.map(
+    (cat) =>
+      `  <url>\n    <loc>${SITE_URL}/?category=${encodeURIComponent(cat.id)}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+  ),
+  ...items.map(
+    (item) =>
+      `  <url>\n    <loc>${SITE_URL}/${item.path}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+  ),
+];
+
+const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries.join("\n")}\n</urlset>\n`;
+await writeFile(join(ROOT, "sitemap.xml"), sitemapXml, "utf8");
+console.log(`✔ sitemap.xml — ${urlEntries.length} URL(s)`);
