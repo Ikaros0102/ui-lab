@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — 5x5 Photorealistic LED & Optoelectronic Specimen Matrix</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "5x5 Photorealistic LED & Indicator Matrix",
+  "category": "cards",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "led",
+    "indicators",
+    "optoelectronics",
+    "skeuomorphic",
+    "smd-5050",
+    "fairy-bulb",
+    "d-link",
+    "epoxy-dome",
+    "hardware-ui",
+    "5x5-grid",
+    "hardware",
+    "neon",
+    "cards"
+  ],
+  "description": "A 5x5 hardware specimen showcase of 25 photorealistic LEDs and indicator lamps: D-Link crinkle-metal recessed domes, clear 5mm through-hole epoxy capsules with internal anvil cups, WS2812B 5050 SMD strips, tangled copper-wire fairy bulbs, macro resin dewdrop LEDs, dynamic flame-emulator tubes, precision acrylic Angel-Eye waveguides, and Fresnel polycarbonate strobe beacons.",
+  "techniques": [
+    "non-uniform internal semiconductor die hotspots with off-center radial gradients and dual specular dome highlights",
+    "transparent 5mm epoxy lens refraction revealing internal cathode anvil cups and bond wires",
+    "macro SVG optical rendering for twisted copper resin droplets, laser-etched acrylic torus waveguides, and stepped Fresnel strobe lenses",
+    "interactive per-cell ON/OFF switching and global PWM voltage dimming"
+  ],
+  "recipe": "25 distinct optoelectronic cells arranged in a 5x5 inspection matrix with real-time PWM brightness control and wave simulation.",
+  "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 960
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --pwm: 1;
+    --bg-lab: #08090c;
+    --card-chassis: #111318;
+    --card-border: #232732;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 25%, #151922 0%, #07080b 70%, #030405 100%);
+    color: #e2e8f0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 18px 36px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     TOP LABORATORY CONTROL BAR (PWM DIMMER & MODES)
+     ========================================================= */
+  .lab-header {
+    width: 100%;
+    max-width: 1360px;
+    background: rgba(16, 19, 25, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid #282e3d;
+    border-radius: 14px;
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.8);
+  }
+
+  .lab-title-block h1 {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: #f8fafc;
+  }
+
+  .lab-title-block p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  .lab-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .lab-btn {
+    background: #1a1e29;
+    border: 1px solid #353d52;
+    color: #cbd5e1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .lab-btn:hover {
+    border-color: #64748b;
+    color: #fff;
+  }
+
+  .lab-btn.active {
+    background: #0284c7;
+    border-color: #7dd3fc;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  }
+
+  .pwm-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0b0d12;
+    border: 1px solid #262c3a;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #94a3b8;
+  }
+
+  /* =========================================================
+     5x5 SPECIMEN MATRIX GRID (25 CELLS)
+     ========================================================= */
+  .led-matrix-5x5 {
+    width: 100%;
+    max-width: 1360px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+
+  .specimen-cell {
+    height: 174px;
+    background: var(--card-chassis);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow:
+      0 12px 26px rgba(0, 0, 0, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .specimen-cell:hover {
+    border-color: #475569;
+    transform: translateY(-2px);
+  }
+
+  .cell-top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #64748b;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .cell-state-tag {
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    font-weight: 700;
+    font-size: 8px;
+  }
+
+  .specimen-cell.off .cell-state-tag {
+    background: rgba(148, 163, 184, 0.1);
+    color: #64748b;
+  }
+
+  .cell-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 3;
+  }
+
+  .cell-bottom-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-align: center;
+    letter-spacing: 0.2px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* Global PWM & OFF-state handling */
+  .glow-layer {
+    opacity: var(--pwm);
+    transition: opacity 0.18s ease;
+  }
+
+  .specimen-cell.off .glow-layer {
+    opacity: 0 !important;
+  }
+
+  .specimen-cell.off .die-core {
+    filter: brightness(0.28) saturate(0.2) !important;
+    box-shadow: none !important;
+  }
+
+  /* =========================================================
+     SHARED PHOTOREALISTIC 3D EPOXY DOME & CRINKLE METAL STYLES
+     ========================================================= */
+  .crinkle-metal-surface {
+    background-color: #141518;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.07) 1px, transparent 0),
+      radial-gradient(rgba(0,0,0,0.8) 1px, transparent 0);
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+  }
+
+  .recessed-hole {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #050607;
+    border: 2px solid #282b30;
+    box-shadow:
+      inset 0 3px 5px #000,
+      0 1px 1px rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .dome-led-3d {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.18s ease;
+  }
+
+  .dome-led-3d::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 5px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    filter: blur(0.4px);
+    z-index: 3;
+  }
+  .dome-led-3d::after {
+    content: "";
+    position: absolute;
+    top: 4.5px;
+    right: 4px;
+    width: 4.5px;
+    height: 3.5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    filter: blur(0.4px);
+    z-index: 3;
+  }
+
+  .dome-amber {
+    background:
+      radial-gradient(circle at 44% 42%, rgba(255, 245, 190, var(--pwm)) 0%, rgba(245, 166, 35, var(--pwm)) 38%, #8c5308 78%, #361d02 100%);
+    box-shadow:
+      0 0 calc(14px * var(--pwm)) rgba(245, 158, 11, calc(0.75 * var(--pwm))),
+      inset 0 -3px 5px rgba(0, 0, 0, 0.65);
+  }
+
+  .dome-green {
+    background:
+      radial-gradient(circle at 46% 42%, rgba(210, 255, 225, var(--pwm)) 0%, rgba(16, 185, 105, var(--pwm)) 40%, #065f36 78%, #022c18 100%);
+    box-shadow:
+      0 0 calc(14px * var(--pwm)) rgba(16, 185, 105, calc(0.75 * var(--pwm))),
+      inset 0 -3px 5px rgba(0, 0, 0, 0.65);
+  }
+
+  /* =========================================================
+     REALISTIC ANIMATIONS FOR NETWORK, FLAME & STROBE
+     ========================================================= */
+  @keyframes flickerAct {
+    0%, 100% { opacity: 1; }
+    25% { opacity: 0.2; }
+    40% { opacity: 0.95; }
+    65% { opacity: 0.15; }
+    80% { opacity: 1; }
+  }
+
+  .act-blink {
+    animation: flickerAct 0.85s infinite;
+  }
+
+  /* Organic Gas-Flame Dance Animation for #19 */
+  @keyframes flameDanceOuter {
+    0%, 100% { transform: translateY(0) scaleX(1) scaleY(1) skewX(0deg); }
+    25%      { transform: translateY(-1.5px) scaleX(0.95) scaleY(1.05) skewX(-3deg); }
+    55%      { transform: translateY(1px) scaleX(1.04) scaleY(0.96) skewX(3.5deg); }
+    80%      { transform: translateY(-2px) scaleX(0.97) scaleY(1.06) skewX(-1.5deg); }
+  }
+
+  @keyframes flameDanceCore {
+    0%, 100% { transform: scale(1) translateY(0); opacity: 0.95; }
+    35%      { transform: scale(1.06, 1.1) translateY(-1.5px); opacity: 1; }
+    70%      { transform: scale(0.94, 0.92) translateY(1px); opacity: 0.86; }
+  }
+
+  .flame-plume-outer {
+    transform-origin: 45px 78px;
+    animation: flameDanceOuter 2.1s ease-in-out infinite;
+  }
+
+  .flame-plume-core {
+    transform-origin: 45px 78px;
+    animation: flameDanceCore 1.35s ease-in-out infinite;
+  }
+
+  /* Realistic Double-Pulse Xenon/LED Strobe Flash for #25 */
+  @keyframes strobePulse {
+    0%, 100% { opacity: 0.78; filter: brightness(0.95); }
+    8%       { opacity: 1; filter: brightness(1.38); }
+    14%      { opacity: 0.8; filter: brightness(0.95); }
+    22%      { opacity: 1; filter: brightness(1.45); }
+    32%      { opacity: 0.78; filter: brightness(0.95); }
+  }
+
+  .strobe-pulse {
+    animation: strobePulse 2.2s infinite;
+  }
+
+  @media (max-width: 1200px) {
+    .led-matrix-5x5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .led-matrix-5x5 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     TOP HARDWARE CONTROL & PWM DIMMER BAR
+     ========================================================= -->
+<header class="lab-header">
+  <div class="lab-title-block">
+    <h1>OPTOELECTRONIC &amp; LED SPECIMEN MATRIX (5×5 ARCHIVE)</h1>
+    <p>Click any of the 25 cells to toggle ON/OFF state • Adjust PWM Voltage to inspect internal die hotspots &amp; lens refraction</p>
+  </div>
+
+  <div class="lab-controls">
+    <button class="lab-btn active" id="allOnBtn">ALL LIT (25)</button>
+    <button class="lab-btn" id="allOffBtn">ALL DARK</button>
+    <button class="lab-btn" id="waveModeBtn">🌊 WAVE SCAN</button>
+
+    <div class="pwm-box">
+      <span>PWM DRIVE:</span>
+      <input type="range" min="15" max="100" value="100" id="pwmSlider" style="width:100px;cursor:pointer;">
+      <b id="pwmValText" style="color:#38bdf8;min-width:36px;">100%</b>
+    </div>
+  </div>
+</header>
+
+<!-- =========================================================
+     5x5 MATRIX OF 25 PHOTOREALISTIC LED SPECIMENS
+     ========================================================= -->
+<main class="led-matrix-5x5" id="ledMatrix">
+
+  <!-- =======================================================
+       ROW 1: PANEL-MOUNT & NETWORK CHASSIS LEDS (REF 1)
+       ======================================================= -->
+
+  <!-- 01. D-Link DGS-1005P Dual Recessed PoE Max / Power LEDs (Exact Ref 1!) -->
+  <div class="specimen-cell crinkle-metal-surface">
+    <div class="cell-top-meta"><span>#01 // PANEL 3MM</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="display:flex;align-items:center;gap:16px;background:#0e0f12;padding:10px 16px;border-radius:8px;border:1px solid #262930;box-shadow:inset 0 2px 8px #000;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <span style="font-size:9.5px;font-weight:800;color:#cbd5e1;line-height:1.05;">PoE<br>Max</span>
+            <div class="recessed-hole"><div class="dome-led-3d dome-amber die-core"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <span style="font-size:15px;font-weight:800;color:#cbd5e1;">⏻</span>
+            <div class="recessed-hole"><div class="dome-led-3d dome-green die-core"></div></div>
+          </div>
+        </div>
+        <div style="width:14px;height:74px;background:linear-gradient(180deg,#cbd5e1,#64748b);border:1px solid #334155;border-radius:2px;"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">D-Link PoE Max &amp; Power Domes</div>
+  </div>
+
+  <!-- 02. RJ45 Network Port Integrated Link / Activity Prism LEDs -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#02 // RJ45 JACK</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:88px;height:72px;background:linear-gradient(180deg,#94a3b8,#475569);border:2px solid #1e293b;border-radius:5px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 14px #000;">
+        <div style="display:flex;justify-content:space-between;">
+          <div class="die-core" style="width:22px;height:10px;border-radius:2px;background:radial-gradient(circle at 35% 50%,#fff 0%,#22c55e 45%,#064e3b 100%);box-shadow:0 0 calc(12px * var(--pwm)) #22c55e;"></div>
+          <div class="die-core act-blink" style="width:22px;height:10px;border-radius:2px;background:radial-gradient(circle at 65% 50%,#fff 0%,#f59e0b 45%,#78350f 100%);box-shadow:0 0 calc(12px * var(--pwm)) #f59e0b;"></div>
+        </div>
+        <div style="height:40px;background:#090b0f;border-radius:2px;display:flex;justify-content:space-around;padding:0 8px;">
+          <span style="width:2px;height:14px;background:#eab308;"></span>
+          <span style="width:2px;height:14px;background:#eab308;"></span>
+          <span style="width:2px;height:14px;background:#eab308;"></span>
+          <span style="width:2px;height:14px;background:#eab308;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">RJ45 1000BASE-T Link/Act Prisms</div>
+  </div>
+
+  <!-- 03. Chrome Bezel Faceted Ruby Jewel Pilot Lamp -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#03 // JEWEL PILOT</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:68px;height:68px;border-radius:50%;background:conic-gradient(#e2e8f0,#475569,#f8fafc,#1e293b,#e2e8f0);padding:7px;box-shadow:0 8px 18px #000;">
+        <div class="die-core" style="width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 42% 38%,#fff5f5 0%,#ff2a1f 32%,#990f02 72%,#2b0200 100%);box-shadow:0 0 calc(25px * var(--pwm)) rgba(255,42,31,0.85);position:relative;overflow:hidden;border:1.5px solid #450a0a;">
+          <svg viewBox="0 0 50 50" style="width:100%;height:100%;opacity:0.45;">
+            <polygon points="25,4 46,25 25,46 4,25" fill="none" stroke="#fff" stroke-width="1"/>
+            <line x1="4" y1="4" x2="46" y2="46" stroke="#fff" stroke-width="0.8"/>
+            <line x1="46" y1="4" x2="4" y2="46" stroke="#fff" stroke-width="0.8"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Knurled Chrome Ruby Jewel Pilot</div>
+  </div>
+
+  <!-- 04. Bi-Color Dual-Die 5mm Diffused LED (Red + Green Internal Chips) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#04 // DUAL-DIE</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div class="recessed-hole" style="width:58px;height:58px;">
+        <div class="die-core" style="width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 32% 48%,rgba(255,80,40,var(--pwm)) 0%,transparent 55%),radial-gradient(circle at 68% 52%,rgba(40,255,100,var(--pwm)) 0%,transparent 55%),radial-gradient(circle,#856d18 0%,#26210a 100%);box-shadow:0 0 calc(20px * var(--pwm)) rgba(200,220,40,0.65);position:relative;">
+          <span style="position:absolute;top:7px;left:9px;width:9px;height:6px;border-radius:50%;background:rgba(255,255,255,0.85);"></span>
+          <span style="position:absolute;top:8px;right:9px;width:7px;height:5px;border-radius:50%;background:rgba(255,255,255,0.75);"></span>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Bi-Color Dual-Anvil Mixing Dome</div>
+  </div>
+
+  <!-- 05. Flush Server Acrylic Light-Pipe Bar (Edge-Injected Hotspot) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#05 // LIGHT-PIPE</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:128px;height:28px;background:#07090d;border:2px solid #28303d;border-radius:5px;padding:4px;box-shadow:inset 0 2px 5px #000;">
+        <div class="die-core" style="width:100%;height:100%;border-radius:2px;background:linear-gradient(90deg,#ffffff 0%,#00f0ff 18%,#0284c7 58%,#0c2e45 100%);box-shadow:0 0 calc(16px * var(--pwm)) rgba(0,240,255,0.65);position:relative;">
+          <div style="position:absolute;top:2px;left:4px;right:4px;height:2px;background:rgba(255,255,255,0.65);"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Acrylic Edge-Lit Waveguide Bar</div>
+  </div>
+
+  <!-- =======================================================
+       ROW 2: CLEAR EPOXY THROUGH-HOLE MACRO LEDS (REF 2)
+       ======================================================= -->
+
+  <!-- 06. 5mm Water-Clear Ruby Red LED with Internal Anvil & Die (Ref 2!) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#06 // 5MM CLEAR RED</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="90" height="105" viewBox="0 0 90 105" class="die-core" style="overflow:visible;">
+        <circle class="glow-layer" cx="45" cy="48" r="38" fill="rgba(255, 30, 60, 0.38)" filter="blur(10px)"/>
+        <path d="M 24 82 L 24 42 C 24 18, 66 18, 66 42 L 66 82 Z"
+              fill="rgba(255, 40, 70, 0.28)" stroke="rgba(255, 190, 200, 0.75)" stroke-width="1.6"/>
+        <rect x="20" y="80" width="50" height="8" rx="3" fill="rgba(255, 50, 80, 0.45)" stroke="#fda4af" stroke-width="1.2"/>
+        <polygon points="33,80 33,56 29,48 46,48 42,56 42,80" fill="#7f1d1d" stroke="#fca5a5" stroke-width="0.8"/>
+        <polygon points="52,80 52,46 57,46 57,80" fill="#7f1d1d" stroke="#fca5a5" stroke-width="0.8"/>
+        <ellipse class="glow-layer" cx="38" cy="46" rx="11" ry="6" fill="#ffea00" filter="blur(3px)"/>
+        <circle class="glow-layer" cx="38" cy="46" r="3.5" fill="#ffffff"/>
+        <path d="M 38 46 Q 46 36 54 46" fill="none" stroke="#fef08a" stroke-width="0.9"/>
+        <ellipse class="glow-layer" cx="45" cy="24" rx="12" ry="5" fill="#ff9e00" filter="blur(2px)"/>
+        <path d="M 28 40 C 28 24, 42 22, 42 22" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">5mm Clear Epoxy Ruby Anvil LED</div>
+  </div>
+
+  <!-- 07. 5mm Water-Clear Electric Cobalt / UV LED (Ref 2!) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#07 // 5MM CLEAR BLUE</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="90" height="105" viewBox="0 0 90 105" class="die-core" style="overflow:visible;">
+        <circle class="glow-layer" cx="45" cy="48" r="38" fill="rgba(56, 189, 248, 0.42)" filter="blur(10px)"/>
+        <path d="M 24 82 L 24 42 C 24 18, 66 18, 66 42 L 66 82 Z"
+              fill="rgba(30, 140, 255, 0.28)" stroke="rgba(186, 230, 253, 0.8)" stroke-width="1.6"/>
+        <rect x="20" y="80" width="50" height="8" rx="3" fill="rgba(56, 189, 248, 0.45)" stroke="#bae6fd" stroke-width="1.2"/>
+        <polygon points="33,80 33,56 29,48 46,48 42,56 42,80" fill="#1e3a8a" stroke="#93c5fd" stroke-width="0.8"/>
+        <polygon points="52,80 52,46 57,46 57,80" fill="#1e3a8a" stroke="#93c5fd" stroke-width="0.8"/>
+        <ellipse class="glow-layer" cx="38" cy="46" rx="12" ry="6" fill="#00ffff" filter="blur(3px)"/>
+        <circle class="glow-layer" cx="38" cy="46" r="4" fill="#ffffff"/>
+        <ellipse class="glow-layer" cx="46" cy="24" rx="13" ry="5" fill="#e0f2fe" filter="blur(2px)"/>
+        <path d="M 28 40 C 28 24, 42 22, 42 22" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">5mm Clear Indium-Gallium Blue</div>
+  </div>
+
+  <!-- 08. 5mm Water-Clear Emerald Green LED (Ref 2!) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#08 // 5MM EMERALD</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="90" height="105" viewBox="0 0 90 105" class="die-core" style="overflow:visible;">
+        <circle class="glow-layer" cx="45" cy="48" r="38" fill="rgba(16, 245, 120, 0.38)" filter="blur(10px)"/>
+        <path d="M 24 82 L 24 42 C 24 18, 66 18, 66 42 L 66 82 Z"
+              fill="rgba(16, 185, 129, 0.28)" stroke="rgba(167, 243, 208, 0.8)" stroke-width="1.6"/>
+        <rect x="20" y="80" width="50" height="8" rx="3" fill="rgba(16, 185, 129, 0.45)" stroke="#6ee7b7" stroke-width="1.2"/>
+        <polygon points="33,80 33,56 29,48 46,48 42,56 42,80" fill="#064e3b" stroke="#6ee7b7" stroke-width="0.8"/>
+        <polygon points="52,80 52,46 57,46 57,80" fill="#064e3b" stroke="#6ee7b7" stroke-width="0.8"/>
+        <ellipse class="glow-layer" cx="38" cy="46" rx="12" ry="6" fill="#a3e635" filter="blur(3px)"/>
+        <circle class="glow-layer" cx="38" cy="46" r="4" fill="#ffffff"/>
+        <ellipse class="glow-layer" cx="45" cy="24" rx="12" ry="5" fill="#bef264" filter="blur(2px)"/>
+        <path d="M 28 40 C 28 24, 42 22, 42 22" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">5mm Clear Emerald Phosphide</div>
+  </div>
+
+  <!-- 09. Superflux "Piranha" 4-Pin Wide-Angle Automotive LED -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#09 // SUPERFLUX 4-PIN</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div class="die-core" style="width:66px;height:66px;background:rgba(255,60,20,0.22);border:1.8px solid #fda4af;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 calc(22px * var(--pwm)) rgba(255,50,10,0.65);">
+        <span style="position:absolute;left:-5px;top:8px;width:5px;height:10px;background:#cbd5e1;"></span>
+        <span style="position:absolute;left:-5px;bottom:8px;width:5px;height:10px;background:#cbd5e1;"></span>
+        <span style="position:absolute;right:-5px;top:8px;width:5px;height:10px;background:#cbd5e1;"></span>
+        <span style="position:absolute;right:-5px;bottom:8px;width:5px;height:10px;background:#cbd5e1;"></span>
+        <div style="width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 42% 40%,#ffffff 0%,#ffea00 25%,#ff2a00 68%,#7f1d1d 100%);border:1.5px solid #fecdd3;box-shadow:inset 0 2px 5px #fff;"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Piranha 4-Pin Flux Emitter</div>
+  </div>
+
+  <!-- 10. 10mm Diffused RGB Tri-Chip Dome (3 Distinct Internal Hotspots!) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#10 // 10MM RGB DOME</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div class="die-core" style="width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 32% 36%,rgba(255,40,90,var(--pwm)) 0%,transparent 52%),radial-gradient(circle at 68% 38%,rgba(0,235,255,var(--pwm)) 0%,transparent 52%),radial-gradient(circle at 50% 70%,rgba(50,255,100,var(--pwm)) 0%,transparent 55%),#1e1b2e;box-shadow:0 0 calc(26px * var(--pwm)) rgba(192,132,252,0.75);border:1.5px solid rgba(255,255,255,0.45);position:relative;">
+        <span style="position:absolute;top:10px;left:14px;width:10px;height:7px;border-radius:50%;background:rgba(255,255,255,0.88);transform:rotate(-20deg);"></span>
+        <span style="position:absolute;top:12px;right:14px;width:8px;height:5px;border-radius:50%;background:rgba(255,255,255,0.78);transform:rotate(20deg);"></span>
+      </div>
+    </div>
+    <div class="cell-bottom-title">10mm Diffused Tri-Die RGB</div>
+  </div>
+
+  <!-- =======================================================
+       ROW 3: SMD 5050 STRIPS, COB & MICRO-SMD (REF 3)
+       ======================================================= -->
+
+  <!-- 11. WS2812B 5050 Addressable RGB LED Strip Segment (Exact Ref 3!) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#11 // SMD 5050 STRIP</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:100%;height:58px;background:linear-gradient(90deg,#3b1d5e,#0f5257);border-top:2px solid #94a3b8;border-bottom:2px solid #94a3b8;border-radius:4px;display:flex;align-items:center;justify-content:space-around;padding:0 6px;position:relative;box-shadow:0 0 calc(20px * var(--pwm)) rgba(56,189,248,0.45);">
+        <div class="die-core" style="width:36px;height:36px;background:#f8fafc;border-radius:3px;padding:4px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 calc(16px * var(--pwm)) #f43f5e;">
+          <div style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#ffffff 0%,#ff7bf0 40%,#f43f5e 85%);border:1px solid #cbd5e1;"></div>
+        </div>
+        <div class="die-core" style="width:36px;height:36px;background:#f8fafc;border-radius:3px;padding:4px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 calc(16px * var(--pwm)) #38bdf8;">
+          <div style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 60% 40%,#ffffff 0%,#7dd3fc 40%,#0284c7 85%);border:1px solid #cbd5e1;"></div>
+        </div>
+        <div class="die-core" style="width:36px;height:36px;background:#f8fafc;border-radius:3px;padding:4px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 calc(16px * var(--pwm)) #10b981;">
+          <div style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 45% 55%,#ffffff 0%,#6ee7b7 40%,#059669 85%);border:1px solid #cbd5e1;"></div>
+        </div>
+        <span style="position:absolute;bottom:1px;left:12px;font-size:6.5px;font-family:monospace;color:#e2e8f0;">+12V &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +12V &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +12V</span>
+      </div>
+    </div>
+    <div class="cell-bottom-title">WS2812B 5050 RGB Strip (Ref 3)</div>
+  </div>
+
+  <!-- 12. COB (Chip-on-Board) Phosphor Ring Emitter -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#12 // COB RING</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:74px;height:74px;border-radius:14px;background:linear-gradient(135deg,#e2e8f0,#94a3b8);border:1.5px solid #475569;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px #000;">
+        <div class="die-core" style="width:56px;height:56px;border-radius:50%;border:10px solid #facc15;background:#1e293b;box-shadow:0 0 calc(22px * var(--pwm)) #fde047,inset 0 0 calc(12px * var(--pwm)) #fde047;position:relative;">
+          <div class="glow-layer" style="position:absolute;inset:-9px;border-radius:50%;border:6px dotted #ffffff;filter:blur(0.6px);"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">COB Multi-Die Phosphor Ring</div>
+  </div>
+
+  <!-- 13. Dual 0603 Micro-SMD PCB TX/RX Indicators -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#13 // 0603 SMD PCB</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:110px;height:66px;background:#0e2947;border:1.5px solid #285482;border-radius:6px;padding:10px;display:flex;flex-direction:column;justify-content:space-around;box-shadow:inset 0 0 15px #000;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:monospace;font-size:8px;color:#cbd5e1;">TX</span>
+          <div style="display:flex;align-items:center;">
+            <span style="width:5px;height:10px;background:#cbd5e1;"></span>
+            <div class="die-core" style="width:14px;height:10px;background:radial-gradient(circle,#fff 0%,#ff2a00 60%);box-shadow:0 0 calc(16px * var(--pwm)) #ff2a00,0 0 calc(26px * var(--pwm)) #ff5500;"></div>
+            <span style="width:5px;height:10px;background:#cbd5e1;"></span>
+          </div>
+          <span style="font-family:monospace;font-size:8px;color:#cbd5e1;">R1</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:monospace;font-size:8px;color:#cbd5e1;">RX</span>
+          <div style="display:flex;align-items:center;">
+            <span style="width:5px;height:10px;background:#cbd5e1;"></span>
+            <div class="die-core act-blink" style="width:14px;height:10px;background:radial-gradient(circle,#fff 0%,#f59e0b 60%);box-shadow:0 0 calc(16px * var(--pwm)) #f59e0b;"></div>
+            <span style="width:5px;height:10px;background:#cbd5e1;"></span>
+          </div>
+          <span style="font-family:monospace;font-size:8px;color:#cbd5e1;">R2</span>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">0603 SMD TX/RX Board LEDs</div>
+  </div>
+
+  <!-- 14. Cree XLamp 4-Die High-Power Flashlight Emitter -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#14 // CREE XHP70</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:64px;height:64px;background:#d4af37;border:2px solid #fef08a;border-radius:8px;padding:7px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px #000;">
+        <div class="die-core" style="width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffffff 0%,#fef08a 52%,#ca8a04 100%);box-shadow:0 0 calc(28px * var(--pwm)) #fef08a;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:9px;position:relative;">
+          <div style="background:#ffffff;border-radius:1px;"></div>
+          <div style="background:#ffffff;border-radius:1px;"></div>
+          <div style="background:#ffffff;border-radius:1px;"></div>
+          <div style="background:#ffffff;border-radius:1px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Quad-Die Silicone Dome Emitter</div>
+  </div>
+
+  <!-- 15. Reverse-Mount FR-4 Fiberglass Diffused Backlight LED -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#15 // FR-4 SUBSTRATE</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:94px;height:64px;background:#2b2212;border:1.5px solid #6b5328;border-radius:6px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <div class="die-core" style="width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#ffffff 0%,#ff9d00 28%,rgba(217,119,6,0.4) 65%,transparent 100%);box-shadow:0 0 calc(20px * var(--pwm)) #f59e0b;"></div>
+        <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,0.22) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,0.22) 0 1px,transparent 1px 3px);"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">FR-4 Fiberglass Bleed-Through</div>
+  </div>
+
+  <!-- =======================================================
+       ROW 4: UPGRADED FAIRY BULB, DEWDROP & FLAME BULB
+       ======================================================= -->
+
+  <!-- 16. UPGRADED: Glass Edison G80 Bulb with Tangled Copper Fairy Micro-LEDs (Ref 4) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#16 // FAIRY BULB</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="100" height="118" viewBox="0 0 100 118" class="die-core" style="overflow:visible;">
+        <defs>
+          <linearGradient id="e27Brass16" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#57534e"/>
+            <stop offset="28%" stop-color="#e7e5e4"/>
+            <stop offset="55%" stop-color="#a8a29e"/>
+            <stop offset="82%" stop-color="#f5f5f4"/>
+            <stop offset="100%" stop-color="#44403c"/>
+          </linearGradient>
+          <radialGradient id="bulbGlass16" cx="50%" cy="62%" r="50%">
+            <stop offset="0%" stop-color="rgba(255, 195, 95, 0.28)"/>
+            <stop offset="68%" stop-color="rgba(255, 160, 60, 0.08)"/>
+            <stop offset="92%" stop-color="rgba(255, 240, 215, 0.25)"/>
+            <stop offset="100%" stop-color="rgba(255, 255, 255, 0.5)"/>
+          </radialGradient>
+          <radialGradient id="fairyDrop16" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="38%" stop-color="#fef08a"/>
+            <stop offset="72%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="rgba(217, 119, 6, 0)"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Volumetric Warm Ambient Halo -->
+        <ellipse class="glow-layer" cx="50" cy="70" rx="38" ry="36" fill="rgba(255, 175, 55, 0.35)" filter="blur(11px)"/>
+
+        <!-- Black Vitrite Top Contact Insulator -->
+        <path d="M 41 4 L 59 4 L 62 8 L 38 8 Z" fill="#18181b" stroke="#52525b" stroke-width="0.7"/>
+
+        <!-- Threaded Nickel-Brass E27 Screw Cap -->
+        <rect x="36" y="7" width="28" height="17" rx="2.5" fill="url(#e27Brass16)" stroke="#292524" stroke-width="0.9"/>
+        <path d="M 35 11 Q 50 13.5 65 11 M 35 15.5 Q 50 18 65 15.5 M 35 20 Q 50 22.5 65 20" fill="none" stroke="#292524" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M 36 12.2 Q 50 14.7 64 12.2 M 36 16.7 Q 50 19.2 64 16.7" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.75"/>
+
+        <!-- Blown Pear/Globe Glass Envelope with Fresnel Rim -->
+        <path d="M 37 24
+                 C 37 32, 33 38, 25 48
+                 C 14 62, 15 86, 28 99
+                 C 39 109, 61 109, 72 99
+                 C 85 86, 86 62, 75 48
+                 C 67 38, 63 32, 63 24 Z"
+              fill="url(#bulbGlass16)" stroke="rgba(255, 240, 210, 0.55)" stroke-width="1.2"/>
+
+        <!-- Internal Glass Stem Press (Pinch Seal) & Lead-In Wires -->
+        <path d="M 45 24 L 46 43 C 46 46, 54 46, 54 43 L 55 24 Z" fill="rgba(255, 255, 255, 0.16)" stroke="rgba(255, 255, 255, 0.38)" stroke-width="0.8"/>
+        <ellipse cx="50" cy="43" rx="4.5" ry="1.6" fill="rgba(255, 235, 190, 0.45)"/>
+
+        <!-- Out-of-Focus Back Coils of Copper Wire & Bokeh Orbs -->
+        <path d="M 48 43 C 68 50, 74 74, 56 92 C 38 105, 22 84, 34 62 C 44 46, 66 58, 62 82"
+              fill="none" stroke="#9a3412" stroke-width="0.9" opacity="0.55"/>
+        <g class="glow-layer" opacity="0.55">
+          <circle cx="62" cy="58" r="6" fill="url(#fairyDrop16)"/>
+          <circle cx="34" cy="70" r="6.5" fill="url(#fairyDrop16)"/>
+          <circle cx="55" cy="91" r="6" fill="url(#fairyDrop16)"/>
+        </g>
+
+        <!-- Foreground Coiled Enamelled Copper Wire -->
+        <path d="M 47 43 C 28 48, 22 68, 36 82 C 50 96, 72 86, 68 68 C 64 50, 34 52, 28 74 C 24 90, 44 103, 58 96 C 70 90, 62 72, 46 66"
+              fill="none" stroke="#f59e0b" stroke-width="1.15" stroke-linecap="round"/>
+        <path d="M 47 43 C 28 48, 22 68, 36 82 C 50 96, 72 86, 68 68"
+              fill="none" stroke="#fef08a" stroke-width="0.45" stroke-dasharray="3 5"/>
+
+        <!-- Glowing Micro-Resin Fairy LED Droplets Aligned Along Wire -->
+        <g class="glow-layer">
+          <!-- Droplet 1 -->
+          <g transform="translate(31, 53) rotate(-42)">
+            <circle cx="0" cy="0" r="7.5" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.3" ry="2.1" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.2" y="-0.8" width="2.4" height="1.6" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 2 -->
+          <g transform="translate(27, 73) rotate(68)">
+            <circle cx="0" cy="0" r="8" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.4" ry="2.1" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.2" y="-0.8" width="2.4" height="1.6" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 3 (Center Hero Hotspot) -->
+          <g transform="translate(48, 65) rotate(14)">
+            <circle cx="0" cy="0" r="9.5" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.8" ry="2.3" fill="#fef08a" stroke="#ffffff" stroke-width="0.6"/>
+            <rect x="-1.4" y="-0.9" width="2.8" height="1.8" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 4 -->
+          <g transform="translate(68, 70) rotate(82)">
+            <circle cx="0" cy="0" r="8" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.4" ry="2.1" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.2" y="-0.8" width="2.4" height="1.6" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 5 -->
+          <g transform="translate(42, 86) rotate(26)">
+            <circle cx="0" cy="0" r="8.5" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.5" ry="2.2" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.2" y="-0.8" width="2.4" height="1.6" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 6 -->
+          <g transform="translate(60, 86) rotate(-32)">
+            <circle cx="0" cy="0" r="7.5" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.2" ry="2" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.1" y="-0.7" width="2.2" height="1.4" rx="0.4" fill="#ffffff"/>
+          </g>
+          <!-- Droplet 7 -->
+          <g transform="translate(48, 99) rotate(-8)">
+            <circle cx="0" cy="0" r="7.5" fill="url(#fairyDrop16)"/>
+            <ellipse cx="0" cy="0" rx="3.2" ry="2" fill="#fde047" stroke="#ffffff" stroke-width="0.5"/>
+            <rect x="-1.1" y="-0.7" width="2.2" height="1.4" rx="0.4" fill="#ffffff"/>
+          </g>
+        </g>
+
+        <!-- Curved Blown-Glass Specular Highlights -->
+        <path d="M 28 52 C 19 65, 20 84, 30 95" fill="none" stroke="rgba(255, 255, 255, 0.72)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M 32 55 C 25 66, 25 81, 33 91" fill="none" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" stroke-linecap="round"/>
+        <path d="M 73 54 C 80 67, 79 84, 69 96" fill="none" stroke="rgba(255, 225, 160, 0.45)" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">Copper Fairy-String Bulb (Ref 4)</div>
+  </div>
+
+  <!-- 17. Vintage COB Glass LED Filament Rod (Beaded Micro-Hotspots) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#17 // COG FILAMENT</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:46px;height:96px;border-radius:23px 23px 6px 6px;border:1.5px solid rgba(255,235,200,0.45);background:rgba(255,180,60,0.08);display:flex;justify-content:space-around;align-items:center;padding:12px 10px;position:relative;">
+        <div class="die-core" style="width:4px;height:64px;border-radius:3px;background:repeating-linear-gradient(180deg,#ffffff 0 3px,#f59e0b 3px 6px);box-shadow:0 0 calc(14px * var(--pwm)) #f59e0b,0 0 calc(24px * var(--pwm)) #ea580c;"></div>
+        <div class="die-core" style="width:4px;height:64px;border-radius:3px;background:repeating-linear-gradient(180deg,#ffffff 0 3px,#f59e0b 3px 6px);box-shadow:0 0 calc(14px * var(--pwm)) #f59e0b,0 0 calc(24px * var(--pwm)) #ea580c;"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">2200K Chip-on-Glass Filament</div>
+  </div>
+
+  <!-- 18. UPGRADED: Macro Enamelled-Wire Resin Dewdrop Micro-LED -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#18 // DEWDROP RESIN</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="150" height="96" viewBox="0 0 150 96" class="die-core" style="overflow:visible;">
+        <defs>
+          <linearGradient id="copperStrandA" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fed7aa"/>
+            <stop offset="45%" stop-color="#ea580c"/>
+            <stop offset="100%" stop-color="#431407"/>
+          </linearGradient>
+          <linearGradient id="copperStrandB" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#9a3412"/>
+            <stop offset="50%" stop-color="#fb923c"/>
+            <stop offset="100%" stop-color="#270901"/>
+          </linearGradient>
+          <radialGradient id="resinBody18" cx="48%" cy="46%" r="54%">
+            <stop offset="0%" stop-color="rgba(255, 255, 240, 0.98)"/>
+            <stop offset="34%" stop-color="rgba(254, 240, 138, 0.92)"/>
+            <stop offset="68%" stop-color="rgba(245, 158, 11, 0.78)"/>
+            <stop offset="90%" stop-color="rgba(180, 83, 9, 0.58)"/>
+            <stop offset="100%" stop-color="rgba(254, 215, 170, 0.85)"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Warm Volumetric Halo + Optical Starburst Rays -->
+        <ellipse class="glow-layer" cx="75" cy="48" rx="48" ry="30" fill="rgba(245, 158, 11, 0.42)" filter="blur(10px)"/>
+        <g class="glow-layer" opacity="0.65">
+          <line x1="75" y1="10" x2="75" y2="86" stroke="#fef08a" stroke-width="1" filter="blur(0.8px)"/>
+          <line x1="25" y1="48" x2="125" y2="48" stroke="#fef08a" stroke-width="1.2" filter="blur(0.8px)"/>
+          <line x1="48" y1="24" x2="102" y2="72" stroke="#fde047" stroke-width="0.8" filter="blur(0.6px)"/>
+          <line x1="48" y1="72" x2="102" y2="24" stroke="#fde047" stroke-width="0.8" filter="blur(0.6px)"/>
+        </g>
+
+        <!-- Twisted Dual Enamelled Copper Wire Strands (Left & Right of Bead) -->
+        <!-- Strand B (Back) -->
+        <path d="M 4 50 C 12 43, 20 53, 28 46 C 36 40, 44 52, 52 47
+                 M 98 47 C 106 52, 114 40, 122 46 C 130 53, 138 43, 146 50"
+              fill="none" stroke="url(#copperStrandB)" stroke-width="3.4" stroke-linecap="round"/>
+        <!-- Strand A (Front braided over) -->
+        <path d="M 4 46 C 12 53, 20 43, 28 50 C 36 55, 44 44, 52 49
+                 M 98 49 C 106 44, 114 55, 122 50 C 130 43, 138 53, 146 46"
+              fill="none" stroke="url(#copperStrandA)" stroke-width="3.4" stroke-linecap="round"/>
+        <!-- Specular Glints on Copper Twists -->
+        <path d="M 8 48 L 13 49 M 22 46 L 27 48 M 36 51 L 41 49 M 108 47 L 113 50 M 124 48 L 129 46 M 136 49 L 141 48"
+              fill="none" stroke="#fff7ed" stroke-width="0.9" stroke-linecap="round" opacity="0.8"/>
+
+        <!-- Internal Leadframe & Solder Pads Visible Inside Clear Epoxy Drop -->
+        <path d="M 47 47 L 66 47 M 84 47 L 103 47" stroke="#9a3412" stroke-width="2.6" stroke-linecap="round"/>
+        <rect x="64" y="42" width="22" height="11" rx="2" fill="#78350f" stroke="#fde047" stroke-width="0.7"/>
+
+        <!-- Translucent Domed UV-Resin Dewdrop Capsule -->
+        <path d="M 45 48
+                 C 48 31, 61 25, 75 25
+                 C 89 25, 102 31, 105 48
+                 C 102 65, 89 71, 75 71
+                 C 61 71, 48 65, 45 48 Z"
+              fill="url(#resinBody18)" stroke="rgba(255, 247, 214, 0.85)" stroke-width="1.3"/>
+
+        <!-- Blazing 0402 Micro-SMD Semiconductor Die & Gold Bond Wire -->
+        <ellipse class="glow-layer" cx="75" cy="48" rx="15" ry="10" fill="#ffffff" filter="blur(3px)"/>
+        <rect x="70" y="44.5" width="10" height="7" rx="1.2" fill="#ffffff" stroke="#fef08a" stroke-width="1"/>
+        <path d="M 65 48 Q 75 37 85 48" fill="none" stroke="#fef08a" stroke-width="0.9"/>
+
+        <!-- Glossy Curved Top & Bottom Meniscus Reflections on Resin Bead -->
+        <path d="M 53 39 C 60 30, 82 29, 93 36" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" opacity="0.92"/>
+        <ellipse cx="64" cy="34" rx="4.5" ry="1.8" transform="rotate(-14 64 34)" fill="#ffffff"/>
+        <path d="M 56 61 C 66 67, 84 67, 94 60" fill="none" stroke="rgba(255, 235, 170, 0.65)" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">Macro Copper-Wire Resin Drop</div>
+  </div>
+
+  <!-- 19. UPGRADED: Flickering Gas-Flame Matrix Candle Bulb -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#19 // FLAME MATRIX</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="96" height="118" viewBox="0 0 96 118" class="die-core" style="overflow:visible;">
+        <defs>
+          <linearGradient id="outerFlame19" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.75"/>
+            <stop offset="16%" stop-color="#ffffff"/>
+            <stop offset="42%" stop-color="#facc15"/>
+            <stop offset="74%" stop-color="#f97316"/>
+            <stop offset="94%" stop-color="#dc2626"/>
+            <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="coreFlame19" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" stop-color="#e0f2fe"/>
+            <stop offset="30%" stop-color="#ffffff"/>
+            <stop offset="75%" stop-color="#fef08a"/>
+            <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="brassBase19" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#451a03"/>
+            <stop offset="30%" stop-color="#d97706"/>
+            <stop offset="55%" stop-color="#fde68a"/>
+            <stop offset="80%" stop-color="#b45309"/>
+            <stop offset="100%" stop-color="#270901"/>
+          </linearGradient>
+          <!-- Perforated internal SMD LED matrix pattern -->
+          <pattern id="smdFlameGrid19" width="5" height="5" patternUnits="userSpaceOnUse">
+            <rect x="1" y="1" width="2.6" height="2.6" rx="0.5" fill="rgba(255, 255, 255, 0.32)"/>
+          </pattern>
+        </defs>
+
+        <!-- Warm Flickering Ambient Halo -->
+        <ellipse class="glow-layer" cx="48" cy="54" rx="34" ry="42" fill="rgba(255, 90, 0, 0.38)" filter="blur(11px)"/>
+
+        <!-- Tubular T10 Tinted Glass Envelope -->
+        <path d="M 27 88 L 27 34 C 27 12, 69 12, 69 34 L 69 88 Z"
+              fill="rgba(255, 80, 10, 0.12)" stroke="rgba(255, 210, 170, 0.58)" stroke-width="1.3"/>
+
+        <!-- Internal Perforated Cylindrical PCB Matrix Barrel -->
+        <rect x="34" y="34" width="28" height="52" rx="4" fill="rgba(69, 10, 10, 0.65)" stroke="rgba(251, 146, 60, 0.35)" stroke-width="0.8"/>
+        <rect x="35" y="35" width="26" height="50" rx="3" fill="url(#smdFlameGrid19)"/>
+
+        <!-- Animated Multi-Layered Gas/Matrix Flame Plumes Inside Tube -->
+        <g class="glow-layer">
+          <!-- Outer Dancing Orange-Red Flame Tongue -->
+          <path class="flame-plume-outer"
+                d="M 48 20
+                   C 57 32, 65 48, 63 66
+                   C 62 78, 56 85, 48 85
+                   C 40 85, 34 78, 33 66
+                   C 31 48, 39 32, 48 20 Z"
+                fill="url(#outerFlame19)" filter="blur(1.2px)"/>
+
+          <!-- Secondary Licking Flame Tip -->
+          <path class="flame-plume-Core"
+                d="M 45 26 C 52 34, 58 46, 56 62 C 54 74, 42 74, 40 62 C 38 46, 42 36, 45 26 Z"
+                fill="rgba(255, 165, 0, 0.7)" filter="blur(1px)"/>
+
+          <!-- White-Hot / Blue-Base Inner Core Flame -->
+          <path class="flame-plume-core"
+                d="M 48 38
+                   C 54 48, 57 60, 55 73
+                   C 54 81, 51 84, 48 84
+                   C 45 84, 42 81, 41 73
+                   C 39 60, 42 48, 48 38 Z"
+                fill="url(#coreFlame19)"/>
+
+          <!-- Rising Micro-Ember Sparks on Matrix -->
+          <circle cx="44" cy="31" r="1.4" fill="#ffffff"/>
+          <circle cx="52" cy="27" r="1.1" fill="#fef08a"/>
+          <circle cx="48" cy="22" r="0.9" fill="#fb923c"/>
+        </g>
+
+        <!-- Bottom Machined Brass Bayonet / Screw Collar -->
+        <rect x="25" y="86" width="46" height="6" rx="2" fill="url(#brassBase19)" stroke="#451a03" stroke-width="0.9"/>
+        <rect x="30" y="92" width="36" height="14" rx="2.5" fill="url(#brassBase19)" stroke="#451a03" stroke-width="0.9"/>
+        <line x1="30" y1="97" x2="66" y2="97" stroke="#451a03" stroke-width="1.4"/>
+        <line x1="30" y1="101.5" x2="66" y2="101.5" stroke="#451a03" stroke-width="1.4"/>
+        <path d="M 38 106 L 58 106 L 53 111 L 43 111 Z" fill="#18181b"/>
+
+        <!-- Curved Glass Specular Highlights -->
+        <path d="M 31 34 L 31 82" fill="none" stroke="rgba(255, 255, 255, 0.72)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M 35 28 C 38 20, 46 18, 52 19" fill="none" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M 65 36 L 65 82" fill="none" stroke="rgba(255, 180, 100, 0.4)" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">Dynamic Flame-Emulator Bulb</div>
+  </div>
+
+  <!-- 20. Aircraft Subminiature Press-to-Test Amber Lamp -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#20 // PRESS-TO-TEST</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="width:62px;height:62px;border-radius:50%;background:#1e222b;border:3px dashed #64748b;padding:8px;box-shadow:0 6px 14px #000;">
+        <div class="die-core" style="width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 38% 38%,#ffffff 0%,#ffbe0b 35%,#9a3412 80%);box-shadow:0 0 calc(18px * var(--pwm)) #f59e0b;border:1.5px solid #fde047;"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Avionics Press-to-Test Indicator</div>
+  </div>
+
+  <!-- =======================================================
+       ROW 5: AUDIO BARGRAPH, DOT-MATRIX, UPGRADED HALO & STROBE
+       ======================================================= -->
+
+  <!-- 21. 5-Segment Epoxy Bargraph Array (With Inter-Cell Bleed) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#21 // 5-SEG BARGRAPH</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="display:flex;gap:3px;background:#1c1e24;padding:6px;border-radius:4px;border:1px solid #3f4452;">
+        <div class="die-core" style="width:14px;height:42px;background:radial-gradient(circle,#d9f99d 0%,#22c55e 75%);box-shadow:0 0 calc(10px * var(--pwm)) #22c55e;"></div>
+        <div class="die-core" style="width:14px;height:42px;background:radial-gradient(circle,#d9f99d 0%,#22c55e 75%);box-shadow:0 0 calc(10px * var(--pwm)) #22c55e;"></div>
+        <div class="die-core" style="width:14px;height:42px;background:radial-gradient(circle,#fef08a 0%,#eab308 75%);box-shadow:0 0 calc(10px * var(--pwm)) #eab308;"></div>
+        <div class="die-core" style="width:14px;height:42px;background:radial-gradient(circle,#fecdd3 0%,#ef4444 75%);box-shadow:0 0 calc(12px * var(--pwm)) #ef4444;"></div>
+        <div style="width:14px;height:42px;background:#272a33;"></div>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Epoxy VU Bargraph Array</div>
+  </div>
+
+  <!-- 22. 5x5 Dot-Matrix LED Character Cell -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#22 // DOT-MATRIX</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div style="display:grid;grid-template-columns:repeat(4,12px);gap:4px;background:#16181f;padding:8px;border:1px solid #333846;border-radius:4px;">
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#252830;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#252830;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#252830;"></span>
+
+        <span style="width:12px;height:12px;border-radius:50%;background:#252830;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+        <span class="die-core" style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ff2a1f 70%);box-shadow:0 0 6px #ff2a1f;"></span>
+      </div>
+    </div>
+    <div class="cell-bottom-title">Matrix Epoxy Cavity Display</div>
+  </div>
+
+  <!-- 23. Broadcast Console Backlit Push-Switch (Center Hotspot Bleed) -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#23 // BROADCAST KEY</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <div class="die-core" style="width:68px;height:54px;border-radius:6px;background:radial-gradient(circle at 50% 52%,#ffffff 0%,#ff9d00 42%,#9a3412 88%);border:2px solid #cbd5e1;box-shadow:0 0 calc(20px * var(--pwm)) rgba(245,158,11,0.7),inset 0 2px 4px #fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;color:#1c0a00;">
+        ON AIR
+      </div>
+    </div>
+    <div class="cell-bottom-title">Studio Console Hotspot Switch</div>
+  </div>
+
+  <!-- 24. UPGRADED: Laser-Etched Acrylic Angel-Eye Halo Torus Waveguide -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#24 // HALO TORUS</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="110" height="110" viewBox="0 0 110 110" class="die-core" style="overflow:visible;">
+        <defs>
+          <!-- Optical falloff from bottom dual emitter around the acrylic ring -->
+          <linearGradient id="haloFalloff24" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="28%" stop-color="#38bdf8"/>
+            <stop offset="72%" stop-color="#0284c7"/>
+            <stop offset="100%" stop-color="#bae6fd"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Outer & Inner Cyan Neon Bloom -->
+        <circle class="glow-layer" cx="55" cy="53" r="35" fill="none" stroke="rgba(14, 165, 233, 0.48)" stroke-width="16" filter="blur(8px)"/>
+
+        <!-- Recessed Dark Automotive Projector Housing Behind Ring -->
+        <circle cx="55" cy="53" r="42" fill="#07090e" stroke="#1e293b" stroke-width="1.5"/>
+        <circle cx="55" cy="53" r="22" fill="radial-gradient(circle, #1e293b 0%, #05070b 100%)" stroke="#1e293b" stroke-width="1"/>
+
+        <!-- Translucent Molded Acrylic Waveguide Tube (315° C-Ring) -->
+        <path d="M 41 85 A 35 35 0 1 1 69 85"
+              fill="none" stroke="rgba(12, 74, 110, 0.75)" stroke-width="12" stroke-linecap="butt"/>
+        <path class="glow-layer" d="M 41 85 A 35 35 0 1 1 69 85"
+              fill="none" stroke="url(#haloFalloff24)" stroke-width="9.5" stroke-linecap="butt"/>
+
+        <!-- Internal Laser-Etched Refractive Micro-Ribs Around the Torus -->
+        <path class="glow-layer" d="M 41 85 A 35 35 0 1 1 69 85"
+              fill="none" stroke="#ffffff" stroke-width="7.5" stroke-dasharray="1.5 3.6" opacity="0.88"/>
+
+        <!-- Specular Glass Tube Rim Highlights (Outer & Inner Bevels) -->
+        <path d="M 37 86 A 39.5 39.5 0 1 1 73 86"
+              fill="none" stroke="rgba(224, 242, 254, 0.78)" stroke-width="1.1"/>
+        <path d="M 44 82 A 30.2 30.2 0 1 1 66 82"
+              fill="none" stroke="rgba(186, 230, 253, 0.62)" stroke-width="1"/>
+
+        <!-- Top Internal Reflection Hotspot (Opposite Emitter) -->
+        <ellipse class="glow-layer" cx="55" cy="18" rx="9" ry="3" fill="#ffffff" filter="blur(1.5px)"/>
+
+        <!-- Bottom Dual-SMD Emitter Injection Block & Metal Retainer Clip -->
+        <rect x="38" y="81" width="34" height="14" rx="3" fill="linear-gradient(180deg, #334155, #0f172a)" stroke="#64748b" stroke-width="1.1"/>
+        <line x1="45" y1="81" x2="45" y2="95" stroke="#475569" stroke-width="1"/>
+        <line x1="65" y1="81" x2="65" y2="95" stroke="#475569" stroke-width="1"/>
+
+        <!-- Blazing Dual Side-Firing SMD LEDs Injecting Light into Acrylic Ends -->
+        <g class="glow-layer">
+          <circle cx="42" cy="84" r="6.5" fill="#38bdf8" filter="blur(3px)"/>
+          <circle cx="68" cy="84" r="6.5" fill="#38bdf8" filter="blur(3px)"/>
+          <rect x="39" y="82" width="5" height="4" rx="1" fill="#ffffff"/>
+          <rect x="66" y="82" width="5" height="4" rx="1" fill="#ffffff"/>
+        </g>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">Etched Acrylic Halo Waveguide</div>
+  </div>
+
+  <!-- 25. UPGRADED: Fresnel Polycarbonate High-Voltage Beacon Strobe -->
+  <div class="specimen-cell">
+    <div class="cell-top-meta"><span>#25 // FRESNEL BEACON</span><span class="cell-state-tag">ON</span></div>
+    <div class="cell-stage">
+      <svg width="106" height="116" viewBox="0 0 106 116" class="die-core strobe-pulse" style="overflow:visible;">
+        <defs>
+          <radialGradient id="strobeCore25" cx="50%" cy="62%" r="52%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="28%" stop-color="#fef08a"/>
+            <stop offset="58%" stop-color="#ff5500"/>
+            <stop offset="86%" stop-color="#dc2626"/>
+            <stop offset="100%" stop-color="#450a0a"/>
+          </radialGradient>
+          <linearGradient id="chassisBase25" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0f172a"/>
+            <stop offset="25%" stop-color="#475569"/>
+            <stop offset="50%" stop-color="#94a3b8"/>
+            <stop offset="75%" stop-color="#334155"/>
+            <stop offset="100%" stop-color="#090d16"/>
+          </linearGradient>
+          <clipPath id="domeClip25">
+            <path d="M 24 86 L 26 42 C 26 16, 80 16, 80 42 L 82 86 Z"/>
+          </clipPath>
+        </defs>
+
+        <!-- High-Intensity Strobe Volumetric Halo & Lateral Lens Flare -->
+        <ellipse class="glow-layer" cx="53" cy="54" rx="42" ry="38" fill="rgba(239, 68, 68, 0.45)" filter="blur(11px)"/>
+        <ellipse class="glow-layer" cx="53" cy="58" rx="48" ry="6" fill="rgba(255, 180, 90, 0.55)" filter="blur(3px)"/>
+
+        <!-- Polycarbonate Dome Shell Background -->
+        <path d="M 24 86 L 26 42 C 26 16, 80 16, 80 42 L 82 86 Z"
+              fill="url(#strobeCore25)"/>
+
+        <!-- Internal Parabolic Mirror Cone & Helical Xenon Flash Tube (Clipped Inside Dome) -->
+        <g clip-path="url(#domeClip25)">
+          <!-- Chrome Reflector Base Dish -->
+          <polygon points="30,86 43,66 63,66 76,86" fill="rgba(255,255,255,0.35)"/>
+          <!-- Helical Xenon / LED Strobe Tube -->
+          <path class="glow-layer" d="M 46 82 L 46 46 C 46 38, 60 38, 60 46 L 60 82"
+                fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" filter="blur(1px)"/>
+          <ellipse class="glow-layer" cx="53" cy="58" rx="14" ry="18" fill="#ffffff" filter="blur(4px)"/>
+
+          <!-- Precision Stepped Horizontal Fresnel Lens Ridges (Internal & External Refraction) -->
+          <g stroke-linecap="round" fill="none">
+            <path d="M 23 32 Q 53 27 83 32" stroke="rgba(255,255,255,0.65)" stroke-width="1.6"/>
+            <path d="M 23 35 Q 53 30 83 35" stroke="rgba(69,10,10,0.65)" stroke-width="1.2"/>
+
+            <path d="M 22 41 Q 53 36 84 41" stroke="rgba(255,255,255,0.75)" stroke-width="1.8"/>
+            <path d="M 22 44 Q 53 39 84 44" stroke="rgba(69,10,10,0.65)" stroke-width="1.3"/>
+
+            <path d="M 22 50 Q 53 45 84 50" stroke="rgba(255,255,255,0.88)" stroke-width="2"/>
+            <path d="M 22 53 Q 53 48 84 53" stroke="rgba(69,10,10,0.7)" stroke-width="1.4"/>
+
+            <path d="M 22 59 Q 53 54 84 59" stroke="#ffffff" stroke-width="2.2"/>
+            <path d="M 22 62 Q 53 57 84 62" stroke="rgba(69,10,10,0.7)" stroke-width="1.4"/>
+
+            <path d="M 22 68 Q 53 63 84 68" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+            <path d="M 22 71 Q 53 66 84 71" stroke="rgba(69,10,10,0.7)" stroke-width="1.4"/>
+
+            <path d="M 22 77 Q 53 72 84 77" stroke="rgba(255,255,255,0.7)" stroke-width="1.8"/>
+            <path d="M 22 80 Q 53 75 84 80" stroke="rgba(69,10,10,0.75)" stroke-width="1.4"/>
+          </g>
+
+          <!-- Vertical Internal Fluting Micro-Prisms -->
+          <g stroke="rgba(255, 255, 255, 0.18)" stroke-width="1">
+            <line x1="34" y1="24" x2="32" y2="86"/>
+            <line x1="42" y1="20" x2="41" y2="86"/>
+            <line x1="53" y1="18" x2="53" y2="86"/>
+            <line x1="64" y1="20" x2="65" y2="86"/>
+            <line x1="72" y1="24" x2="74" y2="86"/>
+          </g>
+        </g>
+
+        <!-- Scalloped Outer Fresnel Polycarbonate Contour & Specular Highlight -->
+        <path d="M 24 86 L 26 42 C 26 16, 80 16, 80 42 L 82 86 Z"
+              fill="none" stroke="rgba(254, 202, 202, 0.85)" stroke-width="1.5"/>
+        <path d="M 30 80 L 31 42 C 31 27, 42 22, 48 22"
+              fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+
+        <!-- Heavy-Duty Die-Cast Aluminum Mounting Base & Weatherproof Gasket -->
+        <rect x="20" y="85" width="66" height="5" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="0.8"/>
+        <path d="M 16 90 L 90 90 L 94 102 L 12 102 Z" fill="url(#chassisBase25)" stroke="#475569" stroke-width="1.1"/>
+        <!-- Hex Socket Mounting Bolts -->
+        <rect x="22" y="93" width="8" height="5" rx="1" fill="#cbd5e1" stroke="#1e293b" stroke-width="0.8"/>
+        <rect x="76" y="93" width="8" height="5" rx="1" fill="#cbd5e1" stroke="#1e293b" stroke-width="0.8"/>
+        <text x="53" y="98.5" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="6" font-weight="800" fill="#0f172a">HV STROBE</text>
+      </svg>
+    </div>
+    <div class="cell-bottom-title">Fresnel Polycarbonate Strobe</div>
+  </div>
+
+</main>
+
+<script>
+(() => {
+  const cells = document.querySelectorAll('#ledMatrix .specimen-cell');
+  const pwmSlider = document.getElementById('pwmSlider');
+  const pwmValText = document.getElementById('pwmValText');
+
+  // Toggle individual LED specimen ON/OFF on click
+  cells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      const isOff = cell.classList.toggle('off');
+      cell.querySelector('.cell-state-tag').textContent = isOff ? 'OFF' : 'ON';
+    });
+  });
+
+  // Global All ON / All OFF / Wave Scan
+  let waveTimer = null;
+  function stopWave() {
+    if (waveTimer) {
+      clearInterval(waveTimer);
+      waveTimer = null;
+      document.getElementById('waveModeBtn').classList.remove('active');
+    }
+  }
+
+  document.getElementById('allOnBtn').addEventListener('click', () => {
+    stopWave();
+    cells.forEach(c => {
+      c.classList.remove('off');
+      c.querySelector('.cell-state-tag').textContent = 'ON';
+    });
+  });
+
+  document.getElementById('allOffBtn').addEventListener('click', () => {
+    stopWave();
+    cells.forEach(c => {
+      c.classList.add('off');
+      c.querySelector('.cell-state-tag').textContent = 'OFF';
+    });
+  });
+
+  document.getElementById('waveModeBtn').addEventListener('click', (e) => {
+    if (waveTimer) {
+      stopWave();
+      return;
+    }
+    e.currentTarget.classList.add('active');
+    let step = 0;
+    waveTimer = setInterval(() => {
+      step++;
+      cells.forEach((c, idx) => {
+        const active = (idx + step) % 3 !== 0;
+        c.classList.toggle('off', !active);
+        c.querySelector('.cell-state-tag').textContent = active ? 'ON' : 'OFF';
+      });
+    }, 240);
+  });
+
+  // PWM Voltage Brightness Dimmer
+  pwmSlider.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    pwmValText.textContent = `${val}%`;
+    document.documentElement.style.setProperty('--pwm', (val / 100).toFixed(2));
+  });
+})();
+</script>
+</body>
+</html>

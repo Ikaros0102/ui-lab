@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-28T13:38:04.896Z",
- "count": 78,
+ "generated": "2026-10-29T17:00:18.312Z",
+ "count": 81,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -499,6 +499,45 @@
    "hasJs": false
   },
   {
+   "id": "led-indicator-matrix",
+   "path": "components/cards/led-indicator-matrix.html",
+   "title": "5x5 Photorealistic LED & Indicator Matrix",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "led",
+    "indicators",
+    "optoelectronics",
+    "skeuomorphic",
+    "smd-5050",
+    "fairy-bulb",
+    "d-link",
+    "epoxy-dome",
+    "hardware-ui",
+    "5x5-grid",
+    "hardware",
+    "neon",
+    "cards"
+   ],
+   "description": "A 5x5 hardware specimen showcase of 25 photorealistic LEDs and indicator lamps: D-Link crinkle-metal recessed domes, clear 5mm through-hole epoxy capsules with internal anvil cups, WS2812B 5050 SMD strips, tangled copper-wire fairy bulbs, macro resin dewdrop LEDs, dynamic flame-emulator tubes, precision acrylic Angel-Eye waveguides, and Fresnel polycarbonate strobe beacons.",
+   "techniques": [
+    "non-uniform internal semiconductor die hotspots with off-center radial gradients and dual specular dome highlights",
+    "transparent 5mm epoxy lens refraction revealing internal cathode anvil cups and bond wires",
+    "macro SVG optical rendering for twisted copper resin droplets, laser-etched acrylic torus waveguides, and stepped Fresnel strobe lenses",
+    "interactive per-cell ON/OFF switching and global PWM voltage dimming"
+   ],
+   "recipe": "25 distinct optoelectronic cells arranged in a 5x5 inspection matrix with real-time PWM brightness control and wave simulation.",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 960
+   },
+   "hasJs": true
+  },
+  {
    "id": "material-you-bento-grid",
    "path": "components/cards/material-you-bento-grid.html",
    "title": "Material You Bento Desktop & Palette Switcher",
@@ -753,6 +792,44 @@
     "mode": "center",
     "width": 540,
     "height": 520
+   },
+   "hasJs": true
+  },
+  {
+   "id": "tactile-wood-controls",
+   "path": "components/forms/tactile-wood-controls.html",
+   "title": "Tactile Carved Wood UI Kit with Backlit Inlays",
+   "category": "forms",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "wood",
+    "skeuomorphism",
+    "rotary-knob",
+    "sliders",
+    "toggle-switch",
+    "carved-buttons",
+    "media-controls",
+    "search-input",
+    "backlit",
+    "tactile",
+    "skeuomorphic",
+    "hardware",
+    "controls"
+   ],
+   "description": "High-precision skeuomorphic wooden UI kit recreating the classic vertical mahogany plank board and horizontal maple controls. Features a rotary dial in a routed well, dual groove sliders, ON/OFF toggle switches, radio dimples, pill & square media buttons, and a recessed search bar. Toggling ON activates internal LED backlighting inside the carved icons and typography, while the sliders control glow hue and intensity.",
+   "techniques": [
+    "dual-species procedural wood rendering (vertical dark mahogany planks + horizontal warm maple controls with 3D bottom lip extrusion)",
+    "routed letterpress typography and media icons that transition from dark carved wood to internally backlit LED cutouts",
+    "interactive rotary potentiometer, draggable maple sliders controlling HSL glow hue/intensity, and linked ON/OFF toggle switches"
+   ],
+   "recipe": "Pixel-faithful recreation of the classic skeuomorphic wood UI board with interactive internal cutout illumination.",
+   "preview": {
+    "mode": "page",
+    "width": 1200,
+    "height": 860
    },
    "hasJs": true
   },
@@ -2482,6 +2559,44 @@
     "mode": "page",
     "width": 1080,
     "height": 760
+   },
+   "hasJs": true
+  },
+  {
+   "id": "royal-walnut-hifi-suite",
+   "path": "components/widgets/royal-walnut-hifi-suite.html",
+   "title": "Royal Walnut & Spun Brass Luxury UI Kit",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "walnut",
+    "brass",
+    "gold",
+    "luxury-ui",
+    "skeuomorphism",
+    "audio-player",
+    "equalizer",
+    "rotary-knob",
+    "toggle-switches",
+    "dropdown",
+    "hardware",
+    "skeuomorphic",
+    "hifi"
+   ],
+   "description": "Luxury skeuomorphic UI kit crafted from lacquered horizontal burl walnut and precision-machined spun brass. Includes an interactive Hi-Fi audio deck, 7-band vertical fader equalizer, spun-brass master rotary dial (0-100), sliding brass-bezel navigation bar, jewel-LED toggle switches, expandable share pill, and modal dialog.",
+   "techniques": [
+    "anisotropic spun-brass conical gradients paired with brushed linear gold bevels and piano-lacquer wood sheen",
+    "interactive sliding glass-and-brass navigation frame, expandable social share drawer, and live 7-band EQ faders",
+    "recessed walnut grooves with warm gold fill bars and ruby/emerald jewel indicators"
+   ],
+   "recipe": "Combines horizontal dark walnut grain with multi-stop metallic brass borders, specular gloss overlays, and tactile physical controls.",
+   "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 920
    },
    "hasJs": true
   },

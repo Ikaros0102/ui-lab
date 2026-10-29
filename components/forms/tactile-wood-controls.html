@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Handcrafted Tactile Wood UI Kit with Backlit Carved Inlays</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Myriad+Pro:wght@400;600&family=Source+Sans+3:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Tactile Carved Wood UI Kit with Backlit Inlays",
+  "category": "forms",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "wood",
+    "skeuomorphism",
+    "rotary-knob",
+    "sliders",
+    "toggle-switch",
+    "carved-buttons",
+    "media-controls",
+    "search-input",
+    "backlit",
+    "tactile",
+    "skeuomorphic",
+    "hardware",
+    "controls"
+  ],
+  "description": "High-precision skeuomorphic wooden UI kit recreating the classic vertical mahogany plank board and horizontal maple controls. Features a rotary dial in a routed well, dual groove sliders, ON/OFF toggle switches, radio dimples, pill & square media buttons, and a recessed search bar. Toggling ON activates internal LED backlighting inside the carved icons and typography, while the sliders control glow hue and intensity.",
+  "techniques": [
+    "dual-species procedural wood rendering (vertical dark mahogany planks + horizontal warm maple controls with 3D bottom lip extrusion)",
+    "routed letterpress typography and media icons that transition from dark carved wood to internally backlit LED cutouts",
+    "interactive rotary potentiometer, draggable maple sliders controlling HSL glow hue/intensity, and linked ON/OFF toggle switches"
+  ],
+  "recipe": "Pixel-faithful recreation of the classic skeuomorphic wood UI board with interactive internal cutout illumination.",
+  "preview": {
+    "mode": "page",
+    "width": 1200,
+    "height": 860
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    /* Dynamic Backlight Parameters (Controlled by ON/OFF toggles & Sliders) */
+    --glow-on: 0;              /* 0 by default (matches reference photo!) */
+    --glow-hue: 28;            /* Warm Amber-Orange default hue */
+    --glow-intensity: 0.88;    /* Controlled by 2nd slider & big rotary knob */
+
+    --active-alpha: calc(var(--glow-on) * var(--glow-intensity));
+    --led-core: hsl(var(--glow-hue), 100%, 76%);
+    --led-mid: hsl(var(--glow-hue), 95%, 56%);
+    --led-halo: hsla(var(--glow-hue), 100%, 50%, calc(0.75 * var(--active-alpha)));
+    --led-soft: hsla(var(--glow-hue), 100%, 55%, calc(0.32 * var(--active-alpha)));
+
+    /* Horizontal Light Maple Wood Surface (Used on Knob, Thumbs, Toggles, Buttons) */
+    --maple-grain:
+      repeating-linear-gradient(
+        180deg,
+        rgba(120, 52, 18, 0.08) 0px,
+        rgba(120, 52, 18, 0.08) 1.5px,
+        transparent 1.5px,
+        transparent 4px,
+        rgba(255, 235, 205, 0.14) 4px,
+        rgba(255, 235, 205, 0.14) 6px
+      ),
+      radial-gradient(ellipse 140% 55% at 50% 25%, rgba(255, 230, 200, 0.35) 0%, transparent 70%),
+      linear-gradient(
+        180deg,
+        #e5a67b 0%,
+        #ebbc8e 16%,
+        #dfa572 48%,
+        #d1915c 78%,
+        #be7b47 100%
+      );
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #3d180a;
+    font-family: 'Source Sans 3', 'Myriad Pro', -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* =========================================================
+     VERTICAL MAHOGANY PLANK BACKGROUND (EXACT MATCH TO REF)
+     ========================================================= */
+  .wood-board-stage {
+    width: 100vw;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    /* Layered Vertical Plank Seams + Rich Reddish-Brown Mahogany Tones + Vignette */
+    background:
+      /* Soft studio spotlight & dark vignette corners */
+      radial-gradient(ellipse 75% 75% at 50% 48%, rgba(255, 165, 95, 0.08) 0%, rgba(20, 6, 1, 0.58) 100%),
+      /* Vertical dark plank grooves every 28px + subtle sub-grain */
+      repeating-linear-gradient(
+        90deg,
+        rgba(22, 6, 1, 0.72) 0px,
+        rgba(22, 6, 1, 0.72) 1.5px,
+        rgba(255, 160, 90, 0.07) 1.5px,
+        rgba(255, 160, 90, 0.07) 3px,
+        transparent 3px,
+        transparent 14px,
+        rgba(40, 12, 3, 0.14) 14px,
+        rgba(40, 12, 3, 0.14) 15px,
+        transparent 15px,
+        transparent 28px
+      ),
+      /* Slight plank-to-plank tone variation */
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.09) 0px 28px,
+        rgba(255, 180, 110, 0.04) 28px 56px,
+        rgba(0, 0, 0, 0.04) 56px 84px,
+        rgba(80, 25, 5, 0.08) 84px 112px
+      ),
+      linear-gradient(180deg, #6b2d14 0%, #7d3619 35%, #6e2e14 70%, #59230e 100%);
+  }
+
+  /* Organic SVG Wood Fiber Texture Overlay Across the Entire Board */
+  .wood-fiber-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.34;
+    mix-blend-mode: multiply;
+    filter: url(#mahogany-fibers);
+    background: #6e2e14;
+  }
+
+  /* =========================================================
+     MAIN COMPONENT CANVAS (EXACT PROPORTIONS & POSITIONS)
+     ========================================================= */
+  .ui-kit-canvas {
+    position: relative;
+    z-index: 2;
+    width: 660px;
+    height: 540px;
+  }
+
+  /* =========================================================
+     1. TOP-LEFT: LARGE ROTARY KNOB IN ROUTED WOOD WELL
+     ========================================================= */
+  .rotary-assembly {
+    position: absolute;
+    top: 32px;
+    left: 42px;
+    width: 170px;
+    height: 176px;
+  }
+
+  /* Routed Dark Circular Well in the Mahogany Board */
+  .rotary-well {
+    width: 152px;
+    height: 152px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(28, 8, 2, 0.65) 0%, rgba(42, 14, 4, 0.52) 72%, rgba(30, 9, 2, 0.78) 100%);
+    box-shadow:
+      inset 0 5px 10px rgba(0, 0, 0, 0.75),
+      inset 0 -2px 3px rgba(255, 175, 110, 0.22),
+      0 1px 2px rgba(255, 185, 120, 0.25);
+    border: 1px solid rgba(25, 7, 1, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* 3D Maple Wood Knob Base Extrusion (Gives the 3D lower rim when viewed at an angle) */
+  .rotary-knob-3d-base {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    position: relative;
+    background: linear-gradient(180deg, #9c5a30 0%, #753c19 100%);
+    box-shadow:
+      0 12px 18px rgba(0, 0, 0, 0.78),
+      0 4px 6px rgba(0, 0, 0, 0.6),
+      0 0 calc(22px * var(--active-alpha)) var(--led-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Rotating Top Maple Face of Knob */
+  .rotary-knob-face {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin-top: -5px;
+    background: var(--maple-grain);
+    border: 2.5px solid #d89668;
+    box-shadow:
+      inset 0 3px 4px rgba(255, 235, 210, 0.72),
+      inset 0 -4px 6px rgba(115, 52, 18, 0.55),
+      0 3px 3px rgba(55, 20, 5, 0.65);
+    cursor: grab;
+    position: relative;
+    transform: rotate(var(--knob-deg, 90deg));
+  }
+
+  .rotary-knob-face:active {
+    cursor: grabbing;
+  }
+
+  /* Recessed Dimple Indicator on Knob Face (Lights up when ON!) */
+  .knob-dimple {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 50% 50%,
+        var(--led-core) 0%,
+        var(--led-mid) calc(55% * var(--active-alpha)),
+        #9e5b16 calc(56% * var(--active-alpha) + 10%),
+        #5e3008 100%
+      );
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.78),
+      0 1px 1px rgba(255, 235, 205, 0.7),
+      0 0 calc(12px * var(--active-alpha)) var(--led-halo);
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  /* Carved "min" and "max" Labels Under Knob Well */
+  .knob-minmax-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    margin-top: -6px;
+  }
+
+  .carved-board-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #361305;
+    text-shadow:
+      0 1px 0 rgba(255, 165, 95, 0.26),
+      0 -1px 1px rgba(0, 0, 0, 0.65);
+    letter-spacing: 0.2px;
+  }
+
+  /* =========================================================
+     2. TOP-RIGHT: TWO HORIZONTAL WOOD SLIDERS
+     ========================================================= */
+  .sliders-stack {
+    position: absolute;
+    top: 38px;
+    left: 236px;
+    width: 344px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .wood-slider-track {
+    width: 100%;
+    height: 15px;
+    border-radius: 9px;
+    background:
+      linear-gradient(180deg, rgba(24, 7, 1, 0.82) 0%, rgba(58, 22, 8, 0.68) 100%);
+    border: 1px solid rgba(30, 8, 2, 0.75);
+    box-shadow:
+      inset 0 3px 5px rgba(0, 0, 0, 0.85),
+      0 1.5px 1px rgba(255, 185, 125, 0.25);
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Subtle internal glow bar inside slider groove when ON */
+  .slider-fill-glow {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    width: var(--pos, 24%);
+    border-radius: 7px;
+    background: linear-gradient(90deg, transparent, var(--led-mid));
+    opacity: calc(0.45 * var(--active-alpha));
+    box-shadow: 0 0 10px var(--led-halo);
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  /* Round Maple Wood Slider Thumb */
+  .wood-slider-thumb {
+    position: absolute;
+    top: 50%;
+    left: var(--pos, 24%);
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #99552c 0%, #6e3715 100%);
+    box-shadow:
+      0 6px 9px rgba(0, 0, 0, 0.75),
+      0 2px 3px rgba(0, 0, 0, 0.6);
+    cursor: grab;
+  }
+
+  .wood-slider-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--maple-grain);
+    border: 2px solid #dc9c6e;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 240, 220, 0.75),
+      inset 0 -2px 4px rgba(120, 55, 18, 0.55);
+  }
+
+  /* =========================================================
+     3. MIDDLE-RIGHT: "ON" & "OFF" WOOD TOGGLE SWITCHES
+     ========================================================= */
+  .toggles-row {
+    position: absolute;
+    top: 170px;
+    left: 280px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .wood-toggle {
+    width: 116px;
+    height: 44px;
+    border-radius: 24px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.22s ease;
+  }
+
+  /* Light Maple "on" Toggle Body (Left Switch in Reference) */
+  .wood-toggle.style-light {
+    background: var(--maple-grain);
+    border: 1.5px solid #8a4922;
+    box-shadow:
+      inset 0 2px 4px rgba(255, 235, 210, 0.65),
+      inset 0 -3px 6px rgba(110, 48, 16, 0.55),
+      0 4px 8px rgba(0, 0, 0, 0.65),
+      0 1px 1px rgba(255, 190, 130, 0.25);
+  }
+
+  /* Dark Recessed "off" Toggle Well (Right Switch in Reference) */
+  .wood-toggle.style-dark {
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(78, 25, 14, 0.92) 0%, rgba(46, 13, 6, 0.96) 100%);
+    border: 1.5px solid rgba(25, 6, 2, 0.85);
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.85),
+      0 1.5px 1px rgba(255, 180, 120, 0.26);
+  }
+
+  .toggle-label {
+    position: absolute;
+    font-size: 19px;
+    font-weight: 600;
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+
+  .wood-toggle.style-light .toggle-label {
+    right: 22px;
+    color: #7d431e;
+    text-shadow: 0 1px 0 rgba(255, 230, 200, 0.65);
+  }
+
+  .wood-toggle.style-dark .toggle-label {
+    left: 20px;
+    color: #9e6b56;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
+  }
+
+  /* When Backlight is ON, illuminate the active "on" label */
+  body.backlit-on .wood-toggle.style-light .toggle-label {
+    color: var(--led-core);
+    text-shadow:
+      0 0 8px var(--led-mid),
+      0 0 16px var(--led-halo);
+  }
+
+  /* Round Maple Toggle Knob */
+  .toggle-knob {
+    width: 38px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(180deg, #99552c 0%, #683313 100%);
+    box-shadow:
+      0 6px 10px rgba(0, 0, 0, 0.78),
+      0 2px 3px rgba(0, 0, 0, 0.6);
+    transition: left 0.24s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .toggle-knob::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--maple-grain);
+    border: 2px solid #dc9c6e;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 240, 220, 0.75),
+      inset 0 -2px 4px rgba(120, 55, 18, 0.55);
+  }
+
+  /* Exact positions from reference screenshot */
+  .wood-toggle.style-light .toggle-knob { left: 4px; }
+  .wood-toggle.style-dark .toggle-knob  { left: 72px; }
+
+  /* =========================================================
+     4. CENTER: TWO WOOD RADIO SOCKETS (EMPTY & RUBY BEAD)
+     ========================================================= */
+  .radios-pair {
+    position: absolute;
+    top: 290px;
+    left: 230px;
+    display: flex;
+    gap: 26px;
+  }
+
+  .wood-radio-well {
+    width: 35px;
+    height: 37px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #8c4b23 0%, #592b0f 100%);
+    box-shadow:
+      0 6px 9px rgba(0, 0, 0, 0.78),
+      0 2px 3px rgba(0, 0, 0, 0.6);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wood-radio-well::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--maple-grain);
+    border: 2px solid #d89668;
+    box-shadow:
+      inset 0 3px 5px rgba(95, 38, 10, 0.65),
+      inset 0 -2px 3px rgba(255, 235, 205, 0.65);
+  }
+
+  /* Glossy Ruby-Red Sphere Inside Selected Radio Well */
+  .radio-ruby-bead {
+    position: relative;
+    z-index: 2;
+    width: 16px;
+    height: 16px;
+    margin-top: -2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #ff9a8b 0%, #c92a2a 48%, #5c0b0b 95%);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.75),
+      inset 0 1px 2px rgba(255, 255, 255, 0.65),
+      0 0 calc(14px * var(--active-alpha)) var(--led-halo);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .wood-radio-well.selected .radio-ruby-bead {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  body.backlit-on .wood-radio-well.selected .radio-ruby-bead {
+    background: radial-gradient(circle at 38% 35%, #ffffff 0%, var(--led-core) 35%, var(--led-mid) 75%, #4a1504 100%);
+  }
+
+  /* =========================================================
+     5. RIGHT: TWO PILL BUTTONS (RAISED MAPLE & RECESSED DARK)
+     ========================================================= */
+  .pill-buttons-stack {
+    position: absolute;
+    top: 274px;
+    left: 390px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Top Raised Maple Pill Button */
+  .pill-btn-maple {
+    width: 162px;
+    height: 54px;
+    border-radius: 28px;
+    border: none;
+    background: linear-gradient(180deg, #99552c 0%, #6b3413 100%);
+    box-shadow:
+      0 8px 14px rgba(0, 0, 0, 0.78),
+      0 3px 4px rgba(0, 0, 0, 0.65),
+      0 0 calc(20px * var(--active-alpha)) var(--led-soft);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .pill-btn-maple::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 4px 0;
+    border-radius: 28px;
+    background: var(--maple-grain);
+    border: 1.5px solid #e0a376;
+    box-shadow:
+      inset 0 3px 5px rgba(255, 240, 220, 0.78),
+      inset 0 -3px 5px rgba(125, 58, 20, 0.5);
+  }
+
+  .pill-btn-maple:active {
+    transform: translateY(2px);
+    box-shadow:
+      0 4px 7px rgba(0, 0, 0, 0.75),
+      0 0 calc(24px * var(--active-alpha)) var(--led-halo);
+  }
+
+  /* Carved / Backlit Cutout Text Inside Maple Button */
+  .carved-cutout-text {
+    position: relative;
+    z-index: 2;
+    margin-top: -3px;
+    font-size: 25px;
+    font-weight: 600;
+    color: #7c4221;
+    text-shadow:
+      0 1px 0 rgba(255, 235, 210, 0.7),
+      0 -1px 1px rgba(45, 16, 4, 0.55);
+    transition: color 0.25s ease, text-shadow 0.25s ease, filter 0.25s ease;
+  }
+
+  /* Bottom Recessed Translucent Dark Pill Button */
+  .pill-btn-dark {
+    width: 162px;
+    height: 54px;
+    border-radius: 28px;
+    border: 1.5px solid rgba(40, 12, 4, 0.75);
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(115, 58, 42, 0.72) 0%, rgba(68, 24, 14, 0.85) 75%, rgba(48, 15, 7, 0.92) 100%);
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.75),
+      inset 0 1px 2px rgba(255, 195, 155, 0.22),
+      0 1.5px 1px rgba(255, 175, 115, 0.26);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+  }
+
+  .pill-btn-dark:active {
+    transform: scale(0.985);
+  }
+
+  .pill-btn-dark .carved-cutout-text {
+    margin-top: 0;
+    color: #9e6d58;
+    text-shadow:
+      0 -1px 1px rgba(0, 0, 0, 0.85),
+      0 1px 0 rgba(255, 190, 140, 0.22);
+  }
+
+  /* =========================================================
+     6. MIDDLE-LEFT: WOOD-FRAMED SEARCH INPUT BAR
+     ========================================================= */
+  .wood-search-frame {
+    position: absolute;
+    top: 356px;
+    left: 50px;
+    width: 276px;
+    height: 48px;
+    border-radius: 24px;
+    padding: 5px;
+    background: linear-gradient(180deg, #b87846 0%, #8c4e24 100%);
+    border: 1px solid #4a1e08;
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.65),
+      inset 0 1px 1px rgba(255, 225, 185, 0.55);
+    display: flex;
+    align-items: center;
+  }
+
+  .wood-search-well {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, #cf9e90 0%, #e5be9e 48%, #d4a68e 100%);
+    box-shadow:
+      inset 0 3px 6px rgba(65, 22, 8, 0.65),
+      inset 0 -1px 2px rgba(255, 245, 230, 0.6),
+      0 0 calc(14px * var(--active-alpha)) var(--led-soft);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+  }
+
+  .wood-search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 19px;
+    font-weight: 600;
+    color: #783f27;
+    text-align: right;
+    text-shadow: 0 1px 0 rgba(255, 235, 215, 0.6);
+  }
+
+  .wood-search-input::placeholder {
+    color: #824830;
+    opacity: 0.9;
+  }
+
+  /* =========================================================
+     7. BOTTOM-LEFT: 4 SQUARE CARVED MEDIA BUTTONS (► ◄ ■ ❚❚)
+     ========================================================= */
+  .media-buttons-row {
+    position: absolute;
+    top: 438px;
+    left: 52px;
+    display: flex;
+    gap: 22px;
+  }
+
+  .wood-media-btn {
+    width: 62px;
+    height: 64px;
+    border-radius: 13px;
+    border: none;
+    /* Thick 3D dark maple lower extrusion lip */
+    background: linear-gradient(180deg, #99552c 0%, #632e10 100%);
+    box-shadow:
+      0 9px 14px rgba(0, 0, 0, 0.82),
+      0 3px 4px rgba(0, 0, 0, 0.68),
+      0 0 calc(18px * var(--active-alpha)) var(--led-soft);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  /* Top Horizontal Maple Face of Square Button */
+  .wood-media-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 6px 0;
+    border-radius: 12px;
+    background: var(--maple-grain);
+    border: 1.5px solid #e0a376;
+    box-shadow:
+      inset 0 2.5px 4px rgba(255, 240, 220, 0.78),
+      inset 0 -3px 5px rgba(125, 58, 20, 0.52);
+  }
+
+  .wood-media-btn:active,
+  .wood-media-btn.pressed {
+    transform: translateY(3px);
+    box-shadow:
+      0 4px 7px rgba(0, 0, 0, 0.78),
+      0 0 calc(22px * var(--active-alpha)) var(--led-halo);
+  }
+
+  .wood-media-btn:active::before,
+  .wood-media-btn.pressed::before {
+    inset: 0 0 3px 0;
+  }
+
+  /* Routed / Cutout Media Icon SVG Inside Button */
+  .carved-icon-svg {
+    position: relative;
+    z-index: 2;
+    width: 22px;
+    height: 22px;
+    margin-top: -5px;
+    fill: #7d431e;
+    filter:
+      drop-shadow(0 1px 0 rgba(255, 230, 200, 0.75))
+      drop-shadow(0 -1px 1px rgba(40, 14, 3, 0.65));
+    transition: fill 0.25s ease, filter 0.25s ease;
+  }
+
+  /* =========================================================
+     INTERNAL CUTOUT BACKLIGHT ILLUMINATION STATE (WHEN "ON")
+     ========================================================= */
+  body.backlit-on .carved-cutout-text {
+    color: var(--led-core);
+    text-shadow:
+      0 0 2px var(--led-core),
+      0 0 calc(14px * var(--glow-intensity)) var(--led-mid),
+      0 0 calc(24px * var(--glow-intensity)) var(--led-halo);
+  }
+
+  body.backlit-on .carved-icon-svg {
+    fill: var(--led-core);
+    filter:
+      drop-shadow(0 0 -1px   var(--led-core))
+      drop-shadow(0 0 calc(10px * var(--glow-intensity)) var(--led-mid))
+      drop-shadow(0 0 calc(18px * var(--glow-intensity)) var(--led-halo));
+  }
+
+  /* Subtle floating hint at bottom of screen */
+  .wood-hud-hint {
+    position: fixed;
+    bottom: 14px;
+    z-index: 10;
+    background: rgba(28, 10, 3, 0.78);
+    border: 1px solid rgba(224, 163, 118, 0.28);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 12px;
+    color: #e5be9e;
+    letter-spacing: 0.3px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+  }
+
+  .wood-hud-hint b {
+    color: #ffbe76;
+  }
+
+  @media (max-width: 700px) {
+    .ui-kit-canvas {
+      transform: scale(0.56);
+      transform-origin: center center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Procedural SVG Wood Grain Filter for Vertical Mahogany Planks -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="mahogany-fibers" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.18 0.012" numOctaves="4" seed="7" result="noise"/>
+      <feColorMatrix type="matrix" values="
+        0.45 0 0 0 0.22
+        0.18 0 0 0 0.08
+        0.06 0 0 0 0.02
+        0    0 0 1 0" in="noise"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="wood-fiber-overlay"></div>
+
+<main class="wood-board-stage">
+  <div class="ui-kit-canvas">
+
+    <!-- =======================================================
+         1. TOP-LEFT: LARGE ROTARY KNOB IN ROUTED WELL (min / max)
+         ======================================================= -->
+    <div class="rotary-assembly">
+      <div class="rotary-well">
+        <div class="rotary-knob-3d-base">
+          <div class="rotary-knob-face" id="rotaryKnob" style="--knob-deg: 82deg;" title="Drag vertically to adjust Backlight Intensity">
+            <div class="knob-dimple"></div>
+          </div>
+        </div>
+      </div>
+      <div class="knob-minmax-row">
+        <span class="carved-board-label">min</span>
+        <span class="carved-board-label">max</span>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         2. TOP-RIGHT: TWO HORIZONTAL SLIDERS (COLOR HUE & INTENSITY)
+         ======================================================= -->
+    <div class="sliders-stack">
+      <!-- Slider 1: Controls Backlight Color Hue (Default at ~23% like reference!) -->
+      <div class="wood-slider-track" id="hueSlider" style="--pos: 23%;" title="Slide to change Carved Cutout Backlight Color">
+        <div class="slider-fill-glow"></div>
+        <div class="wood-slider-thumb"></div>
+      </div>
+
+      <!-- Slider 2: Controls Backlight Brightness / Intensity (Default at ~13% like reference!) -->
+      <div class="wood-slider-track" id="intensitySlider" style="--pos: 13%;" title="Slide to adjust Cutout Glow Intensity">
+        <div class="slider-fill-glow"></div>
+        <div class="wood-slider-thumb"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         3. MIDDLE-RIGHT: "on" AND "off" WOOD TOGGLE SWITCHES
+         ======================================================= -->
+    <div class="toggles-row">
+      <!-- Left Light-Maple Switch ("on") -->
+      <div class="wood-toggle style-light" id="toggleOnSwitch" title="Click to toggle Carved Cutout Backlight ON/OFF">
+        <div class="toggle-knob"></div>
+        <span class="toggle-label">on</span>
+      </div>
+
+      <!-- Right Dark-Recessed Switch ("off") -->
+      <div class="wood-toggle style-dark" id="toggleOffSwitch" title="Click to toggle Carved Cutout Backlight ON/OFF">
+        <span class="toggle-label">off</span>
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         4. CENTER: TWO CIRCULAR WOOD RADIO WELLS
+         ======================================================= -->
+    <div class="radios-pair">
+      <div class="wood-radio-well" data-radio="0" title="Select Radio 1">
+        <div class="radio-ruby-bead"></div>
+      </div>
+      <div class="wood-radio-well selected" data-radio="1" title="Select Radio 2">
+        <div class="radio-ruby-bead"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         5. RIGHT: TWO PILL BUTTONS ("Button" RAISED & RECESSED)
+         ======================================================= -->
+    <div class="pill-buttons-stack">
+      <button class="pill-btn-maple" type="button">
+        <span class="carved-cutout-text">Button</span>
+      </button>
+
+      <button class="pill-btn-dark" type="button">
+        <span class="carved-cutout-text">Button</span>
+      </button>
+    </div>
+
+    <!-- =======================================================
+         6. MIDDLE-LEFT: WOOD-FRAMED SEARCH INPUT BAR
+         ======================================================= -->
+    <div class="wood-search-frame">
+      <div class="wood-search-well">
+        <input type="text" class="wood-search-input" placeholder="search" aria-label="Search">
+      </div>
+    </div>
+
+    <!-- =======================================================
+         7. BOTTOM-LEFT: 4 SQUARE CARVED MEDIA BUTTONS (► ◄ ■ ❚❚)
+         ======================================================= -->
+    <div class="media-buttons-row">
+      <!-- Play (►) -->
+      <button class="wood-media-btn" type="button" title="Play">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <polygon points="6,4 20,12 6,20"/>
+        </svg>
+      </button>
+
+      <!-- Reverse Play (◄) -->
+      <button class="wood-media-btn" type="button" title="Reverse">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <polygon points="18,4 4,12 18,20"/>
+        </svg>
+      </button>
+
+      <!-- Stop (■) -->
+      <button class="wood-media-btn" type="button" title="Stop">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <rect x="5" y="5" width="14" height="14" rx="1"/>
+        </svg>
+      </button>
+
+      <!-- Pause (❚❚) -->
+      <button class="wood-media-btn" type="button" title="Pause">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <rect x="5" y="4" width="4.5" height="16" rx="1"/>
+          <rect x="14.5" y="4" width="4.5" height="16" rx="1"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</main>
+
+<div class="wood-hud-hint" id="hudStatus">
+  BACKLIGHT: <b>OFF (Carved Wood Default)</b> • Click <b>on / off</b> switches to illuminate button cutouts • Drag sliders to change color
+</div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const hudStatus = document.getElementById('hudStatus');
+  const toggleOnSwitch = document.getElementById('toggleOnSwitch');
+  const toggleOffSwitch = document.getElementById('toggleOffSwitch');
+  const hueSlider = document.getElementById('hueSlider');
+  const intensitySlider = document.getElementById('intensitySlider');
+  const rotaryKnob = document.getElementById('rotaryKnob');
+
+  // By default, backlight is OFF so the UI looks 100% identical to the reference image!
+  let isBacklit = false;
+  let currentHue = 28; // Warm amber-gold default
+  let currentIntensity = 0.88;
+
+  function syncBacklightUI() {
+    document.body.classList.toggle('backlit-on', isBacklit);
+    root.style.setProperty('--glow-on', isBacklit ? '1' : '0');
+    root.style.setProperty('--glow-hue', currentHue.toFixed(0));
+    root.style.setProperty('--glow-intensity', currentIntensity.toFixed(2));
+
+    // Animate the two toggle knobs to reflect ON vs OFF state while preserving their aesthetic
+    const knobLight = toggleOnSwitch.querySelector('.toggle-knob');
+    const knobDark = toggleOffSwitch.querySelector('.toggle-knob');
+
+    if (isBacklit) {
+      knobLight.style.left = '72px';
+      toggleOnSwitch.querySelector('.toggle-label').style.right = 'auto';
+      toggleOnSwitch.querySelector('.toggle-label').style.left = '22px';
+
+      knobDark.style.left = '4px';
+      toggleOffSwitch.querySelector('.toggle-label').style.left = 'auto';
+      toggleOffSwitch.querySelector('.toggle-label').style.right = '20px';
+
+      hudStatus.innerHTML = `BACKLIGHT: <b style="color:hsl(${currentHue}, 100%, 70%)">ON (Hue ${Math.round(currentHue)}° • Power ${Math.round(currentIntensity * 100)}%)</b> • Drag top slider for color, bottom slider/knob for brightness`;
+    } else {
+      // Exact reference photo resting positions
+      knobLight.style.left = '4px';
+      toggleOnSwitch.querySelector('.toggle-label').style.left = 'auto';
+      toggleOnSwitch.querySelector('.toggle-label').style.right = '22px';
+
+      knobDark.style.left = '72px';
+      toggleOffSwitch.querySelector('.toggle-label').style.right = 'auto';
+      toggleOffSwitch.querySelector('.toggle-label').style.left = '20px';
+
+      hudStatus.innerHTML = `BACKLIGHT: <b>OFF (Carved Wood Default)</b> • Click <b>on / off</b> switches to illuminate button cutouts • Drag sliders to change color`;
+    }
+  }
+
+  // Toggle Switches Click Handler
+  toggleOnSwitch.addEventListener('click', () => {
+    isBacklit = !isBacklit;
+    syncBacklightUI();
+  });
+
+  toggleOffSwitch.addEventListener('click', () => {
+    isBacklit = !isBacklit;
+    syncBacklightUI();
+  });
+
+  // =========================================================================
+  // DRAGGABLE WOOD SLIDERS (TOP = COLOR HUE, BOTTOM = GLOW INTENSITY)
+  // =========================================================================
+  function bindWoodSlider(trackEl, onChange) {
+    let dragging = false;
+
+    function updateFromClientX(clientX) {
+      const rect = trackEl.getBoundingClientRect();
+      const ratio = Math.max(0.05, Math.min(0.95, (clientX - rect.left) / rect.width));
+      trackEl.style.setProperty('--pos', `${(ratio * 100).toFixed(1)}%`);
+      onChange((ratio - 0.05) / 0.9);
+    }
+
+    trackEl.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      trackEl.setPointerCapture(e.pointerId);
+      updateFromClientX(e.clientX);
+    });
+
+    trackEl.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      updateFromClientX(e.clientX);
+    });
+
+    const stop = () => { dragging = false; };
+    trackEl.addEventListener('pointerup', stop);
+    trackEl.addEventListener('pointercancel', stop);
+  }
+
+  // Top Slider -> Adjusts Cutout LED Color Hue (0° Red/Amber -> 120° Green -> 195° Cyan -> 300° Magenta)
+  bindWoodSlider(hueSlider, (norm) => {
+    currentHue = norm * 340;
+    if (!isBacklit) isBacklit = true; // Automatically preview glow when sliding color
+    syncBacklightUI();
+  });
+
+  // Bottom Slider -> Adjusts Cutout LED Brightness & Syncs with Big Rotary Knob
+  bindWoodSlider(intensitySlider, (norm) => {
+    currentIntensity = 0.25 + norm * 0.95;
+    const deg = -130 + norm * 260;
+    rotaryKnob.style.setProperty('--knob-deg', `${deg.toFixed(1)}deg`);
+    if (!isBacklit) isBacklit = true;
+    syncBacklightUI();
+  });
+
+  // =========================================================================
+  // DRAGGABLE LARGE MAPLE ROTARY KNOB (min / max)
+  // =========================================================================
+  let knobDragging = false;
+  let startY = 0;
+  let currentKnobDeg = 82; // Matches ~3 o'clock position in reference photo
+
+  rotaryKnob.addEventListener('pointerdown', (e) => {
+    knobDragging = true;
+    startY = e.clientY;
+    rotaryKnob.setPointerCapture(e.pointerId);
+  });
+
+  rotaryKnob.addEventListener('pointermove', (e) => {
+    if (!knobDragging) return;
+    const dy = startY - e.clientY;
+    startY = e.clientY;
+
+    currentKnobDeg = Math.max(-130, Math.min(130, currentKnobDeg + dy * 1.8));
+    rotaryKnob.style.setProperty('--knob-deg', `${currentKnobDeg.toFixed(1)}deg`);
+
+    const norm = (currentKnobDeg + 130) / 260;
+    currentIntensity = 0.25 + norm * 0.95;
+    intensitySlider.style.setProperty('--pos', `${(5 + norm * 90).toFixed(1)}%`);
+    syncBacklightUI();
+  });
+
+  const stopKnob = () => { knobDragging = false; };
+  rotaryKnob.addEventListener('pointerup', stopKnob);
+  rotaryKnob.addEventListener('pointercancel', stopKnob);
+
+  // =========================================================================
+  // RADIO WELLS & MEDIA BUTTONS TACTILE INTERACTION
+  // =========================================================================
+  document.querySelectorAll('.wood-radio-well').forEach(well => {
+    well.addEventListener('click', () => {
+      document.querySelectorAll('.wood-radio-well').forEach(w => w.classList.remove('selected'));
+      well.classList.add('selected');
+    });
+  });
+
+  document.querySelectorAll('.wood-media-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alreadyPressed = btn.classList.contains('pressed');
+      document.querySelectorAll('.wood-media-btn').forEach(b => b.classList.remove('pressed'));
+      if (!alreadyPressed) btn.classList.add('pressed');
+    });
+  });
+})();
+</script>
+</body>
+</html>

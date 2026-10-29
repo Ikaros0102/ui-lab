@@ -1,0 +1,1621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Royal Burl Walnut & Spun Brass Luxury Hi-Fi UI Kit</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Royal Walnut & Spun Brass Luxury UI Kit",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "walnut",
+    "brass",
+    "gold",
+    "luxury-ui",
+    "skeuomorphism",
+    "audio-player",
+    "equalizer",
+    "rotary-knob",
+    "toggle-switches",
+    "dropdown",
+    "hardware",
+    "skeuomorphic",
+    "hifi"
+  ],
+  "description": "Luxury skeuomorphic UI kit crafted from lacquered horizontal burl walnut and precision-machined spun brass. Includes an interactive Hi-Fi audio deck, 7-band vertical fader equalizer, spun-brass master rotary dial (0-100), sliding brass-bezel navigation bar, jewel-LED toggle switches, expandable share pill, and modal dialog.",
+  "techniques": [
+    "anisotropic spun-brass conical gradients paired with brushed linear gold bevels and piano-lacquer wood sheen",
+    "interactive sliding glass-and-brass navigation frame, expandable social share drawer, and live 7-band EQ faders",
+    "recessed walnut grooves with warm gold fill bars and ruby/emerald jewel indicators"
+  ],
+  "recipe": "Combines horizontal dark walnut grain with multi-stop metallic brass borders, specular gloss overlays, and tactile physical controls.",
+  "preview": {
+    "mode": "page",
+    "width": 1360,
+    "height": 920
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    /* Rich Horizontal Dark Walnut Palette */
+    --walnut-deep: #1e0f07;
+    --walnut-mid: #381c0d;
+    --walnut-warm: #522914;
+    --walnut-gloss: rgba(255, 215, 175, 0.14);
+
+    /* Polished & Brushed Brass Palette */
+    --brass-edge-light: #fff3b8;
+    --brass-bright: #e8cd7d;
+    --brass-mid: #bfa054;
+    --brass-dark: #785d22;
+    --brass-deep: #42310d;
+
+    /* Reusable Brushed Gold Linear Gradient */
+    --brushed-gold: linear-gradient(
+      180deg,
+      #f7e6ad 0%,
+      #dfc274 22%,
+      #b89546 52%,
+      #96752c 80%,
+      #c9aa5c 100%
+    );
+
+    /* Glossy Lacquered Walnut Panel Surface */
+    --lacquered-wood-panel:
+      linear-gradient(180deg, rgba(255, 225, 190, 0.18) 0%, rgba(255, 225, 190, 0.04) 44%, rgba(0, 0, 0, 0.28) 46%, rgba(0, 0, 0, 0.45) 100%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.14) 0px 1.5px, transparent 1.5px 4px),
+      linear-gradient(180deg, #5e3119 0%, #3d1e0e 55%, #261106 100%);
+
+    /* Dark Hover Wood Surface */
+    --lacquered-wood-hover:
+      linear-gradient(180deg, rgba(255, 215, 170, 0.12) 0%, rgba(0, 0, 0, 0.5) 48%, rgba(0, 0, 0, 0.75) 100%),
+      linear-gradient(180deg, #36190b 0%, #1c0b04 100%);
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #241107;
+    color: #f3e5c8;
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 18px;
+    overflow-x: hidden;
+    position: relative;
+    /* Horizontal Royal Walnut Board Background */
+    background:
+      radial-gradient(ellipse 85% 80% at 50% 45%, rgba(255, 185, 110, 0.08) 0%, rgba(10, 4, 1, 0.72) 100%),
+      repeating-linear-gradient(
+        180deg,
+        rgba(18, 7, 2, 0.35) 0px,
+        rgba(18, 7, 2, 0.35) 2px,
+        rgba(255, 190, 120, 0.03) 2px,
+        rgba(255, 190, 120, 0.03) 5px,
+        transparent 5px,
+        transparent 11px
+      ),
+      linear-gradient(180deg, #3b1d0e 0%, #4a2512 30%, #381a0b 70%, #241006 100%);
+  }
+
+  /* Organic Horizontal Wood Grain SVG Filter Overlay */
+  .walnut-grain-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.32;
+    mix-blend-mode: multiply;
+    filter: url(#horizontal-walnut);
+    background: #4a2410;
+  }
+
+  /* =========================================================
+     SHARED LUXURY BRASS-RIMMED CONTAINERS & PILLS
+     ========================================================= */
+  .brass-rimmed-box {
+    background: var(--lacquered-wood-panel);
+    border: 1.5px solid #c8a95b;
+    border-radius: 10px;
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.78),
+      0 2px 4px rgba(0, 0, 0, 0.65),
+      inset 0 1px 1px rgba(255, 245, 200, 0.42),
+      inset 0 0 0 1px rgba(20, 8, 2, 0.75);
+    position: relative;
+  }
+
+  .gold-embossed-txt {
+    color: #f2dfb3;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.85), 0 1px 2px rgba(0, 0, 0, 0.65);
+  }
+
+  .dark-engraved-txt {
+    color: #38280b;
+    text-shadow: 0 1px 0 rgba(255, 245, 205, 0.65);
+    font-weight: 600;
+  }
+
+  /* =========================================================
+     MAIN 3-COLUMN SHOWCASE GRID
+     ========================================================= */
+  .luxury-kit-grid {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1220px;
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .right-middle-split {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  /* =========================================================
+     1. TOP-LEFT: PROGRESS BAR WITH LACQUERED GOLD FILL (53%)
+     ========================================================= */
+  .wood-progress-groove {
+    width: 100%;
+    height: 28px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #160903 0%, #2b1307 100%);
+    border: 1px solid rgba(255, 210, 140, 0.16);
+    box-shadow:
+      inset 0 4px 7px rgba(0, 0, 0, 0.9),
+      0 1px 1px rgba(255, 205, 140, 0.18);
+    padding: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .wood-progress-fill {
+    width: var(--prog, 53%);
+    height: 100%;
+    border-radius: 12px;
+    background: var(--lacquered-wood-panel);
+    border: 1.5px solid #d4b568;
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.8),
+      inset 0 1px 1px rgba(255, 245, 200, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #f5e4bc;
+    text-shadow: 0 1px 2px #000;
+    transition: width 0.2s ease;
+  }
+
+  /* =========================================================
+     2. BUTTON STATES, CHECKBOXES, RADIOS & GOLD STAR RATINGS
+     ========================================================= */
+  .controls-showcase-row {
+    display: grid;
+    grid-template-columns: 164px 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .buttons-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .luxury-pill-btn {
+    height: 40px;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.16s ease;
+  }
+
+  /* State 1: Normal Lacquered Walnut Button with Brass Rim */
+  .luxury-pill-btn.state-normal {
+    background: var(--lacquered-wood-panel);
+    border: 1.5px solid #c8a95b;
+    color: #f2dfb3;
+    text-shadow: 0 -1px 1px #000;
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.72),
+      inset 0 1px 1px rgba(255, 245, 205, 0.45);
+  }
+  .luxury-pill-btn.state-normal:hover {
+    background: var(--lacquered-wood-hover);
+    border-color: #e6c875;
+  }
+
+  /* State 2: Hover Deep Espresso Button */
+  .luxury-pill-btn.state-hover {
+    background: var(--lacquered-wood-hover);
+    border: 1.5px solid #d4b463;
+    color: #fff3d1;
+    text-shadow: 0 0 6px rgba(255, 220, 130, 0.35);
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.8),
+      inset 0 1px 2px rgba(255, 235, 180, 0.35);
+  }
+
+  /* State 3: Active Brushed Solid Brass Button */
+  .luxury-pill-btn.state-active,
+  .luxury-pill-btn:active {
+    background: var(--brushed-gold);
+    border: 1.5px solid #fff2ba;
+    color: #362608;
+    text-shadow: 0 1px 0 rgba(255, 255, 230, 0.65);
+    box-shadow:
+      0 5px 12px rgba(0, 0, 0, 0.75),
+      inset 0 1px 2px #ffffff,
+      inset 0 -2px 4px rgba(110, 80, 20, 0.55);
+  }
+
+  /* Micro Checks, Radios & Star Ratings Matrix */
+  .mini-checks-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mini-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wood-socket-circle,
+  .wood-socket-square {
+    width: 18px;
+    height: 18px;
+    background: #1a0b04;
+    border: 1px solid #593318;
+    box-shadow: inset 0 2px 4px #000, 0 1px 0 rgba(255, 210, 150, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .wood-socket-circle { border-radius: 50%; }
+  .wood-socket-square { border-radius: 4px; }
+
+  .wood-socket-circle.dot-wood::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #b87b4b, #4a200a);
+  }
+
+  .wood-socket-circle.dot-gold {
+    border-color: #bfa054;
+  }
+  .wood-socket-circle.dot-gold::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff6c2, #c9a449 65%, #6e5211 100%);
+    box-shadow: 0 0 5px rgba(245, 210, 110, 0.6);
+  }
+
+  .wood-socket-square.chk-wood {
+    color: #9e6b43;
+    font-size: 11px;
+    font-weight: 900;
+  }
+  .wood-socket-square.chk-gold {
+    background: var(--brushed-gold);
+    border-color: #f7e6ad;
+    color: #2b1d04;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .gold-star {
+    font-size: 15px;
+    cursor: pointer;
+    color: #1c0b04;
+    text-shadow: 0 1px 0 rgba(255, 200, 130, 0.2);
+    transition: transform 0.12s ease;
+  }
+  .gold-star.lit {
+    color: #ebd083;
+    text-shadow: 0 0 6px rgba(245, 210, 110, 0.5), 0 2px 3px #000;
+  }
+
+  /* =========================================================
+     3. BRASS-RIVETED TAG PILLS (Cat, Funny dogs, etc.)
+     ========================================================= */
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .brass-tag-pill {
+    height: 25px;
+    padding: 0 11px 0 8px;
+    border-radius: 13px;
+    background: var(--lacquered-wood-panel);
+    border: 1px solid #c4a456;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.68), inset 0 1px 0 rgba(255,240,190,0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #ebd7ad;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .brass-tag-pill:hover {
+    border-color: #f5df98;
+    transform: translateY(-1px);
+  }
+
+  .brass-tag-pill.active {
+    background: var(--brushed-gold);
+    color: #2e1f05;
+    font-weight: 600;
+  }
+
+  /* Tiny Brass Eyelet Ring on Left of Tag */
+  .tag-eyelet {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #1c0c04;
+    border: 1.5px solid #dec06f;
+    box-shadow: 0 1px 2px #000;
+  }
+
+  /* =========================================================
+     4. USER PROFILE CARD & INFORMATION MODAL WITH BRASS HEADER
+     ========================================================= */
+  .profile-card {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .profile-top {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .avatar-frame {
+    width: 66px;
+    height: 66px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #2e180c, #170a04);
+    border: 2px solid #c8a95b;
+    box-shadow: inset 0 2px 6px #000, 0 4px 8px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-info h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e6c878;
+    margin-bottom: 3px;
+  }
+
+  .profile-info p {
+    font-size: 11.5px;
+    line-height: 1.38;
+    color: #d9c5a0;
+  }
+
+  .card-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .card-sm-btn {
+    height: 30px;
+    font-size: 11.5px;
+  }
+
+  /* Information Attention Box with Brushed Brass Top Banner */
+  .info-modal-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-brass-banner {
+    background: var(--brushed-gold);
+    border-bottom: 1.5px solid #75581b;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: inset 0 1px 1px #fff8d6;
+  }
+
+  .info-badge-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #594316, #291d05);
+    border: 1px solid #fff0b8;
+    color: #f7e6ad;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .info-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .info-body p {
+    font-size: 11.5px;
+    line-height: 1.48;
+    color: #dec9a4;
+  }
+
+  /* =========================================================
+     5. TOP-RIGHT: HI-FI AUDIO PLAYER DECK (U2 - Sunday Bloody Sunday)
+     ========================================================= */
+  .hifi-player-deck {
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .track-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f5e3b8;
+    text-shadow: 0 2px 3px #000;
+  }
+
+  .player-controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .transport-cluster {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .round-brass-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--lacquered-wood-panel);
+    border: 1.5px solid #cba956;
+    color: #f2dfb3;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.75), inset 0 1px 1px rgba(255,240,190,0.4);
+    transition: all 0.14s ease;
+  }
+
+  .round-brass-btn.play-main {
+    width: 34px;
+    height: 34px;
+    background: var(--brushed-gold);
+    border-color: #fff4c2;
+    color: #2b1d04;
+    font-size: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8), inset 0 1px 2px #fff;
+  }
+
+  .round-brass-btn:hover {
+    transform: scale(1.06);
+    border-color: #fff0b3;
+  }
+
+  .player-timeline-groove {
+    flex: 1;
+    height: 11px;
+    border-radius: 6px;
+    background: #170903;
+    border: 1px solid #573318;
+    box-shadow: inset 0 2px 4px #000;
+    padding: 1.5px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .player-timeline-fill {
+    width: var(--seek, 42%);
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #9c6a3e 0%, #5e3818 100%);
+    border: 1px solid #c9a453;
+    position: relative;
+  }
+
+  .player-time-txt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ebd7ad;
+    min-width: 64px;
+    text-align: right;
+  }
+
+  /* =========================================================
+     6. DROPDOWNS ("Elegant wood") & JEWEL LED TOGGLE SWITCHES
+     ========================================================= */
+  .dropdowns-and-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .wood-select-bar {
+    height: 38px;
+    border-radius: 20px;
+    padding: 0 5px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #ebd7ad;
+    cursor: pointer;
+  }
+
+  .select-Trigger-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    border: 1.5px solid #d9ba6c;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.7);
+  }
+
+  .select-Trigger-circle.wood-cap {
+    background: var(--lacquered-wood-panel);
+    color: #f2dfb3;
+  }
+
+  .select-Trigger-circle.brass-cap {
+    background: var(--brushed-gold);
+    border-color: #fff3bd;
+    color: #2e1f05;
+  }
+
+  .expanded-dropdown-panel {
+    border-radius: 14px;
+    padding: 8px 6px 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dropdown-menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-right: 10px;
+  }
+
+  .dropdown-menu-list li {
+    font-size: 12.5px;
+    color: #d6c096;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+
+  .dropdown-menu-list li:hover,
+  .dropdown-menu-list li.selected {
+    background: rgba(212, 178, 92, 0.18);
+    color: #fff2c2;
+  }
+
+  /* Jewel-LED Brass Toggle Switches (Horizontal & Vertical) */
+  .jewel-toggles-cluster {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 4px 2px;
+  }
+
+  .jewel-horiz-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 18px;
+  }
+
+  .jewel-track-h {
+    width: 58px;
+    height: 14px;
+    border-radius: 7px;
+    background: #170903;
+    border: 1px solid #4f2c14;
+    box-shadow: inset 0 3px 5px #000, 0 1px 0 rgba(255,210,150,0.16);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .jewel-track-v {
+    width: 14px;
+    height: 58px;
+    border-radius: 7px;
+    background: #170903;
+    border: 1px solid #4f2c14;
+    box-shadow: inset 0 3px 5px #000;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .jewel-knob {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    position: absolute;
+    background: conic-gradient(
+      from 45deg,
+      #f7e6ad, #9e7d32, #fff4c2, #7a5c18, #ebd083, #8c6c22, #f7e6ad
+    );
+    border: 1.5px solid #fff2ba;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .jewel-knob.wood-rim {
+    background: radial-gradient(circle, #6e3b1e 0%, #2e1407 100%);
+    border-color: #c9a654;
+  }
+
+  .jewel-track-h .jewel-knob {
+    top: 50%;
+    transform: translateY(-50%);
+    left: -2px;
+  }
+  .jewel-track-h.right .jewel-knob {
+    left: 32px;
+  }
+
+  .jewel-track-v .jewel-knob {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 32px;
+  }
+  .jewel-track-v.top .jewel-knob {
+    top: -2px;
+  }
+
+  /* Glowing Emerald & Ruby Jewel Center Beads */
+  .jewel-bead {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.6);
+  }
+
+  .jewel-bead.emerald {
+    background: radial-gradient(circle at 35% 35%, #d9f99d 0%, #4ade80 45%, #14532d 100%);
+    box-shadow: 0 0 8px #4ade80;
+  }
+
+  .jewel-bead.ruby {
+    background: radial-gradient(circle at 35% 35%, #fecdd3 0%, #e11d48 48%, #4c0519 100%);
+    box-shadow: 0 0 8px #f43f5e;
+  }
+
+  /* =========================================================
+     7. LIKE BUTTONS, EXPANDABLE SHARE DRAWER & RANGE SLIDERS
+     ========================================================= */
+  .social-and-sliders-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .like-buttons-row {
+    display: flex;
+    gap: 14px;
+  }
+
+  .like-btn {
+    padding: 0 18px;
+    height: 36px;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+
+  /* Expandable "Share it" Drawer Pill */
+  .share-drawer-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .share-main-pill {
+    height: 36px;
+    padding: 0 5px 0 16px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .share-social-tray {
+    height: 30px;
+    margin-left: -14px;
+    padding: 0 14px 0 24px;
+    border-radius: 0 15px 15px 0;
+    background: var(--brushed-gold);
+    border: 1px solid #fff3bd;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 1px 1px #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #362608;
+    font-weight: 800;
+    font-size: 13px;
+    transition: all 0.25s ease;
+    transform-origin: left center;
+  }
+
+  .share-social-tray.collapsed {
+    opacity: 0;
+    transform: scaleX(0);
+    pointer-events: none;
+  }
+
+  /* 3 Horizontal Range Sliders (50 - 300) */
+  .range-sliders-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 6px;
+  }
+
+  .brass-groove-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #160802;
+    border: 1px solid #4d2b13;
+    box-shadow: inset 0 2px 4px #000, 0 1px 0 rgba(255,210,150,0.16);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .range-fill-bar {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 24%;
+    right: 26%;
+    border-radius: 3px;
+  }
+  .range-fill-bar.wood-fill {
+    background: linear-gradient(180deg, #8c5832, #4d2911);
+    border-top: 1px solid #b88456;
+  }
+  .range-fill-bar.gold-fill {
+    background: var(--brushed-gold);
+  }
+
+  .rect-brass-thumb {
+    width: 10px;
+    height: 20px;
+    border-radius: 3px;
+    background: var(--brushed-gold);
+    border: 1px solid #fff5c2;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.85);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .thumb-val-lbl {
+    position: absolute;
+    top: 23px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #dfc89c;
+  }
+
+  .round-slider-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #824924, #2e1306);
+    border: 1.5px solid #d4b261;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.85);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* =========================================================
+     8. HORIZONTAL NAVIGATION BAR WITH SLIDING BRASS LENS
+     ========================================================= */
+  .luxury-navbar {
+    height: 52px;
+    border-radius: 26px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+  }
+
+  .nav-tab-item {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .nav-tab-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f5e6c8;
+    text-shadow: 0 1px 2px #000;
+  }
+
+  .nav-tab-item.active .nav-tab-title {
+    color: #ffe394;
+  }
+
+  .nav-tab-sub {
+    font-size: 9.5px;
+    color: #b59b76;
+  }
+
+  /* Sliding Translucent Brass & Glass Selector Frame (Exact Match to Reference!) */
+  .nav-sliding-lens {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    width: calc((100% - 20px) / 4);
+    left: calc(10px + var(--nav-idx, 1) * ((100% - 20px) / 4));
+    border-radius: 10px;
+    background:
+      linear-gradient(180deg, rgba(255, 240, 185, 0.28) 0%, rgba(215, 175, 80, 0.12) 48%, rgba(30, 15, 5, 0.25) 52%, rgba(215, 175, 80, 0.16) 100%);
+    border: 1.5px solid #ebd083;
+    box-shadow:
+      0 8px 18px rgba(0, 0, 0, 0.8),
+      inset 0 1px 2px rgba(255, 255, 240, 0.65);
+    pointer-events: none;
+    transition: left 0.32s cubic-bezier(0.25, 1, 0.35, 1);
+    z-index: 1;
+  }
+
+  /* =========================================================
+     9. BOTTOM-RIGHT: SPUN-BRASS MASTER DIAL (0-100) + 7-BAND EQ
+     ========================================================= */
+  .master-audio-deck {
+    display: grid;
+    grid-template-columns: 230px 1fr 56px;
+    gap: 20px;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  /* Spun-Brass Rotary Potentiometer (0 - 100) */
+  .brass-dial-wrap {
+    width: 210px;
+    height: 190px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dial-scale-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* Outer Fluted Brass Skirt */
+  .brass-knob-skirt {
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    background:
+      repeating-conic-gradient(#42300b 0deg 6deg, #bfa054 6deg 12deg);
+    border: 2px solid #241704;
+    box-shadow:
+      0 14px 26px rgba(0, 0, 0, 0.9),
+      0 4px 8px rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Inner Conical Spun-Brass Cap */
+  .brass-knob-cap {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        from 140deg,
+        #f7e8b5 0deg,
+        #9c7a2d 45deg,
+        #fff9db 105deg,
+        #785a18 165deg,
+        #f7e8b5 225deg,
+        #8c6b22 290deg,
+        #fff9db 330deg,
+        #f7e8b5 360deg
+      );
+    border: 2px solid #fff2ba;
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.8),
+      0 2px 5px rgba(0, 0, 0, 0.8);
+    cursor: grab;
+    position: relative;
+    transform: rotate(var(--brass-deg, 45deg));
+  }
+
+  .brass-knob-cap:active { cursor: grabbing; }
+
+  .brass-knob-dimple {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1f1605 0%, #4d3911 100%);
+    box-shadow: inset 0 1px 2px #000, 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  /* 7-Band Vertical Graphic Equalizer Faders */
+  .eq-7band-bank {
+    height: 164px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 8px 14px;
+  }
+
+  .eq-fader-slot {
+    width: 10px;
+    height: 100%;
+    border-radius: 5px;
+    background: #140702;
+    border: 1px solid #4a2912;
+    box-shadow: inset 0 3px 6px #000;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .eq-fader-fill {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+    height: var(--fader, 50%);
+    border-radius: 4px;
+    background: linear-gradient(90deg, #5e3417, #9e6538, #47240e);
+    border-top: 1px solid #d4b261;
+  }
+
+  .eq-fader-cap {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #8f5329, #2e1306);
+    border: 2px solid #dec06f;
+    box-shadow: 0 4px 7px rgba(0,0,0,0.88);
+    position: absolute;
+    left: 50%;
+    bottom: var(--fader, 50%);
+    transform: translate(-50%, 50%);
+  }
+
+  /* Right Mute & Volume Rocker Strip */
+  .speaker-strip-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 164px;
+  }
+
+  .volume-pill-fader {
+    width: 38px;
+    height: 98px;
+    border-radius: 19px;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 1180px) {
+    .luxury-kit-grid {
+      grid-template-columns: 1fr;
+      max-width: 680px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Global SVG Filter for Horizontal Walnut Wood Grain -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="horizontal-walnut" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.22" numOctaves="4" seed="14" result="noise"/>
+      <feColorMatrix type="matrix" values="
+        0.38 0 0 0 0.16
+        0.18 0 0 0 0.07
+        0.07 0 0 0 0.02
+        0    0 0 1 0" in="noise"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="walnut-grain-overlay"></div>
+
+<main class="luxury-kit-grid">
+
+  <!-- =========================================================
+       LEFT COLUMN: PROGRESS, BUTTON STATES, TAGS, PROFILE, MODAL
+       ========================================================= -->
+  <section class="left-column">
+
+    <!-- 1. Top Progress Bar (Click anywhere to set %) -->
+    <div class="wood-progress-groove" id="topProgressGroove" title="Click to adjust progress">
+      <div class="wood-progress-fill" id="topProgressFill" style="--prog: 53%;">53%</div>
+    </div>
+
+    <!-- 2. Button States + Micro Radios, Checkboxes & Star Rating -->
+    <div class="controls-showcase-row">
+      <div class="buttons-stack">
+        <button class="luxury-pill-btn state-normal">Normal button</button>
+        <button class="luxury-pill-btn state-hover">Hover button</button>
+        <button class="luxury-pill-btn state-active">Active button</button>
+      </div>
+
+      <div class="mini-checks-matrix">
+        <!-- Radio Dots -->
+        <div class="mini-row" id="miniRadios">
+          <div class="wood-socket-circle"></div>
+          <div class="wood-socket-circle dot-wood"></div>
+          <div class="wood-socket-circle dot-gold"></div>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="mini-row">
+          <div class="wood-socket-square" onclick="this.classList.toggle('chk-gold');this.textContent=this.classList.contains('chk-gold')?'✓':''"></div>
+          <div class="wood-socket-square chk-wood" onclick="this.classList.toggle('chk-gold')">✓</div>
+          <div class="wood-socket-square chk-gold" onclick="this.classList.toggle('chk-gold')">✓</div>
+        </div>
+
+        <!-- 5-Star Rating -->
+        <div class="mini-row" id="starRow">
+          <span class="gold-star lit">★</span>
+          <span class="gold-star lit">★</span>
+          <span class="gold-star lit">★</span>
+          <span class="gold-star">★</span>
+          <span class="gold-star">★</span>
+        </div>
+
+        <!-- 5-Bead Rating -->
+        <div class="mini-row">
+          <div class="wood-socket-circle dot-gold"></div>
+          <div class="wood-socket-circle dot-gold"></div>
+          <div class="wood-socket-circle dot-gold"></div>
+          <div class="wood-socket-circle"></div>
+          <div class="wood-socket-circle"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Brass-Riveted Tag Pills -->
+    <div class="tags-cloud">
+      <span class="brass-tag-pill" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Cat</span>
+      <span class="brass-tag-pill" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Funny dogs</span>
+      <span class="brass-tag-pill" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Monstrual</span>
+      <span class="brass-tag-pill" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Big fat cat</span>
+      <span class="brass-tag-pill active" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Pet</span>
+      <span class="brass-tag-pill" onclick="this.classList.toggle('active')"><span class="tag-eyelet"></span>Swimming tigers</span>
+    </div>
+
+    <!-- 4. User Profile Card -->
+    <div class="brass-rimmed-box profile-card">
+      <div class="profile-top">
+        <div class="avatar-frame">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#c8a95b" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20 C4 15, 20 15, 20 20"/>
+          </svg>
+        </div>
+        <div class="profile-info">
+          <h3>George Christiansen</h3>
+          <p>Los Angeles<br>Age: 30<br>Posts: 3,586</p>
+        </div>
+      </div>
+      <div class="card-actions-row">
+        <button class="luxury-pill-btn state-normal card-sm-btn">Add to friend list</button>
+        <button class="luxury-pill-btn state-normal card-sm-btn">Send message</button>
+      </div>
+    </div>
+
+    <!-- 5. Information Modal Box with Brushed Brass Header -->
+    <div class="brass-rimmed-box info-modal-card">
+      <div class="info-brass-banner">
+        <span class="info-badge-circle">i</span>
+        <span class="dark-engraved-txt" style="font-size:12.5px;">INFORMATION: Pay attention</span>
+      </div>
+      <div class="info-body">
+        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy?</p>
+        <div class="card-actions-row">
+          <button class="luxury-pill-btn state-active card-sm-btn">Yes, do it</button>
+          <button class="luxury-pill-btn state-normal card-sm-btn">Stop now</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================
+       RIGHT COLUMN: HI-FI DECK, DROPDOWNS, TOGGLES, NAV, EQ & DIAL
+       ========================================================= -->
+  <section class="right-column">
+
+    <!-- 6. Top Hi-Fi Audio Player Deck -->
+    <div class="brass-rimmed-box hifi-player-deck">
+      <div class="track-title-row">
+        <span id="trackNameDisplay">U2 - Sunday Bloody Sunday</span>
+        <span style="font-size:11px;color:#bfa054;">24-BIT VALVE DAC</span>
+      </div>
+
+      <div class="player-controls-bar">
+        <div class="transport-cluster">
+          <button class="round-brass-btn" title="Previous">⏮</button>
+          <button class="round-brass-btn play-main" id="playPauseBtn" title="Play / Pause">▶</button>
+          <button class="round-brass-btn" title="Pause">⏸</button>
+          <button class="round-brass-btn" title="Stop">⏹</button>
+          <button class="round-brass-btn" title="Next">⏭</button>
+        </div>
+
+        <div class="player-timeline-groove" id="playerTimeline">
+          <div class="player-timeline-fill" id="playerTimelineFill" style="--seek: 48%;"></div>
+        </div>
+
+        <span class="player-time-txt" id="playerTimeTxt">2:31/4:56</span>
+
+        <button class="round-brass-btn" title="Mute">🔊</button>
+      </div>
+    </div>
+
+    <!-- 7. Middle Split: [Dropdowns + Jewel Toggles] | [Likes + Share + Range Sliders] -->
+    <div class="right-middle-split">
+
+      <!-- Left Sub-Column: Elegant Wood Dropdowns & Jewel Switches -->
+      <div class="dropdowns-and-toggles">
+        <div class="brass-rimmed-box wood-select-bar">
+          <span class="selected-wood-lbl">Elegant wood</span>
+          <span class="select-Trigger-circle wood-cap">▼</span>
+        </div>
+
+        <div class="brass-rimmed-box wood-select-bar">
+          <span class="selected-wood-lbl">Elegant wood</span>
+          <span class="select-Trigger-circle brass-cap">▼</span>
+        </div>
+
+        <!-- Expanded Dropdown Menu -->
+        <div class="brass-rimmed-box expanded-dropdown-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;border-bottom:1px solid rgba(200,169,91,0.2);">
+            <span class="selected-wood-lbl" style="font-size:13px;font-weight:600;">Elegant wood</span>
+            <span class="select-Trigger-circle brass-cap">▼</span>
+          </div>
+          <ul class="dropdown-menu-list" id="dropdownList">
+            <li class="selected">Diamond metal</li>
+            <li>Metal lava</li>
+            <li>Hot fire</li>
+            <li>Glossy</li>
+          </ul>
+        </div>
+
+        <!-- Jewel-LED Toggle Switches (Click any switch to toggle!) -->
+        <div class="jewel-toggles-cluster">
+          <div class="jewel-horiz-group">
+            <div class="jewel-track-h" onclick="this.classList.toggle('right')">
+              <div class="jewel-knob wood-rim"><span class="jewel-bead emerald"></span></div>
+            </div>
+            <div class="jewel-track-h" onclick="this.classList.toggle('right')">
+              <div class="jewel-knob"><span class="jewel-bead emerald"></span></div>
+            </div>
+            <div class="jewel-track-h right" onclick="this.classList.toggle('right')">
+              <div class="jewel-knob wood-rim"><span class="jewel-bead ruby"></span></div>
+            </div>
+            <div class="jewel-track-h right" onclick="this.classList.toggle('right')">
+              <div class="jewel-knob"><span class="jewel-bead ruby"></span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;">
+            <div class="jewel-track-v" onclick="this.classList.toggle('top')">
+              <div class="jewel-knob wood-rim"><span class="jewel-bead emerald"></span></div>
+            </div>
+            <div class="jewel-track-v top" onclick="this.classList.toggle('top')">
+              <div class="jewel-knob"><span class="jewel-bead ruby"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sub-Column: Like Buttons, Share Drawer & 3 Range Sliders -->
+      <div class="social-and-sliders-col">
+        <div class="like-buttons-row">
+          <button class="luxury-pill-btn state-normal like-btn" onclick="this.classList.toggle('state-active');this.classList.toggle('state-normal')">
+            <span>👍</span><span>Like it</span>
+          </button>
+          <button class="luxury-pill-btn state-active like-btn" onclick="this.classList.toggle('state-active');this.classList.toggle('state-normal')">
+            <span>👍</span><span>Like it</span>
+          </button>
+        </div>
+
+        <!-- Closed Share Pill -->
+        <div class="share-drawer-wrap">
+          <div class="brass-rimmed-box share-main-pill" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+            <span>Share it</span>
+            <span class="select-Trigger-circle brass-cap">▶</span>
+          </div>
+          <div class="share-social-tray collapsed">
+            <span>f</span>
+            <span>𝕏</span>
+          </div>
+        </div>
+
+        <!-- Expanded Share Pill with Brass Social Tray -->
+        <div class="share-drawer-wrap">
+          <div class="brass-rimmed-box share-main-pill" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+            <span>Share it</span>
+            <span class="select-Trigger-circle brass-cap">◀</span>
+          </div>
+          <div class="share-social-tray">
+            <span>f</span>
+            <span>🐦</span>
+          </div>
+        </div>
+
+        <!-- 3 Range Sliders -->
+        <div class="range-sliders-stack">
+          <div class="brass-groove-track" style="margin-bottom:10px;">
+            <div class="range-fill-bar wood-fill"></div>
+            <div class="rect-brass-thumb" style="left:24%;"><span class="thumb-val-lbl">50</span></div>
+            <div class="rect-brass-thumb" style="left:74%;"><span class="thumb-val-lbl">300</span></div>
+          </div>
+
+          <div class="brass-groove-track">
+            <div class="range-fill-bar gold-fill" style="left:28%;right:30%;"></div>
+            <div class="round-slider-thumb" style="left:28%;"></div>
+            <div class="round-slider-thumb" style="left:70%;"></div>
+          </div>
+
+          <div class="brass-groove-track" id="singleGoldSlider">
+            <div class="round-slider-thumb" id="singleGoldThumb" style="left:38%;width:22px;height:22px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 8. Horizontal Navigation Bar with Sliding Translucent Brass Frame -->
+    <nav class="brass-rimmed-box luxury-navbar" id="luxuryNavbar" style="--nav-idx: 1;">
+      <div class="nav-sliding-lens"></div>
+
+      <div class="nav-tab-item" data-idx="0">
+        <span class="nav-tab-title">Home</span>
+        <span class="nav-tab-sub">Lorem ipsum</span>
+      </div>
+      <div class="nav-tab-item active" data-idx="1">
+        <span class="nav-tab-title">About us</span>
+        <span class="nav-tab-sub">Dolor sit amet</span>
+      </div>
+      <div class="nav-tab-item" data-idx="2">
+        <span class="nav-tab-title">Portfolio</span>
+        <span class="nav-tab-sub">Lipsum</span>
+      </div>
+      <div class="nav-tab-item" data-idx="3">
+        <span class="nav-tab-title">Contact</span>
+        <span class="nav-tab-sub">Sit amet</span>
+      </div>
+    </nav>
+
+    <!-- 9. Bottom Master Audio Deck: Spun-Brass Rotary Knob (0-100) + 7-Band EQ -->
+    <div class="master-audio-deck">
+
+      <!-- Spun-Brass Master Volume Knob with Engraved 0-100 Scale -->
+      <div class="brass-dial-wrap">
+        <svg class="dial-scale-svg" id="brassDialSvg" viewBox="0 0 210 190"></svg>
+        <div class="brass-knob-skirt">
+          <div class="brass-knob-cap" id="brassMasterKnob" style="--brass-deg: 42deg;" title="Drag vertically to turn Spun-Brass Master Knob">
+            <div class="brass-knob-dimple"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-Band Graphic Equalizer Faders (Drag any fader!) -->
+      <div class="eq-7band-bank" id="eqBank">
+        <div class="eq-fader-slot" style="--fader: 36%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 48%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 62%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 28%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 82%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 45%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+        <div class="eq-fader-slot" style="--fader: 70%;"><div class="eq-fader-fill"></div><div class="eq-fader-cap"></div></div>
+      </div>
+
+      <!-- Right Speaker Mute & Volume Pill -->
+      <div class="speaker-strip-col">
+        <button class="round-brass-btn" style="width:36px;height:36px;">🔉</button>
+        <div class="brass-rimmed-box volume-pill-fader">
+          <div class="eq-fader-slot" style="height:56px;--fader:65%;">
+            <div class="eq-fader-fill"></div>
+            <div class="eq-fader-cap" style="width:15px;height:15px;"></div>
+          </div>
+          <span style="font-size:11px;color:#ebd7ad;">🔊</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. GENERATE ENGRAVED 0 - 100 SCALE AROUND SPUN-BRASS MASTER KNOB
+  // =========================================================================
+  const dialSvg = document.getElementById('brassDialSvg');
+  const cx = 105, cy = 102;
+  let scaleHtml = '';
+
+  for (let val = 0; val <= 100; val += 5) {
+    // Angle from -135 deg (0) to +135 deg (100)
+    const deg = -135 + (val / 100) * 270;
+    const rad = ((deg - 90) * Math.PI) / 180;
+
+    const rIn = 66;
+    const rOut = val % 10 === 0 ? 74 : 71;
+    const x1 = cx + Math.cos(rad) * rIn;
+    const y1 = cy + Math.sin(rad) * rIn;
+    const x2 = cx + Math.cos(rad) * rOut;
+    const y2 = cy + Math.sin(rad) * rOut;
+
+    scaleHtml += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#1a0b04" stroke-width="${val % 10 === 0 ? 1.6 : 1}"/>`;
+
+    if (val % 5 === 0) {
+      const rTxt = 85;
+      const tx = cx + Math.cos(rad) * rTxt;
+      const ty = cy + Math.sin(rad) * rTxt + 3;
+      scaleHtml += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1c0b04">${val}</text>`;
+    }
+  }
+  dialSvg.innerHTML = scaleHtml;
+
+  // =========================================================================
+  // 2. INTERACTIVE SPUN-BRASS MASTER KNOB DRAGGING
+  // =========================================================================
+  const brassKnob = document.getElementById('brassMasterKnob');
+  let knobDragging = false;
+  let startY = 0;
+  let curDeg = 42;
+
+  brassKnob.addEventListener('pointerdown', (e) => {
+    knobDragging = true;
+    startY = e.clientY;
+    brassKnob.setPointerCapture(e.pointerId);
+  });
+
+  brassKnob.addEventListener('pointermove', (e) => {
+    if (!knobDragging) return;
+    const dy = startY - e.clientY;
+    startY = e.clientY;
+    curDeg = Math.max(-135, Math.min(135, curDeg + dy * 1.8));
+    brassKnob.style.setProperty('--brass-deg', `${curDeg.toFixed(1)}deg`);
+  });
+
+  const stopKnob = () => { knobDragging = false; };
+  brassKnob.addEventListener('pointerup', stopKnob);
+  brassKnob.addEventListener('pointercancel', stopKnob);
+
+  // =========================================================================
+  // 3. INTERACTIVE 7-BAND GRAPHIC EQUALIZER FADERS
+  // =========================================================================
+  document.querySelectorAll('.eq-fader-slot').forEach(slot => {
+    let dragging = false;
+
+    function updateFader(clientY) {
+      const rect = slot.getBoundingClientRect();
+      const ratio = 1 - Math.max(0.08, Math.min(0.92, (clientY - rect.top) / rect.height));
+      slot.style.setProperty('--fader', `${(ratio * 100).toFixed(1)}%`);
+    }
+
+    slot.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      slot.setPointerCapture(e.pointerId);
+      updateFader(e.clientY);
+    });
+
+    slot.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      updateFader(e.clientY);
+    });
+
+    const stop = () => { dragging = false; };
+    slot.addEventListener('pointerup', stop);
+    slot.addEventListener('pointercancel', stop);
+  });
+
+  // =========================================================================
+  // 4. SLIDING BRASS LENS NAVIGATION BAR
+  // =========================================================================
+  const navbar = document.getElementById('luxuryNavbar');
+  navbar.querySelectorAll('.nav-tab-item').forEach(tab => {
+    tab.addEventListener('click', () => {
+      navbar.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      navbar.style.setProperty('--nav-idx', tab.dataset.idx);
+    });
+  });
+
+  // =========================================================================
+  // 5. TOP PROGRESS BAR, AUDIO TIMELINE, STAR RATING & DROPDOWN
+  // =========================================================================
+  const topGroove = document.getElementById('topProgressGroove');
+  const topFill = document.getElementById('topProgressFill');
+  topGroove.addEventListener('click', (e) => {
+    const rect = topGroove.getBoundingClientRect();
+    const pct = Math.round(Math.max(12, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
+    topFill.style.setProperty('--prog', `${pct}%`);
+    topFill.textContent = `${pct}%`;
+  });
+
+  // Audio Player Timeline Seek
+  const timeline = document.getElementById('playerTimeline');
+  const timelineFill = document.getElementById('playerTimelineFill');
+  const timeTxt = document.getElementById('playerTimeTxt');
+  const totalSec = 296; // 4:56
+
+  timeline.addEventListener('click', (e) => {
+    const rect = timeline.getBoundingClientRect();
+    const ratio = Math.max(0.05, Math.min(1, (e.clientX - rect.left) / rect.width));
+    timelineFill.style.setProperty('--seek', `${(ratio * 100).toFixed(1)}%`);
+    const cur = Math.round(ratio * totalSec);
+    const m = Math.floor(cur / 60);
+    const s = String(cur % 60).padStart(2, '0');
+    timeTxt.textContent = `${m}:${s}/4:56`;
+  });
+
+  // Play / Pause Toggle
+  const playBtn = document.getElementById('playPauseBtn');
+  let playing = false;
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? '⏸' : '▶';
+  });
+
+  // 5-Star Rating
+  const stars = document.querySelectorAll('#starRow .gold-star');
+  stars.forEach((star, idx) => {
+    star.addEventListener('click', () => {
+      stars.forEach((s, i) => s.classList.toggle('lit', i <= idx));
+    });
+  });
+
+  // Dropdown List Selection
+  document.querySelectorAll('#dropdownList li').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('#dropdownList li').forEach(li => li.classList.remove('selected'));
+      item.classList.add('selected');
+      document.querySelectorAll('.selected-wood-lbl').forEach(lbl => {
+        lbl.textContent = item.textContent;
+      });
+    });
+  });
+
+  // Single Horizontal Slider Dragging
+  const singleSlider = document.getElementById('singleGoldSlider');
+  const singleThumb = document.getElementById('singleGoldThumb');
+  singleSlider.addEventListener('click', (e) => {
+    const rect = singleSlider.getBoundingClientRect();
+    const pct = Math.max(6, Math.min(94, ((e.clientX - rect.left) / rect.width) * 100));
+    singleThumb.style.left = `${pct.toFixed(1)}%`;
+  });
+})();
+</script>
+</body>
+</html>
