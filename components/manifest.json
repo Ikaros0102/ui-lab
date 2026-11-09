@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-29T17:00:18.312Z",
- "count": 81,
+ "generated": "2026-11-09T18:34:41.819Z",
+ "count": 89,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -138,6 +138,45 @@
     "mode": "page",
     "width": 1080,
     "height": 720
+   },
+   "hasJs": true
+  },
+  {
+   "id": "touchdesigner-glitch-butterfly",
+   "path": "components/backgrounds/touchdesigner-glitch-butterfly.html",
+   "title": "TouchDesigner Glitch Butterfly & CV Blob Tracker",
+   "category": "backgrounds",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "glitch",
+    "touchdesigner",
+    "blob-tracking",
+    "butterfly",
+    "bioluminescent",
+    "canvas-2d",
+    "chromatic-aberration",
+    "particles",
+    "hud",
+    "generative",
+    "neon",
+    "cyberpunk",
+    "backgrounds",
+    "animations"
+   ],
+   "description": "Real-time generative Canvas simulation of a bioluminescent 3D butterfly with TouchDesigner computer-vision blob tracking overlays (red bounding boxes, dashed radius rings, and live X/Y telemetry coordinates), horizontal slit-scan glitch slicing, RGB chromatic aberration, and automatic Cyan-to-Magenta phase shifting.",
+   "techniques": [
+    "offscreen Canvas rendering with real-time horizontal strip displacement and RGB channel splitting",
+    "dynamic TouchDesigner-style CV blob tracker tracking 3D wing vertices with live X/Y coordinate readouts, red bounding boxes, and dashed target circles",
+    "additive-blended bioluminescent wing shaders with internal venation and voxel particle emission"
+   ],
+   "recipe": "Built with a dual-buffer HTML5 Canvas pipeline combining 3D perspective wing kinematics, post-processing glitch slices, and a vector CV tracking HUD.",
+   "preview": {
+    "mode": "page",
+    "width": 1280,
+    "height": 860
    },
    "hasJs": true
   },
@@ -351,6 +390,44 @@
     "mode": "page",
     "width": 1080,
     "height": 780
+   },
+   "hasJs": true
+  },
+  {
+   "id": "blueprint-aethereal-styleguide",
+   "path": "components/cards/blueprint-aethereal-styleguide.html",
+   "title": "System UI Kit Blueprint: Project Aethereal — Rev. 2.4",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "blueprint",
+    "design-system",
+    "styleguide",
+    "retro-futurism",
+    "brass-bezel",
+    "teal-glow",
+    "stepper",
+    "datepicker",
+    "button-anatomy",
+    "skeuomorphic",
+    "hardware",
+    "neon",
+    "cards"
+   ],
+   "description": "Tactile retro-futuristic engineering blueprint styleguide ('PROJECT AETHEREAL - REV. 2.4') rendered on a creased cyanotype drafting sheet. Combines warm brushed-brass 3D bezels, bioluminescent cyan-teal edge illumination, muted terracotta-coral secondary states, interactive steppers, a 2042 mini calendar, and a schematic 6-stage Button Anatomy diagram.",
+   "techniques": [
+    "folded cyanotype blueprint paper simulation with orthogonal crease highlights, drafting grid lines, and distressed vignette edges",
+    "hybrid brass-and-teal 3D pill bezels with multi-stage neon bloom and interactive state transitions",
+    "schematic SVG callout tree for the 6-layer Primary Button Anatomy diagram"
+   ],
+   "recipe": "Built on a distressed deep-petrol blueprint canvas (#142830) with technical Condensed typography, brass rims, and glowing cyan/coral accents.",
+   "preview": {
+    "mode": "page",
+    "width": 1220,
+    "height": 1680
    },
    "hasJs": true
   },
@@ -726,6 +803,45 @@
    "hasJs": true
   },
   {
+   "id": "tactile-product-styleguide-board",
+   "path": "components/cards/tactile-product-styleguide-board.html",
+   "title": "Tactile 3D Product UI Styleguide Board",
+   "category": "cards",
+   "themes": [
+    "light",
+    "retro"
+   ],
+   "tags": [
+    "styleguide",
+    "design-system",
+    "claymorphism",
+    "neumorphism",
+    "tactile-ui",
+    "color-tokens",
+    "typography",
+    "elevation",
+    "tabs",
+    "3d-ui",
+    "skeuomorphic",
+    "hardware",
+    "cards"
+   ],
+   "description": "Physical 3D architectural styleguide board featuring perimeter millimeter rulers, drafting grid lines, matte ceramic/resin color token tiles, a glowing mint acrylic focus ring, dimensional spacing blocks, cascading 5-level elevation stack, backlit focus search input, dual interactive tab bars, pastel 3D alert strips, and a stacked media card.",
+   "techniques": [
+    "directional studio soft-box lighting casting crisp 4px physical extrusions and soft 45-degree drop shadows",
+    "translucent backlit mint-cyan acrylic glow on Focus Ring, Hover Button, and recessed Search Input",
+    "precision SVG perimeter drafting rulers (1-11 horizontal, 0-140 vertical) with dotted architectural guide lines",
+    "synchronized interactive Segmented Pill Tabs and Underline Bar Tabs"
+   ],
+   "recipe": "Constructed as a physical matte drafting tablet with extruded 3D resin UI primitives and interactive state transitions.",
+   "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 1580
+   },
+   "hasJs": true
+  },
+  {
    "id": "cyber-command-input",
    "path": "components/forms/cyber-command-input.html",
    "title": "Cyberpunk Terminal Search & Command Input",
@@ -792,6 +908,85 @@
     "mode": "center",
     "width": 540,
     "height": 520
+   },
+   "hasJs": true
+  },
+  {
+   "id": "luminescent-clay-controls-trio",
+   "path": "components/forms/luminescent-clay-controls-trio.html",
+   "title": "Luminescent 3D Clay & Incandescent UI Trio",
+   "category": "forms",
+   "themes": [
+    "light",
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "3d-ui",
+    "claymorphism",
+    "incandescent",
+    "warm-glow",
+    "slider",
+    "toggle",
+    "search-bar",
+    "floor-reflection",
+    "studio-lighting",
+    "tactile",
+    "skeuomorphic",
+    "neon",
+    "forms"
+   ],
+   "description": "A unified studio showcase combining three 3D tactile luminescent components: the levitating 'Apply Filters' incandescent bar block, the floating 'Sale Only' pill slider with a 3D push-button knob and floor bounce reflection, and the 'Actome' porcelain search capsule with dual edge-bleed corona backlighting. Includes a 4-mode studio backdrop switcher.",
+   "techniques": [
+    "levitating 3D matte clay geometry casting synchronized contact shadows and blurred specular floor reflections",
+    "2700K incandescent light-bar rendering with inner trough bounce illumination and interactive width/intensity dragging",
+    "dual-edge corona backlight bleed behind a matte porcelain search pill under a diagonal sunlit gobo shadow",
+    "4 switchable studio cyclorama backdrops (Lavender Dusk, Warm Slate, Sunlit Alabaster, Carbon Darkroom)"
+   ],
+   "recipe": "Three interactive 3D luminescent widgets presented on a shared studio stage with a real-time environment switcher.",
+   "preview": {
+    "mode": "page",
+    "width": 1380,
+    "height": 920
+   },
+   "hasJs": true
+  },
+  {
+   "id": "night-bar-loft-controls",
+   "path": "components/forms/night-bar-loft-controls.html",
+   "title": "Night Bar Brick & Matte Black Cast-Iron UI Kit",
+   "category": "forms",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "brick",
+    "loft-bar",
+    "cast-iron",
+    "matte-black",
+    "skeuomorphism",
+    "rotary-knob",
+    "sliders",
+    "toggle-switch",
+    "backlit",
+    "media-controls",
+    "hardware",
+    "skeuomorphic",
+    "neon",
+    "forms"
+   ],
+   "description": "Industrial speakeasy night-bar UI kit featuring a weathered red-brick wall in moody spotlighting paired with heavy matte-black powder-coated cast-iron and gunmetal controls. Preserves the exact layout of the classic tactile board: a rotary dial in a chiselled masonry well, dual sliders, ON/OFF toggles, radio sockets, pill buttons, search bar, and square media keys with neon-backlit laser-cut inlays.",
+   "techniques": [
+    "procedural SVG running-bond brickwork with recessed mortar joints and mineral surface roughness",
+    "powder-coated matte-black cast-iron controls with 3D lower extrusion lips and specular anodized bevels",
+    "laser-cut icon and letterpress inlays that ignite with neon bar illumination and cast colored bounce light onto the brick wall"
+   ],
+   "recipe": "Exact layout of the tactile skeuomorphic UI board reimagined in speakeasy red brick and matte-black cast iron with interactive neon cutout lighting.",
+   "preview": {
+    "mode": "page",
+    "width": 1200,
+    "height": 860
    },
    "hasJs": true
   },
@@ -1592,6 +1787,44 @@
     "mode": "page",
     "width": 1120,
     "height": 780
+   },
+   "hasJs": true
+  },
+  {
+   "id": "bas-relief-alpine-diorama",
+   "path": "components/widgets/bas-relief-alpine-diorama.html",
+   "title": "Bas-Relief Alpine Diorama & Sunset Slate UI",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "diorama",
+    "bas-relief",
+    "neumorphism",
+    "claymorphism",
+    "alpine",
+    "landscape",
+    "sunset-palette",
+    "telemetry",
+    "tactile-ui",
+    "svg-illustration",
+    "skeuomorphic",
+    "widgets",
+    "dashboards"
+   ],
+   "description": "Sculpted bas-relief dashboard blending a 3D layered alpine valley diorama (binary sunset, jagged peaks, pine forests, and lakeside chalets) directly into a matte slate-and-copper neumorphic control surface. Features 16 modular tactile panels, backlit apricot-copper gauges, vertical bar meters, and a dual-ridge elevation silhouette graph.",
+   "techniques": [
+    "multi-layered SVG bas-relief mountain, pine forest, and chalet diorama with drop-shadow depth integrated directly into the dashboard chassis",
+    "sunset-copper to deep-aubergine internal radial illumination simulating backlit frosted resin panels",
+    "interactive solar horizon slider that shifts the binary sun position, lake reflection, and panel glow intensity"
+   ],
+   "recipe": "Constructed on a sculpted slate-indigo surface (#2f3342) with recessed dark wells, warm apricot-terracotta gradient tiles, and bas-relief SVG scenery.",
+   "preview": {
+    "mode": "page",
+    "width": 1320,
+    "height": 1280
    },
    "hasJs": true
   },
@@ -2411,6 +2644,45 @@
    "hasJs": true
   },
   {
+   "id": "pro-camera-focus-control",
+   "path": "components/widgets/pro-camera-focus-control.html",
+   "title": "Future. Focus. Control. — Pro Camera UI System",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "camera-ui",
+    "viewfinder",
+    "focus-peaking",
+    "histogram",
+    "vectorscope",
+    "dials",
+    "japanese-ui",
+    "hud",
+    "photography",
+    "cinema-camera",
+    "hardware",
+    "neon",
+    "dashboards",
+    "widgets"
+   ],
+   "description": "Next-generation professional mirrorless & cinema camera UI system concept ('FUTURE. FOCUS. CONTROL.'). Features an interactive live viewfinder with cyan focus-peaking edge detection, movable AF reticle, 5 composition grid overlays, RGB histogram & vectorscope, quick-adjust exposure matrix, spun-aluminum shutter & REC deck, and 4 radial parameter dials.",
+   "techniques": [
+    "interactive SVG sci-fi monolith viewfinder with real-time cyan focus-peaking contour intensity and dynamic composition grids",
+    "synchronized exposure state engine linking Quick Adjust tiles, Main Viewfinder HUD, EV ruler, and 4 radial arc dials",
+    "live RGB/Luma waveform histogram, color vectorscope wheel, and 3D wireframe terrain mesh"
+   ],
+   "recipe": "Built on a matte obsidian-slate camera chassis (#0b0d11) with ice-cyan (#28d7f7) telemetry accents and Japanese/English technical typography.",
+   "preview": {
+    "mode": "page",
+    "width": 1340,
+    "height": 1720
+   },
+   "hasJs": true
+  },
+  {
    "id": "quantum-atom-confinement",
    "path": "components/widgets/quantum-atom-confinement.html",
    "title": "Cryo-Magnetic 3D Atom Confinement Chamber",
@@ -2559,6 +2831,41 @@
     "mode": "page",
     "width": 1080,
     "height": 760
+   },
+   "hasJs": true
+  },
+  {
+   "id": "refractive-liquid-glass-caustics",
+   "path": "components/widgets/refractive-liquid-glass-caustics.html",
+   "title": "Refractive Liquid Glass & Caustic UI Showcase",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "light",
+    "glass"
+   ],
+   "tags": [
+    "liquid-glass",
+    "glassmorphism",
+    "caustics",
+    "refraction",
+    "control-center",
+    "botanical",
+    "lavender",
+    "3d-buttons",
+    "switches",
+    "specular-border",
+    "neon",
+    "skeuomorphic",
+    "widgets"
+   ],
+   "description": "True-to-reference implementation of the Botanical Lavender Liquid-Glass Control Center (Ref 1) and Prismatic Caustic Liquid Glass UI Kit (Ref 2). Features directional total-internal-reflection black glass rims, upper-right quadrant softbox meniscus crescents, translucent 3D extruded acrylic bases, chromatic dispersion arcs, and structured bottom-left caustic light projections.",
+   "techniques": [],
+   "recipe": "",
+   "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 980
    },
    "hasJs": true
   },

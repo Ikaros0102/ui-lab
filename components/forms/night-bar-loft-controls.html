@@ -1,0 +1,1090 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Night Bar Loft Brick & Matte Black Cast-Iron UI Kit</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Night Bar Brick & Matte Black Cast-Iron UI Kit",
+  "category": "forms",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "brick",
+    "loft-bar",
+    "cast-iron",
+    "matte-black",
+    "skeuomorphism",
+    "rotary-knob",
+    "sliders",
+    "toggle-switch",
+    "backlit",
+    "media-controls",
+    "hardware",
+    "skeuomorphic",
+    "neon",
+    "forms"
+  ],
+  "description": "Industrial speakeasy night-bar UI kit featuring a weathered red-brick wall in moody spotlighting paired with heavy matte-black powder-coated cast-iron and gunmetal controls. Preserves the exact layout of the classic tactile board: a rotary dial in a chiselled masonry well, dual sliders, ON/OFF toggles, radio sockets, pill buttons, search bar, and square media keys with neon-backlit laser-cut inlays.",
+  "techniques": [
+    "procedural SVG running-bond brickwork with recessed mortar joints and mineral surface roughness",
+    "powder-coated matte-black cast-iron controls with 3D lower extrusion lips and specular anodized bevels",
+    "laser-cut icon and letterpress inlays that ignite with neon bar illumination and cast colored bounce light onto the brick wall"
+  ],
+  "recipe": "Exact layout of the tactile skeuomorphic UI board reimagined in speakeasy red brick and matte-black cast iron with interactive neon cutout lighting.",
+  "preview": {
+    "mode": "page",
+    "width": 1200,
+    "height": 860
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    /* Dynamic Backlight Parameters (OFF by default, controlled by ON/OFF & Sliders) */
+    --glow-on: 0;              /* 0 = OFF by default */
+    --glow-hue: 14;            /* Speakeasy Neon Ruby-Amber default hue */
+    --glow-intensity: 0.90;    /* Controlled by 2nd slider & big rotary knob */
+
+    --active-alpha: calc(var(--glow-on) * var(--glow-intensity));
+    --led-core: hsl(var(--glow-hue), 100%, 78%);
+    --led-mid: hsl(var(--glow-hue), 96%, 56%);
+    --led-halo: hsla(var(--glow-hue), 100%, 50%, calc(0.82 * var(--active-alpha)));
+    --led-brick-bounce: hsla(var(--glow-hue), 100%, 52%, calc(0.42 * var(--active-alpha)));
+
+    /* Matte-Black Powder-Coated Cast Iron / Brushed Gunmetal Surface */
+    --black-iron-surface:
+      /* Subtle horizontal brushed metal micro-lines */
+      repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.025) 0px,
+        rgba(255, 255, 255, 0.025) 1px,
+        transparent 1px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.22) 3px,
+        rgba(0, 0, 0, 0.22) 4.5px
+      ),
+      /* Top crown metallic sheen */
+      radial-gradient(ellipse 130% 55% at 50% 18%, rgba(255, 255, 255, 0.12) 0%, transparent 65%),
+      /* Rich dark charcoal to obsidian vertical body gradient */
+      linear-gradient(
+        180deg,
+        #32353c 0%,
+        #26292f 18%,
+        #1c1e23 52%,
+        #14161a 82%,
+        #0d0e11 100%
+      );
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #140806;
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* =========================================================
+     NIGHT-BAR WEATHERED RED BRICK WALL STAGE
+     ========================================================= */
+  .brick-wall-stage {
+    width: 100vw;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #1a0b08;
+    /* Running-bond SVG brick pattern + Moody Night-Bar Overhead Spotlight & Vignette */
+    background-image:
+      radial-gradient(
+        ellipse 68% 65% at 50% 46%,
+        rgba(255, 130, 65, 0.14) 0%,
+        rgba(25, 8, 5, 0.45) 58%,
+        rgba(5, 2, 2, 0.88) 100%
+      ),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='96' viewBox='0 0 168 96'%3E%3Crect width='168' height='96' fill='%23161211'/%3E%3Cg stroke='%230c0908' stroke-width='1.5'%3E%3C!-- Row 1 Bricks --%3E%3Crect x='3' y='3' width='78' height='42' rx='3.5' fill='%23592218'/%3E%3Crect x='5' y='4' width='74' height='3' rx='1.5' fill='%237a3326' opacity='0.45' stroke='none'/%3E%3Crect x='87' y='3' width='78' height='42' rx='3.5' fill='%234d1d15'/%3E%3Crect x='89' y='4' width='74' height='3' rx='1.5' fill='%236e2c20' opacity='0.4' stroke='none'/%3E%3C!-- Row 2 Offset Bricks --%3E%3Crect x='-39' y='51' width='78' height='42' rx='3.5' fill='%23481a13'/%3E%3Crect x='45' y='51' width='78' height='42' rx='3.5' fill='%2363261b'/%3E%3Crect x='47' y='52' width='74' height='3' rx='1.5' fill='%2385392b' opacity='0.45' stroke='none'/%3E%3Crect x='129' y='51' width='78' height='42' rx='3.5' fill='%23521e16'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: cover, 168px 96px;
+    background-position: center, center;
+  }
+
+  /* Organic Mineral Brick Roughness & Mortar Grain Overlay */
+  .brick-mineral-grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.36;
+    mix-blend-mode: overlay;
+    filter: url(#brick-roughness);
+  }
+
+  /* Ambient Neon Bar Wall Bounce When Backlight is Switched ON */
+  .brick-neon-wash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(
+      circle 380px at 50% 52%,
+      var(--led-brick-bounce) 0%,
+      transparent 75%
+    );
+    opacity: var(--glow-on);
+    transition: opacity 0.3s ease;
+  }
+
+  /* =========================================================
+     MAIN COMPONENT CANVAS (IDENTICAL GEOMETRY TO WOOD KIT)
+     ========================================================= */
+  .ui-kit-canvas {
+    position: relative;
+    z-index: 2;
+    width: 660px;
+    height: 540px;
+  }
+
+  /* =========================================================
+     1. TOP-LEFT: LARGE CAST-IRON ROTARY KNOB IN CHISELLED WELL
+     ========================================================= */
+  .rotary-assembly {
+    position: absolute;
+    top: 32px;
+    left: 42px;
+    width: 170px;
+    height: 176px;
+  }
+
+  /* Chiselled Dark Masonry Well in the Brick Wall */
+  .rotary-well {
+    width: 152px;
+    height: 152px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(10, 8, 8, 0.88) 0%, rgba(18, 12, 11, 0.82) 72%, rgba(8, 5, 5, 0.95) 100%);
+    box-shadow:
+      inset 0 7px 14px rgba(0, 0, 0, 0.95),
+      inset 0 -2px 3px rgba(255, 130, 85, 0.16),
+      0 2px 3px rgba(255, 140, 95, 0.15);
+    border: 1.5px solid rgba(10, 5, 4, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* 3D Cast-Iron Knob Lower Extrusion Lip */
+  .rotary-knob-3d-base {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    position: relative;
+    background: linear-gradient(180deg, #141619 0%, #07080a 100%);
+    box-shadow:
+      0 14px 22px rgba(0, 0, 0, 0.92),
+      0 5px 8px rgba(0, 0, 0, 0.8),
+      0 0 calc(26px * var(--active-alpha)) var(--led-brick-bounce);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Rotating Top Matte-Black Iron Face of Knob */
+  .rotary-knob-face {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin-top: -6px;
+    background: var(--black-iron-surface);
+    border: 2px solid #3a3e47;
+    box-shadow:
+      inset 0 2.5px 3px rgba(255, 255, 255, 0.22),
+      inset 0 -4px 7px rgba(0, 0, 0, 0.85),
+      0 3px 4px rgba(0, 0, 0, 0.9);
+    cursor: grab;
+    position: relative;
+    transform: rotate(var(--knob-deg, 82deg));
+  }
+
+  .rotary-knob-face:active {
+    cursor: grabbing;
+  }
+
+  /* Recessed Dimple Indicator on Knob Face (Ignites when ON!) */
+  .knob-dimple {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 50% 50%,
+        var(--led-core) 0%,
+        var(--led-mid) calc(58% * var(--active-alpha)),
+        #22252b calc(59% * var(--active-alpha) + 8%),
+        #090a0c 100%
+      );
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.92),
+      0 1px 1px rgba(255, 255, 255, 0.2),
+      0 0 calc(14px * var(--active-alpha)) var(--led-halo);
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  /* Stencilled / Engraved "min" and "max" Labels on the Brick Wall */
+  .knob-minmax-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    margin-top: -6px;
+  }
+
+  .carved-board-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #160907;
+    text-shadow:
+      0 1px 0 rgba(255, 145, 95, 0.25),
+      0 -1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 0.3px;
+  }
+
+  /* =========================================================
+     2. TOP-RIGHT: TWO HORIZONTAL IRON SLIDERS IN MASONRY SLOTS
+     ========================================================= */
+  .sliders-stack {
+    position: absolute;
+    top: 38px;
+    left: 236px;
+    width: 344px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .iron-slider-track {
+    width: 100%;
+    height: 15px;
+    border-radius: 9px;
+    background:
+      linear-gradient(180deg, rgba(8, 6, 6, 0.95) 0%, rgba(26, 18, 16, 0.88) 100%);
+    border: 1px solid rgba(10, 5, 4, 0.9);
+    box-shadow:
+      inset 0 3px 6px rgba(0, 0, 0, 0.95),
+      0 1.5px 1px rgba(255, 145, 95, 0.2);
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Internal Neon Glow Bar Inside Slider Groove When ON */
+  .slider-fill-glow {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    width: var(--pos, 23%);
+    border-radius: 7px;
+    background: linear-gradient(90deg, transparent, var(--led-mid));
+    opacity: calc(0.65 * var(--active-alpha));
+    box-shadow: 0 0 12px var(--led-halo);
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  /* Round Matte-Black Iron Slider Thumb */
+  .iron-slider-thumb {
+    position: absolute;
+    top: 50%;
+    left: var(--pos, 23%);
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #16181c 0%, #07080a 100%);
+    box-shadow:
+      0 7px 11px rgba(0, 0, 0, 0.9),
+      0 2px 4px rgba(0, 0, 0, 0.75);
+    cursor: grab;
+  }
+
+  .iron-slider-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--black-iron-surface);
+    border: 1.5px solid #434854;
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.24),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.85);
+  }
+
+  /* =========================================================
+     3. MIDDLE-RIGHT: "ON" & "OFF" CAST-IRON TOGGLE SWITCHES
+     ========================================================= */
+  .toggles-row {
+    position: absolute;
+    top: 170px;
+    left: 280px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .iron-toggle {
+    width: 116px;
+    height: 44px;
+    border-radius: 24px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.22s ease;
+  }
+
+  /* Left Raised Matte-Iron Switch ("on") */
+  .iron-toggle.style-raised {
+    background: var(--black-iron-surface);
+    border: 1.5px solid #3c404a;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.18),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.8),
+      0 6px 12px rgba(0, 0, 0, 0.85),
+      0 0 calc(18px * var(--active-alpha)) var(--led-brick-bounce);
+  }
+
+  /* Right Deep Recessed Masonry/Smoked Switch ("off") */
+  .iron-toggle.style-recessed {
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(28, 14, 12, 0.94) 0%, rgba(12, 7, 6, 0.98) 100%);
+    border: 1.5px solid rgba(10, 5, 4, 0.95);
+    box-shadow:
+      inset 0 4px 9px rgba(0, 0, 0, 0.95),
+      0 1.5px 1px rgba(255, 140, 90, 0.2);
+  }
+
+  .toggle-label {
+    position: absolute;
+    font-size: 19px;
+    font-weight: 600;
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+
+  .iron-toggle.style-raised .toggle-label {
+    right: 22px;
+    color: #7c8494;
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.12),
+      0 -1px 1px rgba(0, 0, 0, 0.9);
+  }
+
+  .iron-toggle.style-recessed .toggle-label {
+    left: 20px;
+    color: #6e554f;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9);
+  }
+
+  /* When Backlight is ON, the carved "on" label glows like a neon bar sign */
+  body.backlit-on .iron-toggle.style-raised .toggle-label {
+    color: var(--led-core);
+    text-shadow:
+      0 0 6px var(--led-core),
+      0 0 14px var(--led-mid),
+      0 0 22px var(--led-halo);
+  }
+
+  /* Round Matte-Iron Toggle Knob */
+  .toggle-knob {
+    width: 38px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(180deg, #16181c 0%, #060709 100%);
+    box-shadow:
+      0 6px 11px rgba(0, 0, 0, 0.9),
+      0 2px 4px rgba(0, 0, 0, 0.75);
+    transition: left 0.24s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .toggle-knob::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--black-iron-surface);
+    border: 1.5px solid #454a56;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.24),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.85);
+  }
+
+  .iron-toggle.style-raised .toggle-knob   { left: 4px; }
+  .iron-toggle.style-recessed .toggle-knob { left: 72px; }
+
+  /* =========================================================
+     4. CENTER: TWO BLACK IRON RADIO SOCKETS (EMPTY & RUBY LED)
+     ========================================================= */
+  .radios-pair {
+    position: absolute;
+    top: 290px;
+    left: 230px;
+    display: flex;
+    gap: 26px;
+  }
+
+  .iron-radio-well {
+    width: 35px;
+    height: 37px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #16181c 0%, #07080a 100%);
+    box-shadow:
+      0 7px 11px rgba(0, 0, 0, 0.9),
+      0 2px 4px rgba(0, 0, 0, 0.75);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .iron-radio-well::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 3px 0;
+    border-radius: 50%;
+    background: var(--black-iron-surface);
+    border: 1.5px solid #414652;
+    box-shadow:
+      inset 0 3px 6px rgba(0, 0, 0, 0.9),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.2);
+  }
+
+  /* Glossy Ruby-Red Sphere Inside Selected Radio Well */
+  .radio-ruby-bead {
+    position: relative;
+    z-index: 2;
+    width: 16px;
+    height: 16px;
+    margin-top: -2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #ff8787 0%, #c92a2a 48%, #4a0808 95%);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.9),
+      inset 0 1px 2px rgba(255, 255, 255, 0.65),
+      0 0 calc(16px * var(--active-alpha)) var(--led-halo);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .iron-radio-well.selected .radio-ruby-bead {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  body.backlit-on .iron-radio-well.selected .radio-ruby-bead {
+    background: radial-gradient(circle at 38% 35%, #ffffff 0%, var(--led-core) 35%, var(--led-mid) 75%, #2b0804 100%);
+  }
+
+  /* =========================================================
+     5. RIGHT: TWO PILL BUTTONS (RAISED IRON & RECESSED SMOKED)
+     ========================================================= */
+  .pill-buttons-stack {
+    position: absolute;
+    top: 274px;
+    left: 390px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Top Raised Matte-Black Cast-Iron Pill Button */
+  .pill-btn-iron {
+    width: 162px;
+    height: 54px;
+    border-radius: 28px;
+    border: none;
+    background: linear-gradient(180deg, #15171b 0%, #060709 100%);
+    box-shadow:
+      0 10px 16px rgba(0, 0, 0, 0.9),
+      0 3px 5px rgba(0, 0, 0, 0.8),
+      0 0 calc(24px * var(--active-alpha)) var(--led-brick-bounce);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .pill-btn-iron::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 5px 0;
+    border-radius: 28px;
+    background: var(--black-iron-surface);
+    border: 1.5px solid #434854;
+    box-shadow:
+      inset 0 2.5px 3px rgba(255, 255, 255, 0.22),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.85);
+  }
+
+  .pill-btn-iron:active {
+    transform: translateY(2px);
+    box-shadow:
+      0 5px 9px rgba(0, 0, 0, 0.88),
+      0 0 calc(28px * var(--active-alpha)) var(--led-halo);
+  }
+
+  /* Laser-Cut / Stamped Cutout Text Inside Iron Button */
+  .carved-cutout-text {
+    position: relative;
+    z-index: 2;
+    margin-top: -3px;
+    font-size: 25px;
+    font-weight: 600;
+    color: #6c7382;
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.14),
+      0 -1.5px 1px rgba(0, 0, 0, 0.92);
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+
+  /* Bottom Recessed Smoked-Anthracite Pill Button in Brick Wall */
+  .pill-btn-smoked {
+    width: 162px;
+    height: 54px;
+    border-radius: 28px;
+    border: 1.5px solid rgba(12, 6, 5, 0.9);
+    background:
+      radial-gradient(ellipse at 50% 28%, rgba(56, 36, 34, 0.78) 0%, rgba(28, 15, 14, 0.9) 75%, rgba(16, 8, 8, 0.96) 100%);
+    box-shadow:
+      inset 0 4px 9px rgba(0, 0, 0, 0.92),
+      inset 0 1px 2px rgba(255, 175, 145, 0.15),
+      0 1.5px 1px rgba(255, 145, 95, 0.2);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+  }
+
+  .pill-btn-smoked:active {
+    transform: scale(0.985);
+  }
+
+  .pill-btn-smoked .carved-cutout-text {
+    margin-top: 0;
+    color: #876862;
+    text-shadow:
+      0 -1px 1px rgba(0, 0, 0, 0.95),
+      0 1px 0 rgba(255, 180, 145, 0.16);
+  }
+
+  /* =========================================================
+     6. MIDDLE-LEFT: GUNMETAL-FRAMED SEARCH INPUT BAR
+     ========================================================= */
+  .iron-search-frame {
+    position: absolute;
+    top: 356px;
+    left: 50px;
+    width: 276px;
+    height: 48px;
+    border-radius: 24px;
+    padding: 5px;
+    background: linear-gradient(180deg, #32363e 0%, #16181c 100%);
+    border: 1.5px solid #0b0c0e;
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.85),
+      inset 0 1px 1px rgba(255, 255, 255, 0.24),
+      0 0 calc(18px * var(--active-alpha)) var(--led-brick-bounce);
+    display: flex;
+    align-items: center;
+  }
+
+  .iron-search-well {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, #2b2628 0%, #3d3536 48%, #2e2728 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 3px 7px rgba(0, 0, 0, 0.88),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.12),
+      inset 0 0 calc(14px * var(--active-alpha)) var(--led-brick-bounce);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+  }
+
+  .iron-search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 19px;
+    font-weight: 600;
+    color: #9e8a86;
+    text-align: right;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.85);
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+
+  .iron-search-input::placeholder {
+    color: #8c7672;
+    opacity: 0.9;
+  }
+
+  body.backlit-on .iron-search-input,
+  body.backlit-on .iron-search-input::placeholder {
+    color: var(--led-core);
+    text-shadow: 0 0 8px var(--led-mid);
+  }
+
+  /* =========================================================
+     7. BOTTOM-LEFT: 4 SQUARE CAST-IRON MEDIA BUTTONS (► ◄ ■ ❚❚)
+     ========================================================= */
+  .media-buttons-row {
+    position: absolute;
+    top: 438px;
+    left: 52px;
+    display: flex;
+    gap: 22px;
+  }
+
+  .iron-media-btn {
+    width: 62px;
+    height: 64px;
+    border-radius: 13px;
+    border: none;
+    /* Thick 3D black cast-iron lower extrusion lip */
+    background: linear-gradient(180deg, #17191d 0%, #050608 100%);
+    box-shadow:
+      0 10px 16px rgba(0, 0, 0, 0.92),
+      0 3px 5px rgba(0, 0, 0, 0.8),
+      0 0 calc(22px * var(--active-alpha)) var(--led-brick-bounce);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  /* Top Matte-Black Iron Face of Square Button */
+  .iron-media-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 6px 0;
+    border-radius: 12px;
+    background: var(--black-iron-surface);
+    border: 1.5px solid #434854;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.22),
+      inset 0 -3px 5px rgba(0, 0, 0, 0.85);
+  }
+
+  .iron-media-btn:active,
+  .iron-media-btn.pressed {
+    transform: translateY(3px);
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.9),
+      0 0 calc(26px * var(--active-alpha)) var(--led-halo);
+  }
+
+  .iron-media-btn:active::before,
+  .iron-media-btn.pressed::before {
+    inset: 0 0 3px 0;
+  }
+
+  /* Laser-Cut / Routed Media Icon SVG Inside Black Button */
+  .carved-icon-svg {
+    position: relative;
+    z-index: 2;
+    width: 22px;
+    height: 22px;
+    margin-top: -5px;
+    fill: #686f7d;
+    filter:
+      drop-shadow(0 1px 0 rgba(255, 255, 255, 0.16))
+      drop-shadow(0 -1.5px 1px rgba(0, 0, 0, 0.95));
+    transition: fill 0.25s ease, filter 0.25s ease;
+  }
+
+  /* =========================================================
+     NEON BAR CUTOUT ILLUMINATION STATE (WHEN SWITCHED "ON")
+     ========================================================= */
+  body.backlit-on .carved-cutout-text {
+    color: var(--led-core);
+    text-shadow:
+      0 0 6px var(--led-core),
+      0 0 calc(14px * var(--glow-intensity)) var(--led-mid),
+      0 0 calc(26px * var(--glow-intensity)) var(--led-halo);
+  }
+
+  body.backlit-on .carved-icon-svg {
+    fill: var(--led-core);
+    filter:
+      drop-shadow(0 0 4px var(--led-core))
+      drop-shadow(0 0 calc(10px * var(--glow-intensity)) var(--led-mid))
+      drop-shadow(0 0 calc(20px * var(--glow-intensity)) var(--led-halo));
+  }
+
+  /* Bottom Bar Telemetry Pill */
+  .bar-hud-hint {
+    position: fixed;
+    bottom: 14px;
+    z-index: 10;
+    background: rgba(14, 12, 13, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 12px;
+    color: #cbd5e1;
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+  }
+
+  .bar-hud-hint b {
+    color: #ff7b54;
+  }
+
+  @media (max-width: 700px) {
+    .ui-kit-canvas {
+      transform: scale(0.56);
+      transform-origin: center center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Procedural SVG Filter for Mineral Brick & Mortar Surface Texture -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="brick-roughness" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" seed="9" result="grain"/>
+      <feColorMatrix type="saturate" values="0" in="grain"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="brick-mineral-grain"></div>
+<div class="brick-neon-wash"></div>
+
+<main class="brick-wall-stage">
+  <div class="ui-kit-canvas">
+
+    <!-- =======================================================
+         1. TOP-LEFT: LARGE CAST-IRON KNOB IN BRICK WELL (min / max)
+         ======================================================= -->
+    <div class="rotary-assembly">
+      <div class="rotary-well">
+        <div class="rotary-knob-3d-base">
+          <div class="rotary-knob-face" id="rotaryKnob" style="--knob-deg: 82deg;" title="Drag vertically to adjust Neon Cutout Intensity">
+            <div class="knob-dimple"></div>
+          </div>
+        </div>
+      </div>
+      <div class="knob-minmax-row">
+        <span class="carved-board-label">min</span>
+        <span class="carved-board-label">max</span>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         2. TOP-RIGHT: TWO HORIZONTAL SLIDERS (NEON COLOR & POWER)
+         ======================================================= -->
+    <div class="sliders-stack">
+      <!-- Slider 1: Controls Neon Cutout Color Hue (Default at 23% like reference!) -->
+      <div class="iron-slider-track" id="hueSlider" style="--pos: 23%;" title="Slide to change Neon Cutout Color">
+        <div class="slider-fill-glow"></div>
+        <div class="iron-slider-thumb"></div>
+      </div>
+
+      <!-- Slider 2: Controls Neon Cutout Brightness / Intensity (Default at 13% like reference!) -->
+      <div class="iron-slider-track" id="intensitySlider" style="--pos: 13%;" title="Slide to adjust Neon Cutout Intensity">
+        <div class="slider-fill-glow"></div>
+        <div class="iron-slider-thumb"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         3. MIDDLE-RIGHT: "on" AND "off" CAST-IRON TOGGLE SWITCHES
+         ======================================================= -->
+    <div class="toggles-row">
+      <!-- Left Raised Matte-Iron Switch ("on") -->
+      <div class="iron-toggle style-raised" id="toggleOnSwitch" title="Click to toggle Neon Bar Cutout Backlight ON/OFF">
+        <div class="toggle-knob"></div>
+        <span class="toggle-label">on</span>
+      </div>
+
+      <!-- Right Recessed Dark Switch ("off") -->
+      <div class="iron-toggle style-recessed" id="toggleOffSwitch" title="Click to toggle Neon Bar Cutout Backlight ON/OFF">
+        <span class="toggle-label">off</span>
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         4. CENTER: TWO CIRCULAR CAST-IRON RADIO WELLS
+         ======================================================= -->
+    <div class="radios-pair">
+      <div class="iron-radio-well" data-radio="0" title="Select Radio 1">
+        <div class="radio-ruby-bead"></div>
+      </div>
+      <div class="iron-radio-well selected" data-radio="1" title="Select Radio 2">
+        <div class="radio-ruby-bead"></div>
+      </div>
+    </div>
+
+    <!-- =======================================================
+         5. RIGHT: TWO PILL BUTTONS ("Button" RAISED IRON & SMOKED)
+         ======================================================= -->
+    <div class="pill-buttons-stack">
+      <button class="pill-btn-iron" type="button">
+        <span class="carved-cutout-text">Button</span>
+      </button>
+
+      <button class="pill-btn-smoked" type="button">
+        <span class="carved-cutout-text">Button</span>
+      </button>
+    </div>
+
+    <!-- =======================================================
+         6. MIDDLE-LEFT: GUNMETAL-FRAMED SEARCH INPUT BAR
+         ======================================================= -->
+    <div class="iron-search-frame">
+      <div class="iron-search-well">
+        <input type="text" class="iron-search-input" placeholder="search" aria-label="Search">
+      </div>
+    </div>
+
+    <!-- =======================================================
+         7. BOTTOM-LEFT: 4 SQUARE CAST-IRON MEDIA BUTTONS (► ◄ ■ ❚❚)
+         ======================================================= -->
+    <div class="media-buttons-row">
+      <!-- Play (►) -->
+      <button class="iron-media-btn" type="button" title="Play">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <polygon points="6,4 20,12 6,20"/>
+        </svg>
+      </button>
+
+      <!-- Reverse Play (◄) -->
+      <button class="iron-media-btn" type="button" title="Reverse">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <polygon points="18,4 4,12 18,20"/>
+        </svg>
+      </button>
+
+      <!-- Stop (■) -->
+      <button class="iron-media-btn" type="button" title="Stop">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <rect x="5" y="5" width="14" height="14" rx="1"/>
+        </svg>
+      </button>
+
+      <!-- Pause (❚❚) -->
+      <button class="iron-media-btn" type="button" title="Pause">
+        <svg class="carved-icon-svg" viewBox="0 0 24 24">
+          <rect x="5" y="4" width="4.5" height="16" rx="1"/>
+          <rect x="14.5" y="4" width="4.5" height="16" rx="1"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</main>
+
+<div class="bar-hud-hint" id="hudStatus">
+  NEON INLAYS: <b>OFF (Matte Cast-Iron Default)</b> • Click <b>on / off</b> switches to ignite bar neon • Drag top slider for color
+</div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const hudStatus = document.getElementById('hudStatus');
+  const toggleOnSwitch = document.getElementById('toggleOnSwitch');
+  const toggleOffSwitch = document.getElementById('toggleOffSwitch');
+  const hueSlider = document.getElementById('hueSlider');
+  const intensitySlider = document.getElementById('intensitySlider');
+  const rotaryKnob = document.getElementById('rotaryKnob');
+
+  // Default OFF so the cast-iron & brick textures match the unlit reference state
+  let isBacklit = false;
+  let currentHue = 14; // Speakeasy Neon Ruby-Orange default
+  let currentIntensity = 0.90;
+
+  function syncBacklightUI() {
+    document.body.classList.toggle('backlit-on', isBacklit);
+    root.style.setProperty('--glow-on', isBacklit ? '1' : '0');
+    root.style.setProperty('--glow-hue', currentHue.toFixed(0));
+    root.style.setProperty('--glow-intensity', currentIntensity.toFixed(2));
+
+    const knobRaised = toggleOnSwitch.querySelector('.toggle-knob');
+    const knobRecessed = toggleOffSwitch.querySelector('.toggle-knob');
+
+    if (isBacklit) {
+      knobRaised.style.left = '72px';
+      toggleOnSwitch.querySelector('.toggle-label').style.right = 'auto';
+      toggleOnSwitch.querySelector('.toggle-label').style.left = '22px';
+
+      knobRecessed.style.left = '4px';
+      toggleOffSwitch.querySelector('.toggle-label').style.left = 'auto';
+      toggleOffSwitch.querySelector('.toggle-label').style.right = '20px';
+
+      hudStatus.innerHTML = `NEON INLAYS: <b style="color:hsl(${currentHue}, 100%, 70%)">ON (Hue ${Math.round(currentHue)}° • Power ${Math.round(currentIntensity * 100)}%)</b> • Drag top slider for neon color, bottom slider/knob for dimmer`;
+    } else {
+      knobRaised.style.left = '4px';
+      toggleOnSwitch.querySelector('.toggle-label').style.left = 'auto';
+      toggleOnSwitch.querySelector('.toggle-label').style.right = '22px';
+
+      knobRecessed.style.left = '72px';
+      toggleOffSwitch.querySelector('.toggle-label').style.right = 'auto';
+      toggleOffSwitch.querySelector('.toggle-label').style.left = '20px';
+
+      hudStatus.innerHTML = `NEON INLAYS: <b>OFF (Matte Cast-Iron Default)</b> • Click <b>on / off</b> switches to ignite bar neon • Drag top slider for color`;
+    }
+  }
+
+  // Toggle Switches Click Handler
+  toggleOnSwitch.addEventListener('click', () => {
+    isBacklit = !isBacklit;
+    syncBacklightUI();
+  });
+
+  toggleOffSwitch.addEventListener('click', () => {
+    isBacklit = !isBacklit;
+    syncBacklightUI();
+  });
+
+  // =========================================================================
+  // DRAGGABLE IRON SLIDERS (TOP = NEON HUE, BOTTOM = DIMMER INTENSITY)
+  // =========================================================================
+  function bindIronSlider(trackEl, onChange) {
+    let dragging = false;
+
+    function updateFromClientX(clientX) {
+      const rect = trackEl.getBoundingClientRect();
+      const ratio = Math.max(0.05, Math.min(0.95, (clientX - rect.left) / rect.width));
+      trackEl.style.setProperty('--pos', `${(ratio * 100).toFixed(1)}%`);
+      onChange((ratio - 0.05) / 0.9);
+    }
+
+    trackEl.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      trackEl.setPointerCapture(e.pointerId);
+      updateFromClientX(e.clientX);
+    });
+
+    trackEl.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      updateFromClientX(e.clientX);
+    });
+
+    const stop = () => { dragging = false; };
+    trackEl.addEventListener('pointerup', stop);
+    trackEl.addEventListener('pointercancel', stop);
+  }
+
+  // Top Slider -> Adjusts Neon Cutout Color Hue
+  bindIronSlider(hueSlider, (norm) => {
+    currentHue = norm * 340;
+    if (!isBacklit) isBacklit = true;
+    syncBacklightUI();
+  });
+
+  // Bottom Slider -> Adjusts Neon Cutout Brightness & Syncs with Big Rotary Knob
+  bindIronSlider(intensitySlider, (norm) => {
+    currentIntensity = 0.25 + norm * 0.95;
+    const deg = -130 + norm * 260;
+    rotaryKnob.style.setProperty('--knob-deg', `${deg.toFixed(1)}deg`);
+    if (!isBacklit) isBacklit = true;
+    syncBacklightUI();
+  });
+
+  // =========================================================================
+  // DRAGGABLE LARGE CAST-IRON ROTARY KNOB (min / max)
+  // =========================================================================
+  let knobDragging = false;
+  let startY = 0;
+  let currentKnobDeg = 82;
+
+  rotaryKnob.addEventListener('pointerdown', (e) => {
+    knobDragging = true;
+    startY = e.clientY;
+    rotaryKnob.setPointerCapture(e.pointerId);
+  });
+
+  rotaryKnob.addEventListener('pointermove', (e) => {
+    if (!knobDragging) return;
+    const dy = startY - e.clientY;
+    startY = e.clientY;
+
+    currentKnobDeg = Math.max(-130, Math.min(130, currentKnobDeg + dy * 1.8));
+    rotaryKnob.style.setProperty('--knob-deg', `${currentKnobDeg.toFixed(1)}deg`);
+
+    const norm = (currentKnobDeg + 130) / 260;
+    currentIntensity = 0.25 + norm * 0.95;
+    intensitySlider.style.setProperty('--pos', `${(5 + norm * 90).toFixed(1)}%`);
+    syncBacklightUI();
+  });
+
+  const stopKnob = () => { knobDragging = false; };
+  rotaryKnob.addEventListener('pointerup', stopKnob);
+  rotaryKnob.addEventListener('pointercancel', stopKnob);
+
+  // =========================================================================
+  // RADIO WELLS & MEDIA BUTTONS TACTILE INTERACTION
+  // =========================================================================
+  document.querySelectorAll('.iron-radio-well').forEach(well => {
+    well.addEventListener('click', () => {
+      document.querySelectorAll('.iron-radio-well').forEach(w => w.classList.remove('selected'));
+      well.classList.add('selected');
+    });
+  });
+
+  document.querySelectorAll('.iron-media-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alreadyPressed = btn.classList.contains('pressed');
+      document.querySelectorAll('.iron-media-btn').forEach(b => b.classList.remove('pressed'));
+      if (!alreadyPressed) btn.classList.add('pressed');
+    });
+  });
+})();
+</script>
+</body>
+</html>

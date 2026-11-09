@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Tactile 3D Claymorphic Product UI Styleguide Board</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Tactile 3D Product UI Styleguide Board",
+  "category": "cards",
+  "themes": [
+    "light",
+    "retro"
+  ],
+  "tags": [
+    "styleguide",
+    "design-system",
+    "claymorphism",
+    "neumorphism",
+    "tactile-ui",
+    "color-tokens",
+    "typography",
+    "elevation",
+    "tabs",
+    "3d-ui",
+    "skeuomorphic",
+    "hardware",
+    "cards"
+  ],
+  "description": "Physical 3D architectural styleguide board featuring perimeter millimeter rulers, drafting grid lines, matte ceramic/resin color token tiles, a glowing mint acrylic focus ring, dimensional spacing blocks, cascading 5-level elevation stack, backlit focus search input, dual interactive tab bars, pastel 3D alert strips, and a stacked media card.",
+  "techniques": [
+    "directional studio soft-box lighting casting crisp 4px physical extrusions and soft 45-degree drop shadows",
+    "translucent backlit mint-cyan acrylic glow on Focus Ring, Hover Button, and recessed Search Input",
+    "precision SVG perimeter drafting rulers (1-11 horizontal, 0-140 vertical) with dotted architectural guide lines",
+    "synchronized interactive Segmented Pill Tabs and Underline Bar Tabs"
+  ],
+  "recipe": "Constructed as a physical matte drafting tablet with extruded 3D resin UI primitives and interactive state transitions.",
+  "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 1580
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --desk-bg: #e4e1da;
+    --board-bg: #f3f1ec;
+    --board-edge: #d8d4cc;
+    --ink-dark: #2c2b29;
+    --ink-mid: #5a5854;
+    --ink-muted: #8c8982;
+    --grid-line: rgba(140, 136, 128, 0.22);
+
+    /* Tactile 3D Resin Colors from Reference */
+    --mint-top: #b8ebd6;
+    --mint-mid: #a4e3c9;
+    --mint-lip: #7bc4a7;
+    --mint-neon: #6effd2;
+    --mint-glow: rgba(94, 255, 204, 0.68);
+
+    --surf-top: #f7f6f2;
+    --surf-lip: #cdcac2;
+
+    --bord-top: #d5d3cd;
+    --bord-lip: #a8a59e;
+
+    --warn-top: #f3e19b;
+    --warn-lip: #cbb66d;
+
+    --err-top: #f2a39d;
+    --err-lip: #c77771;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 35% 20%, #f2efe9 0%, #dedad2 65%, #cbc6bc 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 18px 54px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     PHYSICAL ARCHITECTURAL DRAFTING TABLET (THE BOARD)
+     ========================================================= */
+  .styleguide-tablet {
+    position: relative;
+    width: 850px;
+    background:
+      /* Subtle top-left studio light gradient across the matte board */
+      linear-gradient(155deg, #f8f6f2 0%, #f1efe9 55%, #eae7e0 100%);
+    border-radius: 14px;
+    padding: 46px 52px 50px;
+    /* Physical 3D slab thickness + realistic soft studio shadow on desk */
+    box-shadow:
+      0 5px 0 #d5d1c8,
+      0 7px 0 #bdb8ae,
+      18px 34px 65px rgba(45, 42, 36, 0.32),
+      -4px 12px 24px rgba(45, 42, 36, 0.12),
+      inset 0 2px 2px rgba(255, 255, 255, 0.9),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Vertical Dashed Architectural Grid Lines Across the Board */
+  .drafting-grid-overlay {
+    position: absolute;
+    inset: 32px 38px 36px 38px;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      /* Outer drafting border frame */
+      linear-gradient(90deg, rgba(130, 126, 118, 0.35) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(130, 126, 118, 0.35) 1px, transparent 1px);
+    border: 1px solid rgba(130, 126, 118, 0.38);
+  }
+
+  /* Vertical Dotted Column Guides Matching Ruler Numbers 1..11 */
+  .vertical-dotted-guides {
+    position: absolute;
+    inset: 32px 38px 36px 38px;
+    pointer-events: none;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+  }
+
+  .v-guide-col {
+    border-right: 1px dashed rgba(140, 136, 128, 0.22);
+    height: 100%;
+  }
+  .v-guide-col:last-child { border-right: none; }
+
+  /* Perimeter Millimeter Rulers SVG Layer */
+  .perimeter-rulers-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Content Layer Above Grid */
+  .board-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* =========================================================
+     MAIN HEADER: "Product UI Styleguide"
+     ========================================================= */
+  .board-main-title {
+    font-size: 51px;
+    font-weight: 700;
+    letter-spacing: -1.3px;
+    color: #2b2a28;
+    line-height: 1.05;
+    margin-bottom: 2px;
+  }
+
+  .section-heading {
+    font-size: 16.5px;
+    font-weight: 600;
+    color: #2f2e2c;
+    letter-spacing: -0.2px;
+    margin-bottom: 12px;
+  }
+
+  /* =========================================================
+     ROW 1: COLOR TOKENS (LEFT) & TYPOGRAPHY SCALE (RIGHT)
+     ========================================================= */
+  .row-tokens-typo {
+    display: grid;
+    grid-template-columns: 326px 1fr;
+    gap: 38px;
+    align-items: start;
+  }
+
+  .tokens-2x2-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 26px;
+    padding-top: 4px;
+  }
+
+  .token-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+  }
+
+  /* 3D Extruded Squircle Swatch Tile */
+  .swatch-squircle {
+    width: 108px;
+    height: 104px;
+    border-radius: 30px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  }
+
+  .swatch-squircle:hover {
+    transform: translateY(-3px);
+  }
+
+  .swatch-squircle:active {
+    transform: translateY(2px);
+  }
+
+  /* Primary Mint Swatch */
+  .swatch-primary {
+    background: linear-gradient(145deg, #c2f0dc 0%, #a5e2c9 100%);
+    box-shadow:
+      0 6px 0 #79b89f,
+      -6px 14px 20px rgba(45, 55, 50, 0.24),
+      0 0 18px rgba(165, 226, 201, 0.45),
+      inset 0 2px 2px rgba(255, 255, 255, 0.85);
+  }
+
+  /* Surface White Swatch */
+  .swatch-surface {
+    background: linear-gradient(145deg, #faf9f5 0%, #eceae3 100%);
+    box-shadow:
+      0 6px 0 #c7c4bc,
+      -6px 14px 20px rgba(45, 42, 38, 0.2),
+      inset 0 2px 3px #ffffff;
+  }
+
+  /* Border Warm-Grey Swatch */
+  .swatch-border {
+    background: linear-gradient(145deg, #dad8d2 0%, #cac7c0 100%);
+    box-shadow:
+      0 6px 0 #9e9b94,
+      -6px 14px 20px rgba(45, 42, 38, 0.22),
+      inset 0 2px 2px rgba(255, 255, 255, 0.72);
+  }
+
+  /* Glowing Translucent Mint Acrylic Focus Ring */
+  .swatch-focus-ring {
+    width: 106px;
+    height: 104px;
+    border-radius: 50%;
+    border: 14px solid #b4f7de;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    box-shadow:
+      0 4px 0 #7fd4b6,
+      0 0 22px var(--mint-glow),
+      inset 0 0 14px var(--mint-glow),
+      inset 0 2px 2px #ffffff,
+      -4px 12px 18px rgba(40, 65, 55, 0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .swatch-focus-ring:hover,
+  .swatch-focus-ring.pulse {
+    transform: scale(1.04);
+    box-shadow:
+      0 4px 0 #7fd4b6,
+      0 0 32px rgba(94, 255, 204, 0.95),
+      inset 0 0 18px rgba(94, 255, 204, 0.85),
+      inset 0 2px 3px #ffffff;
+  }
+
+  .token-label-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-dark);
+    line-height: 1.1;
+  }
+
+  .token-label-hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--ink-mid);
+    letter-spacing: 0.3px;
+    margin-top: -5px;
+  }
+
+  /* Typography Scale Table */
+  .typo-scale-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .typo-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(140, 136, 128, 0.32);
+    position: relative;
+    padding: 7px 0 6px;
+  }
+
+  /* Upper cap-height guide line on typography rows */
+  .typo-row::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 6px;
+    border-top: 1px dotted rgba(140, 136, 128, 0.2);
+    pointer-events: none;
+  }
+
+  .typo-sample {
+    color: #2b2a28;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .typo-spec {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-mid);
+    white-space: nowrap;
+  }
+
+  /* =========================================================
+     ROW 2: SPACING BLOCKS | RADIUS | 5-LEVEL ELEVATION STACK
+     ========================================================= */
+  .row-spacing-radius-elev {
+    display: grid;
+    grid-template-columns: 356px 136px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-top: 2px;
+  }
+
+  .spacing-blocks-stage {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-top: 4px;
+  }
+
+  .dim-block-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 3D Extruded Calibration Blocks */
+  .calib-block {
+    border-radius: 5px;
+    background: linear-gradient(145deg, #f3f1ec 0%, #e2dfd8 100%);
+    box-shadow:
+      0 4px 0 #b8b5ae,
+      -4px 9px 14px rgba(40, 38, 34, 0.2),
+      inset 0 1.5px 1px #ffffff;
+  }
+
+  .calib-block.med-grey {
+    background: linear-gradient(145deg, #dcdad3 0%, #cbc8c0 100%);
+    box-shadow:
+      0 4px 0 #9e9b94,
+      -4px 9px 14px rgba(40, 38, 34, 0.22),
+      inset 0 1.5px 1px rgba(255,255,255,0.8);
+  }
+
+  .calib-block.dark-grey {
+    background: linear-gradient(145deg, #989690 0%, #83817b 100%);
+    box-shadow:
+      0 4px 0 #5e5c57,
+      -3px 7px 11px rgba(40, 38, 34, 0.25),
+      inset 0 1px 1px rgba(255,255,255,0.45);
+  }
+
+  /* Architectural Dimension Callout Lines (|--- 70px ---|) */
+  .dim-h-line {
+    width: 100%;
+    height: 12px;
+    margin-top: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dim-h-line::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: #5a5854;
+  }
+  .dim-h-line::after {
+    content: "";
+    position: absolute;
+    inset: 2px 0;
+    border-left: 1px solid #5a5854;
+    border-right: 1px solid #5a5854;
+  }
+
+  .dim-txt {
+    position: relative;
+    z-index: 2;
+    background: var(--board-bg);
+    padding: 0 3px;
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #3d3b38;
+  }
+
+  .dim-v-label {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #3d3b38;
+    margin-left: 4px;
+  }
+
+  /* Radius Block with Corner Arc Callout */
+  .radius-block {
+    width: 78px;
+    height: 82px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #dbd9d2 0%, #c8c5bd 100%);
+    box-shadow:
+      0 5px 0 #9c9992,
+      -4px 10px 15px rgba(40, 38, 34, 0.22),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.78);
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 8px 10px;
+  }
+
+  .radius-corner-lbl {
+    font-size: 8.5px;
+    font-weight: 700;
+    color: #3d3b38;
+    transform: rotate(-42deg);
+    border-bottom: 1px dashed #3d3b38;
+    padding-bottom: 1px;
+  }
+
+  /* Elevation 5-Layer Cascading Stack (Spans down alongside Buttons) */
+  .elevation-stack-wrap {
+    position: relative;
+    height: 224px;
+    width: 158px;
+  }
+
+  .elev-card {
+    position: absolute;
+    left: 0;
+    width: 146px;
+    height: 96px;
+    border-radius: 16px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-end;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .elev-card:hover {
+    transform: translateY(-5px) scale(1.02);
+  }
+
+  .elev-1 {
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(145deg, #faf9f5 0%, #eceae3 100%);
+    color: #2b2a28;
+    box-shadow:
+      0 4px 0 #ccccc4,
+      0 8px 14px rgba(0, 0, 0, 0.18),
+      inset 0 2px 2px #ffffff;
+  }
+
+  .elev-2 {
+    top: 30px;
+    z-index: 4;
+    background: linear-gradient(145deg, #e8e6df 0%, #d8d5ce 100%);
+    color: #2b2a28;
+    box-shadow:
+      0 4px 0 #b5b2ab,
+      0 9px 16px rgba(0, 0, 0, 0.22),
+      inset 0 1px 2px rgba(255,255,255,0.8);
+  }
+
+  .elev-3 {
+    top: 60px;
+    z-index: 3;
+    background: linear-gradient(145deg, #d2d0c9 0%, #c0bdb6 100%);
+    color: #2b2a28;
+    box-shadow:
+      0 4px 0 #99968f,
+      0 10px 18px rgba(0, 0, 0, 0.25);
+  }
+
+  .elev-4 {
+    top: 90px;
+    z-index: 2;
+    background: linear-gradient(145deg, #a6a49e 0%, #918f89 100%);
+    color: #1f1e1c;
+    box-shadow:
+      0 4px 0 #6e6c67,
+      0 11px 20px rgba(0, 0, 0, 0.28);
+  }
+
+  .elev-5 {
+    top: 120px;
+    z-index: 1;
+    background: linear-gradient(145deg, #82807a 0%, #6e6c67 100%);
+    color: #141312;
+    box-shadow:
+      0 5px 0 #4d4b47,
+      -6px 16px 24px rgba(20, 18, 15, 0.36);
+  }
+
+  /* =========================================================
+     ROW 3: BUTTONS (Default, Hover with Neon Base, Disabled)
+     ========================================================= */
+  .buttons-section {
+    margin-top: -54px; /* Tucks neatly beside the bottom of the Elevation stack */
+    width: 515px;
+  }
+
+  .buttons-3col {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .btn-col {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .sub-state-lbl {
+    font-size: 11px;
+    font-weight: 500;
+    color: #3d3b38;
+    padding-left: 2px;
+  }
+
+  .clay-pill-btn {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 22px;
+    border: none;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.16s ease;
+  }
+
+  /* Default Mint 3D Pill */
+  .clay-pill-btn.btn-default {
+    background: linear-gradient(180deg, #bcefd9 0%, #a3e0c7 100%);
+    color: #1f332b;
+    box-shadow:
+      0 5px 0 #76b59c,
+      -4px 11px 16px rgba(35, 55, 45, 0.24),
+      inset 0 2px 2px rgba(255, 255, 255, 0.85);
+  }
+
+  .clay-pill-btn.btn-default:hover {
+    transform: translateY(-2px);
+  }
+
+  .clay-pill-btn.btn-default:active {
+    transform: translateY(3px);
+    box-shadow:
+      0 2px 0 #76b59c,
+      -2px 5px 8px rgba(35, 55, 45, 0.2);
+  }
+
+  /* Hover Mint Pill with Glowing Translucent Neon Acrylic Base (Like Ref!) */
+  .clay-pill-btn.btn-hover {
+    background: linear-gradient(180deg, #c6f7e2 0%, #9fe8ca 100%);
+    color: #182b23;
+    box-shadow:
+      0 5px 0 #7be8be,
+      0 8px 20px var(--mint-glow),
+      0 0 14px rgba(110, 255, 210, 0.55),
+      -4px 12px 18px rgba(35, 55, 45, 0.22),
+      inset 0 2px 3px #ffffff;
+  }
+
+  /* Disabled Matte Grey Pill */
+  .clay-pill-btn.btn-disabled {
+    padding: 0 22px;
+    background: linear-gradient(180deg, #cfcdc7 0%, #bfbdb7 100%);
+    color: #787670;
+    box-shadow:
+      0 5px 0 #96948e,
+      -3px 9px 14px rgba(40, 38, 34, 0.2),
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.65);
+    cursor: not-allowed;
+  }
+
+  /* =========================================================
+     ROW 4: INPUTS (LEFT) & CHIPS (RIGHT)
+     ========================================================= */
+  .row-two-col {
+    display: grid;
+    grid-template-columns: 356px 1fr;
+    gap: 38px;
+    align-items: start;
+  }
+
+  /* Molded Grey Outer Bezel + Glowing Mint Inner Focus Ring Input */
+  .clay-search-bezel {
+    width: 318px;
+    height: 60px;
+    border-radius: 30px;
+    padding: 8px;
+    background: linear-gradient(180deg, #d5d3cd 0%, #bab7b0 100%);
+    box-shadow:
+      0 5px 0 #8f8c86,
+      -5px 13px 20px rgba(35, 33, 30, 0.28),
+      inset 0 2px 2px rgba(255, 255, 255, 0.78);
+    display: flex;
+    align-items: center;
+  }
+
+  .clay-search-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #e6e5e0 0%, #f2f1ec 100%);
+    border: 2.5px solid #9ef5d6;
+    box-shadow:
+      0 0 14px var(--mint-glow),
+      inset 0 2px 5px rgba(45, 65, 55, 0.18),
+      inset 0 0 8px rgba(110, 255, 210, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 0 18px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .clay-search-inner:focus-within {
+    border-color: #5effcc;
+    box-shadow:
+      0 0 22px rgba(94, 255, 204, 0.92),
+      inset 0 2px 5px rgba(45, 65, 55, 0.15);
+  }
+
+  .clay-search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-dark);
+  }
+
+  .clay-search-input::placeholder {
+    color: #6e6c66;
+  }
+
+  /* Tactile 3D Chips */
+  .chips-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+  }
+
+  .clay-chip {
+    height: 34px;
+    padding: 0 15px;
+    border-radius: 17px;
+    border: none;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .clay-chip.mint-chip {
+    background: linear-gradient(180deg, #bcefd9 0%, #a2dfc5 100%);
+    color: #1c3028;
+    box-shadow:
+      0 4px 0 #75b39a,
+      -3px 8px 12px rgba(35, 55, 45, 0.22),
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.85);
+  }
+
+  .clay-chip.mint-chip:hover {
+    transform: translateY(-1.5px);
+  }
+
+  .clay-chip.grey-chip {
+    background: linear-gradient(180deg, #d1cfc9 0%, #c0beb8 100%);
+    color: #75736d;
+    box-shadow:
+      0 4px 0 #96948e,
+      -3px 8px 12px rgba(40, 38, 34, 0.18),
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.65);
+  }
+
+  /* =========================================================
+     ROW 5: DUAL TABS (SEGMENTED PILL TABS & UNDERLINE TABS)
+     ========================================================= */
+  /* Left: Molded Grey Pill Tray with 3D Mint Active Capsule */
+  .segmented-tabs-tray {
+    width: 318px;
+    height: 46px;
+    border-radius: 23px;
+    background: linear-gradient(180deg, #b8b6b0 0%, #a3a19b 100%);
+    box-shadow:
+      0 4px 0 #7d7b76,
+      -4px 10px 16px rgba(35, 33, 30, 0.25),
+      inset 0 2px 4px rgba(0, 0, 0, 0.22);
+    padding: 4px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    position: relative;
+  }
+
+  .seg-active-pill {
+    position: absolute;
+    top: 4px;
+    bottom: 6px;
+    width: calc((100% - 8px) / 3);
+    left: calc(4px + var(--tab-idx, 0) * ((100% - 8px) / 3));
+    border-radius: 19px;
+    background: linear-gradient(180deg, #c2f2de 0%, #a5e2c9 100%);
+    box-shadow:
+      0 3px 0 #72b097,
+      0 4px 8px rgba(0, 0, 0, 0.22),
+      inset 0 1.5px 1px #ffffff;
+    transition: left 0.26s cubic-bezier(0.34, 1.4, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .seg-tab-btn {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    border: none;
+    height: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2f2e2c;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  /* Right: Minimalist Text Tabs with 3D Extruded Mint/Grey Track Bar */
+  .underline-tabs-wrap {
+    width: 318px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 6px;
+  }
+
+  .underline-tabs-labels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+  }
+
+  .uline-tab-btn {
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #78756e;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .uline-tab-btn.active {
+    color: #262523;
+  }
+
+  .underline-3d-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #e5e3dc 0%, #d2cfc8 100%);
+    box-shadow:
+      0 3px 0 #a8a59e,
+      -2px 6px 10px rgba(35, 33, 30, 0.18),
+      inset 0 1px 1px #ffffff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .underline-mint-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 33.333%;
+    left: calc(var(--tab-idx, 0) * 33.333%);
+    border-radius: 4px;
+    background: linear-gradient(180deg, #b8ebd6 0%, #92d9bc 100%);
+    box-shadow: 0 0 8px var(--mint-glow);
+    transition: left 0.26s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  /* =========================================================
+     ROW 6: ALERTS (LEFT) & STACKED 3D MEDIA CARD (RIGHT)
+     ========================================================= */
+  .alerts-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 324px;
+  }
+
+  .clay-alert-bar {
+    height: 44px;
+    border-radius: 13px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #262523;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .clay-alert-bar:hover {
+    transform: translateX(3px);
+  }
+
+  .clay-alert-bar.alert-success {
+    background: linear-gradient(180deg, #bcefd9 0%, #a6e2c9 100%);
+    box-shadow:
+      0 5px 0 var(--mint-lip),
+      -4px 10px 16px rgba(35, 55, 45, 0.2),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+  }
+
+  .clay-alert-bar.alert-warning {
+    background: linear-gradient(180deg, #f5e5a4 0%, #ead68a 100%);
+    box-shadow:
+      0 5px 0 var(--warn-lip),
+      -4px 10px 16px rgba(55, 48, 25, 0.2),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+  }
+
+  .clay-alert-bar.alert-error {
+    background: linear-gradient(180deg, #f5aba5 0%, #ea958e 100%);
+    box-shadow:
+      0 5px 0 var(--err-lip),
+      -4px 10px 16px rgba(60, 30, 28, 0.22),
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Right: Multi-Layered 3D Card Stack with Moulded Mountain Image Tile */
+  .card-stack-container {
+    position: relative;
+    width: 326px;
+    height: 162px;
+  }
+
+  /* Lower stacked card sheets peeking out underneath */
+  .card-sheet-back2 {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
+    height: 120px;
+    border-radius: 18px;
+    background: #b5b3ac;
+    box-shadow:
+      0 5px 0 #82807a,
+      -6px 16px 26px rgba(30, 28, 24, 0.32);
+  }
+
+  .card-sheet-back1 {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    bottom: 9px;
+    height: 130px;
+    border-radius: 18px;
+    background: #d4d2cb;
+    box-shadow: 0 4px 0 #9e9c95;
+  }
+
+  /* Main Top Card Surface */
+  .card-sheet-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 142px;
+    border-radius: 18px;
+    background: linear-gradient(155deg, #f8f7f3 0%, #eae8e1 100%);
+    box-shadow:
+      0 5px 0 #c2bfb8,
+      0 8px 14px rgba(0, 0, 0, 0.14),
+      inset 0 2px 3px #ffffff;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  .card-sheet-top:hover {
+    transform: translateY(-2px);
+  }
+
+  .card-text-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .card-text-col h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262523;
+    margin-bottom: 4px;
+  }
+
+  .card-text-col p {
+    font-size: 11px;
+    line-height: 1.38;
+    color: #54524e;
+    max-width: 175px;
+  }
+
+  .card-mini-btn {
+    align-self: flex-start;
+    height: 28px;
+    padding: 0 18px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(180deg, #d6d4ce 0%, #c2c0ba 100%);
+    box-shadow:
+      0 3px 0 #94928c,
+      -2px 5px 8px rgba(0, 0, 0, 0.18),
+      inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2f2e2c;
+    cursor: pointer;
+  }
+
+  .card-mini-btn:active {
+    transform: translateY(2px);
+  }
+
+  /* 3D Molded Grey Picture Icon Tile (Mountains & Sun) */
+  .clay-image-tile {
+    width: 82px;
+    height: 76px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #d0ceca 0%, #bab8b2 100%);
+    box-shadow:
+      0 5px 0 #787670,
+      -3px 8px 14px rgba(0, 0, 0, 0.22),
+      inset 0 2px 2px rgba(255, 255, 255, 0.75);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* Toast notification when clicking tokens */
+  .token-toast {
+    position: fixed;
+    bottom: 16px;
+    background: #2b2a28;
+    color: #f3f1ec;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.22s ease;
+    pointer-events: none;
+    z-index: 20;
+  }
+  .token-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    .styleguide-tablet {
+      transform: scale(0.76);
+      transform-origin: top center;
+      margin-bottom: -260px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="styleguide-tablet">
+
+  <!-- Architectural Perimeter Frame & Vertical Dotted Guides -->
+  <div class="drafting-grid-overlay"></div>
+  <div class="vertical-dotted-guides">
+    <div class="v-guide-col"></div><div class="v-guide-col"></div><div class="v-guide-col"></div>
+    <div class="v-guide-col"></div><div class="v-guide-col"></div><div class="v-guide-col"></div>
+    <div class="v-guide-col"></div><div class="v-guide-col"></div><div class="v-guide-col"></div>
+    <div class="v-guide-col"></div><div class="v-guide-col"></div>
+  </div>
+
+  <!-- Precision SVG Millimeter Rulers Along All 4 Edges of the Tablet -->
+  <svg class="perimeter-rulers-svg" id="perimeterRulers" viewBox="0 0 850 1160" preserveAspectRatio="none"></svg>
+
+  <!-- =========================================================
+       MAIN BOARD CONTENT
+       ========================================================= -->
+  <div class="board-content">
+
+    <h1 class="board-main-title">Product UI Styleguide</h1>
+
+    <!-- =======================================================
+         1. COLOR TOKENS & TYPOGRAPHY SCALE
+         ======================================================= -->
+    <section class="row-tokens-typo">
+
+      <!-- Left: Color Tokens (2x2) -->
+      <div>
+        <h2 class="section-heading">Color Tokens</h2>
+        <div class="tokens-2x2-grid">
+          <div class="token-item">
+            <div class="swatch-squircle swatch-primary" data-hex="#A5E2C9" title="Click to copy token"></div>
+            <span class="token-label-title">Primary</span>
+            <span class="token-label-hex">#EBCEEC</span>
+          </div>
+
+          <div class="token-item">
+            <div class="swatch-squircle swatch-surface" data-hex="#F7F6F2" title="Click to copy token"></div>
+            <span class="token-label-title">Surface</span>
+            <span class="token-label-hex">#FFFFFE</span>
+          </div>
+
+          <div class="token-item">
+            <div class="swatch-squircle swatch-border" data-hex="#D5D3CD" title="Click to copy token"></div>
+            <span class="token-label-title">Border</span>
+            <span class="token-label-hex">#E98520</span>
+          </div>
+
+          <div class="token-item">
+            <div class="swatch-focus-ring" id="focusRingToken" data-hex="#00CFCC" title="Click to pulse Focus Ring"></div>
+            <span class="token-label-title">Focus ring</span>
+            <span class="token-label-hex">#00CFCC</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Typography Scale -->
+      <div>
+        <h2 class="section-heading">Typography Scale</h2>
+        <div class="typo-scale-list">
+          <div class="typo-row" style="padding-top:2px;">
+            <span class="typo-sample" style="font-size:44px;font-weight:600;">Display</span>
+            <span class="typo-spec">Size 8º / 7px</span>
+          </div>
+          <div class="typo-row">
+            <span class="typo-sample" style="font-size:31px;font-weight:600;">Hister</span>
+            <span class="typo-spec">Size 5º / 6px</span>
+          </div>
+          <div class="typo-row">
+            <span class="typo-sample" style="font-size:25px;font-weight:600;">Pastin</span>
+            <span class="typo-spec">Size 4º / 7px</span>
+          </div>
+          <div class="typo-row">
+            <span class="typo-sample" style="font-size:21px;font-weight:600;">Medium</span>
+            <span class="typo-spec">Size 3º / 7px</span>
+          </div>
+          <div class="typo-row">
+            <span class="typo-sample" style="font-size:17px;font-weight:500;">Caption</span>
+            <span class="typo-spec">Size 3º / 2px</span>
+          </div>
+          <div class="typo-row">
+            <span class="typo-sample" style="font-size:14px;font-weight:500;">Caption</span>
+            <span class="typo-spec">Size 12 / 0px</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================
+         2. SPACING | RADIUS | ELEVATION (5-LEVEL STACK)
+         ======================================================= -->
+    <section class="row-spacing-radius-elev">
+
+      <!-- Spacing Calibration Blocks -->
+      <div>
+        <h2 class="section-heading">Spacing</h2>
+        <div class="spacing-blocks-stage">
+          <!-- 70px Block -->
+          <div class="dim-block-wrap">
+            <div style="display:flex;align-items:center;">
+              <div class="calib-block" style="width:82px;height:82px;"></div>
+              <span class="dim-v-label">5px</span>
+            </div>
+            <div class="dim-h-line" style="width:82px;"><span class="dim-txt">70px</span></div>
+          </div>
+
+          <!-- 20px Block -->
+          <div class="dim-block-wrap">
+            <div style="display:flex;align-items:center;">
+              <div class="calib-block med-grey" style="width:70px;height:82px;"></div>
+              <span class="dim-v-label">25px</span>
+            </div>
+            <div class="dim-h-line" style="width:70px;"><span class="dim-txt">20px</span></div>
+          </div>
+
+          <!-- 6px Narrow Bar -->
+          <div class="dim-block-wrap">
+            <div class="calib-block dark-grey" style="width:24px;height:82px;"></div>
+            <div class="dim-h-line" style="width:24px;"><span class="dim-txt">6px</span></div>
+          </div>
+
+          <!-- Stacked 2px & 7px Cubes -->
+          <div class="dim-block-wrap">
+            <div style="display:flex;flex-direction:column;gap:14px;height:82px;justify-content:space-between;">
+              <div style="display:flex;align-items:center;">
+                <div class="calib-block dark-grey" style="width:32px;height:32px;"></div>
+                <span class="dim-v-label">2px</span>
+              </div>
+              <div style="display:flex;align-items:center;">
+                <div class="calib-block med-grey" style="width:32px;height:34px;"></div>
+                <span class="dim-v-label">7px</span>
+              </div>
+            </div>
+            <div class="dim-h-line" style="width:32px;"><span class="dim-txt">10px</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radius Block -->
+      <div>
+        <h2 class="section-heading">Radius</h2>
+        <div class="dim-block-wrap" style="align-items:flex-start;padding-top:4px;">
+          <div style="display:flex;align-items:center;">
+            <div class="radius-block">
+              <span class="radius-corner-lbl">90px</span>
+            </div>
+            <span class="dim-v-label">20px</span>
+          </div>
+          <div class="dim-h-line" style="width:78px;"><span class="dim-txt">70x</span></div>
+        </div>
+      </div>
+
+      <!-- Elevation Cascading Stack (Level 1 to Level 5) -->
+      <div>
+        <h2 class="section-heading">Elevation</h2>
+        <div class="elevation-stack-wrap">
+          <div class="elev-card elev-1">Level 1</div>
+          <div class="elev-card elev-2">Level 2</div>
+          <div class="elev-card elev-3">Level 3</div>
+          <div class="elev-card elev-4">Level 4</div>
+          <div class="elev-card elev-5">Level 5</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================
+         3. BUTTONS (Default, Hover, Disabled)
+         ======================================================= -->
+    <section class="buttons-section">
+      <h2 class="section-heading">Buttons</h2>
+      <div class="buttons-3col">
+        <div class="btn-col">
+          <span class="sub-state-lbl">Default</span>
+          <button class="clay-pill-btn btn-default" type="button">Primary Action</button>
+        </div>
+
+        <div class="btn-col">
+          <span class="sub-state-lbl">Hover</span>
+          <button class="clay-pill-btn btn-hover" type="button">Primary Action</button>
+        </div>
+
+        <div class="btn-col">
+          <span class="sub-state-lbl">Disabled</span>
+          <button class="clay-pill-btn btn-disabled" type="button">Disabled</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         4. INPUTS & CHIPS
+         ======================================================= -->
+    <section class="row-two-col">
+      <div>
+        <h2 class="section-heading">Inputs</h2>
+        <div class="clay-search-bezel">
+          <div class="clay-search-inner">
+            <input type="text" class="clay-search-input" placeholder="Search invoices" aria-label="Search invoices">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#262523" stroke-width="2.3" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="16.5" y1="16.5" x2="21" y2="21"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="section-heading">Chips</h2>
+        <div class="chips-row">
+          <button class="clay-chip mint-chip" type="button" onclick="this.classList.toggle('grey-chip');this.classList.toggle('mint-chip')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/>
+            </svg>
+            <span>Filter</span>
+          </button>
+
+          <button class="clay-chip mint-chip" type="button" onclick="this.classList.toggle('grey-chip');this.classList.toggle('mint-chip')">
+            <span>✓</span>
+            <span>Selected</span>
+          </button>
+
+          <button class="clay-chip grey-chip" type="button">
+            <span>Disabled</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         5. DUAL TABS (SEGMENTED PILL TABS & UNDERLINE TABS)
+         ======================================================= -->
+    <section class="row-two-col">
+      <div>
+        <h2 class="section-heading">Tabs</h2>
+        <div class="segmented-tabs-tray" id="segTabsTray" style="--tab-idx: 0;">
+          <div class="seg-active-pill"></div>
+          <button class="seg-tab-btn" data-tab="0" type="button">Overview</button>
+          <button class="seg-tab-btn" data-tab="1" type="button">Billing</button>
+          <button class="seg-tab-btn" data-tab="2" type="button">Team</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="section-heading">Tabs</h2>
+        <div class="underline-tabs-wrap" id="ulineTabsWrap" style="--tab-idx: 0;">
+          <div class="underline-tabs-labels">
+            <button class="uline-tab-btn active" data-tab="0" type="button">Overview</button>
+            <button class="uline-tab-btn" data-tab="1" type="button">Billing</button>
+            <button class="uline-tab-btn" data-tab="2" type="button">Team</button>
+          </div>
+          <div class="underline-3d-track">
+            <div class="underline-mint-bar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         6. ALERTS & STACKED MEDIA CARD
+         ======================================================= -->
+    <section class="row-two-col">
+
+      <!-- Left: 3 Pastel 3D Alert Bars -->
+      <div>
+        <h2 class="section-heading">Alerts</h2>
+        <div class="alerts-stack">
+          <div class="clay-alert-bar alert-success">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1e2e26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <polyline points="8.5 12.5 11 15 15.5 9.5"/>
+            </svg>
+            <span>Success</span>
+          </div>
+
+          <div class="clay-alert-bar alert-warning">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#332b14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Warning</span>
+          </div>
+
+          <div class="clay-alert-bar alert-error">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#381816" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <line x1="12" y1="8" x2="12" y2="12.5"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Error</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Multi-Sheet 3D Card with Relief Mountain Icon -->
+      <div>
+        <h2 class="section-heading">Cards</h2>
+        <div class="card-stack-container">
+          <div class="card-sheet-back2"></div>
+          <div class="card-sheet-back1"></div>
+
+          <div class="card-sheet-top">
+            <div class="card-text-col">
+              <div>
+                <h4>Title</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+              <button class="card-mini-btn" type="button">Image</button>
+            </div>
+
+            <!-- 3D Molded Grey Picture Icon (Sun & Twin Mountain Peaks) -->
+            <div class="clay-image-tile">
+              <svg width="82" height="76" viewBox="0 0 82 76">
+                <!-- Relief Sun Circle -->
+                <circle cx="56" cy="24" r="8" fill="#8d8b85"/>
+                <circle cx="55.5" cy="23" r="7.5" fill="#9e9c96"/>
+                <!-- Molded 3D Mountain Peaks -->
+                <path d="M 6 66 L 28 38 C 31 35, 34 35, 37 38 L 54 58 L 62 47 C 64 44, 67 44, 70 47 L 80 66 Z"
+                      fill="#8a8882"/>
+                <path d="M 6 64 L 28 36 C 31 33, 34 33, 37 36 L 54 56 L 62 45 C 64 42, 67 42, 70 45 L 80 64 Z"
+                      fill="#9c9a94"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+</main>
+
+<div class="token-toast" id="tokenToast">Copied token #A5E2C9</div>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. GENERATE PRECISION PERIMETER MILLIMETER RULERS (TOP, BOTTOM, LEFT, RIGHT)
+  // =========================================================================
+  const svg = document.getElementById('perimeterRulers');
+  const W = 850, H = 1160;
+  const leftX = 38, rightX = W - 38;
+  const topY = 32, botY = H - 36;
+  const innerW = rightX - leftX;
+  const innerH = botY - topY;
+
+  let rulerMarkup = '';
+
+  // Top & Bottom Horizontal Rulers (11 Columns, 10 Sub-ticks each)
+  const cols = 11;
+  const totalHTicks = cols * 10;
+  for (let i = 0; i <= totalHTicks; i++) {
+    const x = leftX + (i / totalHTicks) * innerW;
+    const isMajor = i % 10 === 0;
+    const isMid = i % 5 === 0 && !isMajor;
+    const tickLen = isMajor ? 8 : isMid ? 5.5 : 3.5;
+
+    // Top Ruler Ticks
+    rulerMarkup += `<line x1="${x.toFixed(1)}" y1="${topY}" x2="${x.toFixed(1)}" y2="${(topY - tickLen).toFixed(1)}" stroke="#7a7770" stroke-width="${isMajor ? 1 : 0.65}"/>`;
+    // Bottom Ruler Ticks
+    rulerMarkup += `<line x1="${x.toFixed(1)}" y1="${botY}" x2="${x.toFixed(1)}" y2="${(botY + tickLen).toFixed(1)}" stroke="#7a7770" stroke-width="${isMajor ? 1 : 0.65}"/>`;
+
+    if (isMajor && i > 0 && i <= cols * 10) {
+      const colNum = i / 10;
+      const numX = leftX + ((colNum - 0.5) / cols) * innerW;
+      rulerMarkup += `<text x="${numX.toFixed(1)}" y="${topY - 11}" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#6e6b65">${colNum}</text>`;
+      rulerMarkup += `<text x="${numX.toFixed(1)}" y="${botY + 17}" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#6e6b65">${colNum}</text>`;
+    }
+  }
+
+  // Left & Right Vertical Rulers (14 Major Divisions from bottom 0 to top 140)
+  const rows = 14;
+  const totalVTicks = rows * 10;
+  for (let j = 0; j <= totalVTicks; j++) {
+    const y = botY - (j / totalVTicks) * innerH;
+    const isMajor = j % 10 === 0;
+    const isMid = j % 5 === 0 && !isMajor;
+    const tickLen = isMajor ? 8 : isMid ? 5.5 : 3.5;
+
+    // Left Ruler Ticks
+    rulerMarkup += `<line x1="${leftX}" y1="${y.toFixed(1)}" x2="${(leftX - tickLen).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7a7770" stroke-width="${isMajor ? 1 : 0.65}"/>`;
+    // Right Ruler Ticks
+    rulerMarkup += `<line x1="${rightX}" y1="${y.toFixed(1)}" x2="${(rightX + tickLen).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7a7770" stroke-width="${isMajor ? 1 : 0.65}"/>`;
+
+    if (isMajor) {
+      const val = j;
+      rulerMarkup += `<text x="${leftX - 12}" y="${(y + 2.5).toFixed(1)}" text-anchor="end" font-family="Inter, sans-serif" font-size="7" font-weight="600" fill="#6e6b65">${val}</text>`;
+      rulerMarkup += `<text x="${rightX + 12}" y="${(y + 2.5).toFixed(1)}" text-anchor="start" font-family="Inter, sans-serif" font-size="7" font-weight="600" fill="#6e6b65">${val}</text>`;
+    }
+  }
+
+  svg.innerHTML = rulerMarkup;
+
+  // =========================================================================
+  // 2. SYNCHRONIZED INTERACTIVE TABS (SEGMENTED PILL & UNDERLINE BAR)
+  // =========================================================================
+  const segTray = document.getElementById('segTabsTray');
+  const ulineWrap = document.getElementById('ulineTabsWrap');
+  const ulineBtns = ulineWrap.querySelectorAll('.uline-tab-btn');
+
+  function setActiveTab(idx) {
+    segTray.style.setProperty('--tab-idx', idx);
+    ulineWrap.style.setProperty('--tab-idx', idx);
+    ulineBtns.forEach((b, i) => b.classList.toggle('active', i === Number(idx)));
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+  });
+
+  // =========================================================================
+  // 3. COLOR TOKEN CLICK FEEDBACK & FOCUS RING PULSE
+  // =========================================================================
+  const toast = document.getElementById('tokenToast');
+  const focusRing = document.getElementById('focusRingToken');
+  let toastTimer = null;
+
+  document.querySelectorAll('[data-hex]').forEach(el => {
+    el.addEventListener('click', () => {
+      const hex = el.dataset.hex;
+      focusRing.classList.add('pulse');
+      setTimeout(() => focusRing.classList.remove('pulse'), 450);
+
+      toast.textContent = `Token Selected // ${hex}`;
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('visible'), 1800);
+    });
+  });
+})();
+</script>
+</body>
+</html>

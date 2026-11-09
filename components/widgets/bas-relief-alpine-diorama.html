@@ -1,0 +1,1458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Bas-Relief Alpine Diorama & Tactile Sunset Slate Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Bas-Relief Alpine Diorama & Sunset Slate UI",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "diorama",
+    "bas-relief",
+    "neumorphism",
+    "claymorphism",
+    "alpine",
+    "landscape",
+    "sunset-palette",
+    "telemetry",
+    "tactile-ui",
+    "svg-illustration",
+    "skeuomorphic",
+    "widgets",
+    "dashboards"
+  ],
+  "description": "Sculpted bas-relief dashboard blending a 3D layered alpine valley diorama (binary sunset, jagged peaks, pine forests, and lakeside chalets) directly into a matte slate-and-copper neumorphic control surface. Features 16 modular tactile panels, backlit apricot-copper gauges, vertical bar meters, and a dual-ridge elevation silhouette graph.",
+  "techniques": [
+    "multi-layered SVG bas-relief mountain, pine forest, and chalet diorama with drop-shadow depth integrated directly into the dashboard chassis",
+    "sunset-copper to deep-aubergine internal radial illumination simulating backlit frosted resin panels",
+    "interactive solar horizon slider that shifts the binary sun position, lake reflection, and panel glow intensity"
+  ],
+  "recipe": "Constructed on a sculpted slate-indigo surface (#2f3342) with recessed dark wells, warm apricot-terracotta gradient tiles, and bas-relief SVG scenery.",
+  "preview": {
+    "mode": "page",
+    "width": 1320,
+    "height": 1280
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  :root {
+    --slate-board: #303443;
+    --slate-light: #43495c;
+    --slate-dark: #1c1e29;
+    --slate-well: #1e212d;
+    --plum-surface: #271f30;
+    --plum-deep: #1b1422;
+
+    --peach-bright: #ffd9b8;
+    --peach-mid: #f29f79;
+    --copper-warm: #c96d53;
+    --copper-dark: #6b3832;
+    --sun-glow: 1;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 50% 25%, #3d4152 0%, #222530 65%, #14161f 100%);
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+    color: #f5dfd0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px 40px;
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     MAIN SCULPTED SLATE-AND-SUNSET BOARD (SQUARE-ISH CANVAS)
+     ========================================================= */
+  .diorama-board {
+    position: relative;
+    width: 1120px;
+    background:
+      /* Warm sunset radial bloom behind the central mountain sun */
+      radial-gradient(circle 360px at 53% 24%, rgba(255, 195, 145, calc(0.32 * var(--sun-glow))) 0%, rgba(215, 120, 95, 0.12) 52%, transparent 80%),
+      linear-gradient(155deg, #2b2f3d 0%, #383c4c 38%, #282b38 75%, #1e202b 100%);
+    border-radius: 26px;
+    border: 2px solid #454a5e;
+    box-shadow:
+      0 35px 85px rgba(0, 0, 0, 0.88),
+      inset 0 2px 3px rgba(255, 255, 255, 0.15),
+      inset 0 -4px 10px rgba(0, 0, 0, 0.65);
+    padding: 22px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* =========================================================
+     SHARED TACTILE NEUMORPHIC & COPPER-GRADIENT SURFACES
+     ========================================================= */
+  /* Deep Recessed Slate Bezel Frame */
+  .slate-bezel-frame {
+    background: linear-gradient(160deg, #232634 0%, #181a24 100%);
+    border-radius: 20px;
+    border: 1.5px solid #3d4254;
+    box-shadow:
+      8px 12px 22px rgba(10, 11, 16, 0.72),
+      -2px -2px 6px rgba(255, 255, 255, 0.06),
+      inset 0 3px 7px rgba(0, 0, 0, 0.78);
+    padding: 9px;
+    position: relative;
+  }
+
+  /* Raised Dark Aubergine-Slate Card with Warm Rim */
+  .plum-card {
+    background:
+      radial-gradient(circle at 80% 20%, rgba(235, 145, 110, 0.08) 0%, transparent 55%),
+      linear-gradient(165deg, #2d2336 0%, #211929 65%, #191320 100%);
+    border-radius: 18px;
+    border: 1.5px solid rgba(225, 165, 145, 0.28);
+    box-shadow:
+      8px 12px 22px rgba(8, 7, 12, 0.75),
+      inset 0 1.5px 2px rgba(255, 220, 195, 0.22),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.65);
+    position: relative;
+  }
+
+  /* Warm Sunset-Apricot to Copper Gradient Tile */
+  .copper-gradient-tile {
+    background:
+      linear-gradient(165deg, #f5ae86 0%, #d47c61 38%, #8c4c43 78%, #542d2d 100%);
+    border: 1px solid rgba(255, 220, 195, 0.45);
+    box-shadow:
+      5px 8px 15px rgba(10, 8, 12, 0.65),
+      inset 0 1.5px 2px rgba(255, 240, 225, 0.55);
+    color: #fff3eb;
+    position: relative;
+  }
+
+  /* Circular Tactile Pin / Medallion Button */
+  .tactile-orb {
+    border-radius: 50%;
+    background: linear-gradient(145deg, #3e4354 0%, #222530 100%);
+    border: 1.5px solid rgba(235, 180, 155, 0.32);
+    box-shadow:
+      5px 8px 14px rgba(8, 9, 14, 0.78),
+      -2px -2px 5px rgba(255, 255, 255, 0.08),
+      inset 0 1.5px 2px rgba(255, 215, 190, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #f3c6ab;
+    transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.16s ease;
+  }
+
+  .tactile-orb:hover {
+    transform: translateY(-2px) scale(1.04);
+    border-color: #f5ae86;
+  }
+
+  .tactile-orb:active,
+  .tactile-orb.active {
+    transform: scale(0.95);
+    background: linear-gradient(145deg, #d97f62 0%, #824339 100%);
+    color: #fff;
+    border-color: #ffd9b8;
+  }
+
+  /* =========================================================
+     UPPER & MIDDLE 3-ZONE COMPOSITE LAYOUT
+     [LEFT COLUMN: 266px] + [CENTER + RIGHT DIORAMA & DECKS: 1fr]
+     ========================================================= */
+  .upper-composite-grid {
+    display: grid;
+    grid-template-columns: 266px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  /* =========================================================
+     LEFT COLUMN (4 STACKED MODULES FROM REFERENCE)
+     ========================================================= */
+  .left-column-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* 1. Top-Left Split Pair: [Narrow Copper Pill] + [Dual Copper Card] */
+  .top-left-pair {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 10px;
+    height: 178px;
+  }
+
+  .narrow-copper-pill {
+    height: 100%;
+    border-radius: 13px;
+    background: linear-gradient(180deg, #523031 0%, #8f4d42 48%, #e38c6b 100%);
+    border: 1px solid rgba(255, 210, 185, 0.4);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #ffeadb;
+  }
+
+  .dual-copper-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    height: 100%;
+  }
+
+  .copper-top-subcard {
+    flex: 1.25;
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 50% 85%, rgba(255, 185, 135, 0.45) 0%, transparent 65%),
+      linear-gradient(180deg, #6b3b36 0%, #9e5849 65%, #59302e 100%);
+    border: 1px solid rgba(255, 205, 180, 0.38);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+  }
+
+  .copper-bot-subcard {
+    flex: 0.85;
+    border-radius: 11px;
+    background: linear-gradient(90deg, #7d453d 0%, #522c2c 100%);
+    border: 1px solid rgba(255, 195, 165, 0.3);
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 9.5px;
+  }
+
+  /* 2. Mid-Left Dark Aubergine Telemetry & Matrix Card */
+  .telemetry-matrix-card {
+    height: 184px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .telem-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 200, 175, 0.14);
+    padding-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f7d4bc;
+  }
+
+  .telem-body-split {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  .ring-gauge-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ring-80-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #e09272;
+    border-top-color: rgba(224, 146, 114, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd5bd;
+    box-shadow: inset 0 0 8px rgba(242, 159, 121, 0.22);
+  }
+
+  .data-grid-3x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: #deb8a4;
+  }
+
+  /* 3. Lower-Left 5-Tile Copper Mosaic Grid + Thin Slider */
+  .mosaic-5tile-wrap {
+    background: #1d1824;
+    border-radius: 16px;
+    padding: 8px;
+    border: 1px solid rgba(255, 190, 160, 0.18);
+    box-shadow: 6px 10px 20px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mosaic-grid {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    gap: 7px;
+  }
+
+  .mosaic-left-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .mosaic-right-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .m-tile {
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .m-tile:hover {
+    transform: translateY(-1.5px);
+    filter: brightness(1.08);
+  }
+
+  /* Thin Copper Slider Under Mosaic */
+  .mini-copper-slider {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 2px 0;
+  }
+
+  .mini-slider-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd5b8 0%, #c96d53 70%);
+    border: 2px solid #2b222c;
+    box-shadow: 0 2px 5px #000;
+    cursor: pointer;
+  }
+
+  .mini-slider-line {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #f5ae86, #d9cfc9);
+  }
+
+  /* 4. Bottom-Left Twin Terracotta Discs ("14" & "3") */
+  .twin-discs-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px;
+  }
+
+  .terracotta-disc {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d47b63 0%, #8c4a42 68%, #572e2d 100%);
+    border: 1.5px solid rgba(255, 200, 175, 0.35);
+    box-shadow:
+      6px 10px 18px rgba(8, 7, 12, 0.8),
+      inset 0 2px 3px rgba(255, 220, 195, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 700;
+    color: #fff2e8;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.16s ease;
+  }
+
+  .terracotta-disc:hover {
+    transform: scale(1.04);
+  }
+
+  /* =========================================================
+     RIGHT MAIN ZONE: BAS-RELIEF ALPINE DIORAMA + LOWER CONSOLE
+     ========================================================= */
+  .right-main-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Top Diorama Stage (Contains the 3D Mountain Valley + Floating Orbs) */
+  .diorama-stage-wrap {
+    position: relative;
+    height: 456px;
+    width: 100%;
+  }
+
+  .diorama-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+    filter: drop-shadow(0 14px 24px rgba(10, 11, 18, 0.72));
+  }
+
+  /* Floating Top-Left Medallion Above Mountain Peak */
+  .orb-top-left {
+    position: absolute;
+    top: 2px;
+    left: 68px;
+    width: 68px;
+    height: 68px;
+    z-index: 4;
+  }
+
+  /* Floating Top-Right Medallions & Large Glowing Sun Dial ("2") */
+  .orb-top-right-sm {
+    position: absolute;
+    top: 4px;
+    right: 150px;
+    width: 58px;
+    height: 58px;
+    z-index: 4;
+  }
+
+  .orb-top-right-giant {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #43495c 0%, #242836 100%);
+    border: 2px solid rgba(255, 225, 200, 0.38);
+    box-shadow:
+      10px 14px 26px rgba(8, 9, 15, 0.8),
+      inset 0 2px 3px rgba(255, 255, 255, 0.25);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    cursor: pointer;
+  }
+
+  .giant-orb-core {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 60% 35%, #fff7eb 0%, #fad1b0 55%, #e3a382 100%);
+    box-shadow:
+      0 0 20px rgba(255, 210, 175, 0.55),
+      inset 0 2px 5px #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #8c5843;
+  }
+
+  .orb-mid-right-sm {
+    position: absolute;
+    top: 138px;
+    right: 6px;
+    width: 56px;
+    height: 56px;
+    z-index: 4;
+  }
+
+  /* Row of 7 Circular Tactile Pins Nestled Directly Under the Left Chalet & Forest */
+  .under-forest-pins-row {
+    position: absolute;
+    bottom: 6px;
+    left: 16px;
+    display: flex;
+    gap: 15px;
+    z-index: 5;
+  }
+
+  .forest-pin {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  /* Right Pill Bar Under Right Chalet ("1860m • Ridge") */
+  .under-chalet-pill {
+    position: absolute;
+    bottom: 34px;
+    right: 0;
+    width: 224px;
+    height: 52px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, #2b2f3d 0%, #1d202b 100%);
+    border: 1.5px solid #4d5369;
+    box-shadow:
+      6px 10px 18px rgba(8, 9, 14, 0.78),
+      inset 0 2px 4px rgba(0, 0, 0, 0.65);
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    z-index: 5;
+  }
+
+  .under-chalet-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #3b4052 0%, #52576b 100%);
+    border: 1px solid rgba(255, 220, 195, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffeadb;
+  }
+
+  /* =========================================================
+     LOWER DECK UNDER DIORAMA:
+     [CENTER BACKLIT CONSOLE] + [RIGHT TOPO & TELEMETRY STACK]
+     ========================================================= */
+  .lower-diorama-deck {
+    display: grid;
+    grid-template-columns: 1fr 224px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  /* Center Wide Backlit Console + Long Sunset Slider */
+  .center-console-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .main-recessed-console {
+    height: 192px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 42% 65%, rgba(242, 159, 121, 0.16) 0%, transparent 60%),
+      linear-gradient(165deg, #212330 0%, #171822 100%);
+    border: 1.5px solid #3a3e50;
+    box-shadow:
+      8px 14px 26px rgba(6, 7, 11, 0.82),
+      inset 0 3px 8px rgba(0, 0, 0, 0.85);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 36px 256px 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .console-left-3dots {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+  }
+
+  .peach-dot-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe5cc 0%, #e89572 70%, #9e523f 100%);
+    border: 1.5px solid #fff3e6;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.75), 0 0 10px rgba(242, 159, 121, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #3d1d16;
+    cursor: pointer;
+  }
+
+  /* Glowing Frosted Apricot-Copper Screen with 2 Vertical Bar Columns */
+  .frosted-apricot-screen {
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 52% 68%, rgba(255, 190, 140, 0.85) 0%, rgba(212, 118, 90, 0.55) 45%, rgba(62, 44, 58, 0.85) 100%);
+    border: 1px solid rgba(255, 210, 180, 0.42);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.55),
+      0 0 20px rgba(242, 159, 121, 0.18);
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 1fr 78px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .screen-left-rows {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .screen-data-pill {
+    border: 1px solid rgba(255, 230, 210, 0.32);
+    background: rgba(30, 22, 32, 0.32);
+    border-radius: 7px;
+    padding: 5px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #fff0e3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dual-vertical-bars {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 4px 4px 0;
+  }
+
+  .v-bar-pillar {
+    flex: 1;
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(35, 28, 38, 0.72) 0%, rgba(185, 105, 82, 0.65) 60%, rgba(255, 200, 155, 0.85) 100%);
+    border: 1px solid rgba(255, 220, 195, 0.35);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+  .v-bar-pillar:hover { filter: brightness(1.15); }
+
+  /* Console Right Controls Matrix */
+  .console-right-matrix {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .c-right-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .c-pill-badge {
+    flex: 1;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(20, 22, 32, 0.75);
+    border: 1px solid rgba(235, 175, 150, 0.25);
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #f2cab3;
+  }
+
+  /* Long Full-Width Sunset Horizon Slider Bar */
+  .long-sunset-slider-shell {
+    height: 44px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #1b1d28 0%, #262938 100%);
+    border: 1.5px solid #3d4254;
+    box-shadow:
+      6px 10px 20px rgba(6, 7, 12, 0.8),
+      inset 0 3px 6px rgba(0, 0, 0, 0.85);
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sunset-gradient-track {
+    flex: 1;
+    height: 16px;
+    border-radius: 8px;
+    background: #14151f;
+    box-shadow: inset 0 2px 5px #000;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .sunset-gradient-fill {
+    width: var(--horizon, 82%);
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #6e3d3b 0%, #d47b5f 35%, #ffbe94 75%, #ffe6cc 100%);
+    box-shadow: 0 0 14px rgba(255, 185, 135, 0.65);
+  }
+
+  /* Right Column Stack (Topo Card + 3-Row Activity Card) */
+  .right-telemetry-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .topo-copper-card {
+    height: 82px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #633d3f 0%, #302836 60%, #242736 100%);
+    border: 1px solid rgba(242, 165, 135, 0.35);
+    box-shadow: 6px 10px 18px rgba(8, 9, 14, 0.72);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mini-pill-input {
+    height: 36px;
+    border-radius: 18px;
+    background: linear-gradient(90deg, #1b1d28 0%, #5c3a3a 60%, #302b38 100%);
+    border: 1px solid rgba(242, 175, 145, 0.35);
+    box-shadow: 4px 7px 14px rgba(0,0,0,0.65);
+    padding: 0 12px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9.5px;
+  }
+
+  .seismic-3row-card {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .seismic-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: #ecc1a8;
+    border-bottom: 1px solid rgba(255, 200, 175, 0.1);
+    padding-bottom: 6px;
+  }
+  .seismic-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  /* =========================================================
+     BOTTOM ROW:
+     [MOUNTAIN SILHOUETTE GRAPH] + [RESOURCE CARD] + [SPECTRUM BARS]
+     ========================================================= */
+  .bottom-3panel-row {
+    display: grid;
+    grid-template-columns: 490px 1fr 168px;
+    gap: 16px;
+    align-items: stretch;
+    height: 112px;
+  }
+
+  .ridge-Wave-panel {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .resource-middle-panel {
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .spectrum-right-panel {
+    background: linear-gradient(180deg, #1b1c26 0%, #12131a 100%);
+    border-radius: 16px;
+    border: 1.5px solid #3c3f52;
+    box-shadow:
+      6px 10px 20px rgba(0, 0, 0, 0.8),
+      inset 0 2px 6px #000;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .spectrum-bars-wrap {
+    width: 100%;
+    height: 58px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2px;
+  }
+
+  .spec-bar {
+    flex: 1;
+    background: linear-gradient(180deg, #f5c3a6 0%, #9e6254 55%, #38282b 100%);
+    border-radius: 1px 1px 0 0;
+    transition: height 0.2s ease;
+  }
+
+  @media (max-width: 1160px) {
+    .diorama-board {
+      transform: scale(0.76);
+      transform-origin: top center;
+      margin-bottom: -260px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="diorama-board">
+
+  <!-- =========================================================
+       UPPER & MIDDLE COMPOSITE DECK
+       ========================================================= -->
+  <div class="upper-composite-grid">
+
+    <!-- =======================================================
+         LEFT COLUMN: 4 STACKED MODULES
+         ======================================================= -->
+    <aside class="left-column-stack">
+
+      <!-- 1. Top-Left Split Pair -->
+      <div class="top-left-pair">
+        <div class="slate-bezel-frame">
+          <div class="narrow-copper-pill">
+            <span>ALT</span>
+            <span>100</span>
+            <span>80</span>
+            <span>—</span>
+            <span>40</span>
+            <span>20</span>
+          </div>
+        </div>
+
+        <div class="slate-bezel-frame">
+          <div class="dual-copper-stack">
+            <div class="copper-top-subcard">
+              <div style="font-size:12px;font-weight:700;letter-spacing:0.4px;color:#fff2e6;">Nome &nbsp; 73</div>
+              <div style="width:100%;border-top:1px solid rgba(255,220,195,0.28);padding-top:4px;font-size:8.5px;color:#ffdac2;">
+                1,860m // SANCTUARY
+              </div>
+            </div>
+            <div class="copper-bot-subcard">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:8px;opacity:0.8;">N 46°12'</span>
+              <span style="font-weight:700;color:#ffeadb;">Altiplan</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Mid-Left Dark Plum Telemetry Card -->
+      <div class="plum-card telemetry-matrix-card">
+        <div class="telem-header-row">
+          <span>Wales &nbsp; ▛ &nbsp; B</span>
+          <span style="display:flex;gap:8px;align-items:center;color:#f29f79;">
+            <span>◎</span><span>☾</span>
+          </span>
+        </div>
+
+        <div class="telem-body-split">
+          <div class="ring-gauge-box">
+            <span style="font-size:11px;font-weight:600;color:#f2cab3;">Rigeer</span>
+            <div class="ring-80-circle" id="ring80Val">80</div>
+          </div>
+
+          <div style="border-left:1px solid rgba(255,200,175,0.15);padding-left:12px;">
+            <div style="font-size:11px;font-weight:600;color:#f2cab3;margin-bottom:8px;">▛ &nbsp; Sttate</div>
+            <div class="data-grid-3x3">
+              <span>5770</span><span>0090</span><span>879</span>
+              <span>3728</span><span>3878</span><span>6076</span>
+              <span>2508</span><span>9840</span><span>0068</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Lower-Left 5-Tile Copper Mosaic + Thin Slider -->
+      <div class="mosaic-5tile-wrap">
+        <div class="mosaic-grid">
+          <div class="mosaic-left-3">
+            <div class="copper-gradient-tile m-tile" style="height:68px;">
+              <div style="width:28px;height:28px;border-radius:50%;border:1.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;">18</div>
+            </div>
+            <div class="m-tile" style="height:64px;background:linear-gradient(165deg,#784948,#42292d);border:1px solid rgba(255,200,175,0.25);">
+              <span style="font-size:13px;font-weight:700;color:#ffeadb;">58</span>
+            </div>
+            <div class="copper-gradient-tile m-tile" style="height:68px;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffeadb" stroke-width="1.6">
+                <polygon points="12,2 21,9 12,22 3,9"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="mosaic-right-2">
+            <div class="copper-gradient-tile m-tile" style="height:132px;align-items:flex-start;justify-content:space-between;padding:12px;">
+              <span style="font-size:11.5px;font-weight:700;">Tiolei Gostas</span>
+              <div style="width:100%;font-size:9px;opacity:0.85;border-bottom:1px solid rgba(255,255,255,0.25);padding-bottom:3px;">Elevation</div>
+              <div style="width:100%;font-size:9px;opacity:0.85;border-bottom:1px solid rgba(255,255,255,0.25);padding-bottom:3px;">Barometer</div>
+            </div>
+
+            <div class="m-tile" style="height:68px;align-items:flex-start;justify-content:space-between;padding:10px 12px;background:linear-gradient(165deg,#c9785d,#593434);border:1px solid rgba(255,205,180,0.35);">
+              <span style="font-size:11px;font-weight:700;color:#fff2e8;">Lenus Criate</span>
+              <span style="font-size:8.5px;opacity:0.8;">Atmosphere</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-copper-slider">
+          <div class="mini-slider-dot"></div>
+          <div class="mini-slider-line"></div>
+        </div>
+      </div>
+
+      <!-- 4. Bottom-Left Twin Terracotta Discs ("14" & "3") -->
+      <div class="twin-discs-row">
+        <div class="terracotta-disc" onclick="this.textContent = Number(this.textContent) + 1">14</div>
+        <div class="terracotta-disc" onclick="this.textContent = Number(this.textContent) + 1">3</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="tactile-orb" style="width:26px;height:26px;font-size:9px;">◈</button>
+          <button class="tactile-orb" style="width:26px;height:26px;font-size:9px;">✦</button>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- =======================================================
+         RIGHT MAIN ZONE: BAS-RELIEF ALPINE DIORAMA + CONSOLES
+         ======================================================= -->
+    <div class="right-main-zone">
+
+      <!-- -----------------------------------------------------
+           1. SCULPTED 3D ALPINE VALLEY DIORAMA STAGE
+           ----------------------------------------------------- -->
+      <div class="diorama-stage-wrap">
+
+        <!-- Floating Medallions Around the Mountain Sky -->
+        <button class="tactile-orb orb-top-left" title="Camp Beacon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 17h16M6 13h12l-2-7H8z"/>
+            <circle cx="12" cy="10" r="1.5" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <button class="tactile-orb orb-top-right-sm" title="Wind Sensor">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/>
+          </svg>
+        </button>
+
+        <div class="orb-top-right-giant" id="solarOrbBtn" title="Click to cycle Solar Phase">
+          <div class="giant-orb-core" id="solarOrbNum">2</div>
+        </div>
+
+        <button class="tactile-orb orb-mid-right-sm" title="Compass Lock">◎</button>
+
+        <!-- MASTER SVG BAS-RELIEF DIORAMA (Binary Sun, Peaks, Lake, Pine Forests & Chalets) -->
+        <svg class="diorama-svg" viewBox="0 0 800 456">
+          <defs>
+            <!-- Giant Binary Sunset Sphere Gradient -->
+            <radialGradient id="binarySunGrad" cx="55%" cy="48%" r="52%">
+              <stop offset="0%" stop-color="#fff8eb"/>
+              <stop offset="45%" stop-color="#fad1af"/>
+              <stop offset="82%" stop-color="#df9573"/>
+              <stop offset="100%" stop-color="#9e5a49"/>
+            </radialGradient>
+
+            <!-- Sunlit Left Mountain Ridge -->
+            <linearGradient id="leftPeakLight" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#f2c1a0"/>
+              <stop offset="45%" stop-color="#a86d68"/>
+              <stop offset="100%" stop-color="#3a2c3d"/>
+            </linearGradient>
+
+            <!-- Sunlit Right High Alpine Peak -->
+            <linearGradient id="rightPeakLight" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffebd6"/>
+              <stop offset="38%" stop-color="#cfa09e"/>
+              <stop offset="78%" stop-color="#6b4e63"/>
+              <stop offset="100%" stop-color="#2e293a"/>
+            </linearGradient>
+
+            <!-- Calm Alpine Lake Reflection -->
+            <linearGradient id="alpineLakeGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#f5bfa0"/>
+              <stop offset="28%" stop-color="#b57c6c"/>
+              <stop offset="65%" stop-color="#4e4659"/>
+              <stop offset="100%" stop-color="#282b3a"/>
+            </linearGradient>
+
+            <!-- Bas-Relief Drop Shadow Filter -->
+            <filter id="reliefShadow" x="-10%" y="-10%" width="125%" height="125%">
+              <feDropShadow dx="-4" dy="8" stdDeviation="6" flood-color="#0d0e14" flood-opacity="0.72"/>
+            </filter>
+          </defs>
+
+          <!-- 1. GIANT SCULPTED BINARY SUN DISC IN CENTER SKY -->
+          <g id="sunGroup" filter="url(#reliefShadow)">
+            <circle cx="310" cy="176" r="106" fill="url(#binarySunGrad)" stroke="rgba(255,240,220,0.6)" stroke-width="1.5"/>
+            <!-- Inner Secondary Sun Sphere -->
+            <circle cx="336" cy="176" r="20" fill="#fffaf0" stroke="#f5c6a5" stroke-width="2" filter="drop-shadow(0 4px 8px rgba(140,70,50,0.45))"/>
+          </g>
+
+          <!-- Floating Bas-Relief Cloud Pebbles -->
+          <path d="M608 112 C614 104, 628 106, 630 116 C632 124, 616 128, 608 120 Z" fill="#ebd0be" opacity="0.85"/>
+          <circle cx="645" cy="96" r="4" fill="#ebd0be" opacity="0.65"/>
+          <path d="M498 296 C504 286, 520 288, 520 300 C520 310, 502 312, 498 302 Z" fill="#f5c9a6"/>
+
+          <!-- 2. FAR BACKGROUND HORIZON MOUNTAINS -->
+          <polygon points="270,256 365,198 445,256" fill="#d99272"/>
+          <polygon points="365,198 445,256 392,256" fill="#9c5e54"/>
+
+          <!-- 3. RIGHT MAJESTIC ALPS RANGE (WITH FACETED RIDGES) -->
+          <g filter="url(#reliefShadow)">
+            <!-- Main Right Massif -->
+            <polygon points="340,258 456,162 492,175 542,102 645,228 690,265 340,265" fill="url(#rightPeakLight)"/>
+            <!-- Shadowed Right-Side Ridge Facets -->
+            <polygon points="542,102 586,238 645,228" fill="#524157"/>
+            <polygon points="456,162 492,175 468,248 418,255" fill="#7a5866"/>
+            <polygon points="542,102 518,195 562,235 586,238" fill="#8f6d7d"/>
+          </g>
+
+          <!-- 4. LEFT JAGGED MOUNTAIN PEAKS -->
+          <g filter="url(#reliefShadow)">
+            <!-- Outer Left Peak -->
+            <polygon points="75,320 75,212 135,148 215,248 75,320" fill="url(#leftPeakLight)"/>
+            <polygon points="135,148 118,245 75,295 75,212" fill="#4f394a"/>
+            <!-- Inner Sharp Peak -->
+            <polygon points="115,295 224,168 355,272 285,295" fill="url(#leftPeakLight)"/>
+            <polygon points="224,168 205,268 135,288" fill="#3d2f40"/>
+            <polygon points="224,168 258,274 355,272" fill="#785662"/>
+          </g>
+
+          <!-- 5. CALM MIRRORED ALPINE LAKE & SHORELINES -->
+          <path d="M 210 256 L 560 256 L 620 355 L 220 355 Z" fill="url(#alpineLakeGrad)"/>
+          <!-- Shimmering Sunset Water Ripples -->
+          <g stroke="#ffd9b8" stroke-width="1.2" opacity="0.55">
+            <line x1="305" y1="264" x2="385" y2="264"/>
+            <line x1="320" y1="272" x2="410" y2="272"/>
+            <line x1="295" y1="282" x2="375" y2="282"/>
+            <line x1="335" y1="294" x2="425" y2="294"/>
+          </g>
+
+          <!-- 6. RIGHT SHORELINE PINE FOREST & LAKESIDE CHALET SANCTUARY -->
+          <g filter="url(#reliefShadow)">
+            <!-- Dark Slate Land Shelf Under Right Chalet -->
+            <path d="M 465 304 L 748 304 C 756 304, 756 320, 745 320 L 475 320 Z" fill="#232836"/>
+
+            <!-- Back Row of Tall Teal Spruces & Autumn Larches -->
+            <g fill="#1c3840">
+              <polygon points="565,192 552,275 578,275"/>
+              <polygon points="590,178 575,275 605,275"/>
+              <polygon points="622,186 608,275 636,275"/>
+              <polygon points="668,162 650,278 686,278"/>
+              <polygon points="698,145 680,282 716,282"/>
+              <polygon points="726,182 710,285 742,285"/>
+            </g>
+            <!-- Warm Autumn Copper-Orange Trees Mixed in Right Forest -->
+            <g fill="#d97836">
+              <polygon points="545,215 535,278 555,278"/>
+              <polygon points="606,195 594,278 618,278"/>
+              <polygon points="646,180 634,278 658,278"/>
+              <polygon points="682,190 670,278 694,278"/>
+            </g>
+
+            <!-- Right Alpine Timber Chalet & Boathouse -->
+            <!-- Small Left Boathouse Cabin -->
+            <rect x="526" y="280" width="48" height="24" fill="#4a3733" stroke="#221918" stroke-width="1"/>
+            <polygon points="520,282 550,268 580,282" fill="#3a4352" stroke="#7d8799" stroke-width="1"/>
+            <rect x="538" y="287" width="7" height="7" fill="#ffbe76"/>
+            <rect x="552" y="287" width="7" height="7" fill="#ffbe76"/>
+
+            <!-- Main Two-Story Right Chalet -->
+            <rect x="588" y="264" width="96" height="40" fill="#543b33" stroke="#241916" stroke-width="1.2"/>
+            <polygon points="578,268 625,240 694,268" fill="#333c4a" stroke="#8c96a8" stroke-width="1.2"/>
+            <!-- Warm Glowing Chalet Windows -->
+            <rect x="602" y="274" width="10" height="12" rx="1" fill="#ffcf87"/>
+            <rect x="618" y="274" width="10" height="12" rx="1" fill="#ffcf87"/>
+            <rect x="646" y="272" width="14" height="14" rx="1" fill="#ffd999"/>
+            <rect x="666" y="272" width="10" height="14" rx="1" fill="#ffcf87"/>
+          </g>
+
+          <!-- 7. FOREGROUND LEFT FOREST, TIMBER OUTPOST CABIN & LOWER MINI-PEAKS -->
+          <g filter="url(#reliefShadow)">
+            <!-- Sculpted Slate Base Ledge Spanning Bottom of Diorama -->
+            <path d="M 10 415 L 10 388 L 620 388 C 632 388, 636 415, 620 415 Z" fill="#232736" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+            <!-- Left Foreground Pine & Copper Forest Sweeping Down Slope -->
+            <g fill="#19333a">
+              <polygon points="82,235 68,335 96,335"/>
+              <polygon points="104,220 88,335 120,335"/>
+              <polygon points="132,242 118,342 146,342"/>
+              <polygon points="168,255 152,350 184,350"/>
+              <polygon points="212,272 196,362 228,362"/>
+              <polygon points="248,285 232,368 264,368"/>
+            </g>
+            <g fill="#c96b38">
+              <polygon points="118,255 106,338 130,338"/>
+              <polygon points="150,265 138,345 162,345"/>
+              <polygon points="190,278 176,358 204,358"/>
+              <polygon points="268,308 254,375 282,375"/>
+              <polygon points="315,328 302,382 328,382"/>
+            </g>
+
+            <!-- Foreground Left Wooden Outpost Cabin with Porch -->
+            <rect x="82" y="328" width="98" height="44" fill="#593e34" stroke="#241814" stroke-width="1.2"/>
+            <polygon points="64,332 128,298 192,332" fill="#2c313f" stroke="#646d82" stroke-width="1.2"/>
+            <rect x="96" y="338" width="14" height="14" fill="#ffcf87"/>
+            <rect x="118" y="338" width="14" height="14" fill="#ffcf87"/>
+            <rect x="86" y="358" width="104" height="10" rx="2" fill="#9c8a82" stroke="#2b2523" stroke-width="1"/>
+
+            <!-- Foreground Lower-Right Mini Purple Crags & Pine Cluster -->
+            <polygon points="385,388 432,322 488,388" fill="#634b63"/>
+            <polygon points="432,322 415,388 385,388" fill="#3a2d40"/>
+            <polygon points="455,388 518,312 595,388" fill="#8c6978"/>
+            <polygon points="518,312 495,388 455,388" fill="#49394d"/>
+
+            <!-- Foreground Mini Trees Along Bottom Ledge -->
+            <g fill="#1c3b42">
+              <polygon points="382,342 372,388 392,388"/>
+              <polygon points="448,345 438,388 458,388"/>
+              <polygon points="492,338 480,388 504,388"/>
+              <polygon points="558,348 548,388 568,388"/>
+            </g>
+            <g fill="#df8244">
+              <circle cx="348" cy="374" r="9"/>
+              <circle cx="412" cy="376" r="8"/>
+              <circle cx="470" cy="376" r="8.5"/>
+              <circle cx="526" cy="376" r="9"/>
+            </g>
+          </g>
+        </svg>
+
+        <!-- Row of 7 Circular Tactile Pins Directly Under the Left Cabin & Forest -->
+        <div class="under-forest-pins-row">
+          <button class="tactile-orb forest-pin active">⌂</button>
+          <button class="tactile-orb forest-pin">⛰</button>
+          <button class="tactile-orb forest-pin">▲</button>
+          <button class="tactile-orb forest-pin">◉</button>
+          <button class="tactile-orb forest-pin">♒</button>
+          <button class="tactile-orb forest-pin">▤</button>
+          <button class="tactile-orb forest-pin">✦</button>
+        </div>
+
+        <!-- Right Pill Under Right Chalet -->
+        <div class="under-chalet-pill">
+          <div class="under-chalet-inner">
+            <span style="opacity:0.75;">⊏ &nbsp; ☖</span>
+            <span>1860m Ridge</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- -----------------------------------------------------
+           2. LOWER DECK UNDER DIORAMA: [MAIN CONSOLE] + [RIGHT STACK]
+           ----------------------------------------------------- -->
+      <div class="lower-diorama-deck">
+
+        <!-- Center Main Console + Long Sunset Horizon Slider -->
+        <div class="center-console-stack">
+
+          <div class="main-recessed-console">
+            <!-- Left 3 Peach Dot Buttons -->
+            <div class="console-left-3dots">
+              <button class="peach-dot-btn">▼</button>
+              <button class="peach-dot-btn">●</button>
+              <button class="peach-dot-btn">▲</button>
+            </div>
+
+            <!-- Frosted Apricot-Copper Screen with 2 Vertical Pillar Bars -->
+            <div class="frosted-apricot-screen">
+              <div class="screen-left-rows">
+                <div class="screen-data-pill">
+                  <span>BARO</span><span>1014 hPa</span>
+                </div>
+                <div class="screen-data-pill">
+                  <span>WIND</span><span>12 kt NW</span>
+                </div>
+                <div style="font-size:10px;font-weight:700;color:#ffeadb;padding-left:4px;">Sanctuary</div>
+              </div>
+
+              <div class="dual-vertical-bars">
+                <div class="v-bar-pillar" style="height:88%;" title="Solar Flux"></div>
+                <div class="v-bar-pillar" style="height:94%;" title="Thermal Reserve"></div>
+              </div>
+            </div>
+
+            <!-- Right Controls & Badges Matrix -->
+            <div class="console-right-matrix">
+              <div class="c-right-row">
+                <span style="font-size:12px;font-weight:700;color:#ffdac2;min-width:28px;">26°</span>
+                <button class="tactile-orb" style="width:30px;height:30px;font-size:10px;">◎</button>
+                <div class="c-pill-badge">
+                  <span>🚜 &nbsp; 185E</span>
+                  <span>✕</span>
+                </div>
+              </div>
+
+              <div class="c-right-row">
+                <div style="width:32px;height:42px;border-radius:16px;background:#13151e;border:1.5px solid #4d5369;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;">0</div>
+                <div class="c-pill-badge">
+                  <span style="color:#f29f79;">▃ ▅</span>
+                  <span>Substation</span>
+                </div>
+              </div>
+
+              <div class="c-right-row">
+                <span style="font-size:11px;color:#deb8a4;">⌘</span>
+                <button class="tactile-orb active" style="width:34px;height:34px;"></button>
+                <div class="c-pill-badge">
+                  <span>○</span>
+                  <span style="font-weight:700;">Elevation Reach</span>
+                </div>
+              </div>
+
+              <div class="c-right-row" style="justify-content:flex-end;gap:12px;">
+                <button class="tactile-orb" style="width:36px;height:36px;">↻</button>
+                <button class="tactile-orb" style="width:36px;height:36px;">◪</button>
+                <button class="tactile-orb" style="width:36px;height:36px;">⛺</button>
+                <button class="tactile-orb active" style="width:36px;height:36px;"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Long Full-Width Sunset Horizon Slider Bar (Drag to move the Sun & Glow!) -->
+          <div class="long-sunset-slider-shell">
+            <span style="font-size:12px;color:#f29f79;">🔆</span>
+            <div class="sunset-gradient-track" id="horizonSliderTrack" title="Click or drag to adjust Sunset Horizon & Solar Glow">
+              <div class="sunset-gradient-fill" id="horizonSliderFill" style="--horizon: 84%;"></div>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#deb8a4;">513</span>
+            <button class="tactile-orb" style="width:26px;height:26px;font-size:9px;">●</button>
+            <span style="font-size:9.5px;color:#deb8a4;">Dawn</span>
+          </div>
+
+        </div>
+
+        <!-- Right Telemetry Column (Topo Card + Mini Pill + 3-Row Seismic Card) -->
+        <div class="right-telemetry-stack">
+
+          <div class="topo-copper-card">
+            <button class="tactile-orb active" style="width:34px;height:34px;">◉</button>
+            <svg width="110" height="52" viewBox="0 0 110 52" fill="none" stroke="#f5ae86" stroke-width="1.5">
+              <path d="M10 38 C28 18, 55 18, 88 26 L 72 38 L 98 42" fill="rgba(242,159,121,0.22)"/>
+              <circle cx="35" cy="28" r="3" fill="#ffd9b8"/>
+              <path d="M68 34 L82 46 L96 36" fill="#e38c6b" stroke="none"/>
+            </svg>
+          </div>
+
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:8px;align-items:center;">
+            <button class="tactile-orb" style="width:44px;height:44px;">🏮</button>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="background:#222634;border:1px solid #3f4559;border-radius:6px;padding:3px 8px;font-size:8.5px;color:#deb8a4;">Ridge Beacon</div>
+              <div style="background:#222634;border:1px solid #3f4559;border-radius:6px;padding:3px 8px;font-size:8.5px;color:#deb8a4;"> Active</div>
+            </div>
+          </div>
+
+          <div class="mini-pill-input">
+            <button class="tactile-orb" style="width:26px;height:26px;font-size:9px;">⛰</button>
+            <span style="color:#ffeadb;font-weight:600;">Trail Crest</span>
+          </div>
+
+          <div class="plum-card seismic-3row-card">
+            <div class="seismic-row">
+              <span>🔥 〰</span>
+              <div style="text-align:right;"><b>R-Peak</b><br><span style="opacity:0.7;">8.4 km</span></div>
+            </div>
+            <div class="seismic-row">
+              <span>◎ ╱</span>
+              <div style="text-align:right;"><b>D-Ridge</b><br><span style="opacity:0.7;">6.1 km</span></div>
+            </div>
+            <div class="seismic-row">
+              <span>⛰ ⋀</span>
+              <div style="text-align:right;"><b>K-Pass</b><br><span style="opacity:0.7;">2.8 km</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       BOTTOM 3-PANEL ROW:
+       [1. MOUNTAIN SILHOUETTE GRAPH] + [2. RESOURCE CARD] + [3. SPECTRUM]
+       ========================================================= -->
+  <section class="bottom-3panel-row">
+
+    <!-- 1. Dual-Layer Mountain Ridge Silhouette Waveform Panel -->
+    <div class="plum-card ridge-Wave-panel">
+      <svg width="100%" height="100%" viewBox="0 0 490 112" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="upperRidgeGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#ffdfc2"/>
+            <stop offset="45%" stop-color="#b87872"/>
+            <stop offset="100%" stop-color="#2c1d2e"/>
+          </linearGradient>
+          <linearGradient id="lowerRidgeGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#f2b89b"/>
+            <stop offset="55%" stop-color="#6e4254"/>
+            <stop offset="100%" stop-color="#1e1422"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Upper Glowing Jagged Ridge Profile -->
+        <path d="M0,62 L18,46 L32,54 L52,32 L68,48 L92,14 L112,38 L128,22 L148,46 L168,36 L186,18 L210,48 L228,32 L252,16 L275,44 L298,28 L318,48 L342,26 L365,45 L388,28 L412,48 L435,34 L458,48 L490,42 L490,112 L0,112 Z"
+              fill="url(#upperRidgeGrad)"/>
+
+        <!-- Lower Foreground Jagged Ridge Profile -->
+        <path d="M0,88 L24,72 L45,84 L68,66 L88,78 L114,56 L138,76 L158,64 L182,82 L205,62 L232,78 L258,58 L284,78 L312,62 L338,80 L368,54 L394,78 L422,56 L448,78 L490,72 L490,112 L0,112 Z"
+              fill="url(#lowerRidgeGrad)"/>
+      </svg>
+    </div>
+
+    <!-- 2. Bottom Middle Supply & Beacon Telemetry Panel -->
+    <div class="plum-card resource-middle-panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;font-size:10px;color:#f5ae86;">
+        <div>📊<br><span style="font-size:8px;color:#deb8a4;">FLUX</span></div>
+        <div>🗼<br><span style="font-size:8px;color:#deb8a4;">MAST</span></div>
+        <div>🎁<br><span style="font-size:8px;color:#deb8a4;">PACK</span></div>
+        <div>🔋<br><span style="font-size:8px;color:#deb8a4;">CELL</span></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;border-left:1px solid rgba(255,200,175,0.15);padding-left:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+          <span style="color:#f5ae86;">🛢️ ───</span>
+          <b style="color:#ffeadb;">uel. Casco</b>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+          <span style="color:#f5ae86;">🥫 ───</span>
+          <b style="color:#ffeadb;">arias Grias</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Bottom-Right Vertical Frequency / Barcode Spectrum ("Bites") -->
+    <div class="spectrum-right-panel">
+      <span style="font-size:10.5px;font-weight:700;color:#ffdac2;letter-spacing:0.5px;">Bites</span>
+      <div class="spectrum-bars-wrap" id="spectrumBars"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // 1. Populate Bottom-Right "Bites" Vertical Spectrum Bars
+  const specWrap = document.getElementById('spectrumBars');
+  const heights = [92, 74, 88, 62, 95, 80, 90, 52, 86, 94, 78, 88, 68, 96, 84, 90, 72, 92, 86, 64];
+  specWrap.innerHTML = heights.map(h => `<div class="spec-bar" style="height:${h}%;"></div>`).join('');
+
+  // Gently animate spectrum bars & click to randomize
+  specWrap.parentElement.addEventListener('click', () => {
+    specWrap.querySelectorAll('.spec-bar').forEach(bar => {
+      bar.style.height = `${45 + Math.round(Math.random() * 52)}%`;
+    });
+  });
+
+  // 2. Interactive Long Sunset Horizon Slider (Moves Binary Sun & Adjusts Board Glow!)
+  const horizonTrack = document.getElementById('horizonSliderTrack');
+  const horizonFill = document.getElementById('horizonSliderFill');
+  const sunGroup = document.getElementById('sunGroup');
+  let draggingHorizon = false;
+
+  function updateHorizon(clientX) {
+    const rect = horizonTrack.getBoundingClientRect();
+    const ratio = Math.max(0.12, Math.min(0.98, (clientX - rect.left) / rect.width));
+    horizonFill.style.setProperty('--horizon', `${(ratio * 100).toFixed(1)}%`);
+
+    // Shift Binary Sun vertically & horizontally slightly across the mountain valley
+    const dy = (1 - ratio) * 38;
+    const dx = (ratio - 0.8) * 28;
+    sunGroup.setAttribute('transform', `translate(${dx.toFixed(1)}, ${dy.toFixed(1)})`);
+    document.documentElement.style.setProperty('--sun-glow', (0.4 + ratio * 0.8).toFixed(2));
+  }
+
+  horizonTrack.addEventListener('pointerdown', (e) => {
+    draggingHorizon = true;
+    horizonTrack.setPointerCapture(e.pointerId);
+    updateHorizon(e.clientX);
+  });
+
+  horizonTrack.addEventListener('pointermove', (e) => {
+    if (!draggingHorizon) return;
+    updateHorizon(e.clientX);
+  });
+
+  const stopHorizon = () => { draggingHorizon = false; };
+  horizonTrack.addEventListener('pointerup', stopHorizon);
+  horizonTrack.addEventListener('pointercancel', stopHorizon);
+
+  // 3. Toggle Tactile Orbs & Forest Pins
+  document.querySelectorAll('.tactile-orb').forEach(orb => {
+    orb.addEventListener('click', () => orb.classList.toggle('active'));
+  });
+
+  // 4. Giant Top-Right Solar Orb Counter
+  const solarOrbBtn = document.getElementById('solarOrbBtn');
+  const solarOrbNum = document.getElementById('solarOrbNum');
+  solarOrbBtn.addEventListener('click', () => {
+    const next = (Number(solarOrbNum.textContent) % 9) + 1;
+    solarOrbNum.textContent = next;
+  });
+})();
+</script>
+</body>
+</html>

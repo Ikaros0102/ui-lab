@@ -1,0 +1,1747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Refractive Liquid Glass & Botanical Caustic UI Showcase</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Refractive Liquid Glass & Caustic UI Showcase",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "light",
+    "glass"
+  ],
+  "tags": [
+    "liquid-glass",
+    "glassmorphism",
+    "caustics",
+    "refraction",
+    "control-center",
+    "botanical",
+    "lavender",
+    "3d-buttons",
+    "switches",
+    "specular-border",
+    "neon",
+    "skeuomorphic",
+    "widgets"
+  ],
+  "description": "True-to-reference implementation of the Botanical Lavender Liquid-Glass Control Center (Ref 1) and Prismatic Caustic Liquid Glass UI Kit (Ref 2). Features directional total-internal-reflection black glass rims, upper-right quadrant softbox meniscus crescents, translucent 3D extruded acrylic bases, chromatic dispersion arcs, and structured bottom-left caustic light projections.",
+  "preview": {
+    "mode": "page",
+    "width": 1440,
+    "height": 980
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root {
+    --in-oklab: ;
+    --in-oklch: ;
+  }
+
+  @supports (background: linear-gradient(in oklab, white, black)) {
+    :root {
+      --in-oklab: in oklab;
+      --in-oklch: in oklch;
+    }
+  }
+
+  body[data-backdrop="split"] {
+    background: linear-gradient(90deg, #221b2d 0%, #2d243b 46%, #dcdad5 54%, #e5e4e9 100%);
+  }
+
+  body[data-backdrop="dusk"] {
+    background:
+      radial-gradient(circle at 25% 25%, #5c467a 0%, transparent 45%),
+      radial-gradient(circle at 75% 75%, #483666 0%, transparent 50%),
+      linear-gradient(145deg, #2b213a 0%, #140f1d 55%, #231b32 100%);
+  }
+
+  body[data-backdrop="studio"] {
+    background: radial-gradient(circle at 50% 35%, #f2f1f5 0%, #dfdde4 60%, #cac7d1 100%);
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px 40px;
+    overflow-x: hidden;
+    transition: background 0.4s ease;
+  }
+
+  /* =========================================================
+     TOP BAR & MODE SWITCHER
+     ========================================================= */
+  .showcase-topbar {
+    width: 100%;
+    max-width: 1360px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding: 0 6px;
+    flex-wrap: wrap;
+    gap: 16px;
+    z-index: 10;
+  }
+
+  .brand-headline {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    background: rgba(18, 14, 28, 0.62);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .brand-headline h1 {
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: #ffffff;
+  }
+
+  .brand-headline span {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(233, 213, 255, 0.8);
+  }
+
+  .env-switcher-pills {
+    display: flex;
+    gap: 6px;
+    background: rgba(18, 14, 28, 0.65);
+    backdrop-filter: blur(16px);
+    padding: 5px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .env-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .env-btn.active {
+    background: #ffffff;
+    color: #141020;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* =========================================================
+     MAIN 2-PANEL SHOWCASE GRID
+     ========================================================= */
+  .liquid-glass-stage {
+    width: 100%;
+    max-width: 1360px;
+    display: grid;
+    grid-template-columns: 584px 1fr;
+    gap: 34px;
+    align-items: stretch;
+  }
+
+  /* =========================================================
+     LEFT SURFACE: REF 1 (BOTANICAL LAVENDER CONTROL CENTER)
+     ========================================================= */
+  .ref1-ambient-board {
+    position: relative;
+    border-radius: 44px;
+    padding: 36px 34px 38px;
+    background:
+      /* Deep directional studio shadow cast top-center between the 2 squircles */
+      radial-gradient(ellipse 170px 140px at 52% 8%, rgba(5, 3, 10, 0.95) 0%, rgba(16, 11, 26, 0.7) 55%, transparent 85%),
+      /* Deep shadow pocket behind middle-left butterfly orb */
+      radial-gradient(ellipse 135px 115px at 5% 43%, rgba(5, 3, 10, 0.92) 0%, transparent 78%),
+      /* Deep shadow pocket at bottom-right behind camera orb */
+      radial-gradient(ellipse 150px 130px at 95% 91%, rgba(5, 3, 10, 0.96) 0%, transparent 78%),
+      /* Bright smoky-lavender ambient light pools matching Ref 1 */
+      radial-gradient(circle 230px at 14% 12%, #9a88ab 0%, transparent 70%),
+      radial-gradient(circle 250px at 46% 56%, #907ea1 0%, transparent 68%),
+      radial-gradient(circle 240px at 24% 84%, #9482a5 0%, transparent 70%),
+      radial-gradient(circle 220px at 66% 88%, #8c7a9d 0%, transparent 68%),
+      linear-gradient(155deg, #7a6a8a 0%, #5c4d6c 38%, #726284 68%, #4a3d59 100%);
+    box-shadow:
+      0 30px 65px rgba(0, 0, 0, 0.65),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+    isolation: isolate;
+  }
+
+  /* =========================================================
+     REF 1 MOLDED OPTICAL GLASS CONTAINERS (.ref1-glass-pod)
+     ========================================================= */
+  .ref1-glass-pod {
+    position: relative;
+    background:
+      /* Soft top-right studio dome sheen */
+      radial-gradient(ellipse 72% 45% at 62% 14%, rgba(168, 145, 198, 0.22) 0%, transparent 65%),
+      /* Bottom internal violet-magenta caustic glow */
+      radial-gradient(ellipse 85% 20% at 50% 100%, rgba(217, 70, 239, 0.44) 0%, transparent 72%),
+      /* Smoky dark-violet glass core */
+      linear-gradient(175deg var(--in-oklab), rgba(62, 50, 80, 0.72) 0%, rgba(18, 13, 29, 0.88) 54%, rgba(26, 18, 42, 0.92) 100%);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    border-radius: 52px;
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    border-right: 1px solid rgba(255, 255, 255, 0.22);
+    border-bottom: 1.5px solid rgba(250, 232, 255, 0.92);
+    box-shadow:
+      /* 1. Directional dark studio shadow */
+      14px -12px 26px rgba(4, 2, 10, 0.62),
+      0 14px 26px rgba(4, 2, 10, 0.62),
+      /* 2. Focused downward neon purple-pink & white caustic spill on floor */
+      0 11px 22px -2px rgba(192, 132, 252, 0.92),
+      0 4px 10px -1px rgba(250, 232, 255, 0.85),
+      /* 3. Subtle faceted dark-glass inner bevel at top & sides */
+      inset 0 3px 3px -1px rgba(4, 2, 10, 0.78),
+      inset 3px 0 3px -1.5px rgba(195, 180, 225, 0.24),
+      inset -3px 0 3px -1.5px rgba(195, 180, 225, 0.2),
+      /* 4. Uniform bottom edge refraction strip (pure vertical offset so blue never creeps up the side walls!) */
+      inset 0 -2px 2px -0.5px #ffffff,
+      inset 0 -4.5px 5.5px -1.5px rgba(96, 165, 250, 0.88),
+      inset 0 -8px 10px -3px rgba(192, 132, 252, 0.85);
+    overflow: hidden;
+  }
+
+  /* Glossy Curved White Meniscus Tube INSIDE the dark rim (Strictly Top & Top-Right Corner!) */
+  .ref1-glass-pod::before {
+    content: "";
+    position: absolute;
+    inset: 4px 4px 2px 4px;
+    border-radius: calc(var(--pod-radius, 52px) - 4px);
+    box-shadow:
+      /* Thick glossy white curved tube along top & top-right corner */
+      inset -4px 5.5px 1.6px -1.8px #ffffff,
+      /* Subtle left vertical glass reflection */
+      inset 2.5px 0 2.5px -1px rgba(255, 255, 255, 0.38);
+    mask-image: radial-gradient(ellipse 88% 36% at 64% 6%, #000 0%, #000 56%, transparent 88%);
+    -webkit-mask-image: radial-gradient(ellipse 88% 36% at 64% 6%, #000 0%, #000 56%, transparent 88%);
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  /* Bottom Uniform Edge Refraction Strip (follows border-radius & disperses sideways along the bottom curve!) */
+  .ref1-glass-pod::after {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    border-radius: calc(var(--pod-radius, 52px) - 1.5px);
+    box-shadow:
+      inset 0 -2.5px 2px -0.5px #ffffff,
+      inset 0 -5px 6px -1.5px #f0abfc,
+      inset 8px -5px 6px -2.5px rgba(103, 232, 249, 0.94),
+      inset -8px -5px 6px -2.5px rgba(103, 232, 249, 0.94);
+    mask-image: radial-gradient(ellipse 92% 16px at 50% 100%, #000 0%, #000 45%, transparent 94%);
+    -webkit-mask-image: radial-gradient(ellipse 92% 16px at 50% 100%, #000 0%, #000 45%, transparent 94%);
+    pointer-events: none;
+    z-index: 7;
+  }
+
+  /* Row 1: Two 246x246 Squircles */
+  .cc-top-row {
+    display: grid;
+    grid-template-columns: 246px 246px;
+    gap: 22px;
+  }
+
+  .cc-squircle {
+    --pod-radius: 52px;
+    border-radius: 52px;
+    width: 246px;
+    height: 246px;
+    padding: 19px;
+  }
+
+  .conn-2x2-grid {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+    position: relative;
+    z-index: 4;
+  }
+
+  /* =========================================================
+     REF 1 SPHERICAL 3D GLASS ORB BUTTONS (.ref1-orb)
+     ========================================================= */
+  .ref1-orb {
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+      /* Soft translucent smoky-mauve dome interior (extends smoothly to 96% so there is NO harsh black ring!) */
+      radial-gradient(circle at 46% 48%, rgba(168, 142, 198, 0.5) 0%, rgba(92, 74, 122, 0.52) 55%, rgba(28, 20, 44, 0.86) 84%, rgba(8, 5, 16, 0.95) 100%),
+      /* Bottom internal violet-pink caustic bounce */
+      radial-gradient(circle at 50% 92%, rgba(217, 70, 239, 0.6) 0%, transparent 54%);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1.5px solid rgba(250, 232, 255, 0.92);
+    box-shadow:
+      /* Outer studio drop shadow + focused bottom purple-pink-white caustic on floor */
+      8px -8px 18px rgba(4, 2, 10, 0.52),
+      0 11px 18px rgba(4, 2, 10, 0.65),
+      0 10px 18px -2px rgba(192, 132, 252, 0.9),
+      0 4px 9px -1px rgba(250, 232, 255, 0.78),
+      /* Subtle directional dark glass refraction at top-right/top-left only (NO 360° black tire border!) */
+      inset 0 3.5px 3px -1px rgba(4, 2, 10, 0.82),
+      inset -3px 2px 3px -1px rgba(4, 2, 10, 0.72),
+      /* Clean bottom-rim sapphire-blue & violet glass refraction (confined to bottom arc, NOT side walls!) */
+      inset 0 -5px 6px -2px rgba(96, 165, 250, 0.85),
+      inset 0 -7px 9px -2.5px rgba(217, 70, 239, 0.88),
+      inset 0 -2.5px 3px -0.5px #ffffff;
+    color: #e6c5f5;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    isolation: isolate;
+  }
+
+  /* Upper-Right Arc Tapered White Crescent Reflection */
+  .ref1-orb::before {
+    content: "";
+    position: absolute;
+    inset: 3.5px;
+    border-radius: 50%;
+    box-shadow:
+      inset -4.5px 5px 1.8px -1.8px #ffffff,
+      inset 3.5px 0 3px -1.5px rgba(185, 160, 225, 0.34);
+    mask-image: radial-gradient(ellipse 84% 48% at 62% 14%, #000 0%, #000 58%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 84% 48% at 62% 14%, #000 0%, #000 58%, transparent 90%);
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Curved Bottom Caustic Crescent Hotspot right along the bottom edge (with sapphire-cyan dispersion wings) */
+  .ref1-orb::after {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    border-radius: 50%;
+    box-shadow:
+      inset 0 -3px 2.5px -0.5px #ffffff,
+      inset 0 -6px 7px -2px #f0abfc,
+      inset -6px -5px 6px -2.5px rgba(103, 232, 249, 0.9),
+      inset 6px -5px 6px -2.5px rgba(96, 165, 250, 0.9);
+    mask-image: radial-gradient(ellipse 88% 28% at 50% 100%, #000 0%, #000 48%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 88% 28% at 50% 100%, #000 0%, #000 48%, transparent 90%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .ref1-orb:hover {
+    transform: scale(1.035);
+  }
+
+  .ref1-orb:active {
+    transform: scale(0.96);
+  }
+
+  /* Inactive Orbs inside the 2x2 Connectivity Pod (Cellular & Wi-Fi) */
+  .conn-2x2-grid .ref1-orb:not(.active) {
+    color: #f3e8ff;
+    background:
+      radial-gradient(circle at 46% 44%, rgba(160, 138, 192, 0.5) 0%, rgba(68, 52, 94, 0.68) 58%, rgba(22, 16, 36, 0.92) 86%, rgba(8, 5, 16, 0.96) 100%);
+    box-shadow:
+      0 8px 16px rgba(4, 2, 10, 0.68),
+      0 7px 16px rgba(192, 132, 252, 0.85),
+      inset 0 3px 2.5px -1px rgba(4, 2, 10, 0.82),
+      inset 0 -5px 6px -2px rgba(96, 165, 250, 0.8),
+      inset 0 -6px 8px -2px #c084fc,
+      inset 0 -2.5px 3px -0.5px #ffffff;
+  }
+
+  /* =========================================================
+     ACTIVE LIT STATE (Airplane & Bluetooth in Ref 1)
+     ========================================================= */
+  .ref1-orb.active {
+    background:
+      radial-gradient(
+        circle at 50% 47%,
+        #ccb4df 0%,
+        #bfa5d5 58%,
+        #d8c2eb 65%,
+        #ffffff 72%,
+        #fbcfe8 80%,
+        #f472b6 90%,
+        #d946ef 100%
+      );
+    border: 1.5px solid rgba(255, 255, 255, 0.92);
+    color: #23182e;
+    box-shadow:
+      0 0 22px rgba(244, 114, 182, 0.9),
+      0 7px 18px rgba(217, 70, 239, 0.82),
+      0 3px 8px rgba(255, 255, 255, 0.55),
+      inset 0 0 0 2.5px rgba(255, 255, 255, 0.88),
+      inset 0 0 12px rgba(244, 114, 182, 0.65),
+      inset 0 -5px 8px #ffffff;
+  }
+
+  /* Music Player Squircle */
+  .music-bouquet-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 18px 20px;
+  }
+
+  .bouquet-svg-art {
+    position: absolute;
+    inset: -6px 0 0 0;
+    width: 100%;
+    height: 104%;
+    pointer-events: none;
+    z-index: 2;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.65));
+  }
+
+  .music-transport-row {
+    position: relative;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 6px 2px;
+  }
+
+  .neon-rose-transport-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #ffdce5;
+    filter:
+      drop-shadow(0 0 4px #ffffff)
+      drop-shadow(0 0 10px rgba(251, 113, 133, 0.95))
+      drop-shadow(0 0 20px rgba(244, 63, 94, 0.85));
+    transition: transform 0.16s ease, filter 0.16s ease;
+  }
+
+  .neon-rose-transport-btn:hover {
+    transform: scale(1.12);
+    filter:
+      drop-shadow(0 0 8px #ffffff)
+      drop-shadow(0 0 22px #fb7185);
+  }
+
+  /* Row 2: Middle Section */
+  .cc-middle-row {
+    display: grid;
+    grid-template-columns: 246px 246px;
+    gap: 22px;
+    height: 240px;
+  }
+
+  .cc-mid-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .cc-two-orbs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .orb-112 {
+    width: 112px;
+    height: 112px;
+  }
+
+  /* Horizontal "Do Not Disturb On" Capsule (faceted gem with rounded corners, NOT a 50% stadium!) */
+  .dnd-capsule {
+    --pod-radius: 30px;
+    width: 100%;
+    height: 106px;
+    border-radius: 30px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 22% 52%, rgba(216, 140, 255, 0.35) 0%, transparent 55%),
+      linear-gradient(105deg, rgba(112, 90, 142, 0.62) 0%, rgba(56, 44, 78, 0.76) 52%, rgba(26, 19, 40, 0.88) 100%);
+  }
+
+  .dnd-edge-refraction {
+    position: absolute;
+    inset: 4px;
+    border-radius: 26px;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow:
+      inset 0 4.5px 1.8px -1px rgba(255, 255, 255, 0.88),
+      inset 0 -3px 6px -2px rgba(96, 165, 250, 0.78);
+  }
+
+  .dnd-moon-circle {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 48% 46%, #c3a5dc 0%, #b493d0 60%, #fae8ff 76%, #f472b6 92%);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 0 18px rgba(232, 121, 249, 0.88),
+      0 5px 14px rgba(244, 114, 182, 0.75),
+      inset 0 0 8px #fce7f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 6;
+    transition: all 0.25s ease;
+  }
+
+  .dnd-capsule.off .dnd-moon-circle {
+    background: rgba(30, 22, 44, 0.65);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .dnd-text-block {
+    position: relative;
+    z-index: 6;
+    font-size: 16.5px;
+    font-weight: 500;
+    line-height: 1.16;
+    color: #ffe4f2;
+    text-shadow:
+      0 0 8px rgba(244, 114, 182, 0.9),
+      0 0 16px rgba(232, 121, 249, 0.7),
+      0 1px 2px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Right Pair of Vertical Capsules */
+  .cc-mid-right {
+    display: grid;
+    grid-template-columns: 112px 112px;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .vertical-glass-pill {
+    --pod-radius: 34px;
+    width: 112px;
+    height: 100%;
+    border-radius: 34px;
+    position: relative;
+    cursor: ns-resize;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 28px;
+  }
+
+  /* Liquid Fill Level Inside Brightness Slider */
+  .liquid-brightness-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bright, 53%);
+    background:
+      linear-gradient(180deg, rgba(132, 110, 162, 0.52) 0%, rgba(152, 126, 186, 0.64) 78%, rgba(196, 162, 232, 0.72) 100%);
+    border-top: 1.5px solid rgba(20, 14, 30, 0.48);
+    box-shadow:
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.22),
+      inset 4px 0 5px -2px rgba(6, 4, 14, 0.65),
+      inset -4px 0 5px -2px rgba(6, 4, 14, 0.65);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Row 3: 4 Bottom Utility Orbs */
+  .cc-bottom-row {
+    width: 514px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* =========================================================
+     RIGHT SURFACE: REF 2 (STUDIO ALABASTER CAUSTIC UI KIT)
+     ========================================================= */
+  .ref2-studio-board {
+    position: relative;
+    border-radius: 44px;
+    padding: 36px 42px 48px;
+    background:
+      radial-gradient(circle at 65% 18%, #f5f5f7 0%, #e5e4e9 52%, #d3d2d8 100%);
+    box-shadow:
+      0 30px 65px rgba(0, 0, 0, 0.48),
+      inset 0 1px 2px #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    isolation: isolate;
+    transition: background 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  body[data-backdrop="dusk"] .ref2-studio-board {
+    background:
+      radial-gradient(ellipse 220px 160px at 52% 8%, rgba(5, 3, 10, 0.85) 0%, rgba(16, 11, 26, 0.55) 55%, transparent 85%),
+      radial-gradient(circle 280px at 18% 16%, #9a88ab 0%, transparent 70%),
+      radial-gradient(circle 300px at 68% 54%, #907ea1 0%, transparent 68%),
+      radial-gradient(circle 280px at 28% 84%, #9482a5 0%, transparent 70%),
+      linear-gradient(155deg, #7a6a8a 0%, #5c4d6c 38%, #726284 68%, #4a3d59 100%);
+    box-shadow:
+      0 30px 65px rgba(0, 0, 0, 0.65),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  }
+
+  .ref2-header-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+
+  .ref2-header-row h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1.2px;
+    color: #0d0d11;
+    transition: color 0.35s ease;
+  }
+
+  .ref2-header-row span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #22222a;
+    letter-spacing: -0.25px;
+    transition: color 0.35s ease;
+  }
+
+  body[data-backdrop="dusk"] .ref2-header-row h2 {
+    color: #f8f0ff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  body[data-backdrop="dusk"] .ref2-header-row span {
+    color: rgba(243, 232, 255, 0.88);
+  }
+
+  .caustic-kit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 44px 36px;
+    align-items: center;
+  }
+
+  .ref2-item-wrap {
+    position: relative;
+    width: 100%;
+    isolation: isolate;
+  }
+
+  /* =========================================================
+     STRICTLY DIRECTIONAL BOTTOM-LEFT CAUSTIC PROJECTION (.caustic-pool)
+     ========================================================= */
+  .caustic-pool {
+    position: absolute;
+    top: 20px;
+    bottom: -32px;
+    left: -28px;
+    right: 6px;
+    border-radius: 44px;
+    pointer-events: none;
+    z-index: 1;
+    transition: transform 0.22s ease;
+  }
+
+  .ref2-item-wrap:hover .caustic-pool {
+    transform: translate(-2px, 3px) scale(1.01);
+  }
+
+  /* =========================================================
+     PHYSICAL 3D EXTRUDED TRANSLUCENT GLASS PEDESTAL (.glass-pedestal)
+     ========================================================= */
+  .glass-pedestal {
+    position: absolute;
+    top: 6px;
+    left: -1.5px;
+    right: -1.5px;
+    bottom: -11px;
+    border-radius: 42px;
+    pointer-events: none;
+    z-index: 2;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+
+  .glass-pedestal::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow:
+      inset 0 -1.5px 1.5px rgba(15, 23, 42, 0.45),
+      inset 0 -4px 2px rgba(255, 255, 255, 0.52),
+      inset 0 -7.5px 2px rgba(15, 23, 42, 0.42),
+      inset 0 -10px 2px rgba(255, 255, 255, 0.42);
+  }
+
+  /* =========================================================
+     REF 2 TOP MOLDED GLASS CAPSULE (.ref2-capsule)
+     ========================================================= */
+  .ref2-capsule {
+    width: 100%;
+    height: 78px;
+    border-radius: 39px;
+    position: relative;
+    z-index: 3;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+
+  .ref2-item-wrap:hover .ref2-capsule,
+  .ref2-item-wrap:hover .glass-pedestal {
+    transform: translateY(-2px);
+  }
+
+  .ref2-item-wrap:active .ref2-capsule {
+    transform: translateY(2px);
+  }
+
+  /* =========================================================
+     SIGNATURE REF 2 UPPER-RIGHT QUADRANT SOFTBOX CRESCENT (12:15 to 2:45)!
+     ========================================================= */
+  .ref2-capsule::before {
+    content: "";
+    position: absolute;
+    inset: 3.5px;
+    border-radius: 35.5px;
+    box-shadow:
+      inset -13px 8.5px 1.5px -2px #ffffff;
+    mask-image: radial-gradient(ellipse 74px 27px at 89% 17%, #000 0%, #000 58%, transparent 88%);
+    -webkit-mask-image: radial-gradient(ellipse 74px 27px at 89% 17%, #000 0%, #000 58%, transparent 88%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Subtle Top-Edge & Left-Curve Translucent Glass Bevel Sheen */
+  .ref2-capsule::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 37px;
+    box-shadow:
+      inset 0 2.5px 2px -0.5px rgba(255, 255, 255, 0.45),
+      inset 4px 0 3px -1px rgba(255, 255, 255, 0.28);
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  /* ---------------------------------------------------------
+     1. "Start project" — Deep Obsidian Glass + Cobalt/Violet Rim
+     --------------------------------------------------------- */
+  .pool-obsidian {
+    background:
+      radial-gradient(ellipse 58% 68% at 34% 62%, #050509 0%, rgba(10, 10, 20, 0.94) 54%, transparent 82%),
+      radial-gradient(ellipse 52% 62% at 68% 60%, rgba(104, 52, 138, 0.82) 0%, rgba(36, 22, 58, 0.65) 58%, transparent 86%);
+    filter: blur(5.5px);
+  }
+
+  .pedestal-obsidian {
+    background:
+      linear-gradient(90deg, #1d4ed8 0%, #0c0e17 22%, #12101e 72%, #6b21a8 92%, #2e1065 100%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.85);
+  }
+
+  .cap-obsidian {
+    background:
+      radial-gradient(ellipse 26% 36% at 10% 85%, #60a5fa 0%, #2563eb 42%, transparent 76%),
+      radial-gradient(ellipse 26% 36% at 90% 85%, #e879f9 0%, #7e22ce 48%, transparent 76%),
+      linear-gradient(180deg, #12131a 0%, #030305 62%, #070810 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(30, 34, 48, 0.8),
+      inset 0 7px 2px #040508,
+      inset 11px -4px 9px -3px #3b82f6,
+      inset -11px -4px 9px -3px #c084fc,
+      inset 0 -2px 2.5px rgba(255, 255, 255, 0.65);
+  }
+
+  /* ---------------------------------------------------------
+     2. "Secondary" — Ruby-Amber Glass + Structured Pink/Coral Caustic
+     --------------------------------------------------------- */
+  .pool-sunset {
+    background:
+      linear-gradient(125deg, transparent 18%, rgba(255, 230, 242, 0.85) 30%, transparent 38%),
+      linear-gradient(125deg, transparent 46%, rgba(255, 225, 190, 0.82) 56%, transparent 65%),
+      radial-gradient(ellipse 52% 68% at 32% 60%, rgba(219, 39, 119, 0.95) 0%, rgba(236, 72, 153, 0.82) 52%, transparent 84%),
+      radial-gradient(ellipse 54% 66% at 70% 60%, rgba(249, 115, 22, 0.92) 0%, rgba(244, 63, 94, 0.76) 55%, transparent 85%);
+    filter: blur(5px);
+  }
+
+  .pedestal-sunset {
+    background:
+      linear-gradient(90deg, #f97316 0%, #fb7185 30%, #e11d48 65%, #f97316 100%);
+    box-shadow: 0 2px 6px rgba(190, 24, 93, 0.7);
+  }
+
+  .cap-sunset {
+    background:
+      radial-gradient(ellipse 48% 58% at 15% 84%, #ffaa00 0%, rgba(234, 88, 12, 0.68) 52%, transparent 82%),
+      radial-gradient(ellipse 52% 55% at 84% 84%, #fb7185 0%, rgba(225, 29, 72, 0.6) 54%, transparent 82%),
+      linear-gradient(180deg, #43171d 0%, #351015 44%, #7f2428 80%, #ea580c 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(215, 130, 135, 0.58),
+      inset 0 7px 2px rgba(68, 16, 24, 0.75),
+      inset 13px -4px 11px -2px #ff9e00,
+      inset -13px -4px 11px -2px #fda4af,
+      inset 0 -2px 2.5px rgba(255, 255, 255, 0.85),
+      inset 0 -5px 6px #fde047;
+  }
+
+  /* ---------------------------------------------------------
+     3. "Icon button" — Sapphire Cyan Glass + Dark-Wedge Cyan Caustic
+     --------------------------------------------------------- */
+  .pool-sapphire {
+    background:
+      linear-gradient(130deg, transparent 20%, rgba(186, 230, 253, 0.9) 31%, transparent 40%),
+      linear-gradient(130deg, transparent 44%, rgba(125, 211, 252, 0.88) 54%, transparent 64%),
+      radial-gradient(ellipse 58% 66% at 58% 62%, #00d4ff 0%, rgba(2, 132, 199, 0.94) 52%, transparent 84%),
+      radial-gradient(ellipse 46% 64% at 22% 58%, #040b16 0%, rgba(8, 24, 48, 0.92) 52%, transparent 82%);
+    filter: blur(5px);
+  }
+
+  .pedestal-sapphire {
+    background:
+      linear-gradient(90deg, #0284c7 0%, #7dd3fc 35%, #0284c7 72%, #0c4a6e 100%);
+    box-shadow: 0 2px 6px rgba(3, 105, 161, 0.8);
+  }
+
+  .cap-sapphire {
+    justify-content: flex-start;
+    padding: 0 24px 0 9px;
+    gap: 20px;
+    background:
+      radial-gradient(ellipse 80% 42% at 48% 95%, #a5f3fc 0%, #0ea5e9 48%, transparent 85%),
+      linear-gradient(180deg, #111a29 0%, #040911 56%, #073352 88%, #00d4ff 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(110, 160, 200, 0.52),
+      inset 0 7px 2px rgba(4, 12, 24, 0.88),
+      inset 10px 0 10px -3px rgba(56, 189, 248, 0.72),
+      inset 0 -2px 2.5px #ffffff,
+      inset 0 -6px 10px #38bdf8;
+  }
+
+  .inner-orb-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.22) 0%, #0a1424 65%, #050b14 100%);
+    border: 1.5px solid rgba(186, 230, 253, 0.82);
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.65),
+      inset 0 -3px 6px rgba(56, 189, 248, 0.8),
+      0 3px 8px rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 4;
+  }
+
+  /* ---------------------------------------------------------
+     4. "Text field" — Clear Optical Crystal + White Focused Caustic
+     --------------------------------------------------------- */
+  .pool-crystal {
+    background:
+      radial-gradient(ellipse 58% 26% at 54% 58%, #ffffff 0%, rgba(255, 255, 255, 0.98) 55%, transparent 85%),
+      radial-gradient(ellipse 66% 64% at 42% 62%, rgba(92, 86, 118, 0.82) 0%, rgba(112, 108, 130, 0.6) 58%, transparent 86%);
+    filter: blur(4.5px);
+  }
+
+  .pedestal-crystal {
+    background:
+      linear-gradient(90deg, #64748b 0%, #ffffff 28%, #94a3b8 65%, #64748b 100%);
+    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.7);
+  }
+
+  .cap-crystal-input {
+    padding: 8px 10px;
+    background:
+      linear-gradient(180deg, #d8dce3 0%, #8e95a2 48%, #f1f5f9 100%);
+    box-shadow:
+      inset 0 0 0 3px #64748b,
+      inset 0 0 0 6px #e2e8f0,
+      inset 0 -3px 5px #ffffff;
+  }
+
+  .crystal-inner-well {
+    width: 100%;
+    height: 100%;
+    border-radius: 31px;
+    background: linear-gradient(90deg, #43454a 0%, #3f4146 73%, #17181c 73%, #17181c 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      inset 0 3px 6px rgba(0, 0, 0, 0.6),
+      0 1px 2px rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 22px;
+    z-index: 4;
+  }
+
+  .crystal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 19.5px;
+    font-weight: 400;
+    width: 72%;
+  }
+  .crystal-input::placeholder { color: #ffffff; opacity: 0.96; }
+
+  /* ---------------------------------------------------------
+     5. "Select" — Emerald & Molten Gold Glass + Yellow-Green Caustic
+     --------------------------------------------------------- */
+  .pool-emerald {
+    background:
+      linear-gradient(128deg, transparent 20%, rgba(254, 240, 138, 0.9) 30%, transparent 40%),
+      radial-gradient(ellipse 46% 64% at 32% 62%, #eab308 0%, rgba(202, 138, 4, 0.92) 54%, transparent 82%),
+      radial-gradient(ellipse 54% 64% at 64% 62%, #22c55e 0%, rgba(16, 185, 129, 0.9) 54%, transparent 84%),
+      radial-gradient(ellipse 38% 56% at 18% 58%, rgba(20, 22, 10, 0.92) 0%, transparent 76%);
+    filter: blur(5px);
+  }
+
+  .pedestal-emerald {
+    background:
+      linear-gradient(90deg, #ca8a04 0%, #fde047 28%, #10b981 68%, #047857 100%);
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.75);
+  }
+
+  .cap-emerald-gold {
+    justify-content: space-between;
+    padding: 0 14px 0 32px;
+    background:
+      radial-gradient(ellipse 55% 46% at 26% 94%, #facc15 0%, rgba(202, 138, 4, 0.68) 55%, transparent 85%),
+      radial-gradient(ellipse 60% 46% at 72% 94%, #34d399 0%, rgba(5, 150, 105, 0.68) 55%, transparent 85%),
+      linear-gradient(180deg, #121f17 0%, #050b08 54%, #133822 88%, #10b981 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(110, 145, 120, 0.52),
+      inset 0 7px 2px rgba(5, 14, 9, 0.88),
+      inset 12px -4px 10px -2px #facc15,
+      inset -12px -4px 10px -2px #34d399,
+      inset 0 -2px 2.5px rgba(255, 255, 255, 0.82),
+      inset 0 -5px 6px #fef08a;
+  }
+
+  .select-check-squircle {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+      inset 0 1.5px 2px rgba(255, 255, 255, 0.65),
+      0 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    transition: all 0.2s ease;
+  }
+
+  .cap-emerald-gold.unchecked .select-check-squircle svg {
+    opacity: 0.15;
+    transform: scale(0.6);
+  }
+
+  /* ---------------------------------------------------------
+     6. "Switch" — Cobalt & Magenta Glass + Royal Blue Toggle
+     --------------------------------------------------------- */
+  .pool-switch {
+    background:
+      radial-gradient(ellipse 48% 64% at 28% 60%, rgba(12, 18, 34, 0.92) 0%, rgba(30, 41, 59, 0.78) 56%, transparent 84%),
+      radial-gradient(ellipse 38% 58% at 54% 60%, rgba(59, 130, 246, 0.86) 0%, transparent 80%),
+      radial-gradient(ellipse 48% 62% at 76% 62%, rgba(147, 51, 234, 0.94) 0%, rgba(126, 34, 206, 0.78) 54%, transparent 84%);
+    filter: blur(5px);
+  }
+
+  .pedestal-switch {
+    background:
+      linear-gradient(90deg, #0284c7 0%, #1d4ed8 35%, #7e22ce 72%, #c084fc 100%);
+    box-shadow: 0 2px 6px rgba(88, 28, 135, 0.78);
+  }
+
+  .cap-switch-glass {
+    justify-content: space-between;
+    padding: 0 10px 0 30px;
+    background:
+      radial-gradient(ellipse 40% 42% at 22% 92%, #38bdf8 0%, transparent 70%),
+      radial-gradient(ellipse 48% 52% at 88% 85%, #d946ef 0%, rgba(126, 34, 206, 0.65) 52%, transparent 78%),
+      linear-gradient(180deg, #141724 0%, #04060e 58%, #1a1032 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(120, 115, 165, 0.52),
+      inset 0 7px 2px rgba(6, 8, 18, 0.88),
+      inset 11px -4px 10px -2px #38bdf8,
+      inset -11px -4px 10px -2px #e879f9,
+      inset 0 -2px 2.5px rgba(255, 255, 255, 0.8);
+  }
+
+  .inner-switch-track {
+    width: 118px;
+    height: 54px;
+    border-radius: 27px;
+    background:
+      radial-gradient(circle at 32% 65%, #3b82f6 0%, #1d4ed8 48%, #1e1b4b 95%);
+    border: 1.5px solid rgba(191, 219, 254, 0.78);
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.7),
+      inset 0 -3px 6px #60a5fa,
+      0 0 14px rgba(59, 130, 246, 0.55);
+    position: relative;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    z-index: 4;
+    transition: background 0.25s ease;
+  }
+
+  .inner-switch-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 38% 35%, #ffffff 0%, #f1f5f9 65%, #cbd5e1 100%);
+    border: 1px solid #ffffff;
+    box-shadow:
+      0 3px 8px rgba(0, 0, 0, 0.65),
+      0 0 12px rgba(255, 255, 255, 0.9),
+      inset 0 -2px 4px rgba(148, 163, 184, 0.45);
+    transform: translateX(63px);
+    transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .cap-switch-glass.off .inner-switch-track {
+    background: #0f172a;
+    box-shadow: inset 0 3px 6px #000;
+  }
+  .cap-switch-glass.off .inner-switch-thumb {
+    transform: translateX(0);
+  }
+
+  /* ---------------------------------------------------------
+     7 & 8. Bottom Rectangular Molded Glass Cards ("< Tabs" & "Pro plan")
+     --------------------------------------------------------- */
+  .pedestal-card {
+    border-radius: 32px;
+    bottom: -11px;
+  }
+
+  .ref2-card {
+    width: 100%;
+    height: 178px;
+    border-radius: 30px;
+    padding: 24px 28px;
+    position: relative;
+    z-index: 3;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.22s ease;
+  }
+
+  .ref2-item-wrap:hover .ref2-card {
+    transform: translateY(-2px);
+  }
+
+  /* Card Top-Right Curved Softbox Crescent Reflection (Strictly in upper-right corner!) */
+  .ref2-card::before {
+    content: "";
+    position: absolute;
+    inset: 3.5px;
+    border-radius: 26.5px;
+    box-shadow:
+      inset -11px 6.5px 1.5px -2px #ffffff;
+    mask-image: radial-gradient(ellipse 68px 28px at 91% 10%, #000 0%, #000 58%, transparent 88%);
+    -webkit-mask-image: radial-gradient(ellipse 68px 28px at 91% 10%, #000 0%, #000 58%, transparent 88%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .ref2-card::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 28px;
+    box-shadow:
+      inset 0 2px 2px -0.5px rgba(255, 255, 255, 0.38),
+      inset 3px 0 3px -1px rgba(255, 255, 255, 0.22);
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  /* 7. "< Tabs" Card */
+  .pool-tabs {
+    background:
+      radial-gradient(ellipse 64% 68% at 38% 62%, #05070c 0%, rgba(10, 14, 24, 0.9) 58%, transparent 86%);
+    filter: blur(6px);
+  }
+
+  .pedestal-tabs {
+    background: linear-gradient(90deg, #9333ea 0%, #111827 18%, #1e293b 78%, #334155 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.88);
+  }
+
+  .card-obsidian-teal {
+    background:
+      radial-gradient(circle at 6% 95%, #f5d0fe 0%, #a855f7 12%, transparent 28%),
+      radial-gradient(ellipse 52% 42% at 68% 22%, rgba(45, 212, 191, 0.15) 0%, transparent 60%),
+      linear-gradient(165deg, #10171f 0%, #040609 65%, #0a0f17 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(71, 85, 105, 0.5),
+      inset 0 7px 2px #040609,
+      inset 0 -3px 6px rgba(148, 163, 184, 0.55);
+  }
+
+  /* 8. "Pro plan" Card */
+  .pool-pro {
+    background:
+      radial-gradient(ellipse 54% 32% at 56% 60%, #ffffff 0%, #7dd3fc 52%, transparent 84%),
+      radial-gradient(ellipse 58% 66% at 36% 62%, rgba(12, 24, 44, 0.88) 0%, rgba(14, 116, 144, 0.68) 58%, transparent 86%);
+    filter: blur(5.5px);
+  }
+
+  .pedestal-pro {
+    background: linear-gradient(90deg, #0284c7 0%, #e0f2fe 45%, #0369a1 85%, #38bdf8 100%);
+    box-shadow: 0 2px 6px rgba(3, 105, 161, 0.75);
+  }
+
+  .card-aurora-pro {
+    background:
+      radial-gradient(ellipse 62% 44% at 68% 16%, rgba(182, 118, 212, 0.54) 0%, rgba(108, 42, 158, 0.3) 52%, transparent 78%),
+      radial-gradient(ellipse 78% 36% at 58% 96%, #bae6fd 0%, #38bdf8 44%, rgba(3, 105, 161, 0.42) 72%, transparent 92%),
+      linear-gradient(165deg, #181124 0%, #05070e 56%, #0a253b 100%);
+    box-shadow:
+      inset 0 4.5px 1px rgba(125, 145, 180, 0.5),
+      inset 0 7px 2px rgba(5, 8, 16, 0.88),
+      inset 0 -2px 2.5px #ffffff,
+      inset 0 -6px 8px #7dd3fc;
+  }
+
+  .card-title-lg {
+    font-size: 21px;
+    font-weight: 400;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 4;
+  }
+
+  .card-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 19.5px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.94);
+    z-index: 4;
+  }
+
+  .pro-meta-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 16.5px;
+    color: rgba(226, 232, 240, 0.86);
+    z-index: 4;
+  }
+
+  .pro-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media (max-width: 1280px) {
+    .liquid-glass-stage {
+      grid-template-columns: 1fr;
+      max-width: 680px;
+      justify-items: center;
+    }
+    .ref1-ambient-board,
+    .ref2-studio-board {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body data-backdrop="split">
+
+<!-- =========================================================
+     TOP BAR: TITLE & ENVIRONMENT SWITCHER
+     ========================================================= -->
+<header class="showcase-topbar">
+  <div class="brand-headline">
+    <h1>liquid glass</h1>
+    <span>Refractive Botanical (Ref 1) &amp; Prismatic Caustic (Ref 2) UI Lab</span>
+  </div>
+
+  <div class="env-switcher-pills">
+    <button class="env-btn active" data-env="split">✨ True Reference Split (Ref 1 + Ref 2)</button>
+    <button class="env-btn" data-env="dusk">🌌 Full Lavender Dusk</button>
+    <button class="env-btn" data-env="studio">☀️ Full Studio Alabaster</button>
+  </div>
+</header>
+
+<!-- =========================================================
+     MAIN UNIFIED STAGE
+     ========================================================= -->
+<main class="liquid-glass-stage">
+
+  <!-- =======================================================
+       LEFT BOARD: BOTANICAL LAVENDER CONTROL CENTER (REF 1)
+       ======================================================= -->
+  <section class="ref1-ambient-board">
+
+    <!-- ROW 1: [2x2 Connectivity Pod] + [Floral Music Player Pod] -->
+    <div class="cc-top-row">
+
+      <!-- 1A. 2x2 Connectivity Squircle -->
+      <div class="ref1-glass-pod cc-squircle">
+        <div class="conn-2x2-grid">
+          <!-- Airplane Mode (Active Lit Lavender Ring) -->
+          <button class="ref1-orb active" type="button" title="Airplane Mode">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+            </svg>
+          </button>
+
+          <!-- Cellular Data -->
+          <button class="ref1-orb" type="button" title="Cellular Data">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 4v15M8 19l-4-4M8 19l4-4"/>
+              <path d="M16 19V4M16 4l-4 4M16 4l4 4"/>
+            </svg>
+          </button>
+
+          <!-- Wi-Fi -->
+          <button class="ref1-orb" type="button" title="Wi-Fi">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+              <path d="M2.5 9.5a14.5 14.5 0 0 1 19 0"/>
+              <path d="M6 13.2a9.5 9.5 0 0 1 12 0"/>
+              <path d="M9.5 16.8a4.5 4.5 0 0 1 5 0"/>
+              <circle cx="12" cy="20" r="1.4" fill="currentColor" stroke="none"/>
+            </svg>
+          </button>
+
+          <!-- Bluetooth (Active Lit Lavender Ring) -->
+          <button class="ref1-orb active" type="button" title="Bluetooth">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 1B. Detailed Botanical Bouquet Music Player Squircle -->
+      <div class="ref1-glass-pod cc-squircle music-bouquet-card">
+        <!-- Detailed Multi-Petaled Purple Wildflower & Lavender Bouquet SVG -->
+        <svg class="bouquet-svg-art" viewBox="0 0 244 244">
+          <defs>
+            <g id="violet-flower">
+              <ellipse rx="3.2" ry="7.5" fill="#7c5ce6" transform="rotate(0)"/>
+              <ellipse rx="3.2" ry="7.5" fill="#6848d6" transform="rotate(60)"/>
+              <ellipse rx="3.2" ry="7.5" fill="#8b6cf6" transform="rotate(120)"/>
+              <ellipse rx="2.2" ry="5.5" fill="#a78bfa" transform="rotate(30)"/>
+              <ellipse rx="2.2" ry="5.5" fill="#9370db" transform="rotate(90)"/>
+              <ellipse rx="2.2" ry="5.5" fill="#b794f4" transform="rotate(150)"/>
+              <circle r="2.2" fill="#2e1065"/>
+              <circle r="1.1" fill="#fde047"/>
+            </g>
+            <g id="lilac-bud">
+              <ellipse rx="2" ry="4.2" fill="#c4b5fd" transform="rotate(-20)"/>
+              <ellipse rx="2" ry="4.2" fill="#a78bfa" transform="rotate(25)"/>
+              <circle r="1.2" fill="#fef08a"/>
+            </g>
+          </defs>
+
+          <g stroke="#6c5a8a" stroke-width="1.5" fill="none" stroke-linecap="round">
+            <path d="M136 244 C132 185, 144 105, 146 12"/>
+            <path d="M134 244 C124 190, 100 135, 84 72"/>
+            <path d="M138 244 C150 192, 176 142, 198 92"/>
+            <path d="M130 218 C110 176, 86 150, 68 124"/>
+            <path d="M140 205 C160 170, 180 148, 206 122"/>
+            <path d="M136 160 C120 124, 114 84, 116 44"/>
+            <path d="M142 150 C158 118, 166 84, 172 48"/>
+          </g>
+
+          <g fill="#51426b" opacity="0.9">
+            <path d="M130 185 Q112 172 108 160 Q122 168 130 185 Z"/>
+            <path d="M144 178 Q162 165 168 152 Q152 162 144 178 Z"/>
+            <path d="M118 142 Q98 130 94 116 Q110 126 118 142 Z"/>
+            <path d="M156 138 Q174 125 180 112 Q164 122 156 138 Z"/>
+          </g>
+
+          <use href="#violet-flower" x="146" y="16" transform="scale(0.85)" style="transform-origin:146px 16px"/>
+          <use href="#violet-flower" x="172" y="48" transform="scale(0.9)" style="transform-origin:172px 48px"/>
+          <use href="#violet-flower" x="142" y="54" transform="scale(1.05)" style="transform-origin:142px 54px"/>
+          <use href="#violet-flower" x="116" y="46" transform="scale(0.8)" style="transform-origin:116px 46px"/>
+          <use href="#violet-flower" x="84" y="72" transform="scale(0.95)" style="transform-origin:84px 72px"/>
+          <use href="#violet-flower" x="98" y="96" transform="scale(1.2)" style="transform-origin:98px 96px"/>
+          <use href="#violet-flower" x="132" y="88" transform="scale(1.25)" style="transform-origin:132px 88px"/>
+          <use href="#violet-flower" x="158" y="94" transform="scale(1.1)" style="transform-origin:158px 94px"/>
+          <use href="#violet-flower" x="196" y="94" transform="scale(0.9)" style="transform-origin:196px 94px"/>
+          <use href="#violet-flower" x="74" y="124" transform="scale(1.0)" style="transform-origin:74px 124px"/>
+          <use href="#violet-flower" x="114" y="128" transform="scale(1.3)" style="transform-origin:114px 128px"/>
+          <use href="#violet-flower" x="144" y="122" transform="scale(1.25)" style="transform-origin:144px 122px"/>
+          <use href="#violet-flower" x="176" y="126" transform="scale(1.15)" style="transform-origin:176px 126px"/>
+          <use href="#violet-flower" x="204" y="118" transform="scale(0.85)" style="transform-origin:204px 118px"/>
+          <use href="#violet-flower" x="104" y="156" transform="scale(1.15)" style="transform-origin:104px 156px"/>
+          <use href="#violet-flower" x="134" y="152" transform="scale(1.35)" style="transform-origin:134px 152px"/>
+          <use href="#violet-flower" x="164" y="154" transform="scale(1.1)" style="transform-origin:164px 154px"/>
+          <use href="#violet-flower" x="138" y="178" transform="scale(1.15)" style="transform-origin:138px 178px"/>
+
+          <use href="#lilac-bud" x="102" y="64"/>
+          <use href="#lilac-bud" x="158" y="72"/>
+          <use href="#lilac-bud" x="88" y="112"/>
+          <use href="#lilac-bud" x="186" y="108"/>
+          <use href="#lilac-bud" x="122" y="172"/>
+          <use href="#lilac-bud" x="156" y="176"/>
+        </svg>
+
+        <!-- Glowing Rose-Peach Transport Controls -->
+        <div class="music-transport-row">
+          <button class="neon-rose-transport-btn" type="button" title="Rewind">
+            <svg width="36" height="28" viewBox="0 0 36 28" fill="currentColor">
+              <polygon points="18,5 4,14 18,23"/>
+              <polygon points="32,5 18,14 32,23"/>
+            </svg>
+          </button>
+
+          <button class="neon-rose-transport-btn" id="floralPlayBtn" type="button" title="Play / Pause">
+            <svg width="42" height="42" viewBox="0 0 32 32" fill="currentColor">
+              <polygon points="7,4 27,16 7,28"/>
+            </svg>
+          </button>
+
+          <button class="neon-rose-transport-btn" type="button" title="Fast Forward">
+            <svg width="36" height="28" viewBox="0 0 36 28" fill="currentColor">
+              <polygon points="4,5 18,14 4,23"/>
+              <polygon points="18,5 32,14 18,23"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2: [Butterfly + Bell + DND Pill] + [Brightness Slider + Celestial Lavender Pill] -->
+    <div class="cc-middle-row">
+
+      <!-- Left Stack -->
+      <div class="cc-mid-left">
+        <div class="cc-two-orbs">
+          <!-- Neon Lavender Butterfly Orb -->
+          <button class="ref1-orb orb-112" type="button" title="Butterfly Focus Mode">
+            <svg width="68" height="68" viewBox="0 0 64 64" style="filter:drop-shadow(0 0 10px rgba(216,180,254,0.88));">
+              <g fill="rgba(192,132,252,0.78)" stroke="#f5d0fe" stroke-width="2.2" stroke-linejoin="round">
+                <path d="M32 33 C18 14, 4 18, 9 31 C12 38, 23 36, 32 33 Z"/>
+                <path d="M32 33 C38 10, 56 10, 51 27 C48 35, 39 35, 32 33 Z"/>
+                <path d="M32 33 C20 38, 14 54, 24 56 C31 57, 33 45, 32 33 Z"/>
+                <path d="M32 33 C44 37, 52 50, 42 54 C35 56, 33 44, 32 33 Z"/>
+              </g>
+              <g stroke="#e9d5ff" stroke-width="1" opacity="0.85" fill="none">
+                <path d="M32 33 Q18 24 12 27"/>
+                <path d="M32 33 Q42 20 47 22"/>
+                <path d="M32 33 Q24 46 25 52"/>
+                <path d="M32 33 Q41 44 41 50"/>
+              </g>
+              <line x1="28" y1="23" x2="36" y2="43" stroke="#3b0764" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <!-- Silent Bell Orb -->
+          <button class="ref1-orb orb-112" type="button" title="Silent Mode">
+            <svg width="46" height="46" viewBox="0 0 24 24" fill="#e6c5f5" style="filter:drop-shadow(0 0 10px rgba(232,121,249,0.65));">
+              <path d="M18 16v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-6 6c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z"/>
+              <line x1="5" y1="3" x2="19" y2="21" stroke="#1e162b" stroke-width="3.2" stroke-linecap="round"/>
+              <line x1="5" y1="3" x2="19" y2="21" stroke="#f5d0fe" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Horizontal "Do Not Disturb On" Capsule -->
+        <div class="ref1-glass-pod dnd-capsule" id="dndCapsule">
+          <div class="dnd-edge-refraction"></div>
+          <div class="dnd-moon-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#63487d">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </div>
+          <div class="dnd-text-block">
+            Do Not<br>Disturb<br><span id="dndStateWord">On</span>
+          </div>
+          <!-- Lavender Sprig Flowing Across DND Capsule -->
+          <svg width="150" height="96" viewBox="0 0 150 96" style="position:absolute;right:2px;bottom:0;pointer-events:none;z-index:4;">
+            <g stroke="#b8afc7" stroke-width="1.3" fill="none">
+              <path d="M22 78 Q78 56 144 18"/>
+              <path d="M58 62 Q82 64 102 74"/>
+              <path d="M35 72 Q52 44 64 16"/>
+            </g>
+            <g fill="#a78bfa">
+              <ellipse cx="64" cy="18" rx="3" ry="5" transform="rotate(-15 64 18)" fill="#d8b4fe"/>
+              <ellipse cx="56" cy="34" rx="2.8" ry="4.5" transform="rotate(-25 56 34)"/>
+              <ellipse cx="88" cy="46" rx="3.5" ry="5.5" transform="rotate(35 88 46)" fill="#8b5cf6"/>
+              <ellipse cx="108" cy="36" rx="3.2" ry="5" transform="rotate(30 108 36)" fill="#c084fc"/>
+              <ellipse cx="128" cy="25" rx="3" ry="4.8" transform="rotate(25 128 25)" fill="#d8b4fe"/>
+              <ellipse cx="26" cy="78" rx="3.5" ry="5" fill="#f5d0fe"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Right Pair of Vertical Capsules -->
+      <div class="cc-mid-right">
+        <!-- Vertical Liquid Brightness Slider -->
+        <div class="ref1-glass-pod vertical-glass-pill" id="brightnessSlider" style="--bright: 53%;" title="Drag vertically to adjust Brightness">
+          <div class="liquid-brightness-fill"></div>
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="#e6c5f5" stroke="#e6c5f5" stroke-width="2.2" stroke-linecap="round" style="position:relative;z-index:4;filter:drop-shadow(0 0 10px rgba(244,114,182,0.75));">
+            <circle cx="12" cy="12" r="4.5"/>
+            <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>
+            <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+            <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/>
+          </svg>
+        </div>
+
+        <!-- Vertical Celestial Night Lavender Capsule -->
+        <div class="ref1-glass-pod vertical-glass-pill" style="cursor:pointer;padding:0;">
+          <svg width="100%" height="100%" viewBox="0 0 111 236" style="position:relative;z-index:3;">
+            <path d="M86 30 A 11 11 0 1 1 72 45 A 8.5 8.5 0 1 0 86 30 Z" fill="#e9d5ff"/>
+            <circle cx="56" cy="34" r="1.1" fill="#ffffff"/>
+            <circle cx="94" cy="64" r="1.3" fill="#ffffff"/>
+            <path d="M18 142 L19.5 146 L23.5 147.5 L19.5 149 L18 153 L16.5 149 L12.5 147.5 L16.5 146 Z" fill="#e9d5ff"/>
+
+            <g stroke="#e2d9f3" stroke-width="1.2" fill="none" stroke-linecap="round">
+              <path d="M52 236 C54 178, 48 118, 28 38"/>
+              <path d="M54 236 C58 182, 66 128, 72 68"/>
+              <path d="M55 202 C68 168, 86 136, 102 102"/>
+              <path d="M52 178 C36 146, 20 124, 6 104"/>
+              <path d="M52 162 L38 148 M53 162 L66 146"/>
+              <path d="M53 188 L40 174 M55 188 L68 172"/>
+            </g>
+
+            <g fill="#7e5bef">
+              <ellipse cx="28" cy="38" rx="2.5" ry="4.5" transform="rotate(-18 28 38)"/>
+              <ellipse cx="30" cy="48" rx="3" ry="4.5" transform="rotate(-32 30 48)" fill="#9f7aea"/>
+              <ellipse cx="34" cy="47" rx="3" ry="4.5" transform="rotate(12 34 47)"/>
+              <ellipse cx="33" cy="58" rx="3.2" ry="5" transform="rotate(-28 33 58)"/>
+              <ellipse cx="38" cy="57" rx="3.2" ry="5" transform="rotate(18 38 57)" fill="#b794f4"/>
+              <ellipse cx="36" cy="70" rx="3.2" ry="5" transform="rotate(-25 36 70)" fill="#9f7aea"/>
+              <ellipse cx="42" cy="69" rx="3.2" ry="5" transform="rotate(20 42 69)"/>
+              <ellipse cx="40" cy="82" rx="3.2" ry="5" transform="rotate(-22 40 82)"/>
+              <ellipse cx="45" cy="81" rx="3.2" ry="5" transform="rotate(22 45 81)" fill="#b794f4"/>
+
+              <ellipse cx="72" cy="68" rx="2.6" ry="4.5" transform="rotate(10 72 68)" fill="#9f7aea"/>
+              <ellipse cx="68" cy="79" rx="3" ry="4.8" transform="rotate(-15 68 79)"/>
+              <ellipse cx="73" cy="80" rx="3" ry="4.8" transform="rotate(25 73 80)" fill="#b794f4"/>
+              <ellipse cx="66" cy="92" rx="3" ry="4.8" transform="rotate(-15 66 92)" fill="#9f7aea"/>
+              <ellipse cx="71" cy="93" rx="3" ry="4.8" transform="rotate(25 71 93)"/>
+              <ellipse cx="63" cy="105" rx="3" ry="4.8" transform="rotate(-15 63 105)"/>
+
+              <ellipse cx="100" cy="105" rx="2.5" ry="4.2" transform="rotate(28 100 105)" fill="#b794f4"/>
+              <ellipse cx="94" cy="116" rx="2.8" ry="4.5" transform="rotate(25 94 116)"/>
+              <ellipse cx="88" cy="127" rx="2.8" ry="4.5" transform="rotate(25 88 127)" fill="#9f7aea"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 3: 4 Bottom Circular Glass Utility Orbs -->
+    <div class="cc-bottom-row">
+      <!-- Flashlight -->
+      <button class="ref1-orb orb-112" type="button" title="Flashlight">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor" style="filter:drop-shadow(0 0 8px rgba(232,121,249,0.5));">
+          <path d="M7 2h10v2.5l-2.5 3.5v12a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8L7 4.5V2zm2 2v.5h6V4H9zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+        </svg>
+      </button>
+
+      <!-- Timer -->
+      <button class="ref1-orb orb-112" type="button" title="Timer">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(232,121,249,0.5));">
+          <circle cx="12" cy="13" r="8"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="9" y1="2" x2="15" y2="2"/>
+          <line x1="18" y1="5" x2="20" y2="7"/>
+        </svg>
+      </button>
+
+      <!-- Calculator -->
+      <button class="ref1-orb orb-112" type="button" title="Calculator">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="filter:drop-shadow(0 0 8px rgba(232,121,249,0.5));">
+          <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 3v4h8V5H8zm1 7a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm3 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm3 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm-6 4a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm3 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm3 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/>
+        </svg>
+      </button>
+
+      <!-- Camera -->
+      <button class="ref1-orb orb-112" type="button" title="Camera">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor" style="filter:drop-shadow(0 0 8px rgba(232,121,249,0.5));">
+          <path d="M9 3L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+        </svg>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- =======================================================
+       RIGHT BOARD: PRISMATIC CAUSTIC LIQUID GLASS UI KIT (REF 2)
+       ======================================================= -->
+  <section class="ref2-studio-board">
+
+    <!-- Authentic Ref 2 Header Inside the Alabaster Studio Card -->
+    <div class="ref2-header-row">
+      <h2>liquid glass</h2>
+      <span>Liquid Glass UI Kit Showcase</span>
+    </div>
+
+    <div class="caustic-kit-grid">
+
+      <!-- 1. Start project (Obsidian & Cobalt-Violet Rim) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-obsidian"></div>
+        <div class="glass-pedestal pedestal-obsidian"></div>
+        <button class="ref2-capsule cap-obsidian" type="button">
+          <span>Start project</span>
+        </button>
+      </div>
+
+      <!-- 2. Secondary (Sunset Ruby-Amber with Pink/Orange Caustic Shadow) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-sunset"></div>
+        <div class="glass-pedestal pedestal-sunset"></div>
+        <button class="ref2-capsule cap-sunset" type="button">
+          <span>Secondary</span>
+        </button>
+      </div>
+
+      <!-- 3. Icon button (Electric Sapphire with Cyan Caustic Shadow) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-sapphire"></div>
+        <div class="glass-pedestal pedestal-sapphire"></div>
+        <button class="ref2-capsule cap-sapphire" type="button">
+          <div class="inner-orb-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+              <rect x="7" y="7" width="10" height="10" rx="2"/>
+              <circle cx="12" cy="3.5" r="1" fill="#ffffff" stroke="none"/>
+              <circle cx="12" cy="20.5" r="1" fill="#ffffff" stroke="none"/>
+              <circle cx="3.5" cy="12" r="1" fill="#ffffff" stroke="none"/>
+              <circle cx="20.5" cy="12" r="1" fill="#ffffff" stroke="none"/>
+            </svg>
+          </div>
+          <span>Icon button</span>
+        </button>
+      </div>
+
+      <!-- 4. Text field (Crystal Silver-Lavender Search Capsule) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-crystal"></div>
+        <div class="glass-pedestal pedestal-crystal"></div>
+        <div class="ref2-capsule cap-crystal-input">
+          <div class="crystal-inner-well">
+            <input type="text" class="crystal-input" placeholder="Text field" aria-label="Text field">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="16.5" y1="16.5" x2="21" y2="21"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Select (Emerald-Gold Glass with Checkmark) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-emerald"></div>
+        <div class="glass-pedestal pedestal-emerald"></div>
+        <div class="ref2-capsule cap-emerald-gold" onclick="this.classList.toggle('unchecked')">
+          <span>Select</span>
+          <div class="select-check-squircle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Switch (Cobalt-Magenta Glass Toggle) -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-switch"></div>
+        <div class="glass-pedestal pedestal-switch"></div>
+        <div class="ref2-capsule cap-switch-glass" onclick="this.classList.toggle('off')">
+          <span>Switch</span>
+          <div class="inner-switch-track">
+            <div class="inner-switch-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Bottom Left Card: "< Tabs" -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-tabs"></div>
+        <div class="glass-pedestal pedestal-card pedestal-tabs"></div>
+        <div class="ref2-card card-obsidian-teal">
+          <div class="card-title-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            <span>Tabs</span>
+          </div>
+          <div class="card-menu-links">
+            <span>Find files...</span>
+            <span>Add collaborator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Bottom Right Card: "Pro plan" -->
+      <div class="ref2-item-wrap">
+        <div class="caustic-pool pool-pro"></div>
+        <div class="glass-pedestal pedestal-card pedestal-pro"></div>
+        <div class="ref2-card card-aurora-pro">
+          <div class="card-title-lg">Pro plan</div>
+          <div class="pro-meta-lines">
+            <span>Focus ring, hover states,</span>
+            <div class="pro-bottom-row">
+              <span>Disabled states</span>
+              <span style="font-weight:500;color:#fff;font-size:18px;">3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+(() => {
+  // 1. Backdrop Environment Switcher
+  document.querySelectorAll('.env-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-backdrop', btn.dataset.env);
+    });
+  });
+
+  // 2. Toggle Circular Glass Orbs (Airplane, Wi-Fi, Bluetooth, Flashlight, etc.)
+  document.querySelectorAll('.ref1-orb').forEach(orb => {
+    orb.addEventListener('click', () => {
+      orb.classList.toggle('active');
+    });
+  });
+
+  // 3. Toggle "Do Not Disturb On/Off" Botanical Capsule
+  const dndCapsule = document.getElementById('dndCapsule');
+  const dndStateWord = document.getElementById('dndStateWord');
+  dndCapsule.addEventListener('click', () => {
+    const isOff = dndCapsule.classList.toggle('off');
+    dndStateWord.textContent = isOff ? 'Off' : 'On';
+  });
+
+  // 4. Vertical Liquid Brightness Slider Dragging
+  const brightSlider = document.getElementById('brightnessSlider');
+  let draggingBright = false;
+
+  function updateBrightness(clientY) {
+    const rect = brightSlider.getBoundingClientRect();
+    const ratio = 1 - Math.max(0.12, Math.min(0.90, (clientY - rect.top) / rect.height));
+    brightSlider.style.setProperty('--bright', `${(ratio * 100).toFixed(1)}%`);
+  }
+
+  brightSlider.addEventListener('pointerdown', (e) => {
+    draggingBright = true;
+    brightSlider.setPointerCapture(e.pointerId);
+    updateBrightness(e.clientY);
+  });
+
+  brightSlider.addEventListener('pointermove', (e) => {
+    if (!draggingBright) return;
+    updateBrightness(e.clientY);
+  });
+
+  const stopBright = () => { draggingBright = false; };
+  brightSlider.addEventListener('pointerup', stopBright);
+  brightSlider.addEventListener('pointercancel', stopBright);
+
+  // 5. Floral Music Player Play / Pause Toggle
+  const floralPlayBtn = document.getElementById('floralPlayBtn');
+  let playing = false;
+  floralPlayBtn.addEventListener('click', () => {
+    playing = !playing;
+    floralPlayBtn.innerHTML = playing
+      ? `<svg width="42" height="42" viewBox="0 0 32 32" fill="currentColor"><rect x="7" y="5" width="6" height="22" rx="1.5"/><rect x="19" y="5" width="6" height="22" rx="1.5"/></svg>`
+      : `<svg width="42" height="42" viewBox="0 0 32 32" fill="currentColor"><polygon points="7,4 27,16 7,28"/></svg>`;
+  });
+})();
+</script>
+</body>
+</html>

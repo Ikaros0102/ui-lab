@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI LAB — Luminescent 3D Clay & Warm Incandescent UI Trio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Luminescent 3D Clay & Incandescent UI Trio",
+  "category": "forms",
+  "themes": [
+    "light",
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "3d-ui",
+    "claymorphism",
+    "incandescent",
+    "warm-glow",
+    "slider",
+    "toggle",
+    "search-bar",
+    "floor-reflection",
+    "studio-lighting",
+    "tactile",
+    "skeuomorphic",
+    "neon",
+    "forms"
+  ],
+  "description": "A unified studio showcase combining three 3D tactile luminescent components: the levitating 'Apply Filters' incandescent bar block, the floating 'Sale Only' pill slider with a 3D push-button knob and floor bounce reflection, and the 'Actome' porcelain search capsule with dual edge-bleed corona backlighting. Includes a 4-mode studio backdrop switcher.",
+  "techniques": [
+    "levitating 3D matte clay geometry casting synchronized contact shadows and blurred specular floor reflections",
+    "2700K incandescent light-bar rendering with inner trough bounce illumination and interactive width/intensity dragging",
+    "dual-edge corona backlight bleed behind a matte porcelain search pill under a diagonal sunlit gobo shadow",
+    "4 switchable studio cyclorama backdrops (Lavender Dusk, Warm Slate, Sunlit Alabaster, Carbon Darkroom)"
+  ],
+  "recipe": "Three interactive 3D luminescent widgets presented on a shared studio stage with a real-time environment switcher.",
+  "preview": {
+    "mode": "page",
+    "width": 1380,
+    "height": 920
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  /* =========================================================
+     4 SWITCHABLE STUDIO BACKDROP ENVIRONMENTS
+     ========================================================= */
+
+  /* 1. Lavender Dusk Cyclorama (Matches Reference 1) */
+  :root,
+  body[data-env="lavender"] {
+    --wall-bg: linear-gradient(180deg, #5e5d75 0%, #7d7994 52%, #9e96b0 100%);
+    --floor-bg: linear-gradient(180deg, #8c859e 0%, #736d85 38%, #595469 100%);
+    --horizon-line: rgba(255, 235, 245, 0.24);
+    --sun-beam-opacity: 0;
+
+    --block1-face: linear-gradient(180deg, #9893ab 0%, #868199 100%);
+    --block1-rim: #b8b2cc;
+    --block1-side: #6b667d;
+
+    --pill2-face: linear-gradient(180deg, #b8b4c7 0%, #9e9ab0 100%);
+    --pill2-rim: #d5d1e3;
+
+    --search3-face: linear-gradient(180deg, #eeeaf5 0%, #ded9e8 100%);
+    --search3-txt: #232029;
+    --ui-title-color: #f8fafc;
+    --ui-sub-color: rgba(241, 245, 249, 0.72);
+  }
+
+  /* 2. Warm Slate Studio (Matches Reference 2) */
+  body[data-env="slate"] {
+    --wall-bg: linear-gradient(180deg, #4f5259 0%, #6d7078 54%, #8f8d91 100%);
+    --floor-bg: linear-gradient(180deg, #858285 0%, #6e6c70 42%, #525054 100%);
+    --horizon-line: rgba(255, 245, 230, 0.22);
+    --sun-beam-opacity: 0;
+
+    --block1-face: linear-gradient(180deg, #9c9da3 0%, #87888f 100%);
+    --block1-rim: #bcbdc4;
+    --block1-side: #686970;
+
+    --pill2-face: linear-gradient(180deg, #c2c3c7 0%, #a7a8ad 100%);
+    --pill2-rim: #e2e3e8;
+
+    --search3-face: linear-gradient(180deg, #f0f0f2 0%, #dfdfe3 100%);
+    --search3-txt: #1f2024;
+    --ui-title-color: #f8fafc;
+    --ui-sub-color: rgba(241, 245, 249, 0.72);
+  }
+
+  /* 3. Sunlit Alabaster Table with Diagonal Sunbeam Shadow (Matches Reference 3) */
+  body[data-env="alabaster"] {
+    --wall-bg: linear-gradient(180deg, #d6dae3 0%, #e4e7ef 55%, #eef0f6 100%);
+    --floor-bg: linear-gradient(180deg, #e6e8f0 0%, #d8dbe4 48%, #c5c9d4 100%);
+    --horizon-line: rgba(255, 255, 255, 0.65);
+    --sun-beam-opacity: 1;
+
+    --block1-face: linear-gradient(180deg, #e2e4ec 0%, #cfd2dc 100%);
+    --block1-rim: #ffffff;
+    --block1-side: #aeb2bf;
+
+    --pill2-face: linear-gradient(180deg, #ebedf2 0%, #d8dbe3 100%);
+    --pill2-rim: #ffffff;
+
+    --search3-face: linear-gradient(180deg, #f8f9fb 0%, #eaecf0 100%);
+    --search3-txt: #1e1f24;
+    --ui-title-color: #1e2028;
+    --ui-sub-color: #5a6070;
+  }
+
+  /* 4. Carbon Darkroom (Bonus High-Contrast Glow Mode) */
+  body[data-env="darkroom"] {
+    --wall-bg: linear-gradient(180deg, #121318 0%, #1c1e26 55%, #262934 100%);
+    --floor-bg: linear-gradient(180deg, #20222b 0%, #16181f 45%, #0e0f14 100%);
+    --horizon-line: rgba(255, 195, 140, 0.14);
+    --sun-beam-opacity: 0;
+
+    --block1-face: linear-gradient(180deg, #323542 0%, #252833 100%);
+    --block1-rim: #4e5366;
+    --block1-side: #181a22;
+
+    --pill2-face: linear-gradient(180deg, #383b47 0%, #2a2d38 100%);
+    --pill2-rim: #555a6e;
+
+    --search3-face: linear-gradient(180deg, #353844 0%, #282b36 100%);
+    --search3-txt: #f1f5f9;
+    --ui-title-color: #f8fafc;
+    --ui-sub-color: #94a3b8;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: hidden;
+    position: relative;
+    background: var(--floor-bg);
+  }
+
+  /* =========================================================
+     SHARED STUDIO CYCLORAMA BACKDROP (WALL + HORIZON + FLOOR)
+     ========================================================= */
+  .studio-cyclorama {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cyclorama-wall {
+    height: 62%;
+    width: 100%;
+    background: var(--wall-bg);
+    transition: background 0.45s ease;
+    position: relative;
+  }
+
+  .cyclorama-horizon-seam {
+    height: 2px;
+    width: 100%;
+    background: var(--horizon-line);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.18);
+  }
+
+  .cyclorama-floor {
+    flex: 1;
+    width: 100%;
+    background: var(--floor-bg);
+    transition: background 0.45s ease;
+  }
+
+  /* Diagonal Architectural Window Sunbeam & Gobo Shadow (Visible in Alabaster Ref 3 Mode!) */
+  .sunbeam-gobo-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: var(--sun-beam-opacity);
+    transition: opacity 0.5s ease;
+    background:
+      linear-gradient(
+        132deg,
+        rgba(145, 152, 172, 0.34) 0%,
+        rgba(145, 152, 172, 0.22) 34%,
+        rgba(255, 255, 255, 0.55) 35.5%,
+        rgba(255, 255, 255, 0.45) 74%,
+        rgba(140, 148, 168, 0.38) 75.5%,
+        rgba(125, 132, 152, 0.48) 100%
+      );
+  }
+
+  /* =========================================================
+     TOP STUDIO HEADER & 4-BACKDROP SWITCHER BAR
+     ========================================================= */
+  .studio-topbar {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1280px;
+    padding: 24px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .studio-title-group h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--ui-title-color);
+    transition: color 0.3s ease;
+  }
+
+  .studio-title-group p {
+    font-size: 12.5px;
+    color: var(--ui-sub-color);
+    margin-top: 2px;
+    transition: color 0.3s ease;
+  }
+
+  .backdrop-switcher-dock {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(20, 20, 28, 0.52);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 5px;
+    border-radius: 32px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  .env-pill-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+  }
+
+  .env-pill-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .env-pill-btn.active {
+    background: #ffffff;
+    color: #181820;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  }
+
+  .swatch-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  /* =========================================================
+     MAIN 3-SPECIMEN PRESENTATION STAGE
+     ========================================================= */
+  .trio-showcase-stage {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 1320px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 54px;
+    padding: 20px 20px 30px;
+  }
+
+  /* Top Row: [Specimen 1: Apply Filters Block] + [Specimen 2: Sale Only Pill] */
+  .top-levitating-pair {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .specimen-pedestal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* =========================================================
+     COMPONENT 1: LEVITATING "Apply Filters" 3D BLOCK (REF 1)
+     ========================================================= */
+  .apply-filters-block {
+    width: 456px;
+    height: 152px;
+    border-radius: 22px;
+    background: var(--block1-face);
+    /* Crisp top-right specular bevel + 3D slab depth */
+    border-top: 2px solid var(--block1-rim);
+    border-right: 2px solid var(--block1-rim);
+    border-left: 1px solid rgba(255, 255, 255, 0.35);
+    border-bottom: 2px solid var(--block1-side);
+    box-shadow:
+      /* Warm pink-orange bounce glow on lower edge of block */
+      0 10px 28px -6px rgba(255, 115, 55, 0.42),
+      0 22px 38px -12px rgba(20, 16, 32, 0.45),
+      inset 0 2px 4px rgba(255, 255, 255, 0.45),
+      inset 0 -3px 8px rgba(255, 140, 80, 0.25);
+    padding: 20px 30px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+  }
+
+  .apply-filters-block:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Backlit Warm Incandescent Typography ("Apply Filters", "Slare", "Pesniter") */
+  .incandescent-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: #fffaf5;
+    text-shadow:
+      0 0 8px rgba(255, 195, 145, 0.92),
+      0 0 18px rgba(255, 130, 70, 0.65);
+  }
+
+  /* Deep Recessed Dark Track Groove Inside Block 1 */
+  .block1-trough {
+    width: 100%;
+    height: 36px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #4b4759 0%, #5c576b 100%);
+    border-top: 2px solid #353240;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+      inset 0 5px 10px rgba(15, 12, 22, 0.72),
+      0 0 18px rgba(255, 145, 70, 0.22);
+    padding: 2px;
+    position: relative;
+    cursor: ew-resize;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Blazing Warm Incandescent Light Capsule Inside Block 1 */
+  .incandescent-bar-1 {
+    width: var(--bar1-w, 36%);
+    height: 100%;
+    border-radius: 16px;
+    background:
+      radial-gradient(ellipse at 50% 50%, #ffffff 35%, #fff0c2 75%, #ffae52 100%);
+    box-shadow:
+      0 0 14px #ffcf75,
+      0 0 28px rgba(255, 125, 45, 0.9),
+      0 0 52px rgba(255, 85, 35, 0.65),
+      inset 0 0 8px #ffffff;
+    transition: width 0.08s ease-out;
+  }
+
+  .block1-bottom-labels {
+    display: flex;
+    justify-content: flex-end;
+    gap: 96px;
+    padding-right: 12px;
+  }
+
+  .incandescent-sub-btn {
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff6ed;
+    text-shadow:
+      0 0 6px rgba(255, 190, 135, 0.88),
+      0 0 14px rgba(255, 120, 60, 0.6);
+    cursor: pointer;
+    transition: transform 0.15s ease, text-shadow 0.15s ease;
+  }
+
+  .incandescent-sub-btn:hover {
+    transform: scale(1.06);
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #ff9248;
+  }
+
+  /* Floor Shadow, Horizon Contact Seam & Blurred Reflection Under Block 1 (Exact Match to Ref 1!) */
+  .floor-reflection-stage-1 {
+    width: 456px;
+    height: 92px;
+    margin-top: 34px;
+    position: relative;
+    pointer-events: none;
+  }
+
+  /* Dark Contact Shadow + Bright Orange-Rose Horizon Line Spill */
+  .floor-seam-shadow-1 {
+    width: 92%;
+    height: 14px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background:
+      radial-gradient(ellipse at var(--bar1-center, 34%) 50%, #ffea85 0%, #ff6a2b 38%, rgba(45, 32, 52, 0.65) 78%, transparent 100%);
+    filter: blur(4px);
+  }
+
+  /* Vertically Stretched Specular Table Reflection of the Light Bar & Text */
+  .floor-mirror-bloom-1 {
+    position: absolute;
+    top: 8px;
+    left: 8%;
+    width: var(--bar1-w, 36%);
+    height: 75px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 215, 110, 0.72) 0%, rgba(255, 105, 55, 0.38) 55%, transparent 100%);
+    filter: blur(14px);
+    transition: width 0.08s ease-out;
+  }
+
+  .floor-reflected-text-row {
+    position: absolute;
+    top: 26px;
+    right: 42px;
+    display: flex;
+    gap: 96px;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 195, 155, 0.42);
+    transform: scaleY(-1.35);
+    filter: blur(3.2px);
+  }
+
+  /* =========================================================
+     COMPONENT 2: FLOATING "Sale Only" PILL + 3D KNOB (REF 2)
+     ========================================================= */
+  .sale-only-capsule {
+    width: 476px;
+    height: 112px;
+    border-radius: 56px;
+    background: var(--pill2-face);
+    border-top: 2px solid var(--pill2-rim);
+    border-right: 1.5px solid var(--pill2-rim);
+    border-bottom: 3px solid rgba(80, 75, 85, 0.55);
+    box-shadow:
+      0 12px 28px -6px rgba(255, 155, 60, 0.35),
+      0 24px 42px -12px rgba(15, 14, 20, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.65),
+      inset 0 -3px 8px rgba(255, 165, 85, 0.25);
+    padding: 0 24px 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+  }
+
+  .sale-only-capsule:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Deep Charcoal Inner Track With Warm Orange Inner Wall Bounce */
+  .sale-dark-trough {
+    flex: 1;
+    height: 46px;
+    border-radius: 23px;
+    background:
+      radial-gradient(circle at var(--bar2-w, 56%) 50%, rgba(255, 155, 50, 0.45) 0%, rgba(45, 35, 30, 0.92) 48%, #1d1c20 85%);
+    border-top: 2px solid #141316;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      inset 0 4px 9px rgba(0, 0, 0, 0.85),
+      0 0 20px rgba(255, 165, 65, 0.28);
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    cursor: ew-resize;
+  }
+
+  /* Blazing Warm-Yellow Incandescent Tube Inside "Sale Only" Pill */
+  .incandescent-bar-2 {
+    width: var(--bar2-w, 56%);
+    height: 100%;
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, #fffdf2 0%, #fff6c2 65%, #ffcf6b 100%);
+    box-shadow:
+      0 0 14px #ffe485,
+      0 0 30px rgba(255, 165, 45, 0.95),
+      0 0 50px rgba(255, 125, 20, 0.7),
+      inset 0 0 8px #ffffff;
+    transition: width 0.08s ease-out, opacity 0.2s ease;
+    z-index: 2;
+  }
+
+  .sale-only-label {
+    position: absolute;
+    right: 26px;
+    z-index: 3;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: #fff8f0;
+    text-shadow: 0 0 8px rgba(255, 200, 140, 0.55);
+    pointer-events: none;
+  }
+
+  /* Right Circular 3D Tactile Push-Button Knob (Exact Match to Ref 2!) */
+  .sale-3d-knob-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    /* 3D Cylindrical Side Extrusion */
+    background: linear-gradient(135deg, #d8d9de 0%, #7d7e85 100%);
+    box-shadow:
+      -5px 6px 12px rgba(20, 18, 24, 0.48),
+      1px -1px 2px rgba(255, 255, 255, 0.8);
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  /* Flat Matte Circular Front Cap of Knob */
+  .sale-3d-knob-btn::after {
+    content: "";
+    position: absolute;
+    inset: 2px 4px 4px 2px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #b5b6bd 0%, #9a9ba3 100%);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+  }
+
+  .sale-3d-knob-btn:active,
+  .sale-3d-knob-btn.pressed {
+    transform: translate(-2px, 2px);
+    box-shadow: -2px 3px 6px rgba(20, 18, 24, 0.45);
+  }
+
+  /* Floor Shadow & Large Warm Amber Table Reflection Under Pill 2 (Exact Match to Ref 2!) */
+  .floor-reflection-stage-2 {
+    width: 476px;
+    height: 112px;
+    margin-top: 54px;
+    position: relative;
+    pointer-events: none;
+  }
+
+  .floor-seam-shadow-2 {
+    width: 86%;
+    height: 12px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background:
+      linear-gradient(90deg, rgba(30, 28, 34, 0.62) 0%, rgba(180, 105, 45, 0.65) 35%, rgba(35, 33, 38, 0.55) 85%, transparent 100%);
+    filter: blur(4px);
+  }
+
+  .floor-mirror-bloom-2 {
+    position: absolute;
+    top: 6px;
+    left: 8%;
+    width: calc(var(--bar2-w, 56%) * 0.78);
+    height: 96px;
+    border-radius: 30px;
+    background:
+      radial-gradient(ellipse at 50% 15%, rgba(255, 195, 95, 0.82) 0%, rgba(255, 140, 50, 0.45) 55%, transparent 100%);
+    filter: blur(14px);
+    transition: width 0.08s ease-out, opacity 0.2s ease;
+  }
+
+  /* =========================================================
+     COMPONENT 3: "Actome" PORCELAIN SEARCH PILL WITH CORONA BLEED (REF 3)
+     ========================================================= */
+  .actome-search-pedestal {
+    position: relative;
+    padding: 36px 56px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .actome-pill-wrapper {
+    position: relative;
+    width: 486px;
+    height: 108px;
+    isolation: isolate;
+  }
+
+  /* Directional 3D Cast Shadow Behind Pill (Shifted Down-Left to Match Ref 3 Angle!) */
+  .actome-cast-shadow {
+    position: absolute;
+    inset: 0;
+    border-radius: 54px;
+    transform: translate(-34px, 28px);
+    background:
+      linear-gradient(125deg, rgba(62, 68, 86, 0.42) 0%, rgba(72, 78, 96, 0.32) 65%, rgba(82, 88, 108, 0.18) 100%);
+    filter: blur(11px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Soft Close Contact Umbra Under Pill Base */
+  .actome-cast-shadow::after {
+    content: "";
+    position: absolute;
+    inset: 6px 10px 0 4px;
+    border-radius: 54px;
+    transform: translate(18px, -14px);
+    background: rgba(42, 46, 62, 0.28);
+    filter: blur(6px);
+  }
+
+  /* Static Backlit Incandescent Corona Behind Top Center of Pill (Strictly BEHIND the pill!) */
+  .actome-corona-top {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 48px;
+    background:
+      radial-gradient(ellipse 20% 38% at 50% 82%, #ffffff 0%, #fff9e6 58%, transparent 100%),
+      radial-gradient(ellipse 46% 68% at 50% 84%, rgba(255, 205, 130, 0.88) 0%, rgba(255, 155, 75, 0.42) 52%, transparent 100%);
+    filter: blur(5px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Static Backlit Incandescent Corona Behind Bottom Center of Pill (Strictly BEHIND the pill, illuminating the shadow!) */
+  .actome-corona-bottom {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: 58px;
+    background:
+      radial-gradient(ellipse 16% 32% at 50% 18%, #ffffff 0%, #fff4c2 60%, transparent 100%),
+      radial-gradient(ellipse 38% 60% at 50% 22%, rgba(255, 185, 90, 0.96) 0%, rgba(255, 125, 45, 0.72) 48%, rgba(255, 105, 35, 0.24) 76%, transparent 100%);
+    filter: blur(5px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Matte White Porcelain Pill Body (Sits ON TOP of coronas at z-index: 3 so glow never overlaps face!) */
+  .actome-porcelain-pill {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    border-radius: 54px;
+    background:
+      /* Pure white hotspot right on the top-center & bottom-center rim where the backlight grazes the bevel */
+      radial-gradient(ellipse 14% 4% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0.85) 60%, transparent 100%),
+      radial-gradient(ellipse 16% 5% at 50% 100%, #ffffff 0%, rgba(255, 255, 255, 0.9) 60%, transparent 100%),
+      /* Clean matte porcelain surface with soft diagonal shading toward left */
+      linear-gradient(108deg, #e2e4ec 0%, #eaecf2 48%, #f2f3f7 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.96);
+    border-left: 1px solid rgba(255, 255, 255, 0.86);
+    border-right: 1px solid rgba(255, 255, 255, 0.92);
+    box-shadow:
+      /* Subtle 1px porcelain bevel thickness */
+      -1px 1.5px 0 rgba(196, 200, 212, 0.78),
+      /* Crisp white specular inner rim */
+      inset 0 1.5px 2px #ffffff,
+      inset 0 -1.5px 2px rgba(255, 255, 255, 0.92);
+    padding: 0 42px 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .actome-porcelain-pill:focus-within {
+    transform: translateY(-2px);
+  }
+
+  .actome-input {
+    width: 82%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    color: var(--search3-txt);
+  }
+
+  .actome-input::placeholder {
+    color: var(--search3-txt);
+    opacity: 0.9;
+  }
+
+  .actome-search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--search3-txt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+  }
+
+  .actome-search-btn:hover {
+    transform: scale(1.12);
+  }
+
+  /* Subtle Footer Hint */
+  .studio-footer-hint {
+    position: relative;
+    z-index: 10;
+    margin-bottom: 18px;
+    background: rgba(20, 20, 28, 0.45);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  @media (max-width: 1080px) {
+    .top-levitating-pair {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .trio-showcase-stage {
+      transform: scale(0.78);
+      transform-origin: top center;
+    }
+  }
+</style>
+</head>
+<body data-env="lavender">
+
+<!-- =========================================================
+     SHARED STUDIO CYCLORAMA BACKDROP & SUNBEAM GOBO OVERLAY
+     ========================================================= -->
+<div class="studio-cyclorama">
+  <div class="cyclorama-wall"></div>
+  <div class="cyclorama-horizon-seam"></div>
+  <div class="cyclorama-floor"></div>
+</div>
+<div class="sunbeam-gobo-overlay"></div>
+
+<!-- =========================================================
+     TOP BAR: TITLE & 4-BACKDROP ENVIRONMENT SWITCHER
+     ========================================================= -->
+<header class="studio-topbar">
+  <div class="studio-title-group">
+    <h1>Luminescent 3D Clay &amp; Incandescent Trio</h1>
+    <p>Drag the glowing incandescent bars • Click the 3D push-knob • Inspect the backlit porcelain search bar</p>
+  </div>
+
+  <div class="backdrop-switcher-dock" id="envDock">
+    <button class="env-pill-btn active" data-env="lavender">
+      <span class="swatch-dot" style="background:#867f9e;"></span>
+      <span>Lavender Dusk (Ref 1)</span>
+    </button>
+    <button class="env-pill-btn" data-env="slate">
+      <span class="swatch-dot" style="background:#6d7078;"></span>
+      <span>Warm Slate (Ref 2)</span>
+    </button>
+    <button class="env-pill-btn" data-env="alabaster">
+      <span class="swatch-dot" style="background:#eef0f6;"></span>
+      <span>Sunlit Alabaster (Ref 3)</span>
+    </button>
+    <button class="env-pill-btn" data-env="darkroom">
+      <span class="swatch-dot" style="background:#181a22;"></span>
+      <span>Carbon Darkroom</span>
+    </button>
+  </div>
+</header>
+
+<!-- =========================================================
+     MAIN 3-COMPONENT SHOWCASE STAGE
+     ========================================================= -->
+<main class="trio-showcase-stage">
+
+  <!-- UPPER ROW: [SPECIMEN 1: APPLY FILTERS] + [SPECIMEN 2: SALE ONLY] -->
+  <div class="top-levitating-pair">
+
+    <!-- =====================================================
+         1. LEVITATING "Apply Filters" 3D BLOCK (REFERENCE 1)
+         ===================================================== -->
+    <div class="specimen-pedestal">
+      <div class="apply-filters-block">
+        <div class="incandescent-title" id="applyTitle">Apply Filters</div>
+
+        <div class="block1-trough" id="trough1" title="Drag horizontally to adjust Incandescent Bar">
+          <div class="incandescent-bar-1" id="bar1" style="--bar1-w: 36%;"></div>
+        </div>
+
+        <div class="block1-bottom-labels">
+          <button class="incandescent-sub-btn" id="slareBtn" type="button">Slare</button>
+          <button class="incandescent-sub-btn" id="pesniterBtn" type="button">Pesniter</button>
+        </div>
+      </div>
+
+      <!-- Synchronized Floor Shadow & Specular Table Reflection -->
+      <div class="floor-reflection-stage-1">
+        <div class="floor-seam-shadow-1" id="seam1"></div>
+        <div class="floor-mirror-bloom-1" id="bloom1" style="--bar1-w: 36%;"></div>
+        <div class="floor-reflected-text-row">
+          <span>Slare</span>
+          <span>Pesniter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         2. FLOATING "Sale Only" PILL + 3D KNOB (REFERENCE 2)
+         ===================================================== -->
+    <div class="specimen-pedestal">
+      <div class="sale-only-capsule">
+        <div class="sale-dark-trough" id="trough2" title="Drag horizontally to adjust Sale Filter Bar">
+          <div class="incandescent-bar-2" id="bar2" style="--bar2-w: 58%;"></div>
+          <span class="sale-only-label" id="saleLabelTxt">Sale Only</span>
+        </div>
+
+        <!-- 3D Cylindrical Push-Button Knob on Right -->
+        <button class="sale-3d-knob-btn" id="saleKnobBtn" type="button" title="Click to toggle Sale Only Filter"></button>
+      </div>
+
+      <!-- Synchronized Floor Shadow & Warm Amber Table Reflection -->
+      <div class="floor-reflection-stage-2">
+        <div class="floor-seam-shadow-2"></div>
+        <div class="floor-mirror-bloom-2" id="bloom2" style="--bar2-w: 58%;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =======================================================
+       3. LOWER CENTER: "Actome" PORCELAIN SEARCH PILL (REF 3)
+       ======================================================= -->
+  <div class="actome-search-pedestal">
+    <div class="actome-pill-wrapper" id="actomeWrapper">
+      <!-- Directional Down-Left Cast Shadow -->
+      <div class="actome-cast-shadow"></div>
+
+      <!-- Static Top & Bottom Edge-Bleed Incandescent Coronas (Strictly Behind Pill) -->
+      <div class="actome-corona-top"></div>
+      <div class="actome-corona-bottom"></div>
+
+      <!-- Matte White Porcelain Search Capsule -->
+      <div class="actome-porcelain-pill">
+        <input type="text" class="actome-input" value="Actome" placeholder="Search..." aria-label="Search Actome">
+        <button class="actome-search-btn" type="button" title="Search">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <circle cx="10.5" cy="10.5" r="6.5"/>
+            <line x1="15.5" y1="15.5" x2="21" y2="21"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="studio-footer-hint">
+  💡 <b>Interactive Studio:</b> Switch between the 4 backdrops above to inspect how the 2700K incandescent floor reflections and gobo shadows adapt
+</footer>
+
+<script>
+(() => {
+  // =========================================================================
+  // 1. STUDIO BACKDROP ENVIRONMENT SWITCHER
+  // =========================================================================
+  document.querySelectorAll('#envDock .env-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#envDock .env-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.body.setAttribute('data-env', btn.dataset.env);
+    });
+  });
+
+  // =========================================================================
+  // 2. COMPONENT 1 ("Apply Filters") DRAGGABLE INCANDESCENT BAR & FLOOR REFLECTION
+  // =========================================================================
+  const trough1 = document.getElementById('trough1');
+  const bar1 = document.getElementById('bar1');
+  const bloom1 = document.getElementById('bloom1');
+  const seam1 = document.getElementById('seam1');
+  let drag1 = false;
+
+  function setBar1Width(pct) {
+    const clamped = Math.max(16, Math.min(96, pct));
+    bar1.style.setProperty('--bar1-w', `${clamped.toFixed(1)}%`);
+    bloom1.style.setProperty('--bar1-w', `${clamped.toFixed(1)}%`);
+    seam1.style.setProperty('--bar1-center', `${(clamped * 0.5 + 10).toFixed(1)}%`);
+  }
+
+  function updateTrough1(clientX) {
+    const rect = trough1.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    setBar1Width(pct);
+  }
+
+  trough1.addEventListener('pointerdown', (e) => {
+    drag1 = true;
+    trough1.setPointerCapture(e.pointerId);
+    updateTrough1(e.clientX);
+  });
+  trough1.addEventListener('pointermove', (e) => {
+    if (drag1) updateTrough1(e.clientX);
+  });
+  trough1.addEventListener('pointerup', () => { drag1 = false; });
+  trough1.addEventListener('pointercancel', () => { drag1 = false; });
+
+  // Quick preset buttons ("Slare" & "Pesniter")
+  document.getElementById('slareBtn').addEventListener('click', () => setBar1Width(36));
+  document.getElementById('pesniterBtn').addEventListener('click', () => setBar1Width(82));
+
+  // =========================================================================
+  // 3. COMPONENT 2 ("Sale Only") DRAGGABLE BAR & 3D PUSH-KNOB TOGGLE
+  // =========================================================================
+  const trough2 = document.getElementById('trough2');
+  const bar2 = document.getElementById('bar2');
+  const bloom2 = document.getElementById('bloom2');
+  const saleKnobBtn = document.getElementById('saleKnobBtn');
+  const saleLabelTxt = document.getElementById('saleLabelTxt');
+  let drag2 = false;
+  let saleActive = true;
+
+  function setBar2Width(pct) {
+    const clamped = Math.max(18, Math.min(68, pct));
+    trough2.style.setProperty('--bar2-w', `${clamped.toFixed(1)}%`);
+    bar2.style.setProperty('--bar2-w', `${clamped.toFixed(1)}%`);
+    bloom2.style.setProperty('--bar2-w', `${clamped.toFixed(1)}%`);
+  }
+
+  function updateTrough2(clientX) {
+    const rect = trough2.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    if (!saleActive) {
+      saleActive = true;
+      bar2.style.opacity = '1';
+      bloom2.style.opacity = '1';
+    }
+    setBar2Width(pct);
+  }
+
+  trough2.addEventListener('pointerdown', (e) => {
+    drag2 = true;
+    trough2.setPointerCapture(e.pointerId);
+    updateTrough2(e.clientX);
+  });
+  trough2.addEventListener('pointermove', (e) => {
+    if (drag2) updateTrough2(e.clientX);
+  });
+  trough2.addEventListener('pointerup', () => { drag2 = false; });
+  trough2.addEventListener('pointercancel', () => { drag2 = false; });
+
+  // Clicking the 3D Push-Button Knob toggles the incandescent tube
+  saleKnobBtn.addEventListener('click', () => {
+    saleActive = !saleActive;
+    saleKnobBtn.classList.toggle('pressed', !saleActive);
+    bar2.style.opacity = saleActive ? '1' : '0.15';
+    bloom2.style.opacity = saleActive ? '1' : '0.08';
+    saleLabelTxt.textContent = saleActive ? 'Sale Only' : 'All Items';
+  });
+})();
+</script>
+</body>
+</html>
