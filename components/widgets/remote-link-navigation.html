@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REMOTE LINK NAVIGATION — Tactical Sub Telemetry Console</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "Remote Link Navigation Console",
+  "category": "widgets",
+  "themes": [
+    "dark",
+    "retro"
+  ],
+  "tags": [
+    "telemetry",
+    "tactical-hud",
+    "submarine",
+    "radar",
+    "sonar",
+    "led-meters",
+    "segmented-bar",
+    "rotary-gauges",
+    "sci-fi-ui",
+    "widgets",
+    "military",
+    "tactical"
+  ],
+  "description": "True-to-reference military olive-charcoal tactical naval telemetry console. Features 6 channels (GPS, Sonar, Doppler, Motor 1/2/3) with separated plot gutters, fine 42-tick segmented amber LED meters, angled ballast hull encoder pods, direction radar with dot-matrix corners, dual depth ladders, sub pressure gauges, and query log streams.",
+  "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 1780
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root {
+    --bg-canvas: #141512;
+    --panel-bg: #1c1d19;
+    --panel-dark: #151613;
+    --panel-border: #2c2d27;
+    --panel-border-hi: #42443b;
+
+    --amber: #d4762a;
+    --amber-dim: #734017;
+    --amber-track: #26221b;
+    --amber-glow: rgba(212, 118, 42, 0.35);
+
+    --olive-green: #8ab347;
+    --olive-bright: #a4cf59;
+    --olive-dim: #3d4f22;
+    --olive-track: #1f2419;
+    --olive-glow: rgba(138, 179, 71, 0.35);
+
+    --text-cream: #d8d5c9;
+    --text-muted: #75756b;
+    --text-dim: #4c4d45;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-canvas);
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    color: var(--text-cream);
+    padding: 18px 16px 36px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .terminal-frame {
+    width: 100%;
+    max-width: 960px;
+    background: #171814;
+    border: 1px solid #2b2c26;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Subtle CRT scanline & grain */
+  .terminal-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.18) 50%);
+    background-size: 100% 3px;
+    z-index: 100;
+  }
+
+  /* ========================================================
+     TOP HEADER BAR
+     ======================================================== */
+  .console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--panel-border);
+    background: #1a1b17;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tech-logo-icon {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+  .tech-logo-icon .b1, .tech-logo-icon .b2 {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #96948a;
+  }
+  .tech-logo-icon .b1 { top: 0; left: 0; }
+  .tech-logo-icon .b2 { bottom: 0; right: 0; border-color: var(--amber); }
+
+  .header-title-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #d6d3c7;
+  }
+  .header-title-text span.accent {
+    color: var(--amber);
+  }
+  .header-title-text span.dim {
+    color: #7d7c72;
+    font-weight: 500;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sys-icons {
+    display: flex;
+    gap: 10px;
+    color: #707066;
+    font-size: 11px;
+  }
+  .led-status-dots {
+    display: flex;
+    gap: 5px;
+  }
+  .status-led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .status-led.g { background: var(--olive-green); box-shadow: 0 0 6px var(--olive-glow); }
+  .status-led.a { background: var(--amber); box-shadow: 0 0 6px var(--amber-glow); }
+  .status-led.r { background: #b83b3b; }
+
+  /* Subheader Banner */
+  .subheader-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: #141512;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .sub-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8.5px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+  .active-feeds-title {
+    text-align: right;
+    font-family: 'Rajdhani', sans-serif;
+    line-height: 1.05;
+  }
+  .active-feeds-title .t1 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: #c2bfb3;
+  }
+  .active-feeds-title .t2 {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: #6b6b61;
+  }
+
+  /* ========================================================
+     MAIN TELEMETRY ROWS (GUTTER BETWEEN PLOT & CARD)
+     ======================================================== */
+  .feeds-container {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .feed-row-split {
+    display: grid;
+    grid-template-columns: 315px 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  /* Left Plot Box */
+  .left-plot-box {
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-border);
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  .plot-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7.5px;
+    color: #7d796b;
+    letter-spacing: 0.8px;
+  }
+  .plot-viewport {
+    height: 66px;
+    background: #0d0e0b;
+    border: 1px solid #262821;
+    position: relative;
+    overflow: hidden;
+  }
+  .plot-viewport svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .plot-footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2b1d12;
+    border: 1px solid #4d3018;
+    padding: 2px 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: #e09651;
+  }
+  .plot-mini-btns {
+    display: flex;
+    gap: 4px;
+  }
+  .plot-mini-btn {
+    width: 14px;
+    height: 10px;
+    background: var(--amber);
+    border-radius: 1px;
+    opacity: 0.8;
+  }
+
+  /* Motor Thin Segmented Bars */
+  .motor-bars-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0;
+  }
+  .motor-bar-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .motor-ruler {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7px;
+    color: #6b6b61;
+    padding-left: 34px;
+  }
+  .motor-led-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .motor-stage-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7px;
+    color: #75756b;
+    width: 28px;
+  }
+  .thin-led-track {
+    flex: 1;
+    display: flex;
+    gap: 2px;
+    height: 22px;
+    background: #0f100d;
+    padding: 2px;
+    border: 1px solid #262821;
+  }
+  .thin-seg {
+    flex: 1;
+    height: 100%;
+    background: #24211b;
+  }
+  .thin-seg.lit {
+    background: linear-gradient(180deg, #e88e41 0%, #c9681e 100%);
+    box-shadow: 0 0 3px rgba(212, 118, 42, 0.35);
+  }
+
+  /* Right Main Channel Card */
+  .right-channel-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    display: grid;
+    grid-template-columns: 62px 175px 1fr 165px;
+    position: relative;
+  }
+  .right-channel-card.highlighted {
+    border-color: var(--olive-green);
+    box-shadow: inset 0 0 12px rgba(138, 179, 71, 0.08);
+  }
+
+  .card-top-meta {
+    position: absolute;
+    top: -11px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7px;
+    color: #6b6b61;
+    letter-spacing: 0.8px;
+    pointer-events: none;
+  }
+
+  /* Col A: Feed Status mini ladder */
+  .col-status-ladder {
+    border-right: 1px solid var(--panel-border);
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .mini-dots-5 {
+    display: flex;
+    gap: 2px;
+  }
+  .mini-dots-5 span {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #4b4d44;
+  }
+  .mini-dots-5 span.on { background: var(--olive-green); }
+  .status-num {
+    font-size: 11px;
+    color: #7d7c72;
+  }
+  .status-tri-leds {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+  .tri-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #2b2c26;
+  }
+  .tri-dot.g { background: var(--olive-green); box-shadow: 0 0 4px var(--olive-glow); }
+  .tri-dot.r { background: #a83c32; }
+
+  /* Col B: Channel Title */
+  .col-channel-name {
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .channel-title-lg {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--amber);
+    margin-top: 8px;
+  }
+  .channel-title-lg.white {
+    color: #dcd9ce;
+  }
+  .channel-sub-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7.5px;
+    color: var(--text-muted);
+  }
+  .enabled-tag {
+    color: #9e9c91;
+    border-left: 2px solid var(--olive-green);
+    padding-left: 4px;
+    line-height: 1.1;
+  }
+
+  /* Col C: Specs Details */
+  .col-specs-info {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--text-muted);
+  }
+  .hull-line {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #b8b5a9;
+  }
+  .spec-pair {
+    line-height: 1.25;
+  }
+  .spec-pair span {
+    display: block;
+    color: #5c5c53;
+    font-size: 7px;
+  }
+  .spec-pair strong {
+    color: #9e9b8e;
+    font-weight: 500;
+  }
+
+  /* Col D: Angled Encoder Pod / Motor Buttons */
+  .col-action-pod {
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    position: relative;
+  }
+  .pod-mini-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+  }
+  .pod-bar-item {
+    width: 14px;
+    height: 4px;
+    background: #2b2c26;
+    border-radius: 1px;
+  }
+  .pod-bar-item.a { background: var(--amber); }
+  .pod-bar-item.g { background: var(--olive-green); }
+
+  /* Angled teardrop pod */
+  .angled-encoder-pod {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #2b2c26, #141512 80%);
+    border: 1px solid #383a32;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.12);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .angled-encoder-pod::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.15);
+  }
+  .pod-inner-knob {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #34362f, #171814);
+    border: 1px solid #4c4e44;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pod-needle {
+    position: absolute;
+    top: 4px;
+    width: 2px;
+    height: 12px;
+    background: var(--olive-green);
+    transform-origin: 50% 18px;
+  }
+
+  /* Motor Console Buttons */
+  .motor-btn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 82px;
+  }
+  .console-grey-btn {
+    background: linear-gradient(180deg, #b8b6ad 0%, #8f8d84 100%);
+    color: #161714;
+    border: none;
+    border-radius: 2px;
+    padding: 3px 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7.5px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .console-grey-btn.off-btn {
+    background: linear-gradient(180deg, #99978e 0%, #78766d 100%);
+  }
+  .motor-feed-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7px;
+    color: #7d7c72;
+    margin-top: 2px;
+  }
+  .feed-badge {
+    background: var(--olive-dim);
+    color: var(--olive-bright);
+    padding: 1px 3px;
+    border-radius: 1px;
+  }
+
+  /* ========================================================
+     BOTTOM NAVIGATION DECK (DIRECTION, DEPTH, SUB PRESS)
+     ======================================================== */
+  .bottom-deck-wrap {
+    margin: 4px 14px 12px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .deck-upper-grid {
+    display: grid;
+    grid-template-columns: 230px 135px 1fr;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  /* Direction Radar */
+  .deck-direction {
+    padding: 12px 14px;
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .deck-head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8.5px;
+    color: #8b8a7e;
+    letter-spacing: 1px;
+  }
+  .pill-switches {
+    display: flex;
+    gap: 8px;
+    font-size: 7px;
+  }
+  .pill-sw {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .pill-sw::before {
+    content: '';
+    width: 14px;
+    height: 7px;
+    border-radius: 4px;
+    background: #8e8c82;
+    display: inline-block;
+  }
+
+  .radar-box-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+  }
+  .radar-circle {
+    width: 148px;
+    height: 148px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #181c14 0%, #10120d 75%);
+    border: 1.5px solid var(--olive-dim);
+    box-shadow: inset 0 0 16px rgba(138, 179, 71, 0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .radar-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(138, 179, 71, 0.16);
+  }
+  .radar-ring.r1 { width: 48px; height: 48px; }
+  .radar-ring.r2 { width: 96px; height: 96px; }
+  .radar-cross-h { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(138, 179, 71, 0.18); }
+  .radar-cross-v { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(138, 179, 71, 0.18); }
+  .cardinal {
+    position: absolute;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #c2bfb3;
+  }
+  .cardinal.n { top: 4px; left: 50%; transform: translateX(-50%); }
+  .cardinal.s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+  .cardinal.e { right: 6px; top: 50%; transform: translateY(-50%); }
+  .cardinal.w { left: 6px; top: 50%; transform: translateY(-50%); }
+  .radar-sweep {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 74px; height: 74px;
+    transform-origin: top left;
+    background: conic-gradient(from 0deg, rgba(212, 118, 42, 0.35) 0deg, rgba(138, 179, 71, 0.15) 35deg, transparent 60deg);
+    animation: sweep 4s linear infinite;
+  }
+  @keyframes sweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Depth Lvl */
+  .deck-depth {
+    padding: 12px 10px;
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .depth-ladders {
+    display: flex;
+    gap: 10px;
+    position: relative;
+  }
+  .depth-col {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 3px;
+    width: 36px;
+    background: #10110e;
+    padding: 4px;
+    border: 1px solid #2b2c26;
+  }
+  .depth-seg {
+    height: 8px;
+    background: #1d2118;
+  }
+  .depth-seg.lit {
+    background: linear-gradient(90deg, #8ab347, #b5de68);
+    box-shadow: 0 0 4px rgba(164, 207, 89, 0.35);
+  }
+
+  /* Sub Press */
+  .deck-pressure {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .press-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .press-dial {
+    width: 142px;
+    height: 142px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #181915 0%, #10110e 80%);
+    border: 1px solid #34362e;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .press-needle {
+    position: absolute;
+    bottom: 50%;
+    width: 2px;
+    height: 52px;
+    background: #cc443b;
+    transform-origin: bottom center;
+  }
+  .press-hub {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2b2c26;
+    border: 2px solid #595b50;
+    z-index: 2;
+  }
+  .kpi-list {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .kpi-list div strong {
+    color: #d8d5c9;
+    margin-left: 8px;
+  }
+
+  /* ========================================================
+     BOTTOM DUAL QUERY TABLES
+     ======================================================== */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: 1fr 140px 1fr;
+    background: #141512;
+  }
+  .table-pane {
+    padding: 10px 14px;
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .table-pane:last-child { border-right: none; }
+
+  .t-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    color: #c2bfb3;
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 4px;
+  }
+  .t-head .srch { color: var(--olive-green); }
+
+  .t-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: #7d7c72;
+    line-height: 1.45;
+  }
+  .t-row .ok { color: var(--olive-green); }
+  .t-row .amb { color: var(--amber); }
+
+  .t-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--panel-border);
+  }
+  .q-btn {
+    background: #2b2c26;
+    color: #9e9c91;
+    border: 1px solid #3c3e36;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+  .q-play {
+    background: #2b2c26;
+    border: 1px solid #3c3e36;
+    color: var(--olive-green);
+    font-size: 9px;
+    padding: 2px 6px;
+    cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="terminal-frame">
+  
+  <!-- Header -->
+  <header class="console-header">
+    <div class="header-left">
+      <div class="tech-logo-icon"><div class="b1"></div><div class="b2"></div></div>
+      <div class="header-title-text">REMOTE <span class="accent">LINK</span> <span class="dim">NAVIGATION</span></div>
+    </div>
+    <div class="header-right">
+      <div class="sys-icons"><span>▤</span><span>⌖</span><span>⚙</span></div>
+      <div class="led-status-dots">
+        <div class="status-led g"></div>
+        <div class="status-led a"></div>
+        <div class="status-led r"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Subheader -->
+  <div class="subheader-bar">
+    <div class="sub-nav-left">
+      <span>◀ ▶</span>
+      <span>TARGET LEVEL<br>LINK CONNECTION</span>
+      <span>03519</span>
+      <span>SHP-016</span>
+    </div>
+    <div class="active-feeds-title">
+      <div class="t1">ACTIVE FEEDS</div>
+      <div class="t2">STANDBY STATUS</div>
+    </div>
+  </div>
+
+  <!-- 6 Feed Channels -->
+  <div class="feeds-container">
+    
+    <!-- 1. GPS (Highlighted Border) -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="plot-head"><span>TARGET CALLS</span><span>FREQ</span><span>GRID</span><span>SPECS</span></div>
+        <div class="plot-viewport">
+          <svg viewBox="0 0 300 66" preserveAspectRatio="none">
+            <line x1="0" y1="33" x2="300" y2="33" stroke="#22261c" stroke-width="1"/>
+            <rect x="65" y="10" width="42" height="46" fill="none" stroke="#614223" stroke-width="1"/>
+            <rect x="175" y="15" width="36" height="36" fill="none" stroke="#614223" stroke-width="1"/>
+            <polyline points="0,33 35,33 42,20 75,20 82,48 120,48 128,25 180,25 188,42 230,42 240,18 275,18 280,33 300,33" fill="none" stroke="#536b2c" stroke-width="1.2"/>
+            <circle cx="42" cy="20" r="2.2" fill="#8ab347"/><circle cx="82" cy="48" r="2.2" fill="#d4762a"/>
+            <circle cx="128" cy="25" r="2.2" fill="#8ab347"/><circle cx="188" cy="42" r="2.2" fill="#8ab347"/>
+            <circle cx="240" cy="18" r="2.2" fill="#d4762a"/>
+          </svg>
+        </div>
+        <div class="plot-footer-bar">
+          <span>SCALE +/- 4.0</span>
+          <div class="plot-mini-btns"><div class="plot-mini-btn"></div><div class="plot-mini-btn"></div></div>
+        </div>
+      </div>
+
+      <div class="right-channel-card highlighted">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+          <div class="status-num">505 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg">GPS</div>
+          <div class="channel-sub-row"><span>REGION 5</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 5</div></div>
+          <div class="spec-pair"><span>CONFIG</span><strong>DEFAULT</strong></div>
+          <div class="spec-pair"><span>RESET</span><strong>CODE</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="pod-mini-bars"><div class="pod-bar-item a"></div><div class="pod-bar-item g"></div><div class="pod-bar-item"></div></div>
+          <div class="angled-encoder-pod"><div class="pod-inner-knob"><div class="pod-needle" style="transform:rotate(35deg);"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SONAR -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="plot-head"><span>TARGET CALLS</span><span>FREQ</span><span>GRID</span><span>SPECS</span></div>
+        <div class="plot-viewport">
+          <svg viewBox="0 0 300 66" preserveAspectRatio="none">
+            <line x1="0" y1="33" x2="300" y2="33" stroke="#22261c" stroke-width="1"/>
+            <rect x="135" y="10" width="24" height="46" fill="none" stroke="#8c5423" stroke-width="1"/>
+            <polyline points="0,33 130,33 135,14 155,14 160,50 175,50 180,33 300,33" fill="none" stroke="#8ab347" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="plot-footer-bar">
+          <span>SCALE +/- 4.0</span>
+          <div class="plot-mini-btns"><div class="plot-mini-btn"></div><div class="plot-mini-btn"></div></div>
+        </div>
+      </div>
+
+      <div class="right-channel-card">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+          <div class="status-num">310 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg">SONAR</div>
+          <div class="channel-sub-row"><span>REGION 4</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 1</div></div>
+          <div class="spec-pair"><span>CONFIG</span><strong>0.2M</strong></div>
+          <div class="spec-pair"><span>RESET</span><strong>CODE</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="pod-mini-bars"><div class="pod-bar-item a"></div><div class="pod-bar-item g"></div><div class="pod-bar-item"></div></div>
+          <div class="angled-encoder-pod"><div class="pod-inner-knob"><div class="pod-needle" style="transform:rotate(120deg);"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. DOPPLER -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="plot-head"><span>TARGET CALLS</span><span>FREQ</span><span>GRID</span><span>SPECS</span></div>
+        <div class="plot-viewport">
+          <svg viewBox="0 0 300 66" preserveAspectRatio="none">
+            <line x1="0" y1="33" x2="300" y2="33" stroke="#22261c" stroke-width="1"/>
+            <line x1="45" y1="18" x2="45" y2="48" stroke="#8ab347" stroke-width="1.5"/>
+            <line x1="95" y1="22" x2="95" y2="44" stroke="#8ab347" stroke-width="1.5"/>
+            <line x1="150" y1="12" x2="150" y2="54" stroke="#d4762a" stroke-width="1.5"/>
+            <line x1="205" y1="20" x2="205" y2="46" stroke="#8ab347" stroke-width="1.5"/>
+            <line x1="255" y1="16" x2="255" y2="50" stroke="#8ab347" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="plot-footer-bar">
+          <span>SCALE +/- 4.0</span>
+          <div class="plot-mini-btns"><div class="plot-mini-btn"></div><div class="plot-mini-btn"></div></div>
+        </div>
+      </div>
+
+      <div class="right-channel-card">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+          <div class="status-num">311 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg">DOPPLER</div>
+          <div class="channel-sub-row"><span>REGION 8</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 2</div></div>
+          <div class="spec-pair"><span>CONFIG</span><strong>0.3M</strong></div>
+          <div class="spec-pair"><span>RESET</span><strong>CODE</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="pod-mini-bars"><div class="pod-bar-item a"></div><div class="pod-bar-item g"></div><div class="pod-bar-item"></div></div>
+          <div class="angled-encoder-pod"><div class="pod-inner-knob"><div class="pod-needle" style="transform:rotate(210deg);"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. MOTOR 1 -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="motor-bars-wrap">
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 01</span><div class="thin-led-track" id="m1A"></div></div>
+          </div>
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 02</span><div class="thin-led-track" id="m1B"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-channel-card">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+          <div class="status-num">311 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg white">MOTOR 1</div>
+          <div class="channel-sub-row"><span>REGION 6</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 6</div></div>
+          <div class="spec-pair"><span>STATUS</span><strong style="color:var(--olive-green);">ACTIVE</strong></div>
+          <div class="spec-pair"><span>SCHED</span><strong>READY</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="motor-btn-stack">
+            <button class="console-grey-btn">CODE CONSOLE</button>
+            <button class="console-grey-btn off-btn">OFF</button>
+            <div class="motor-feed-status"><span class="feed-badge">ON</span><span>FEEDS 5-6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MOTOR 2 -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="motor-bars-wrap">
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 01</span><div class="thin-led-track" id="m2A"></div></div>
+          </div>
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 02</span><div class="thin-led-track" id="m2B"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-channel-card">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+          <div class="status-num">350 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg white">MOTOR 2</div>
+          <div class="channel-sub-row"><span>REGION 3</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 3</div></div>
+          <div class="spec-pair"><span>STATUS</span><strong style="color:var(--olive-green);">ACTIVE</strong></div>
+          <div class="spec-pair"><span>SCHED</span><strong>READY</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="motor-btn-stack">
+            <button class="console-grey-btn">CODE CONSOLE</button>
+            <button class="console-grey-btn off-btn">OFF</button>
+            <div class="motor-feed-status"><span class="feed-badge">ON</span><span>FEEDS 5-6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. MOTOR 3 -->
+    <div class="feed-row-split">
+      <div class="left-plot-box">
+        <div class="motor-bars-wrap">
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 01</span><div class="thin-led-track" id="m3A"></div></div>
+          </div>
+          <div class="motor-bar-block">
+            <div class="motor-ruler"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div>
+            <div class="motor-led-row"><span class="motor-stage-tag">STAGE 02</span><div class="thin-led-track" id="m3B"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-channel-card">
+        <div class="card-top-meta"><span>| FEED STATUS</span><span>| SPEC DETAILS</span><span>| SIGNAL ALERT</span></div>
+        <div class="col-status-ladder">
+          <div class="mini-dots-5"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+          <div class="status-num">311 ▾</div>
+          <div class="status-tri-leds"><div class="tri-dot g"></div><div class="tri-dot r"></div></div>
+        </div>
+        <div class="col-channel-name">
+          <div class="channel-title-lg white">MOTOR 3</div>
+          <div class="channel-sub-row"><span>REGION 3</span><span class="enabled-tag">ENABLED<br>LINK CONNECTION</span></div>
+        </div>
+        <div class="col-specs-info">
+          <div class="spec-pair"><span>LINK PT</span><div class="hull-line">HULL 6</div></div>
+          <div class="spec-pair"><span>STATUS</span><strong style="color:var(--olive-green);">ACTIVE</strong></div>
+          <div class="spec-pair"><span>SCHED</span><strong>READY</strong></div>
+        </div>
+        <div class="col-action-pod">
+          <div class="motor-btn-stack">
+            <button class="console-grey-btn">CODE CONSOLE</button>
+            <button class="console-grey-btn off-btn">OFF</button>
+            <div class="motor-feed-status"><span class="feed-badge">ON</span><span>FEEDS 5-6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
+     BOTTOM NAVIGATION DECK & TABLES
+     ======================================================== -->
+  <div class="bottom-deck-wrap">
+    
+    <div class="deck-upper-grid">
+      
+      <!-- Direction -->
+      <div class="deck-direction">
+        <div class="deck-head-row">
+          <span>DIRECTION</span>
+          <div class="pill-switches"><span class="pill-sw">BRG</span><span class="pill-sw">POS</span></div>
+        </div>
+        <div class="radar-box-wrap">
+          <div class="radar-circle">
+            <div class="radar-ring r1"></div>
+            <div class="radar-ring r2"></div>
+            <div class="radar-cross-h"></div>
+            <div class="radar-cross-v"></div>
+            <div class="cardinal n">N</div>
+            <div class="cardinal s">S</div>
+            <div class="cardinal e">E</div>
+            <div class="cardinal w">W</div>
+            <div class="radar-sweep"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Depth Lvl -->
+      <div class="deck-depth">
+        <div class="deck-head-row" style="width:100%;"><span>DEPTH LVL</span></div>
+        <div class="depth-ladders">
+          <div class="depth-col" id="depthColA"></div>
+          <div class="depth-col" id="depthColB"></div>
+        </div>
+      </div>
+
+      <!-- Sub Press -->
+      <div class="deck-pressure">
+        <div class="deck-head-row"><span>SUB PRESS</span><span>BIAS 44.34</span></div>
+        <div class="press-row">
+          <div class="press-dial">
+            <svg viewBox="0 0 100 100" width="100%" height="100%" style="position:absolute; inset:0;">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" stroke-dasharray="1.5,3"/>
+              <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(138,179,71,0.45)" stroke-dasharray="2,2"/>
+            </svg>
+            <div class="press-needle" style="transform: rotate(140deg);"></div>
+            <div class="press-hub"></div>
+          </div>
+
+          <div class="press-dial">
+            <svg viewBox="0 0 100 100" width="100%" height="100%" style="position:absolute; inset:0;">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" stroke-dasharray="1.5,3"/>
+              <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(212,118,42,0.5)" stroke-dasharray="2,2"/>
+            </svg>
+            <div class="press-needle" style="transform: rotate(130deg);"></div>
+            <div class="press-hub"></div>
+          </div>
+
+          <div class="kpi-list">
+            <div>RPM = <strong>43</strong></div>
+            <div>FUEL = <strong>60%</strong></div>
+            <div>CTRL = <strong>53%</strong></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Dual Tables -->
+    <div class="tables-grid">
+      <div class="table-pane">
+        <div class="t-head"><span>INC: SSN PLANETJET LOC</span><span class="srch">SEARCHING...</span></div>
+        <div class="t-row"><span>18075 USSETAUL VRSUN</span><span>04/02/17 13:53</span></div>
+        <div class="t-row"><span>TRMLS AUDIO 003217</span><span>03/02/17 19:29</span></div>
+        <div class="t-row"><span>LIC ARCH INC ALL LC</span><span>04/02/17 16:34</span></div>
+        <div class="t-row"><span>LIC ARCH INC ALL LC INIC SSH</span><span>04/02/17 14:42</span></div>
+        <div class="t-footer"><button class="q-btn">QUERY</button><button class="q-play">▶</button><span style="font-size:8px; color:#5c5c53;">SEARCHING...</span></div>
+      </div>
+
+      <div class="table-pane">
+        <div class="t-head"><span>LOCATION</span><span>STATUS</span></div>
+        <div class="t-row"><span>TKB 1 - 7</span><span class="ok">VALID</span></div>
+        <div class="t-row"><span>TKB 8 - 15</span><span class="ok">VALID</span></div>
+        <div class="t-row"><span>TKB 20 - 32</span><span class="ok">VALID</span></div>
+        <div class="t-row"><span>CONNECTION : STABLR...</span><span class="amb">VALID</span></div>
+      </div>
+
+      <div class="table-pane">
+        <div class="t-head"><span>INC: SSN PLANETJET LOC</span><span class="srch">SEARCHING...</span></div>
+        <div class="t-row"><span>18075 USSETAUL VRSUN</span><span>04/02/17 12:40</span></div>
+        <div class="t-row"><span>TRMLS AUDIO 003217</span><span>03/02/17 15:29</span></div>
+        <div class="t-row"><span>LIC ARCH INC ALL LC</span><span>04/02/17 16:34</span></div>
+        <div class="t-row"><span>LIC ARCH INC ALL LC INIC SSH</span><span>04/02/17 14:42</span></div>
+        <div class="t-footer"><button class="q-btn">QUERY</button><button class="q-play">▶</button><span style="font-size:8px; color:#5c5c53;">SEARCHING...</span></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function fillThinLeds(id, total, lit) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const s = document.createElement('div');
+      s.className = `thin-seg ${i < lit ? 'lit' : ''}`;
+      el.appendChild(s);
+    }
+  }
+  fillThinLeds('m1A', 40, 36);
+  fillThinLeds('m1B', 40, 10);
+  fillThinLeds('m2A', 40, 16);
+  fillThinLeds('m2B', 40, 28);
+  fillThinLeds('m3A', 40, 22);
+  fillThinLeds('m3B', 40, 25);
+
+  function fillDepth(id, total, lit) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const s = document.createElement('div');
+      s.className = `depth-seg ${i < lit ? 'lit' : ''}`;
+      el.appendChild(s);
+    }
+  }
+  fillDepth('depthColA', 15, 7);
+  fillDepth('depthColB', 15, 8);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2027 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System OS — Tactile Coral &amp; Slate UI Kit</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/json" data-uilab-meta>
+{
+  "title": "System OS — Tactile Coral & Slate UI Kit",
+  "category": "cards",
+  "themes": ["dark", "retro", "mesh"],
+  "tags": [
+    "design-system",
+    "ui-kit",
+    "tokens",
+    "system-os",
+    "coral-glow",
+    "tactile",
+    "components",
+    "anatomy",
+    "base-select"
+  ],
+  "description": "Complete System OS component specification sheet on a warm-peach to slate-teal drafting grid. Features design tokens strip, glowing coral & dark slate controls, button anatomy callouts, base-select dropdown, date picker mini, stepper, toast, badges, pagination, breadcrumbs, stacked card, table, and empty state.",
+  "techniques": [
+    "Drafting grid + atmospheric gradient",
+    "Neon coral box-shadow & drop-shadow glow",
+    "Customizable <select> with appearance: base-select",
+    "Blueprint component anatomy callouts",
+    "Stacked layered card depth"
+  ],
+  "recipe": "Layer a multi-stop warm-peach-to-slate-teal background with a 28px CSS linear-gradient drafting grid and subtle SVG noise. Frame each UI module in 1px hairline borders, pair dark slate-teal surfaces (#25353c) with glowing coral-peach accents (#ff9c8a), and use appearance: base-select on native <select> with graceful fallback.",
+  "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 840
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg-peach: #e4a188;
+    --bg-sage: #6a756f;
+    --bg-slate: #2c4048;
+    --bg-deep: #1e2d34;
+
+    --surface: #26363d;
+    --surface-dark: #1d292f;
+    --surface-elevated: #2c3e46;
+    --surface-muted: #6c6b5f;
+
+    --coral: #ff9c8a;
+    --coral-bright: #ffb09c;
+    --coral-deep: #f27e74;
+    --coral-glow: 0 0 14px rgba(255, 146, 128, 0.55), 0 4px 12px rgba(0, 0, 0, 0.35);
+    --coral-ring: 0 0 0 1px rgba(255, 156, 138, 0.85), 0 0 10px rgba(255, 146, 128, 0.42);
+
+    --lime: #94b863;
+    --lime-glow: 0 0 16px rgba(148, 184, 99, 0.48), 0 6px 16px rgba(0, 0, 0, 0.36);
+
+    --ink-dark: #171c1e;
+    --ink-light: #e5ecef;
+    --ink-muted: #98a8ae;
+    --hairline: rgba(16, 22, 24, 0.46);
+    --hairline-soft: rgba(255, 255, 255, 0.08);
+
+    --shadow-elevated: 0 8px 18px rgba(10, 16, 18, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--ink-dark);
+    background-color: #4b5b5c;
+    background-image:
+      radial-gradient(circle at 6% 4%, rgba(244, 174, 146, 0.92) 0%, rgba(226, 156, 132, 0.55) 24%, transparent 54%),
+      radial-gradient(circle at 92% 88%, rgba(24, 39, 46, 0.95) 0%, rgba(36, 54, 62, 0.72) 38%, transparent 72%),
+      linear-gradient(142deg, #d79c86 0%, #86887c 28%, #546668 58%, #283a42 100%);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 26px 20px 36px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Technical drafting grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(16, 24, 26, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(16, 24, 26, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+    z-index: 0;
+  }
+
+  /* Subtle matte noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    z-index: 0;
+  }
+
+  .sheet {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1040px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Section block & label */
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sec-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(18, 24, 26, 0.85);
+  }
+
+  .frame {
+    border: 1px solid var(--hairline);
+    box-shadow: inset 0 1px 0 var(--hairline-soft);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 12px;
+  }
+
+  /* Grid rows */
+  .row-controls {
+    display: grid;
+    grid-template-columns: 1.15fr 1.25fr 0.72fr 1.05fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .row-middle {
+    display: grid;
+    grid-template-columns: 1.05fr 1.15fr 1.45fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .mid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .row-feedback {
+    display: grid;
+    grid-template-columns: 1.45fr 0.75fr 1.05fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .row-nav {
+    display: grid;
+    grid-template-columns: 1.05fr 1.95fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .row-data {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .frame-fill {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ========================
+     1. TOKENS STRIP
+     ======================== */
+  .tokens-frame {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .tokens-grid {
+    display: grid;
+    grid-template-columns: 2.1fr 1.35fr 0.9fr 0.85fr 0.75fr 0.85fr;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .token-col {
+    padding: 12px 14px 14px;
+    border-right: 1px solid var(--hairline);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .token-col:last-child {
+    border-right: none;
+  }
+
+  .token-sub {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(18, 24, 26, 0.78);
+    letter-spacing: 0.02em;
+  }
+
+  .typo-h1 {
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    color: #14181a;
+    margin-top: 2px;
+  }
+
+  .typo-h2 {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: #191f22;
+  }
+
+  .typo-body {
+    font-size: 13px;
+    font-weight: 400;
+    color: #21282b;
+  }
+
+  /* Icon Set 3x3 */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 8px;
+    place-items: center;
+    padding: 2px 4px;
+  }
+
+  .neon-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--coral-bright);
+    filter: drop-shadow(0 0 5px rgba(255, 134, 118, 0.78)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+    transition: transform 0.18s ease, filter 0.18s ease;
+    cursor: pointer;
+  }
+
+  .neon-icon:hover {
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 9px rgba(255, 160, 140, 0.95)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  }
+
+  /* Spacing list */
+  .spacing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(18, 24, 26, 0.85);
+  }
+
+  .spacing-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  /* Border weights */
+  .weights-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    gap: 8px;
+    padding: 4px 2px;
+  }
+
+  .weight-bar {
+    width: 100%;
+    background: #1b2225;
+    border-radius: 1px;
+  }
+
+  /* Corner radii */
+  .radii-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 6px;
+    padding: 2px 0;
+  }
+
+  .radius-arc {
+    width: 28px;
+    height: 16px;
+    border-top: 2px solid;
+    border-right: 2px solid;
+  }
+
+  /* Shadow depth */
+  .shadow-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    flex: 1;
+    gap: 10px;
+  }
+
+  .depth-swatch {
+    width: 34px;
+    height: 30px;
+    border-radius: 6px;
+    background: #233036;
+  }
+
+  .depth-swatch.d1 {
+    border: 1px solid rgba(215, 182, 118, 0.72);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.38);
+  }
+
+  .depth-swatch.d2 {
+    border: 1.5px solid rgba(208, 108, 198, 0.85);
+    box-shadow: 0 0 12px rgba(208, 108, 198, 0.45), 0 6px 14px rgba(0, 0, 0, 0.45);
+  }
+
+  .depth-swatch.d3 {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Ruler strip */
+  .ruler-strip {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    background: rgba(18, 25, 28, 0.14);
+  }
+
+  .ruler-cell {
+    border-right: 1px solid var(--hairline);
+    padding: 4px 3px 3px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    line-height: 1.2;
+    color: rgba(18, 24, 26, 0.85);
+    position: relative;
+  }
+
+  .ruler-cell:last-child {
+    border-right: none;
+  }
+
+  .ruler-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 4px;
+    background: var(--hairline);
+  }
+
+  /* ========================
+     2. BUTTONS / INPUTS / TOGGLE / TABS
+     ======================== */
+  .btn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sys-btn {
+    height: 36px;
+    border-radius: 6px;
+    border: none;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.12s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  }
+
+  .sys-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .sys-btn-primary {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    color: #1a1f21;
+    box-shadow: var(--coral-glow);
+  }
+
+  .sys-btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 0 18px rgba(255, 156, 138, 0.78), 0 6px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  .sys-btn-secondary {
+    background: var(--surface);
+    color: var(--ink-light);
+    border: 1px solid rgba(255, 156, 138, 0.72);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .sys-btn-secondary:hover {
+    box-shadow: var(--coral-ring), 0 6px 14px rgba(0, 0, 0, 0.45);
+  }
+
+  .sys-btn-disabled {
+    background: var(--surface-muted);
+    color: rgba(24, 28, 26, 0.52);
+    cursor: not-allowed;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Inputs */
+  .input-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .sys-input {
+    width: 100%;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    padding: 0 34px 0 12px;
+    outline: none;
+    box-shadow: var(--shadow-elevated);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  }
+
+  .sys-input::placeholder {
+    color: var(--ink-muted);
+  }
+
+  .sys-input.is-focused,
+  .sys-input:focus {
+    border-color: var(--coral);
+    box-shadow: var(--coral-ring), 0 6px 14px rgba(0, 0, 0, 0.4);
+  }
+
+  .input-icon-btn {
+    position: absolute;
+    right: 9px;
+    background: none;
+    border: none;
+    padding: 2px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .input-icon-btn:hover {
+    color: var(--coral-bright);
+  }
+
+  /* Toggle */
+  .toggle-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sys-toggle {
+    width: 78px;
+    height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-light);
+    box-shadow: var(--shadow-elevated);
+    transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .sys-toggle[aria-checked="true"] {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    border-color: rgba(255, 190, 175, 0.8);
+    color: #181d1f;
+    box-shadow: var(--coral-glow);
+    justify-content: flex-start;
+  }
+
+  .sys-toggle[aria-checked="false"] {
+    justify-content: flex-end;
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2e3e45;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease;
+  }
+
+  .sys-toggle[aria-checked="true"] .toggle-thumb {
+    transform: translateX(46px);
+    background: #1c2428;
+  }
+
+  /* Tabs */
+  .tabs-bar {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 7px;
+    padding: 3px;
+    gap: 2px;
+    box-shadow: var(--shadow-elevated);
+    align-self: center;
+  }
+
+  .sys-tab {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .sys-tab[aria-selected="true"] {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    color: #181d1f;
+    box-shadow: 0 0 12px rgba(255, 150, 132, 0.6);
+  }
+
+  .sys-tab:disabled {
+    color: rgba(229, 236, 239, 0.38);
+    cursor: not-allowed;
+  }
+
+  /* ========================
+     3. CHIPS & DATE PICKER MINI
+     ======================== */
+  .chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .sys-chip {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32);
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+  }
+
+  .sys-chip.is-active {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    border-color: transparent;
+    color: #181d1f;
+    box-shadow: var(--coral-glow);
+  }
+
+  .sys-chip.is-muted {
+    background: rgba(108, 107, 95, 0.55);
+    color: rgba(229, 236, 239, 0.5);
+    border-color: transparent;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .chip-x {
+    font-size: 13px;
+    line-height: 1;
+    opacity: 0.78;
+  }
+
+  /* Date Picker Mini */
+  .cal-card {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 24px rgba(8, 14, 16, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    color: var(--ink-light);
+  }
+
+  .cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .cal-nav {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+
+  .cal-nav:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ink-light);
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px 2px;
+    text-align: center;
+    font-size: 11px;
+  }
+
+  .cal-wd {
+    color: var(--ink-muted);
+    font-size: 10px;
+    font-weight: 500;
+    padding-bottom: 4px;
+  }
+
+  .cal-day {
+    height: 24px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .cal-day.is-dim {
+    color: rgba(152, 168, 174, 0.42);
+  }
+
+  .cal-day:hover:not(.is-selected) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .cal-day.is-selected {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    color: #181d1f;
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(255, 150, 132, 0.65);
+  }
+
+  /* ========================
+     4. DROPDOWN (base-select + interactive menu) & STEPPER
+     ======================== */
+  .dropdown-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Modern customizable <select> (with graceful fallback) */
+  .sys-select,
+  .sys-select::picker(select) {
+    appearance: base-select;
+  }
+
+  .sys-select {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    cursor: pointer;
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sys-select:focus-visible {
+    outline: none;
+    border-color: var(--coral);
+    box-shadow: var(--coral-ring);
+  }
+
+  .sys-select::picker(select) {
+    background: var(--surface-dark);
+    border: 1px solid rgba(255, 156, 138, 0.72);
+    border-radius: 7px;
+    padding: 4px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
+  }
+
+  .sys-select::picker-icon {
+    color: var(--ink-muted);
+  }
+
+  .sys-select option {
+    padding: 7px 10px;
+    border-radius: 5px;
+    color: var(--ink-light);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .sys-select option:hover,
+  .sys-select option:checked {
+    background: rgba(255, 156, 138, 0.16);
+    color: #fff;
+  }
+
+  .sys-select option::checkmark {
+    color: var(--coral-bright);
+  }
+
+  /* Expanded interactive menu specimen */
+  .menu-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .menu-trigger {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 6px;
+    border: 1px solid var(--coral);
+    background: var(--surface);
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: var(--coral-ring), 0 6px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  .menu-panel {
+    background: var(--surface-dark);
+    border: 1px solid rgba(255, 156, 138, 0.65);
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 14px 26px rgba(8, 12, 14, 0.55), 0 0 12px rgba(255, 146, 128, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-item {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+
+  .menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ink-light);
+  }
+
+  .menu-item.is-active {
+    background: rgba(255, 156, 138, 0.14);
+    color: #fff;
+    font-weight: 500;
+    border-top: 1px solid rgba(255, 156, 138, 0.25);
+  }
+
+  /* Stepper / Steps */
+  .stepper-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 6px 4px;
+  }
+
+  .step-track {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--surface-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .step-fill {
+    height: 100%;
+    width: 48%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--coral-deep) 0%, var(--coral-bright) 100%);
+    box-shadow: 0 0 12px rgba(255, 150, 132, 0.72);
+    transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .step-marker {
+    position: absolute;
+    top: -4px;
+    left: 48%;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: #ffd3c7;
+    box-shadow: 0 0 8px rgba(255, 160, 140, 0.95);
+    transform: translateX(-50%);
+    transition: left 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .step-labels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .step-btn {
+    background: none;
+    border: none;
+    padding: 2px 0;
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    color: rgba(18, 24, 26, 0.8);
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .step-btn.is-current {
+    font-weight: 600;
+    color: #14181a;
+  }
+
+  /* ========================
+     5. COMPONENT ANATOMY: BUTTON
+     ======================== */
+  .anatomy-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 6px 4px;
+  }
+
+  .dim-top {
+    width: 170px;
+    margin-left: 34px;
+    border-bottom: 1px solid rgba(18, 24, 26, 0.55);
+    position: relative;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: rgba(18, 24, 26, 0.8);
+    padding-bottom: 3px;
+  }
+
+  .dim-top::before,
+  .dim-top::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    width: 1px;
+    height: 6px;
+    background: rgba(18, 24, 26, 0.55);
+  }
+  .dim-top::before { left: 0; }
+  .dim-top::after { right: 0; }
+
+  .anatomy-row {
+    display: grid;
+    grid-template-columns: 28px 170px 1fr;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dim-side {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    color: rgba(18, 24, 26, 0.72);
+    text-align: right;
+    padding-right: 4px;
+    border-right: 1px solid rgba(18, 24, 26, 0.35);
+    line-height: 1.15;
+  }
+
+  .anat-btn {
+    height: 36px;
+    border-radius: 6px;
+    padding: 0 14px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 156, 138, 0.65);
+    background: var(--surface);
+    color: var(--ink-light);
+    box-shadow: var(--shadow-elevated);
+    cursor: pointer;
+  }
+
+  .anat-btn.is-hover {
+    background: linear-gradient(90deg, #ff9988 0%, #ff79b0 100%);
+    border-color: transparent;
+    color: #181c1e;
+    font-weight: 600;
+    justify-content: center;
+    box-shadow: 0 0 18px rgba(255, 130, 165, 0.7), 0 6px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  .anat-btn.is-disabled {
+    background: var(--surface-muted);
+    border-color: transparent;
+    color: rgba(24, 28, 26, 0.55);
+    justify-content: center;
+    cursor: not-allowed;
+  }
+
+  .anat-btn.is-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    justify-content: center;
+  }
+
+  .spinner-ring {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px dotted rgba(229, 236, 239, 0.85);
+    border-top-color: var(--coral-bright);
+    animation: spin 1.1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .callout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .callout-line {
+    width: 18px;
+    height: 1px;
+    background: rgba(18, 24, 26, 0.55);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .callout-line::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: -2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(18, 24, 26, 0.72);
+  }
+
+  .callout-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .callout-title {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #161c1e;
+  }
+
+  .callout-sub {
+    font-size: 8.5px;
+    color: rgba(18, 24, 26, 0.7);
+  }
+
+  /* ========================
+     6. NOTIFICATIONS / TOOLTIP / BADGE
+     ======================== */
+  .toast-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    background: #2f3b31;
+    border: 1px solid var(--lime);
+    box-shadow: var(--lime-glow);
+    color: var(--ink-light);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .toast-bar.is-hidden {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+
+  .toast-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toast-title {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .toast-sub {
+    font-size: 10.5px;
+    color: rgba(229, 236, 239, 0.72);
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  .toast-close:hover {
+    color: #fff;
+  }
+
+  /* Tooltip */
+  .tooltip-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sys-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--ink-light);
+    font-size: 11.5px;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .sys-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    background: var(--surface);
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    transform: rotate(45deg);
+  }
+
+  /* Badges */
+  .badges-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    gap: 8px;
+  }
+
+  .badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .badge-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.42);
+  }
+
+  .b-red { background: #c54b4b; }
+  .b-olive { background: #7b8052; box-shadow: 0 0 8px rgba(170, 175, 110, 0.45); }
+  .b-green { background: #4a9e67; }
+  .b-blue { background: #4787c7; }
+  .b-coral { background: #c96458; }
+  .b-gold { background: #c29548; }
+
+  .badge-caption {
+    font-size: 10px;
+    color: rgba(18, 24, 26, 0.85);
+  }
+
+  /* ========================
+     7. PAGINATION & BREADCRUMBS
+     ======================== */
+  .page-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .page-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    color: var(--ink-light);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    transition: background 0.14s ease, box-shadow 0.14s ease;
+  }
+
+  .page-btn.is-active {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    border-color: transparent;
+    color: #181d1f;
+    font-weight: 600;
+    box-shadow: var(--coral-glow);
+  }
+
+  .page-btn.is-muted {
+    background: rgba(40, 52, 58, 0.45);
+    color: rgba(229, 236, 239, 0.35);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+  }
+
+  .page-dots {
+    font-size: 12px;
+    color: var(--ink-light);
+    padding: 0 2px;
+  }
+
+  /* Breadcrumbs */
+  .crumbs-bar {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    overflow: hidden;
+    height: 32px;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .crumb-item {
+    position: relative;
+    padding: 0 18px 0 14px;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .crumb-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.24);
+    border-right: 1px solid rgba(255, 255, 255, 0.24);
+    transform: translateY(-50%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  .crumb-item:last-child {
+    color: var(--ink-light);
+    font-weight: 500;
+  }
+
+  /* ========================
+     8. CARD / TABLE ROW / EMPTY STATE
+     ======================== */
+  .stacked-card-wrap {
+    position: relative;
+    padding-bottom: 10px;
+  }
+
+  .stacked-card-wrap::before,
+  .stacked-card-wrap::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 4px;
+    height: 24px;
+    border-radius: 8px;
+    background: var(--surface-dark);
+    border: 1px solid rgba(255, 156, 138, 0.35);
+    z-index: 0;
+  }
+
+  .stacked-card-wrap::before {
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    opacity: 0.65;
+  }
+
+  .sys-card {
+    position: relative;
+    z-index: 1;
+    background: var(--surface-dark);
+    border: 1px solid rgba(255, 156, 138, 0.72);
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 22px rgba(8, 12, 14, 0.55), 0 0 12px rgba(255, 146, 128, 0.25);
+    color: var(--ink-light);
+  }
+
+  .card-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--coral-bright);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .card-copy {
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--ink-muted);
+  }
+
+  /* Table Row */
+  .sys-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--surface-dark);
+    box-shadow: var(--shadow-elevated);
+    font-size: 11px;
+    color: var(--ink-light);
+  }
+
+  .sys-table thead th {
+    background: linear-gradient(180deg, var(--coral-bright) 0%, var(--coral) 100%);
+    color: #181d1f;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+  }
+
+  .sys-table tbody td {
+    padding: 8px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--ink-muted);
+  }
+
+  .sys-table tbody td:first-child {
+    color: var(--ink-light);
+  }
+
+  .table-action {
+    color: var(--coral-bright);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .table-action:hover {
+    text-decoration: underline;
+  }
+
+  /* Empty State */
+  .empty-card {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 14px;
+    text-align: center;
+    color: var(--ink-light);
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .empty-title {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .empty-copy {
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: var(--ink-muted);
+    max-width: 230px;
+  }
+
+  .empty-link {
+    font-size: 11px;
+    color: var(--coral-bright);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .tokens-grid { grid-template-columns: repeat(3, 1fr); }
+    .row-controls, .row-middle, .row-feedback, .row-nav, .row-data {
+      grid-template-columns: 1fr;
+    }
+    .ruler-strip { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+
+  <!-- 1. TOKENS STRIP -->
+  <section class="section">
+    <div class="sec-label">TOKENS STRIP</div>
+    <div class="frame tokens-frame">
+      <div class="tokens-grid">
+        <!-- Typography Hierarchy -->
+        <div class="token-col">
+          <div class="token-sub">Typography Hierarchy</div>
+          <div class="typo-h1">H1: System OS</div>
+          <div class="typo-h2">H2: Section Title</div>
+          <div class="typo-body">Body: Default text</div>
+        </div>
+
+        <!-- Icon Set -->
+        <div class="token-col">
+          <div class="token-sub">Icon Set</div>
+          <div class="icon-grid">
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.78 1 1.51 1H21a2 2 0 0 1 0 4h-.09c-.73 0-1.25.4-1.51 1z"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="10" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M6 8.5v7M8.5 6H13a2 2 0 0 1 2 2v2h.5"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 13.3 7.4 4.4M15.7 6.3l-7.4 4.4"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17V5m0 0-3 3m3-3 3 3M17 7v12m0 0-3-3m3 3 3-3"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            <svg class="neon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+          </div>
+        </div>
+
+        <!-- Spacing -->
+        <div class="token-col">
+          <div class="token-sub">Spacing</div>
+          <div class="spacing-list">
+            <div class="spacing-row"><span>01</span><span>2px</span></div>
+            <div class="spacing-row"><span>02</span><span>4px</span></div>
+            <div class="spacing-row"><span>03</span><span>6px</span></div>
+            <div class="spacing-row"><span>04</span><span>8px</span></div>
+            <div class="spacing-row"><span>05</span><span>12px</span></div>
+            <div class="spacing-row"><span>06</span><span>16px</span></div>
+            <div class="spacing-row"><span>07</span><span>24px</span></div>
+            <div class="spacing-row"><span>08</span><span>32px</span></div>
+            <div class="spacing-row"><span>09</span><span>48px</span></div>
+            <div class="spacing-row"><span>10</span><span>64px</span></div>
+          </div>
+        </div>
+
+        <!-- Border Weights -->
+        <div class="token-col">
+          <div class="token-sub">Border Weights</div>
+          <div class="weights-stack">
+            <div class="weight-bar" style="height:1px"></div>
+            <div class="weight-bar" style="height:2px"></div>
+            <div class="weight-bar" style="height:2.5px"></div>
+            <div class="weight-bar" style="height:3.5px"></div>
+            <div class="weight-bar" style="height:4.5px"></div>
+            <div class="weight-bar" style="height:5.5px"></div>
+            <div class="weight-bar" style="height:6.5px"></div>
+          </div>
+        </div>
+
+        <!-- Corner Radii -->
+        <div class="token-col">
+          <div class="token-sub">Corner Radii</div>
+          <div class="radii-stack">
+            <div class="radius-arc" style="border-top-right-radius:2px; border-color:#d8b375"></div>
+            <div class="radius-arc" style="border-top-right-radius:6px; border-color:#ea937e"></div>
+            <div class="radius-arc" style="border-top-right-radius:10px; border-color:#df7d97"></div>
+            <div class="radius-arc" style="border-top-right-radius:14px; border-color:#c66db5"></div>
+            <div class="radius-arc" style="border-top-right-radius:18px; border-color:#1c2427"></div>
+          </div>
+        </div>
+
+        <!-- Shadow Depth -->
+        <div class="token-col">
+          <div class="token-sub">Shadow Depth</div>
+          <div class="shadow-stack">
+            <div class="depth-swatch d1"></div>
+            <div class="depth-swatch d2"></div>
+            <div class="depth-swatch d3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Ruler Strip -->
+      <div class="ruler-strip">
+        <div class="ruler-cell">1<br>2px</div>
+        <div class="ruler-cell">75<br>3px</div>
+        <div class="ruler-cell">100<br>3px</div>
+        <div class="ruler-cell">200<br>3px</div>
+        <div class="ruler-cell">500<br>3px</div>
+        <div class="ruler-cell">1000<br>3px</div>
+        <div class="ruler-cell">1200<br>3px</div>
+        <div class="ruler-cell">1800<br>3px</div>
+        <div class="ruler-cell">2625<br>3px</div>
+        <div class="ruler-cell">374<br>3px</div>
+        <div class="ruler-cell">2520<br>3px</div>
+        <div class="ruler-cell">300<br>3px</div>
+        <div class="ruler-cell">00K<br>3px</div>
+        <div class="ruler-cell">88K<br>3px</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. BUTTONS / INPUTS / TOGGLE / TABS -->
+  <section class="row-controls">
+    <div class="section">
+      <div class="sec-label">BUTTONS</div>
+      <div class="frame frame-fill">
+        <div class="btn-stack">
+          <button type="button" class="sys-btn sys-btn-primary">Primary</button>
+          <button type="button" class="sys-btn sys-btn-secondary">Secondary</button>
+          <button type="button" class="sys-btn sys-btn-disabled" disabled>Disabled</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">INPUTS</div>
+      <div class="frame frame-fill">
+        <div class="input-stack">
+          <div class="input-wrap">
+            <input type="text" class="sys-input is-focused" value="Set up profile" aria-label="Profile name">
+          </div>
+          <div class="input-wrap">
+            <input type="password" id="pwdInput" class="sys-input" placeholder="Password" aria-label="Password">
+            <button type="button" id="pwdToggle" class="input-icon-btn" aria-label="Toggle password visibility">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="input-wrap">
+            <input type="search" class="sys-input" placeholder="Search" aria-label="Search">
+            <span class="input-icon-btn" style="pointer-events:none">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">TOGGLE</div>
+      <div class="frame frame-fill">
+        <div class="toggle-stack">
+          <button type="button" class="sys-toggle" role="switch" aria-checked="true">
+            <span class="toggle-label">On</span>
+            <span class="toggle-thumb"></span>
+          </button>
+          <button type="button" class="sys-toggle" role="switch" aria-checked="false">
+            <span class="toggle-label">Off</span>
+            <span class="toggle-thumb"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">TABS</div>
+      <div class="frame frame-fill">
+        <div class="tabs-bar" role="tablist" aria-label="System OS tabs">
+          <button type="button" class="sys-tab" role="tab" aria-selected="true">Active</button>
+          <button type="button" class="sys-tab" role="tab" aria-selected="false">Inactive</button>
+          <button type="button" class="sys-tab" role="tab" aria-selected="false" disabled>Disabled</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. CHIPS + DATE PICKER / DROPDOWN + STEPPER / COMPONENT ANATOMY -->
+  <section class="row-middle">
+    <!-- Left Column -->
+    <div class="mid-col">
+      <div class="section">
+        <div class="sec-label">CHIPS</div>
+        <div class="frame">
+          <div class="chips-wrap">
+            <button type="button" class="sys-chip is-active">Filter <span class="chip-x">&times;</span></button>
+            <button type="button" class="sys-chip">Action <span class="chip-x">&times;</span></button>
+            <button type="button" class="sys-chip is-muted" disabled>Action</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="flex:1">
+        <div class="sec-label">DATE PICKER MINI</div>
+        <div class="frame frame-fill">
+          <div class="cal-card">
+            <div class="cal-head">
+              <button type="button" class="cal-nav" id="calPrev" aria-label="Previous month">&lsaquo;</button>
+              <span id="calTitle">June 2022</span>
+              <button type="button" class="cal-nav" id="calNext" aria-label="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Column -->
+    <div class="mid-col">
+      <div class="section" style="flex:1">
+        <div class="sec-label">DROPDOWN</div>
+        <div class="frame frame-fill">
+          <div class="dropdown-stack">
+            <select class="sys-select" name="sys-option" aria-label="Select options">
+              <button><selectedcontent></selectedcontent></button>
+              <option value="default">Select options</option>
+              <option value="opt1">Option Alpha</option>
+              <option value="opt2">Option Beta</option>
+              <option value="active">Active menu</option>
+            </select>
+
+            <div class="menu-demo">
+              <button type="button" class="menu-trigger" id="demoDropBtn" aria-expanded="true">
+                <span id="demoDropVal">Select options</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </button>
+              <div class="menu-panel" id="demoDropPanel" role="listbox">
+                <button type="button" class="menu-item" role="option">Select options</button>
+                <button type="button" class="menu-item" role="option">Select options</button>
+                <button type="button" class="menu-item is-active" role="option" aria-selected="true">Active menu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-label">STEPPER/STEPS</div>
+        <div class="frame">
+          <div class="stepper-box">
+            <div class="step-track">
+              <div class="step-fill" id="stepFill"></div>
+              <div class="step-marker" id="stepMarker"></div>
+            </div>
+            <div class="step-labels">
+              <button type="button" class="step-btn" data-pct="22">Upload progress</button>
+              <button type="button" class="step-btn is-current" data-pct="48">Upload progress</button>
+              <button type="button" class="step-btn" data-pct="86">Upload progress</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: COMPONENT ANATOMY -->
+    <div class="section">
+      <div class="sec-label">COMPONENT ANATOMY: BUTTON</div>
+      <div class="frame frame-fill">
+        <div class="anatomy-wrap">
+          <div class="dim-top">190</div>
+
+          <div class="anatomy-row">
+            <div class="dim-side">38<br>px</div>
+            <button type="button" class="anat-btn" style="justify-content:flex-start">Engage</button>
+            <div class="callout">
+              <span class="callout-line"></span>
+              <span class="callout-text">
+                <span class="callout-title">LABEL</span>
+                <span class="callout-sub">technical dimensions</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="anatomy-row">
+            <div class="dim-side"></div>
+            <button type="button" class="anat-btn">
+              <span>ICON</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </button>
+            <div class="callout">
+              <span class="callout-line"></span>
+              <span class="callout-text">
+                <span class="callout-title">ICON</span>
+                <span class="callout-sub">Arrow and dimension</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="anatomy-row">
+            <div class="dim-side">10px<br>4px</div>
+            <button type="button" class="anat-btn is-hover">HOVER STATE</button>
+            <div class="callout">
+              <span class="callout-line"></span>
+              <span class="callout-text">
+                <span class="callout-title">HOVER STATE</span>
+                <span class="callout-sub">Hover effect with glow</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="anatomy-row">
+            <div class="dim-side">50<br>28</div>
+            <button type="button" class="anat-btn is-disabled" disabled>DISABLED STATE</button>
+            <div class="callout">
+              <span class="callout-line"></span>
+              <span class="callout-text">
+                <span class="callout-title">DISABLED STATE</span>
+                <span class="callout-sub">Muted appearance</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="anatomy-row">
+            <div class="dim-side"></div>
+            <button type="button" class="anat-btn is-spinner" aria-label="Loading">
+              <span class="spinner-ring"></span>
+            </button>
+            <div class="callout">
+              <span class="callout-line"></span>
+              <span class="callout-text">
+                <span class="callout-title">LOADING SPINNER</span>
+                <span class="callout-sub">Rotation animation</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. NOTIFICATIONS / TOOLTIP / BADGE -->
+  <section class="row-feedback">
+    <div class="section">
+      <div class="sec-label">NOTIFICATIONS</div>
+      <div class="frame frame-fill">
+        <div class="toast-bar" id="toastBar" role="status">
+          <div class="toast-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b6db80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <div>
+              <div class="toast-title">Toast message</div>
+              <div class="toast-sub">Permission level granted</div>
+            </div>
+          </div>
+          <button type="button" class="toast-close" id="toastClose" aria-label="Dismiss notification">&times;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">TOOLTIP</div>
+      <div class="frame frame-fill tooltip-wrap">
+        <div class="sys-tooltip" role="tooltip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7cc4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Small info bubble</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">BADGE</div>
+      <div class="frame frame-fill">
+        <div class="badges-row">
+          <div class="badge-item"><span class="badge-dot b-red">&times;</span></div>
+          <div class="badge-item">
+            <span class="badge-dot b-olive">!</span>
+            <span class="badge-caption">Status</span>
+          </div>
+          <div class="badge-item"><span class="badge-dot b-green">&#10003;</span></div>
+          <div class="badge-item"><span class="badge-dot b-blue">i</span></div>
+          <div class="badge-item"><span class="badge-dot b-coral">!</span></div>
+          <div class="badge-item"><span class="badge-dot b-gold">&#9733;</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. PAGINATION / BREADCRUMBS -->
+  <section class="row-nav">
+    <div class="section">
+      <div class="sec-label">PAGINATION</div>
+      <div class="frame frame-fill">
+        <nav class="page-row" aria-label="Pagination" id="pagination">
+          <button type="button" class="page-btn is-muted" aria-label="Previous">&lsaquo;</button>
+          <button type="button" class="page-btn is-active" aria-current="page">1</button>
+          <button type="button" class="page-btn">3</button>
+          <button type="button" class="page-btn">4</button>
+          <button type="button" class="page-btn">5</button>
+          <span class="page-dots">...</span>
+          <button type="button" class="page-btn" aria-label="Next">&rsaquo;</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">BREADCRUMBS</div>
+      <div class="frame frame-fill">
+        <nav class="crumbs-bar" aria-label="Breadcrumb">
+          <a class="crumb-item" href="#nav1">Navigation</a>
+          <a class="crumb-item" href="#nav2">Navigation</a>
+          <span class="crumb-item" aria-current="page">Trail</span>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CARD / TABLE ROW / EMPTY STATE -->
+  <section class="row-data">
+    <div class="section">
+      <div class="sec-label">CARD</div>
+      <div class="frame frame-fill">
+        <div class="stacked-card-wrap">
+          <article class="sys-card">
+            <div class="card-eyebrow">Title</div>
+            <h3 class="card-title">Content block title</h3>
+            <p class="card-copy">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed dia nonummy with euismod tincidunt set.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">TABLE ROW</div>
+      <div class="frame frame-fill">
+        <table class="sys-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Data</th>
+              <th>Last row</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data entry row 1</td>
+              <td>2020</td>
+              <td>$39.00</td>
+              <td><a href="#act1" class="table-action">Actions</a></td>
+            </tr>
+            <tr>
+              <td>Data entry row 2</td>
+              <td>2020</td>
+              <td>$84.00</td>
+              <td><a href="#act2" class="table-action">Actions</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">EMPTY STATE</div>
+      <div class="frame frame-fill">
+        <div class="empty-card">
+          <svg width="64" height="36" viewBox="0 0 64 36" fill="none" stroke="rgba(255,156,138,0.65)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 24a8 8 0 0 1 6-14" stroke-dasharray="2 3"/>
+            <path d="M52 24a8 8 0 0 0-6-14" stroke-dasharray="2 3"/>
+            <path d="m32 7 9 16H23l9-16Z"/>
+            <path d="M32 13v4M32 20h.01"/>
+          </svg>
+          <div class="empty-title">Illustration and message</div>
+          <p class="empty-copy">This node or message may have moved to another directory.</p>
+          <a href="#learn-more" class="empty-link">Learn more</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Password visibility toggle
+  const pwdInput = document.getElementById('pwdInput');
+  const pwdToggle = document.getElementById('pwdToggle');
+  pwdToggle?.addEventListener('click', () => {
+    const isPwd = pwdInput.type === 'password';
+    pwdInput.type = isPwd ? 'text' : 'password';
+  });
+
+  // Interactive toggles
+  document.querySelectorAll('.sys-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = btn.getAttribute('aria-checked') !== 'true';
+      btn.setAttribute('aria-checked', String(next));
+      btn.querySelector('.toggle-label').textContent = next ? 'On' : 'Off';
+    });
+  });
+
+  // Interactive tabs
+  document.querySelectorAll('.sys-tab:not(:disabled)').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.sys-tab').forEach((t) => t.setAttribute('aria-selected', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Interactive dropdown demo
+  const dropPanel = document.getElementById('demoDropPanel');
+  const dropVal = document.getElementById('demoDropVal');
+  const dropBtn = document.getElementById('demoDropBtn');
+  dropBtn?.addEventListener('click', () => {
+    const open = dropPanel.style.display !== 'none';
+    dropPanel.style.display = open ? 'none' : 'flex';
+    dropBtn.setAttribute('aria-expanded', String(!open));
+  });
+  dropPanel?.querySelectorAll('.menu-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      dropPanel.querySelectorAll('.menu-item').forEach((i) => {
+        i.classList.remove('is-active');
+        i.setAttribute('aria-selected', 'false');
+      });
+      item.classList.add('is-active');
+      item.setAttribute('aria-selected', 'true');
+      dropVal.textContent = item.textContent;
+    });
+  });
+
+  // Stepper interaction
+  const stepFill = document.getElementById('stepFill');
+  const stepMarker = document.getElementById('stepMarker');
+  document.querySelectorAll('.step-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const pct = btn.dataset.pct + '%';
+      stepFill.style.width = pct;
+      stepMarker.style.left = pct;
+      document.querySelectorAll('.step-btn').forEach((b) => b.classList.remove('is-current'));
+      btn.classList.add('is-current');
+    });
+  });
+
+  // Toast dismiss / restore
+  const toastBar = document.getElementById('toastBar');
+  document.getElementById('toastClose')?.addEventListener('click', () => {
+    toastBar.classList.toggle('is-hidden');
+  });
+
+  // Pagination active switch
+  document.querySelectorAll('#pagination .page-btn:not(.is-muted)').forEach((btn) => {
+    if (btn.textContent.trim().match(/^\d+$/)) {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#pagination .page-btn').forEach((b) => {
+          b.classList.remove('is-active');
+          b.removeAttribute('aria-current');
+        });
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-current', 'page');
+      });
+    }
+  });
+
+  // Mini Calendar (June 2022 default with 11 & 14 highlighted)
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let viewYear = 2022;
+  let viewMonth = 5; // June (0-indexed)
+  const selectedDays = new Set([11, 14]);
+  const calTitle = document.getElementById('calTitle');
+  const calGrid = document.getElementById('calGrid');
+
+  function renderCal() {
+    calTitle.textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+    calGrid.innerHTML = '';
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach((d) => {
+      const el = document.createElement('div');
+      el.className = 'cal-wd';
+      el.textContent = d;
+      calGrid.appendChild(el);
+    });
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    const prevDays = new Date(viewYear, viewMonth, 0).getDate();
+
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day is-dim';
+      btn.textContent = prevDays - i;
+      calGrid.appendChild(btn);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day' + (selectedDays.has(d) ? ' is-selected' : '');
+      btn.textContent = d;
+      btn.addEventListener('click', () => {
+        if (selectedDays.has(d)) selectedDays.delete(d);
+        else selectedDays.add(d);
+        renderCal();
+      });
+      calGrid.appendChild(btn);
+    }
+    const total = firstDay + daysInMonth;
+    const rem = (7 - (total % 7)) % 7;
+    for (let i = 1; i <= rem; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day is-dim';
+      btn.textContent = i;
+      calGrid.appendChild(btn);
+    }
+  }
+
+  document.getElementById('calPrev')?.addEventListener('click', () => {
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCal();
+  });
+  document.getElementById('calNext')?.addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCal();
+  });
+  renderCal();
+</script>
+</body>
+</html>

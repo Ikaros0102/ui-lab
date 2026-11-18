@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-09T18:34:41.819Z",
- "count": 89,
+ "generated": "2026-11-18T12:43:31.249Z",
+ "count": 92,
  "items": [
   {
    "id": "deep-space-nebula",
@@ -799,6 +799,43 @@
     "mode": "page",
     "width": 1120,
     "height": 820
+   },
+   "hasJs": true
+  },
+  {
+   "id": "system-os-ui-kit",
+   "path": "components/cards/system-os-ui-kit.html",
+   "title": "System OS — Tactile Coral & Slate UI Kit",
+   "category": "cards",
+   "themes": [
+    "dark",
+    "retro",
+    "mesh"
+   ],
+   "tags": [
+    "design-system",
+    "ui-kit",
+    "tokens",
+    "system-os",
+    "coral-glow",
+    "tactile",
+    "components",
+    "anatomy",
+    "base-select"
+   ],
+   "description": "Complete System OS component specification sheet on a warm-peach to slate-teal drafting grid. Features design tokens strip, glowing coral & dark slate controls, button anatomy callouts, base-select dropdown, date picker mini, stepper, toast, badges, pagination, breadcrumbs, stacked card, table, and empty state.",
+   "techniques": [
+    "Drafting grid + atmospheric gradient",
+    "Neon coral box-shadow & drop-shadow glow",
+    "Customizable <select> with appearance: base-select",
+    "Blueprint component anatomy callouts",
+    "Stacked layered card depth"
+   ],
+   "recipe": "Layer a multi-stop warm-peach-to-slate-teal background with a 28px CSS linear-gradient drafting grid and subtle SVG noise. Frame each UI module in 1px hairline borders, pair dark slate-teal surfaces (#25353c) with glowing coral-peach accents (#ff9c8a), and use appearance: base-select on native <select> with graceful fallback.",
+   "preview": {
+    "mode": "page",
+    "width": 1160,
+    "height": 840
    },
    "hasJs": true
   },
@@ -2870,6 +2907,39 @@
    "hasJs": true
   },
   {
+   "id": "remote-link-navigation",
+   "path": "components/widgets/remote-link-navigation.html",
+   "title": "Remote Link Navigation Console",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "telemetry",
+    "tactical-hud",
+    "submarine",
+    "radar",
+    "sonar",
+    "led-meters",
+    "segmented-bar",
+    "rotary-gauges",
+    "sci-fi-ui",
+    "widgets",
+    "military",
+    "tactical"
+   ],
+   "description": "True-to-reference military olive-charcoal tactical naval telemetry console. Features 6 channels (GPS, Sonar, Doppler, Motor 1/2/3) with separated plot gutters, fine 42-tick segmented amber LED meters, angled ballast hull encoder pods, direction radar with dot-matrix corners, dual depth ladders, sub pressure gauges, and query log streams.",
+   "techniques": [],
+   "recipe": "",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 1780
+   },
+   "hasJs": true
+  },
+  {
    "id": "royal-walnut-hifi-suite",
    "path": "components/widgets/royal-walnut-hifi-suite.html",
    "title": "Royal Walnut & Spun Brass Luxury UI Kit",
@@ -3125,6 +3195,40 @@
     "mode": "page",
     "width": 1420,
     "height": 640
+   },
+   "hasJs": true
+  },
+  {
+   "id": "unsc-avionics-comm",
+   "path": "components/widgets/unsc-avionics-comm.html",
+   "title": "UNSC Avionics Comm Terminal",
+   "category": "widgets",
+   "themes": [
+    "dark",
+    "retro"
+   ],
+   "tags": [
+    "unsc",
+    "halo",
+    "avionics",
+    "oscilloscope",
+    "sine-wave",
+    "rf-noise",
+    "tactical-mfd",
+    "cockpit",
+    "wireframe",
+    "bezel",
+    "widgets",
+    "sci-fi",
+    "military"
+   ],
+   "description": "True-to-reference UNSC PLN-ECHO-216 Avionics Comm Terminal. Features vertical brushed dark olive-slate cockpit texture, pale icy seafoam-mint CRT wireframe borders, dual radio modules with lime-green sine oscilloscope and tight amber RF laser-noise trace, clustered telemetry ticks, bracketed frequency/channel selectors, and MFD bezel softkeys.",
+   "techniques": [],
+   "recipe": "",
+   "preview": {
+    "mode": "page",
+    "width": 1000,
+    "height": 1000
    },
    "hasJs": true
   },
